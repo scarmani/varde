@@ -1,0 +1,124 @@
+# Cairn — design history and playtest protocol
+
+This document preserves the design lineage (formerly "Grounded Cairn"),
+including retired claims and the playtest protocol. The rules in
+`cairn-rules.md` are authoritative; this file explains why they are what
+they are, and what remains open.
+
+## How the design was reached
+
+The game emerged from an adversarial exchange between two AI systems, each
+round attacking the other's ruleset with concrete positions. Major stages:
+
+1. **Cairn v1–v2** — global height-3 cap, surface control, universal skies.
+   Broken: only full-height groups were capturable; capping was
+   unconditionally legal; endgame cap–recap grind.
+2. **Terrain ceiling (v3)** — "place only while the column is ≤ every
+   neighbor" (human-proposed). Fixed unsupported capping; introduced
+   capture-timing ambiguity (burial vs capture).
+3. **Covered-stone priority / three-phase resolution (v4)** — later deleted
+   whole: the [enemy, cap] removal ambiguity and a supported-boundary-cap
+   erosion line broke two-eye life. An impossibility argument was framed:
+   surface readability + enemy capping + classical life seemed jointly
+   unsatisfiable.
+4. **Dormant sky + majority summits (Grounded Cairn)** — both human-proposed.
+   The dormant sky (a newborn stone cannot breathe through the sky it just
+   created) made eye invasion suicide, deleting the phase machinery; the
+   majority summit rule made capping shape-dependent. The "impossibility"
+   was thereby refuted: the door never tried was regulating what a newborn
+   stone may breathe.
+5. **Well skies** — skies only where a column stands *strictly lower* than
+   every neighbor (reviewer-proposed). Killed the Tripod (three stones
+   around an empty point were unconditionally alive under plateau skies)
+   and restored classical flat capture.
+6. **Drafting rounds** — no-legal-first-move bug in the summit rule (fixed:
+   ground placements exempt); pass/repetition interaction (fixed:
+   placements only); resumption loop (fixed: once per game, normal turn
+   order); plateau restatement of the summit rule; dormancy folded into the
+   sky definition; formal territory regions; completed swap.
+
+## Retired folklore (false claims — do not re-derive)
+
+- **The Tripod**: three stones around an empty interior point are immortal —
+  true under plateau skies, killed by well skies.
+- **The pit-invasion burial line**: an invader in a one-point pit inside
+  raised walls becomes a buried seed — false; it is illegal on the spot.
+- **The six-column equal-core fortress**: premise void under well skies.
+- **The n height ceiling**: true ceiling is 2n−1 (cell rings are not graph
+  distance).
+- **"Stacked groups are peeled, not erased"**: spacing-conditional; adjacent
+  equal-height stacks shade each other's skies and cascade to erasure.
+- **"Two eyes give classical life" / "one well is not life"** (2026-07-12,
+  engine-verified): both are **collar-conditional**. A single well whose
+  walls' outer neighbors stand at height ≥ 2 is unconditional life (peeled
+  walls regenerate wells mid-cascade; the killing entry is suicide). The
+  twin-well theorem requires the same high collar; low-collar twin wells
+  are breachable core by core, erasing the breached core's private walls.
+- **"Twin wells need 9 supports"**: exactly 8 — the hexagonal face through
+  the two cores forces one shared collar point (verified across all 96
+  sites at n = 3).
+- **The peel-that-kills by tying**: nearly unconstructible (full erasure
+  frees rescuing empties); the realizable mechanism is the doomed column
+  stopping in a capture-created pit *below* the mover's column.
+
+## What was tried and abandoned
+
+Plateau skies (one eye suffices → collapse). Universal skies without
+dormancy (every eye invadable). Hard height caps (parity discontinuity).
+Finite stone reserves (exhaustion cliff: a player out of stones passes while
+the opponent plays freely). Foundation scoring (contradicts surface
+control; physically unreadable). Full 3D level-matched connectivity
+(unreadable cascades). Tallest-neighbor terrain (unbounded ratchet).
+Turn-forfeit caps (global tempo for a local act; turn-debt state).
+Movement-based capping ("Crest" rules) — promising, but a separate game.
+Square (degree-4) boards — both reviewers independently concluded degree 3
+is load-bearing: tie-free majority, cheaper skies and pyramids, earlier
+vertical ignition; a square version strengthens exactly the phase where the
+game cannot beat Go.
+
+## Open questions (playtest gates)
+
+1. **Collar strategy** (new, from engine verification): either player can
+   contest a well's collar — raising it makes the defender immortal, so the
+   collar fight is a new strategic layer. Who profits, and does single-well-
+   plus-collar life dominate all other life forms?
+2. **k_well vs k_eye**: minimum enclosed region size for life under
+   eye-only vs well-permitted defense (run at n = 4 — n = 3 underreports).
+3. **Summit-rule variant**: "raise a plateau only if you already control
+   it, or if it captures" — drops neighbor counting but deletes the
+   supported hostile cap. A/B in self-play.
+4. **Saturation equilibrium**: does optimal play avoid packing (openness is
+   armor), starving the vertical game?
+5. **Cap frequency**: greedy self-play sits at ~4%, just under the 5%
+   decorative threshold — re-measure with real search.
+
+## Metrics (operational definitions)
+
+N = points on the board. *Opening phase* = first ⌊0.6N⌋ moves (move-count,
+not occupancy). *Cap* = any placement on an occupied column. *Fight* =
+maximal move sequence within graph distance 3 containing a capture or
+atari. Rim capture *rate* = captures ÷ rim-stone-turns of exposure.
+
+| Question | Metric | Healthy band | Failure |
+|---|---|---|---|
+| Stacking meaningful (late) | caps / moves after opening | 10–40% | <5% or >50% |
+| Stacking restrained (early) | caps / opening moves | 0–10% | >20% |
+| Well skies too generous | captures leaving a well survivor | 5–25% | >30% |
+| Races readable | semeai reversals via post-peel skies | occasional | >25% |
+| Waves manageable | capture waves per move | median 1, p95 ≤ 3 | p95 > 3 |
+| Rim too hostile | rim vs interior capture rate | ≤ 2× | > 2× |
+| Rim life too cheap | opening moves on rim+middle | < 60% | crowds interior |
+| Simple ko sufficient OTB | long cycles / 100 games | <1 | ≥2 |
+| Game length | total placements | 1.2N–2.5N | >3.5N |
+| Board size | fights per game | ≥3 | <3 → n=5 |
+| Swap balance | swap frequency; post-swap win rate | 35–65%; 45–55% | outside 25–75%; 40–60% |
+
+Sample-size note: bands assume ≥100 games per condition.
+
+## Engine status (2026-07-12)
+
+`engine/cairn.py` implements the rules exactly; `engine/test_cairn.py` holds
+27 known-answer positions, all passing, including the collar-condition and
+peel-that-kills discoveries. Greedy self-play: natural termination 100%,
+length ~2.1–2.5N, cap share ~4%, first stack ~move 50 at n = 3. One
+readability data point: random play produced a 53-stone single capture wave.
