@@ -35,12 +35,16 @@ button, select { border: 1px solid #bcb19c; border-radius: 999px; padding: 9px 1
 button:hover { border-color: var(--moss); transform: translateY(-1px); }
 button:disabled { cursor: not-allowed; opacity: .45; transform: none; }
 button.accent { border-color: var(--moss); color: white; background: var(--moss); }
+.toggle { display: inline-flex; align-items: center; gap: 7px; padding: 7px 11px; border: 1px solid #bcb19c; border-radius: 999px; background: #fffdf8; color: var(--ink); font-size: .8rem; font-weight: 650; }
+.toggle input { accent-color: var(--moss); }
+.computer-setting[hidden] { display: none; }
 
 footer { display: flex; flex-wrap: wrap; gap: 12px 22px; align-items: center; padding: 12px 4px 0; color: var(--muted); font-size: .78rem; }
 .legend { display: inline-block; width: 11px; height: 11px; margin-right: 5px; vertical-align: -1px; }
 .legend.legal { border: 2px solid #71936d; border-radius: 50%; }
 .legend.sky { background: #c98835; clip-path: polygon(50% 0, 100% 100%, 0 100%); }
 #message { margin-left: auto; color: #a13d2e; font-weight: 700; }
+#ai-note { flex-basis: 100%; color: var(--moss); font-weight: 700; }
 kbd { border: 1px solid #aaa08c; border-bottom-width: 2px; border-radius: 4px; padding: 1px 5px; background: #f9f5ea; }
 
 @media (max-width: 680px) {

@@ -6,12 +6,19 @@ const passButton = document.querySelector("#pass-btn");
 const swapButton = document.querySelector("#swap-btn");
 const resumeButton = document.querySelector("#resume-btn");
 const sizeSelect = document.querySelector("#board-size");
+const modeSelect = document.querySelector("#game-mode");
+const colorSelect = document.querySelector("#human-color");
+const difficultySelect = document.querySelector("#difficulty");
+const explainCheckbox = document.querySelector("#explain-moves");
+const aiNote = document.querySelector("#ai-note");
 
 let game = null;
 let projected = new Map();
 let hoverKey = null;
 let animation = null;
 let lastFrame = performance.now();
+let thinking = false;
+let computerSequence = 0;
 
 const keyOf = (coord) => `${coord[0]},${coord[1]}`;
 
@@ -27,15 +34,35 @@ async function request(path, body = null) {
   return payload;
 }
 
-function setGame(next) {
+function syncSetupControls() {
+  if (!game?.match) return;
+  modeSelect.value = game.match.mode;
+  if (game.match.human_color) colorSelect.value = game.match.human_color;
+  difficultySelect.value = game.match.difficulty;
+  explainCheckbox.checked = game.match.explain;
+  updateSetupVisibility();
+}
+
+function updateSetupVisibility() {
+  const computer = modeSelect.value === "computer";
+  document.querySelectorAll(".computer-setting").forEach((element) => {
+    element.hidden = !computer;
+  });
+}
+
+function setGame(next, schedule = true) {
   game = next;
   sizeSelect.value = String(game.n);
   if (game.capture_waves.length) {
     animation = {waves: game.capture_waves, elapsed: 0, index: 0};
   }
   message.textContent = "";
+  syncSetupControls();
+  const decision = game.computer_decision;
+  aiNote.textContent = decision?.reason_text || "";
   updateControls();
   draw();
+  if (schedule) scheduleComputerMove();
 }
 
 function updateControls() {
@@ -46,7 +73,9 @@ function updateControls() {
     small.textContent = secondary;
     turnStatus.replaceChildren(document.createTextNode(primary), small);
   };
-  if (game.finished) {
+  if (thinking) {
+    setTurnText("Computer is thinking…", score);
+  } else if (game.finished) {
     const result = game.score.B === game.score.W
       ? "Draw"
       : `${game.score.B > game.score.W ? "Black" : "White"} leads`;
@@ -57,9 +86,40 @@ function updateControls() {
       `${score} · move ${game.moves_played + 1}`,
     );
   }
-  passButton.disabled = game.finished || game.moves_played === 0;
-  swapButton.hidden = !game.swap_available;
+  const computerTurn = game.match?.computer_turn || thinking;
+  passButton.disabled = game.finished || game.moves_played === 0 || computerTurn;
+  swapButton.hidden = !game.swap_available || computerTurn;
   resumeButton.hidden = !game.resumption_available;
+  resumeButton.disabled = thinking || Boolean(game.match?.computer_can_act);
+  canvas.style.cursor = computerTurn ? "wait" : "default";
+}
+
+async function scheduleComputerMove() {
+  if (!game?.match?.computer_can_act || thinking) return;
+  const sequence = ++computerSequence;
+  thinking = true;
+  updateControls();
+  const waveDelay = Math.max(350, (game.capture_waves?.length || 0) * 520);
+  await new Promise((resolve) => setTimeout(resolve, waveDelay));
+  if (sequence !== computerSequence) return;
+  try {
+    const next = await request("/api/computer", {});
+    thinking = false;
+    setGame(next);
+  } catch (error) {
+    thinking = false;
+    message.textContent = error.message;
+    updateControls();
+  }
+}
+
+async function humanAction(path, body = {}) {
+  if (thinking || game?.match?.computer_turn) return;
+  try {
+    setGame(await request(path, body));
+  } catch (error) {
+    message.textContent = error.message;
+  }
 }
 
 function makeProjection() {
@@ -219,20 +279,33 @@ canvas.addEventListener("mousemove", (event) => {
 });
 canvas.addEventListener("mouseleave", () => { hoverKey = null; draw(); });
 canvas.addEventListener("click", async (event) => {
+  if (thinking || game.match?.computer_turn) return;
   const key = nearestPoint(event);
   const point = game.points.find((p) => keyOf(p.coord) === key);
   if (!point || !point.legal || game.finished) return;
-  try { setGame(await request("/api/play", {point: point.coord})); }
-  catch (error) { message.textContent = error.message; }
+  await humanAction("/api/play", {point: point.coord});
 });
 
 document.querySelector("#new-btn").addEventListener("click", async () => {
   if (game.moves_played && !confirm("Start a new game?")) return;
-  setGame(await request("/api/new", {n: Number(sizeSelect.value)}));
+  computerSequence += 1;
+  thinking = false;
+  try {
+    setGame(await request("/api/new", {
+      n: Number(sizeSelect.value),
+      mode: modeSelect.value,
+      human_color: colorSelect.value,
+      difficulty: difficultySelect.value,
+      explain: explainCheckbox.checked,
+    }));
+  } catch (error) {
+    message.textContent = error.message;
+  }
 });
-passButton.addEventListener("click", async () => setGame(await request("/api/pass", {})));
-swapButton.addEventListener("click", async () => setGame(await request("/api/swap", {})));
-resumeButton.addEventListener("click", async () => setGame(await request("/api/resume", {})));
+passButton.addEventListener("click", async () => humanAction("/api/pass"));
+swapButton.addEventListener("click", async () => humanAction("/api/swap"));
+resumeButton.addEventListener("click", async () => humanAction("/api/resume"));
+modeSelect.addEventListener("change", updateSetupVisibility);
 
 document.querySelector("#save-btn").addEventListener("click", async () => {
   const snapshot = await request("/api/snapshot");
@@ -247,6 +320,8 @@ document.querySelector("#load-btn").addEventListener("click", () => document.que
 document.querySelector("#load-file").addEventListener("change", async (event) => {
   const file = event.target.files[0];
   if (!file) return;
+  computerSequence += 1;
+  thinking = false;
   try { setGame(await request("/api/load", JSON.parse(await file.text()))); }
   catch (error) { message.textContent = error.message; }
   event.target.value = "";
@@ -283,9 +358,13 @@ window.render_game_to_text = () => JSON.stringify({
   current_player: game?.current_player,
   move: game ? game.moves_played + 1 : null,
   finished: game?.finished,
+  thinking,
   swap_available: game?.swap_available,
   resumption_available: game?.resumption_available,
+  resumption_used: game?.resumption_used,
   score: game?.score,
+  match: game?.match,
+  computer_decision: game?.computer_decision,
   legal_points: game?.points.filter((p) => p.legal).map((p) => p.coord),
   occupied: game?.points.filter((p) => p.stack.length).map((p) => ({coord: p.coord, stack: p.stack, sky: p.sky})),
   capture_animation_wave: animation?.index ?? null,

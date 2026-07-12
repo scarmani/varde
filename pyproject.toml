@@ -19,7 +19,7 @@ cairn-selfplay = "selfplay:main"
 cairn-server = "server:main"
 
 [tool.setuptools]
-py-modules = ["cairn", "selfplay", "server"]
+py-modules = ["cairn", "opponent", "selfplay", "server"]
 package-dir = {"" = "engine"}
 
 [tool.pytest.ini_options]

@@ -23,3 +23,21 @@ Original prompt: yes to all in best order proceed and execute according to your 
 
 - Human playtest the n=3 client and record usability/strategy observations.
 - After human validation, add MCTS for the summit and saturation experiments.
+
+## Computer opponent implementation
+
+- Approved plan: local Casual and Standard rule-aware opponents, color choice,
+  optional rationales, pie-rule handling, and computer-game save/load support.
+- Opponent engine implementation in progress; MCTS remains intentionally deferred.
+- Opponent engine and server integration now pass focused tests: automatic computer
+  opening, turn locking, swap ownership, rationale visibility, and compatible saves.
+- Browser controls and automatic computer-turn sequencing implemented; visual and
+  end-to-end interaction verification remains.
+- The 8N boundary remains a self-play watchdog only. A temporary 6N forced-pass
+  policy was rejected because full-superko Cairn already terminates mathematically;
+  long bot games must be measured honestly, not shortened by an extra rule.
+- Browser verification completed for both human colors, human and computer swap
+  paths, thinking-state locking, rationales, capture animation, automatic
+  resumption, compatible save/load, and unchanged hotseat play.
+- Bot audit: Casual 20/20 ended below 8N; Standard 20/20 ended naturally, with
+  19 below 8N and one at 489 turns. Decision latency stayed inside both budgets.

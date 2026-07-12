@@ -131,3 +131,17 @@ greedy terminated 100%, averaged 2.31N, and capped 4.3%; 15% epsilon-greedy
 terminated 100%, averaged 3.02N, and capped 13.6%. Maximum cascade depth was
 five waves under random play, and the largest single wave contained 53 stones.
 These are policy baselines, not evidence of balance or fun.
+
+## Local computer opponent (2026-07-12)
+
+The playable client now includes Casual one-ply and Standard bounded two-ply
+opponents. Both use fixed, inspectable features for controlled points, captures,
+strict well skies, ordinary liberties, vulnerable groups, early development,
+and late territory. They use the real resolver for legality and support the pie
+rule, superko, passing, resumption, explanations, and compatible saves.
+
+In 20 seeded n=3 mirror games per level, Casual ended all games before the 8N
+test watchdog. Standard ended all games naturally, but one took 489 turns
+(9.06N); no gameplay cutoff was added. This is an intentional distinction:
+finite-state superko proves eventual termination, while the watchdog measures
+whether a policy terminates within a practical experimental budget.

@@ -19,11 +19,27 @@
     <section class="game-card">
       <canvas id="game" width="960" height="680" aria-label="Cairn game board"></canvas>
       <div class="controls" aria-label="Game controls">
+        <select id="game-mode" aria-label="Game mode">
+          <option value="hotseat">Two players</option>
+          <option value="computer">Vs computer</option>
+        </select>
         <select id="board-size" aria-label="Board size">
           <option value="3">Learning · 54 points</option>
           <option value="4">Standard · 96 points</option>
           <option value="5">Long · 150 points</option>
         </select>
+        <select id="human-color" class="computer-setting" aria-label="Your color">
+          <option value="B">Play Black</option>
+          <option value="W">Play White</option>
+        </select>
+        <select id="difficulty" class="computer-setting" aria-label="Computer difficulty">
+          <option value="casual">Casual computer</option>
+          <option value="standard" selected>Standard computer</option>
+        </select>
+        <label class="toggle computer-setting">
+          <input id="explain-moves" type="checkbox" checked>
+          Explain moves
+        </label>
         <button id="new-btn">New game</button>
         <button id="pass-btn">Pass</button>
         <button id="swap-btn" class="accent" hidden>Take over Black</button>
@@ -38,6 +54,7 @@
       <span><i class="legend legal"></i> legal placement</span>
       <span><i class="legend sky"></i> sky liberty</span>
       <span>Hover to inspect stacks · press <kbd>F</kbd> for fullscreen</span>
+      <span id="ai-note" aria-live="polite"></span>
       <span id="message" role="status"></span>
     </footer>
   </main>

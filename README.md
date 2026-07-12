@@ -18,6 +18,14 @@ boards; legal-move highlighting; stack inspection; sky indicators; pie-rule
 takeover; stepwise capture highlighting; passing and one-time resumption;
 scoring; fullscreen; and versioned save/load files.
 
+### Play against the computer
+
+Choose **Vs computer**, select Black or White, choose **Casual** or **Standard**,
+and start a new game. Casual uses varied one-ply choices; Standard uses bounded
+two-ply minimax. Both use the rules engine's real legality, skies, capture
+cascades, superko, pie rule, passing, and resumption. Move explanations are
+optional and all computation stays local.
+
 For installed commands:
 
 ```bash
@@ -35,11 +43,17 @@ python3 engine/selfplay.py 3 100 greedy
 python3 engine/selfplay.py 3 100 epsilon
 ```
 
-The executable suite currently has 35 tests covering geometry, terrain,
+The executable suite currently has 47 tests covering geometry, terrain,
 summits, flat capture, collar-dependent wells, wall stranding, eight-support
 twin wells, multi-wave peeling, global mover-suicide, full-stack superko,
 opening placement, pie-rule identity, resumption, scoring, serialization, and
 the browser-facing public state.
+
+The `8N` limit used by diagnostic self-play is a watchdog for comparing
+policies, not a game rule or playable-program ceiling. Full-superko Cairn is
+mathematically finite because terrain bounds every stack height and placements
+cannot repeat a recorded position. A policy that reaches the watchdog is
+reported as a long game; the application does not force it to end.
 
 ## Current diagnostic baseline
 
@@ -57,11 +71,22 @@ when no placement immediately improves area score. Epsilon-greedy is the most
 useful current smoke-test baseline: it activates stacking without producing
 the random policy's cap-heavy grind.
 
+### Computer-opponent validation
+
+Twenty seeded n=3 computer-vs-computer games per level produced no illegal
+actions or crashes. Casual finished 20/20 before the 8N watchdog (median 181.5,
+maximum 236 turns). Standard also finished 20/20 naturally; 19 finished before
+8N and one finished at 489 turns (9.06N), demonstrating why 8N is reported as
+a measurement boundary rather than enforced as a rule. Standard decision p95
+was about 30 ms during complete games; fresh-position p95 was about 27 ms at
+n=3 and 196 ms at n=5, below the 500/1500 ms targets.
+
 ## Layout
 
 - `docs/cairn-rules.md` — standalone rules, revision 1.2
 - `docs/design-history.md` — design lineage, retired claims, and playtest gates
 - `engine/cairn.py` — reference rules engine and versioned snapshots
+- `engine/opponent.py` — local Casual and Standard computer opponent
 - `engine/test_cairn.py` — known-answer position and controller tests
 - `engine/selfplay.py` — random, greedy, and epsilon-greedy telemetry
 - `engine/server.py` — local JSON API and static-file server
