@@ -269,6 +269,36 @@ class TestWells(unittest.TestCase):
 
 
 class TestTwinWell(unittest.TestCase):
+    def test_every_twin_well_has_eight_collar_supports(self):
+        b = Board(3)
+        seen = set()
+        sites = 0
+        for c1 in sorted(b.deep):
+            for shared in b.neighbors[c1]:
+                for c2 in b.neighbors[shared]:
+                    if c2 == c1 or c2 not in b.deep:
+                        continue
+                    pair = tuple(sorted((c1, c2)))
+                    if pair in seen:
+                        continue
+                    walls = (
+                        [shared]
+                        + [x for x in b.neighbors[c1] if x != shared]
+                        + [x for x in b.neighbors[c2] if x != shared]
+                    )
+                    collar = {
+                        x
+                        for wall in walls
+                        for x in b.neighbors[wall]
+                        if x not in (c1, c2)
+                    }
+                    if collar & set(walls) or collar & {c1, c2}:
+                        continue
+                    seen.add(pair)
+                    sites += 1
+                    self.assertEqual(len(collar), 8)
+        self.assertEqual(sites, 48)  # 96 ordered core pairs
+
     def _build(self, collar_height):
         g = fresh(3)
         c1, c2, walls, collar = find_twin_well(g.board)
@@ -414,6 +444,7 @@ class TestRepetition(unittest.TestCase):
 
     def test_pass_always_legal_and_two_passes_end(self):
         g = fresh(2)
+        g.play(g.board.points[0])
         g.play_pass()
         g.play_pass()
         self.assertTrue(g.finished)
@@ -424,6 +455,54 @@ class TestRepetition(unittest.TestCase):
         self.assertTrue(g.finished)
         with self.assertRaises(Illegal):
             g.demand_resumption()
+
+
+class TestGameController(unittest.TestCase):
+    def test_black_must_place_first(self):
+        g = fresh(3)
+        with self.assertRaisesRegex(Illegal, "first move must be a placement"):
+            g.play_pass()
+
+    def test_swap_exchanges_people_not_position_or_turn(self):
+        g = fresh(3)
+        opening = g.board.points[0]
+        g.play(opening)
+        before = signature(g.board, g.state, g.to_move)
+        self.assertTrue(g.swap_available)
+        g.take_over()
+        self.assertEqual(g.players, {BLACK: "Player 2", WHITE: "Player 1"})
+        self.assertEqual(signature(g.board, g.state, g.to_move), before)
+        self.assertEqual(g.current_player, "Player 1")
+        self.assertFalse(g.swap_available)
+
+    def test_snapshot_round_trip_preserves_legality_state(self):
+        g = fresh(3)
+        g.players = {BLACK: "Ada", WHITE: "Grace"}
+        g.play(g.board.points[0])
+        g.take_over()
+        restored = Game.from_dict(g.to_dict())
+        self.assertEqual(restored.to_dict(), g.to_dict())
+        self.assertEqual(restored.legal_placements(), g.legal_placements())
+
+    def test_capture_trace_separates_waves(self):
+        g = fresh(3)
+        p = deep_point(g.board)
+        n1, n2, n3 = g.board.neighbors[p]
+        put(g, p, BLACK)
+        put(g, n1, WHITE)
+        put(g, n2, WHITE)
+        trace = []
+        _, captured = resolve(g.board, g.state, n3, WHITE, set(), trace=trace)
+        self.assertEqual(captured, 1)
+        self.assertEqual(trace, [(p,)])
+
+    def test_placement_rejected_after_game_ends(self):
+        g = fresh(2)
+        g.play(g.board.points[0])
+        g.play_pass()
+        g.play_pass()
+        with self.assertRaisesRegex(Illegal, "game over"):
+            g.play(g.legal_placements()[0] if g.legal_placements() else g.board.points[1])
 
 
 # ---------------------------------------------------------------------- scoring

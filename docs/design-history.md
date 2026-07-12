@@ -117,8 +117,17 @@ Sample-size note: bands assume ≥100 games per condition.
 
 ## Engine status (2026-07-12)
 
-`engine/cairn.py` implements the rules exactly; `engine/test_cairn.py` holds
-27 known-answer positions, all passing, including the collar-condition and
-peel-that-kills discoveries. Greedy self-play: natural termination 100%,
-length ~2.1–2.5N, cap share ~4%, first stack ~move 50 at n = 3. One
-readability data point: random play produced a 53-stone single capture wave.
+`engine/cairn.py` implements the rules procedure and exposes each capture wave
+separately. The executable suite covers the known collar-condition,
+wall-stranding, eight-support twin-well, peel-that-kills, opening-placement,
+swap-identity, and serialization cases. Self-play results are diagnostic only:
+random, greedy, and epsilon-greedy policies do not establish strategic quality.
+Run the harness to produce current placement counts, true per-wave size/depth,
+superko blocks, and cap-frequency measurements.
+
+Seeded n=3 runs on 2026-07-12 (100 games each, 8N-turn cutoff): random
+terminated 46%, averaged 6.23N placements, and capped 48.2% of placements;
+greedy terminated 100%, averaged 2.31N, and capped 4.3%; 15% epsilon-greedy
+terminated 100%, averaged 3.02N, and capped 13.6%. Maximum cascade depth was
+five waves under random play, and the largest single wave contained 53 stones.
+These are policy baselines, not evidence of balance or fun.

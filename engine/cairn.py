@@ -165,7 +165,7 @@ class Illegal(Exception):
     pass
 
 
-def resolve(board, state, p, color, history):
+def resolve(board, state, p, color, history, trace=None):
     """Attempt the placement.  Returns (new_state, captured_count).
 
     Raises Illegal(reason) if any step fails.  `state` is not mutated.
@@ -207,6 +207,8 @@ def resolve(board, state, p, color, history):
         if not dead:
             break
         cols = [q for g in dead for q in g]
+        if trace is not None:
+            trace.append(tuple(cols))
         for q in cols:
             st[q] = st[q][:-1]
             captured += 1
@@ -237,6 +239,36 @@ class Game:
         self.moves_played = 0
         self.finished = False
         self.resumption_used = False
+        self.players = {BLACK: "Player 1", WHITE: "Player 2"}
+        self.swap_decided = False
+        self.last_capture_waves = []
+
+    @property
+    def current_player(self):
+        return self.players[self.to_move]
+
+    @property
+    def swap_available(self):
+        return (
+            self.moves_played == 1
+            and self.to_move == WHITE
+            and not self.swap_decided
+            and not self.finished
+        )
+
+    def take_over(self):
+        """Exercise the pie rule after Black's opening placement.
+
+        The board and color to move do not change. Only the human identities
+        assigned to Black and White are exchanged; the original first player,
+        now White, still makes the next move.
+        """
+        if not self.swap_available:
+            raise Illegal("swap unavailable")
+        self.players[BLACK], self.players[WHITE] = (
+            self.players[WHITE], self.players[BLACK]
+        )
+        self.swap_decided = True
 
     def try_play(self, p):
         """Resolve without committing.  Returns (state, captured) or raises."""
@@ -245,23 +277,37 @@ class Game:
         return resolve(self.board, self.state, p, self.to_move, self.history)
 
     def play(self, p):
-        st, captured = self.try_play(p)
+        if self.finished:
+            raise Illegal("game over")
+        waves = []
+        st, captured = resolve(
+            self.board, self.state, p, self.to_move, self.history, trace=waves
+        )
+        was_swap_reply = self.moves_played == 1
         self.state = st
         self.to_move = other(self.to_move)
         self.history.add(signature(self.board, self.state, self.to_move))
         self.consecutive_passes = 0
         self.moves_played += 1
+        if was_swap_reply:
+            self.swap_decided = True
+        self.last_capture_waves = waves
         return captured
 
     def play_pass(self):
         if self.finished:
             raise Illegal("game over")
+        if self.moves_played == 0:
+            raise Illegal("first move must be a placement")
+        if self.moves_played == 1:
+            self.swap_decided = True
         self.to_move = other(self.to_move)
         self.history.add(signature(self.board, self.state, self.to_move))
         self.consecutive_passes += 1
         self.moves_played += 1
         if self.consecutive_passes >= 2:
             self.finished = True
+        self.last_capture_waves = []
 
     def demand_resumption(self):
         """Once per game, after two passes; normal turn order continues."""
@@ -270,8 +316,11 @@ class Game:
         self.resumption_used = True
         self.finished = False
         self.consecutive_passes = 0
+        self.last_capture_waves = []
 
     def legal_placements(self):
+        if self.finished:
+            return []
         out = []
         for p in self.board.points:
             try:
@@ -308,3 +357,76 @@ class Game:
             if len(border) == 1:
                 pts[border.pop()] += len(region)
         return pts
+
+    def to_dict(self):
+        """Return a JSON-compatible, versioned snapshot of the full game."""
+        history = [
+            {
+                "to_move": sig[0],
+                "stacks": [list(stack) for stack in sig[1]],
+            }
+            for sig in sorted(self.history, key=repr)
+        ]
+        return {
+            "format": "cairn-game",
+            "version": 1,
+            "n": self.board.n,
+            "stacks": [list(self.state[p]) for p in self.board.points],
+            "to_move": self.to_move,
+            "history": history,
+            "consecutive_passes": self.consecutive_passes,
+            "moves_played": self.moves_played,
+            "finished": self.finished,
+            "resumption_used": self.resumption_used,
+            "players": dict(self.players),
+            "swap_decided": self.swap_decided,
+        }
+
+    @classmethod
+    def from_dict(cls, payload):
+        """Restore a snapshot created by :meth:`to_dict`."""
+        if payload.get("format") != "cairn-game" or payload.get("version") != 1:
+            raise ValueError("unsupported Cairn snapshot")
+        n = payload.get("n")
+        if not isinstance(n, int) or n < 1:
+            raise ValueError("invalid board size")
+        game = cls(n)
+
+        def parse_stacks(raw):
+            if not isinstance(raw, list) or len(raw) != len(game.board.points):
+                raise ValueError("invalid stack array")
+            parsed = []
+            for stack in raw:
+                if not isinstance(stack, list) or any(
+                    c not in (BLACK, WHITE) for c in stack
+                ):
+                    raise ValueError("invalid stack")
+                parsed.append(tuple(stack))
+            return parsed
+
+        stacks = parse_stacks(payload.get("stacks"))
+        game.state = dict(zip(game.board.points, stacks))
+        if payload.get("to_move") not in (BLACK, WHITE):
+            raise ValueError("invalid player to move")
+        game.to_move = payload["to_move"]
+        game.history = set()
+        for item in payload.get("history", []):
+            if item.get("to_move") not in (BLACK, WHITE):
+                raise ValueError("invalid history")
+            old_stacks = parse_stacks(item.get("stacks"))
+            game.history.add((item["to_move"], tuple(old_stacks)))
+        current = signature(game.board, game.state, game.to_move)
+        game.history.add(current)
+        game.consecutive_passes = int(payload.get("consecutive_passes", 0))
+        game.moves_played = int(payload.get("moves_played", 0))
+        game.finished = bool(payload.get("finished", False))
+        game.resumption_used = bool(payload.get("resumption_used", False))
+        players = payload.get("players", {})
+        if set(players) != {BLACK, WHITE} or not all(
+            isinstance(name, str) and name for name in players.values()
+        ):
+            raise ValueError("invalid players")
+        game.players = dict(players)
+        game.swap_decided = bool(payload.get("swap_decided", False))
+        game.last_capture_waves = []
+        return game

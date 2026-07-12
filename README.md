@@ -1,59 +1,76 @@
 # Cairn
 
-A Go variant on the intersections of a hexagonal board, with stacking,
-terrain-limited height, and vertical liberties ("skies"). Designed through an
-adversarial exchange between two AI systems; every rule survived multiple
-rounds of counterexample hunting, and the engine's test suite encodes the
-known-answer positions from that history.
+Cairn is a two-player territory game on a honeycomb lattice. Players surround
+territory, cover occupied columns, and use height-dependent sky liberties to
+survive capture cascades.
+
+This repository contains a tested Python reference engine, an instrumented
+self-play harness, and a dependency-free local hotseat web client.
+
+## Play locally
+
+```bash
+python3 engine/server.py
+```
+
+Open <http://127.0.0.1:8000>. The client supports learning, standard, and long
+boards; legal-move highlighting; stack inspection; sky indicators; pie-rule
+takeover; stepwise capture highlighting; passing and one-time resumption;
+scoring; fullscreen; and versioned save/load files.
+
+For installed commands:
+
+```bash
+python3 -m pip install -e . --no-deps
+cairn-server
+```
+
+## Verify
+
+```bash
+python3 -m unittest discover -s engine -v
+python3 -m pytest
+python3 engine/selfplay.py 3 100 random
+python3 engine/selfplay.py 3 100 greedy
+python3 engine/selfplay.py 3 100 epsilon
+```
+
+The executable suite currently has 35 tests covering geometry, terrain,
+summits, flat capture, collar-dependent wells, wall stranding, eight-support
+twin wells, multi-wave peeling, global mover-suicide, full-stack superko,
+opening placement, pie-rule identity, resumption, scoring, serialization, and
+the browser-facing public state.
+
+## Current diagnostic baseline
+
+Seeded n=3 runs, 100 games per policy, cutoff at 8N turns:
+
+| Policy | Finished | Placements | Cap share | Wave depth | Largest wave |
+|---|---:|---:|---:|---:|---:|
+| Random | 46% | 6.23N mean | 48.2% | max 5 | 53 |
+| Greedy | 100% | 2.31N mean | 4.3% | max 1 | 11 |
+| 15% epsilon-greedy | 100% | 3.02N mean | 13.6% | max 2 | 37 |
+
+These policies diagnose engine behavior; they do not establish balance or
+strategic quality. Greedy termination is partly induced by its rule to pass
+when no placement immediately improves area score. Epsilon-greedy is the most
+useful current smoke-test baseline: it activates stacking without producing
+the random policy's cap-heavy grind.
 
 ## Layout
 
-- `docs/cairn-rules.md` — the current rules (rev 1.2), standalone
-- `docs/design-history.md` — the annotated design document (Grounded Cairn
-  1.0.1 lineage): proofs, retired folklore, playtest protocol
-- `engine/cairn.py` — reference rules engine (pure Python, no dependencies)
-- `engine/test_cairn.py` — 27-test position suite, all known-answer positions
-- `engine/selfplay.py` — random and greedy self-play with metric logging
+- `docs/cairn-rules.md` — standalone rules, revision 1.2
+- `docs/design-history.md` — design lineage, retired claims, and playtest gates
+- `engine/cairn.py` — reference rules engine and versioned snapshots
+- `engine/test_cairn.py` — known-answer position and controller tests
+- `engine/selfplay.py` — random, greedy, and epsilon-greedy telemetry
+- `engine/server.py` — local JSON API and static-file server
+- `web/` — responsive canvas hotseat client
+- `progress.md` — implementation and handoff log
 
-## Run
+## What remains experimental
 
-```
-cd engine
-python3 -m unittest test_cairn -v      # position suite (27 tests)
-python3 selfplay.py 3 40               # random self-play, n=3 board
-python3 selfplay.py 3 12 greedy        # greedy self-play (natural endings)
-```
-
-## Status
-
-Rules are stable and machine-verified; the engine implements the six-step
-resolution exactly as written. Greedy self-play terminates naturally at
-~2.1–2.5N moves with cap share ~4% (just under the 5% "decorative"
-threshold — the number to watch once real search replaces greed).
-
-## Open findings from engine verification (2026-07-12)
-
-Building the test suite broke four claims in the rules document's commentary
-(the rules themselves held):
-
-1. **The collar condition.** "One well is not life" is false in general: if
-   a well's walls have their outer neighbors ("collar") at height ≥ 2, the
-   peeled walls regenerate wells mid-cascade and the killing entry is
-   suicide — a single well with a high collar is unconditional life. The
-   twin-well theorem inherits the same premise (low-collar twin wells are
-   breachable core by core). The life doctrine is collar-conditional.
-2. **Wall stranding.** Walls connect only through the core; capping the core
-   disconnects them, and low-collar disconnected walls are erased even when
-   the rest of the group survives.
-3. **Twin wells have 8 collar supports, not 9** — the hexagonal face through
-   the two cores forces exactly one shared point (verified across all 96
-   sites at n = 3).
-4. **The peel-that-kills** operates by the wall dropping *below* your column
-   (a capture-created pit under you kills your sky), not by tying it; the
-   tie version is nearly unconstructible because full erasure frees
-   rescuing empties.
-
-All four are encoded as passing tests. Next steps: independent verification
-of these findings against the rules text; fold the collar condition into the
-rules commentary; then a web UI over this engine, then MCTS for the gate
-experiments (k_well vs k_eye, summit-rule variants, saturation equilibrium).
+The software is playable, but the game design is not declared final. Human
+playtests must still evaluate collar strategy, well life versus classical eyes,
+the summit-rule variant, saturation avoidance, board size, and swap balance.
+MCTS should follow human usability testing rather than precede it.

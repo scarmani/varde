@@ -96,15 +96,15 @@ even next turn; no empty neighbor; no White neighbor; and it
 captures nothing while the Black group has any other liberty.
 White's stone would have no liberty: the placement is illegal.
 
-But if c's sky were the group's LAST liberty, White's entry would
-capture the walls, not itself. A well is an eye — and as in Go,
-one eye is not life. Life is two: two wells, two eyes, or one of
-each.
-
-[ENGINE ERRATUM 2026-07-12: the last paragraph is collar-conditional.
-If the walls' outer neighbors stand at height ≥ 2, the peeled walls
-regenerate wells mid-cascade and the entry is suicide: a single well
-with a high collar IS life. See README, finding 1.]
+If c's sky is the group's LAST liberty, the result depends on the
+collar beyond the walls. With outer neighbors at height 1, the walls
+peel to height 1, gain no skies, and are erased in a second wave;
+White's entry survives. With every outer neighbor at height 2 or
+higher, the peeled walls land strictly below their surroundings and
+regain skies. Capture stops, leaving White's cap without a liberty,
+so the entry is illegal. A high collar can therefore make one well
+unconditionally alive; life is determined by the full vertical shape,
+not by a flat count of eyes.
 ```
 
 **The peel that kills.**
@@ -116,17 +116,14 @@ b's neighbors: [W,W,W], [W,W,W], [W,W,W] — all height 3.
 b is strictly lower than all three: its sky is the lone Black
 group's only liberty.
 
-Black now plays elsewhere and captures the White group containing
-b's neighbors. The peel lowers them to height 2 — level with b.
-b's sky is gone, Black's group has no liberty left, and step 5
-rules Black's own capturing move illegal.
+Black now plays elsewhere and captures a White group containing one
+of b's neighbors. That neighbor peels from height 3 to height 1, where
+it survives in a newly created well. It now stands BELOW b, so b no
+longer stands strictly below every neighbor. Black's sky is gone;
+if the Black group has no other liberty, step 5 makes Black's own
+capturing move illegal.
 
 Count your skies before you take the walls that make them.
-
-[ENGINE ERRATUM 2026-07-12: the realizable form is subtler — the
-doomed column typically peels PAST the tie into a capture-created
-pit BELOW b, which kills b's sky just as surely (a sky needs every
-neighbor strictly taller). See README, finding 4.]
 ```
 
 ---
@@ -139,7 +136,7 @@ Five consequences follow from the rules. None is obvious at the board, and all f
 
 **Openness is armor.** A stone beside an empty point can never be capped. Stacking needs a locally packed neighborhood, so broad, open play stays flat, and the vertical game ignites first wherever the board saturates — usually as territory closes. Sealing your territory is what scoring demands, and it is also what arms the vertical game along your walls: the timing of closure is a decision, not a formality.
 
-**Height difference creates the sky.** Enclosure alone does not: a stone walled in at its own height has no liberty left and dies, exactly as in Go. A column breathes upward only when everything around it stands strictly taller. It follows that a well of any depth is safe from single-stone entry — the invader's own sky does not exist on the turn it lands, and it dies before that changes — while pits of two or more empty points are fought over classically, the defender filling from the walls.
+**Height difference creates the sky.** Enclosure alone does not: a stone walled in at its own height has no liberty left and dies, exactly as in Go. A column breathes upward only when everything around it stands strictly taller. Entry into a well is suicide while the defending group has another liberty. When the well is its last liberty, the surrounding collar decides whether peeled walls regain skies or collapse. Pits of two or more empty points are fought over classically, with the defender filling from the walls.
 
 **Spacing rules the stacks.** When a stacked group is captured, only its surface is peeled away, and a survivor lives only where it lands strictly below everything around it. Columns of equal height shade each other's skies and fall together in the next wave; a lone stack, peeled, lands in a hollow and breathes. Build your towers apart — and remember the peel that kills: capturing the walls around you can erase your own sky, and the rules will call it suicide.
 

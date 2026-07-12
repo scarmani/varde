@@ -1,0 +1,52 @@
+:root {
+  color-scheme: light;
+  --ink: #20231f;
+  --muted: #6d7067;
+  --paper: #f4efe2;
+  --card: #fbf8ef;
+  --line: #b8aa8d;
+  --moss: #496a52;
+  --clay: #b76545;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  color: var(--ink);
+  background:
+    radial-gradient(circle at 20% 0%, #fffaf0 0, transparent 34rem),
+    #dcd4c3;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.shell { width: min(1120px, 96vw); margin: 0 auto; padding: 24px 0 18px; }
+header { display: flex; align-items: end; justify-content: space-between; gap: 24px; margin-bottom: 14px; }
+h1 { margin: 0; font: 700 clamp(2.2rem, 6vw, 4.5rem)/.9 Georgia, serif; letter-spacing: -.055em; }
+.eyebrow { margin: 0 0 8px; color: var(--clay); font-size: .7rem; font-weight: 800; letter-spacing: .2em; }
+.turn { max-width: 55%; text-align: right; font-weight: 700; }
+.turn small { display: block; color: var(--muted); font-weight: 500; margin-top: 4px; }
+
+.game-card { overflow: hidden; border: 1px solid rgba(62,55,42,.28); border-radius: 18px; background: var(--card); box-shadow: 0 18px 54px rgba(53,43,27,.16); }
+canvas { display: block; width: 100%; height: auto; aspect-ratio: 24 / 17; touch-action: none; }
+.controls { display: flex; flex-wrap: wrap; gap: 8px; padding: 12px; border-top: 1px solid #d8cfbc; background: rgba(255,255,255,.42); }
+button, select { border: 1px solid #bcb19c; border-radius: 999px; padding: 9px 15px; color: var(--ink); background: #fffdf8; font: 650 .85rem inherit; cursor: pointer; }
+button:hover { border-color: var(--moss); transform: translateY(-1px); }
+button:disabled { cursor: not-allowed; opacity: .45; transform: none; }
+button.accent { border-color: var(--moss); color: white; background: var(--moss); }
+
+footer { display: flex; flex-wrap: wrap; gap: 12px 22px; align-items: center; padding: 12px 4px 0; color: var(--muted); font-size: .78rem; }
+.legend { display: inline-block; width: 11px; height: 11px; margin-right: 5px; vertical-align: -1px; }
+.legend.legal { border: 2px solid #71936d; border-radius: 50%; }
+.legend.sky { background: #c98835; clip-path: polygon(50% 0, 100% 100%, 0 100%); }
+#message { margin-left: auto; color: #a13d2e; font-weight: 700; }
+kbd { border: 1px solid #aaa08c; border-bottom-width: 2px; border-radius: 4px; padding: 1px 5px; background: #f9f5ea; }
+
+@media (max-width: 680px) {
+  .shell { width: 100%; padding-top: 12px; }
+  header { padding: 0 14px; }
+  .game-card { border-radius: 0; border-left: 0; border-right: 0; }
+  .turn { font-size: .8rem; }
+  footer { padding-inline: 14px; }
+}

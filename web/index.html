@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Cairn</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <main class="shell">
+    <header>
+      <div>
+        <p class="eyebrow">STACK · SURROUND · SURVIVE</p>
+        <h1>Cairn</h1>
+      </div>
+      <div class="turn" id="turn-status">Loading board…</div>
+    </header>
+
+    <section class="game-card">
+      <canvas id="game" width="960" height="680" aria-label="Cairn game board"></canvas>
+      <div class="controls" aria-label="Game controls">
+        <select id="board-size" aria-label="Board size">
+          <option value="3">Learning · 54 points</option>
+          <option value="4">Standard · 96 points</option>
+          <option value="5">Long · 150 points</option>
+        </select>
+        <button id="new-btn">New game</button>
+        <button id="pass-btn">Pass</button>
+        <button id="swap-btn" class="accent" hidden>Take over Black</button>
+        <button id="resume-btn" class="accent" hidden>Resume once</button>
+        <button id="save-btn">Save</button>
+        <button id="load-btn">Load</button>
+        <input id="load-file" type="file" accept="application/json" hidden>
+      </div>
+    </section>
+
+    <footer>
+      <span><i class="legend legal"></i> legal placement</span>
+      <span><i class="legend sky"></i> sky liberty</span>
+      <span>Hover to inspect stacks · press <kbd>F</kbd> for fullscreen</span>
+      <span id="message" role="status"></span>
+    </footer>
+  </main>
+  <script src="/game.js"></script>
+</body>
+</html>
