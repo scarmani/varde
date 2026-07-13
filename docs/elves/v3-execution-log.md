@@ -66,6 +66,23 @@ profile availability is known in Batch 5.
 
 **Next:** three-batch entropy check, then Batch 4 deterministic MAP-Elites.
 
+## 2026-07-13 12:06 CDT
+
+**Three-batch entropy check:** clean
+
+- Reviewed the cumulative 18-file diff for duplicated authorities, naming drift,
+  avoidable abstractions, and shared-surface regressions.
+- `engine/profiles.py` remains the sole catalog authority and
+  `engine/opponent.py` remains the sole evaluator/search authority.
+- Legacy `advanced` references are confined to explicit compatibility tests,
+  historical V2 research artifacts, and the unchanged Personal model path.
+- README terminology is intentionally deferred until Batch 5 determines which
+  curated profiles satisfy their immutable availability gates.
+- `git diff --check 1da66f7...HEAD` passed and `engine/cairn.py` is absent from
+  the cumulative changed-file list.
+
+**Decision:** no entropy repair is warranted; proceed to Batch 4.
+
 ## 2026-07-13 11:55 CDT
 
 **Batch:** 2 — Profile model, API, saves, and Personal migration
