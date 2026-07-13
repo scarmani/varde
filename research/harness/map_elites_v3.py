@@ -89,6 +89,11 @@ class RolloutResult:
     verticality: int
     edge_reach_sum: float
     consolidation: int
+    all_engagement: int
+    all_consolidation: int
+    hostile_covers: int
+    reinforcements: int
+    candidate_points: tuple[tuple[int, int], ...]
 
 
 def _canonical_bytes(payload):
@@ -244,6 +249,11 @@ def play_rollout(
     verticality = 0
     edge_reach_sum = 0.0
     consolidation = 0
+    all_engagement = 0
+    all_consolidation = 0
+    hostile_covers = 0
+    reinforcements = 0
+    candidate_points = []
     total = len(game.board.points)
     early_limit = 0.6 * total
     distances = game.board.dist_to_rim()
@@ -293,18 +303,31 @@ def play_rollout(
                     raise Illegal("computer selected an illegal placement")
                 is_candidate = seat["identity"] == "candidate"
                 if is_candidate:
+                    enemy_adjacent = any(
+                        control(game.state, neighbor) == other(color)
+                        for neighbor in game.board.neighbors[point]
+                    )
+                    friendly_adjacent = any(
+                        control(game.state, neighbor) == color
+                        for neighbor in game.board.neighbors[point]
+                    )
                     all_placements += 1
                     verticality += bool(game.state[point])
+                    all_engagement += enemy_adjacent
+                    all_consolidation += friendly_adjacent
+                    hostile_covers += (
+                        bool(game.state[point])
+                        and control(game.state, point) == other(color)
+                    )
+                    reinforcements += (
+                        bool(game.state[point])
+                        and control(game.state, point) == color
+                    )
+                    candidate_points.append(point)
                     if placements < early_limit:
                         early_placements += 1
-                        engagement += any(
-                            control(game.state, neighbor) == other(color)
-                            for neighbor in game.board.neighbors[point]
-                        )
-                        consolidation += any(
-                            control(game.state, neighbor) == color
-                            for neighbor in game.board.neighbors[point]
-                        )
+                        engagement += enemy_adjacent
+                        consolidation += friendly_adjacent
                         edge_reach_sum += 1.0 - (
                             distances[point] / maximum_distance
                         )
@@ -351,6 +374,11 @@ def play_rollout(
         verticality=verticality,
         edge_reach_sum=edge_reach_sum,
         consolidation=consolidation,
+        all_engagement=all_engagement,
+        all_consolidation=all_consolidation,
+        hostile_covers=hostile_covers,
+        reinforcements=reinforcements,
+        candidate_points=tuple(candidate_points),
     )
 
 
