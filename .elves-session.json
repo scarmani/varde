@@ -1,0 +1,36 @@
+{
+  "session_id": "elves-2026-07-12-cairn-advanced-v2",
+  "version": "1.12.0",
+  "status": "in_progress",
+  "branch": "feat/advanced-learning-v2",
+  "plan_path": "docs/plans/advanced-learning-v2.md",
+  "survival_guide_path": "docs/elves/advanced-v2-survival.md",
+  "learnings_path": "docs/elves/advanced-v2-learnings.md",
+  "execution_log_path": "docs/elves/advanced-v2-execution.md",
+  "pr_number": null,
+  "continuation_guard": {
+    "remaining_batches": 4,
+    "stop_allowed": false,
+    "checkpoint_is_stop": true,
+    "next_required_action": "Start Batch 1: Search and ending correctness"
+  },
+  "test_baseline": {
+    "passed": 60,
+    "total": 60,
+    "skipped": 0,
+    "status": "captured",
+    "reason": null
+  },
+  "current_batch": {
+    "id": 1,
+    "name": "Search and ending correctness",
+    "status": "in_progress"
+  },
+  "batches": [
+    {"id": 1, "name": "Search and ending correctness", "status": "in_progress", "commit": null, "rollback_tag": "elves/pre-batch-1"},
+    {"id": 2, "name": "Learning V2 and deterministic continuation", "status": "pending", "commit": null, "rollback_tag": "elves/pre-batch-2"},
+    {"id": 3, "name": "Reproducible research and strength gate", "status": "pending", "commit": null, "rollback_tag": "elves/pre-batch-3"},
+    {"id": 4, "name": "Browser, documentation, and final review", "status": "pending", "commit": null, "rollback_tag": "elves/pre-batch-4"}
+  ],
+  "review_comments": []
+}

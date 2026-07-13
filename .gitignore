@@ -6,4 +6,6 @@ htmlcov/
 *.egg-info/
 .venv/
 playwright-artifacts/
+.playwright-mcp/
+docs/audit/
 .DS_Store
