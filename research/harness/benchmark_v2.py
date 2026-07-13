@@ -33,7 +33,13 @@ def main():
             for seed in range(args.samples):
                 game = Game(n)
                 started = time.perf_counter()
-                choose_decision(game, BLACK, difficulty, seed=seed, model=model)
+                choose_decision(
+                    game,
+                    BLACK,
+                    difficulty,
+                    seed=seed,
+                    model=model if difficulty == "advanced" else None,
+                )
                 timings.append((time.perf_counter() - started) * 1000)
             results[f"n{n}_{difficulty}"] = {
                 "samples": len(timings),

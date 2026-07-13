@@ -1,6 +1,9 @@
 import unittest
+from pathlib import Path
+from tempfile import TemporaryDirectory
 
 from cairn import BLACK, WHITE, Game, Illegal
+from learning import LearningModel
 from server import (
     MatchConfig,
     apply_computer_action,
@@ -118,6 +121,142 @@ class TestComputerMatch(unittest.TestCase):
         self.assertEqual(match.computer_color, WHITE)
         self.assertEqual(match.seed, 43)
 
+    def test_profiles_default_and_legacy_advanced_migration(self):
+        game = Game(3)
+        balanced = MatchConfig.from_new_game(
+            game,
+            {"mode": "computer", "human_color": BLACK},
+        )
+        seat = balanced.seats[WHITE]
+        self.assertEqual((seat.difficulty, seat.profile), ("standard", "balanced"))
+        self.assertNotIn("profile", balanced.seats[BLACK].to_dict())
+
+        personal = MatchConfig.from_new_game(
+            Game(3),
+            {
+                "mode": "computer",
+                "human_color": BLACK,
+                "difficulty": "advanced",
+            },
+        )
+        self.assertEqual(
+            (personal.seats[WHITE].difficulty, personal.seats[WHITE].profile),
+            ("standard", "personal"),
+        )
+
+        payload = snapshot_payload(Game(3), personal)
+        payload["match"]["seats"][WHITE].pop("profile")
+        payload["match"]["seats"][WHITE]["difficulty"] = "advanced"
+        _, migrated = load_snapshot(payload)
+        self.assertEqual(
+            (migrated.seats[WHITE].difficulty, migrated.seats[WHITE].profile),
+            ("standard", "personal"),
+        )
+
+        legacy = Game(3).to_dict()
+        legacy["computer"] = {
+            "enabled": True,
+            "color": WHITE,
+            "difficulty": "advanced",
+            "seed": 19,
+        }
+        _, migrated_legacy = load_snapshot(legacy)
+        self.assertEqual(
+            (
+                migrated_legacy.seats[WHITE].difficulty,
+                migrated_legacy.seats[WHITE].profile,
+            ),
+            ("standard", "personal"),
+        )
+
+    def test_zero_weight_personal_is_visibly_balanced(self):
+        with TemporaryDirectory() as directory:
+            model = LearningModel(path=Path(directory) / "model.json")
+            balanced_game = Game(3)
+            personal_game = Game(3)
+            balanced = MatchConfig.from_new_game(
+                balanced_game,
+                {
+                    "mode": "computer",
+                    "human_color": WHITE,
+                    "difficulty": "standard",
+                    "profile": "balanced",
+                    "seed": 913,
+                },
+            )
+            personal = MatchConfig.from_new_game(
+                personal_game,
+                {
+                    "mode": "computer",
+                    "human_color": WHITE,
+                    "difficulty": "standard",
+                    "profile": "personal",
+                    "seed": 913,
+                },
+            )
+            balanced_decision = apply_computer_action(
+                balanced_game, balanced, model
+            )
+            personal_decision = apply_computer_action(
+                personal_game, personal, model
+            )
+            self.assertEqual(
+                (
+                    personal_decision.action,
+                    personal_decision.point,
+                    personal_decision.score,
+                    personal_decision.nodes,
+                ),
+                (
+                    balanced_decision.action,
+                    balanced_decision.point,
+                    balanced_decision.score,
+                    balanced_decision.nodes,
+                ),
+            )
+            self.assertEqual(personal_game.to_dict(), balanced_game.to_dict())
+
+    def test_profile_snapshot_remains_version_one(self):
+        game = Game(3)
+        match = MatchConfig.from_new_game(
+            game,
+            {
+                "mode": "computer",
+                "human_color": BLACK,
+                "profile": "personal",
+            },
+        )
+        payload = snapshot_payload(game, match)
+        self.assertEqual(payload["version"], 1)
+        self.assertEqual(payload["match"]["seats"][WHITE]["profile"], "personal")
+
+    def test_unknown_and_unavailable_profiles_are_rejected(self):
+        for profile in ("missing", "raider"):
+            with self.subTest(profile=profile), self.assertRaises(ValueError):
+                MatchConfig.from_new_game(
+                    Game(3),
+                    {
+                        "mode": "computer",
+                        "human_color": BLACK,
+                        "profile": profile,
+                    },
+                )
+
+    def test_public_view_exposes_profile_without_raw_weights(self):
+        game = Game(3)
+        match = MatchConfig.from_new_game(
+            game,
+            {
+                "mode": "computer",
+                "human_color": BLACK,
+                "profile": "personal",
+            },
+        )
+        view = public_view(game, match)
+        self.assertEqual(view["match"]["profile"], "personal")
+        self.assertEqual(view["match"]["seats"][WHITE]["profile"], "personal")
+        self.assertNotIn("weights", view["match"]["seats"][WHITE])
+
     def test_public_view_can_hide_rationale_text(self):
         game = Game(3)
         match = MatchConfig.from_new_game(
@@ -161,7 +300,9 @@ class TestWatchMatch(unittest.TestCase):
             },
         )
         self.assertEqual(match.seats[BLACK].difficulty, "casual")
-        self.assertEqual(match.seats[WHITE].difficulty, "advanced")
+        self.assertEqual(match.seats[BLACK].profile, "balanced")
+        self.assertEqual(match.seats[WHITE].difficulty, "standard")
+        self.assertEqual(match.seats[WHITE].profile, "personal")
         first = apply_computer_action(game, match)
         self.assertEqual(first.action, "play")
         self.assertEqual(game.moves_played, 1)
@@ -185,14 +326,18 @@ class TestWatchMatch(unittest.TestCase):
         white_identity = match.seats[WHITE].identity
         black_seed = match.seats[BLACK].seed
         white_seed = match.seats[WHITE].seed
+        black_profile = match.seats[BLACK].profile
+        white_profile = match.seats[WHITE].profile
         game.take_over()
         match.swap_owners(game)
         self.assertEqual(match.seats[BLACK].identity, white_identity)
         self.assertEqual(match.seats[WHITE].identity, black_identity)
         self.assertEqual(match.seats[BLACK].seed, white_seed)
         self.assertEqual(match.seats[WHITE].seed, black_seed)
-        self.assertEqual(match.seats[BLACK].difficulty, "advanced")
+        self.assertEqual(match.seats[BLACK].difficulty, "standard")
         self.assertEqual(match.seats[WHITE].difficulty, "casual")
+        self.assertEqual(match.seats[BLACK].profile, white_profile)
+        self.assertEqual(match.seats[WHITE].profile, black_profile)
 
     def test_watch_save_round_trip_preserves_both_seats(self):
         game = Game(6)

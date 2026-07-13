@@ -21,7 +21,7 @@ varde-server = "server:main"
 cairn-server = "server:main"
 
 [tool.setuptools]
-py-modules = ["cairn", "learning", "opponent", "selfplay", "server"]
+py-modules = ["cairn", "learning", "opponent", "profiles", "selfplay", "server"]
 package-dir = {"" = "engine"}
 
 [tool.pytest.ini_options]

@@ -261,13 +261,12 @@ def play_training_game(model, seed, index, cancel_event):
             else:
                 game.play_pass()
         else:
-            difficulty = "advanced" if color == learner_color else "standard"
             decision = choose_decision(
                 game,
                 color,
-                difficulty=difficulty,
+                difficulty="standard",
                 seed=seed + index,
-                model=model,
+                model=model if color == learner_color else None,
             )
             if decision.action == "play":
                 game.play(decision.point)

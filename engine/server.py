@@ -10,7 +10,12 @@ from urllib.parse import urlparse
 
 from cairn import BLACK, WHITE, Game, Illegal, has_sky, other
 from learning import LearningModel, TRAINING_BATCHES, TrainingService
-from opponent import DIFFICULTIES, choose_decision
+from opponent import choose_decision
+from profiles import (
+    get_profile,
+    normalize_computer_settings,
+    profiles_public,
+)
 
 
 WEB_ROOT = Path(__file__).resolve().parent.parent / "web"
@@ -29,26 +34,38 @@ class Seat:
     kind: str
     name: str
     difficulty: str | None = None
+    profile: str | None = None
     seed: int = 1
 
     def to_dict(self):
-        return {
+        payload = {
             "identity": self.identity,
             "kind": self.kind,
             "name": self.name,
-            "difficulty": self.difficulty,
-            "seed": self.seed,
         }
+        if self.kind == "computer":
+            payload.update(
+                {
+                    "difficulty": self.difficulty,
+                    "profile": self.profile,
+                    "seed": self.seed,
+                }
+            )
+        return payload
 
     @classmethod
     def from_dict(cls, payload):
         if not isinstance(payload, dict) or payload.get("kind") not in ("human", "computer"):
             raise ValueError("invalid match seat")
-        difficulty = payload.get("difficulty")
-        if payload["kind"] == "computer" and difficulty not in DIFFICULTIES:
-            raise ValueError("invalid computer difficulty")
+        difficulty = payload.get("difficulty", "standard")
+        profile = payload.get("profile")
+        if payload["kind"] == "computer":
+            difficulty, profile = normalize_computer_settings(
+                difficulty, profile
+            )
         if payload["kind"] == "human":
             difficulty = None
+            profile = None
         seed = payload.get("seed", 1)
         seed = _seed(seed)
         return cls(
@@ -56,6 +73,7 @@ class Seat:
             kind=payload["kind"],
             name=str(payload.get("name", "Player"))[:40],
             difficulty=difficulty,
+            profile=profile,
             seed=seed,
         )
 
@@ -125,6 +143,11 @@ class MatchConfig:
         return self.seats[color].difficulty if color else "standard"
 
     @property
+    def profile(self):
+        color = self.computer_color
+        return self.seats[color].profile if color else None
+
+    @property
     def seed(self):
         color = self.computer_color
         return self.seats[color].seed if color else 1
@@ -155,26 +178,51 @@ class MatchConfig:
             human_color = body.get("human_color", BLACK)
             if human_color not in (BLACK, WHITE):
                 raise ValueError("human_color must be B or W")
-            difficulty = body.get("difficulty", "standard")
-            if difficulty not in DIFFICULTIES:
-                raise ValueError("invalid computer difficulty")
+            difficulty, profile = normalize_computer_settings(
+                body.get("difficulty", "standard"), body.get("profile")
+            )
             computer_color = other(human_color)
             seats = {
                 human_color: Seat("human", "human", "You"),
-                computer_color: Seat("computer", "computer", "Computer", difficulty, _seed(body.get("seed", 1))),
+                computer_color: Seat(
+                    "computer",
+                    "computer",
+                    "Computer",
+                    difficulty=difficulty,
+                    profile=profile,
+                    seed=_seed(body.get("seed", 1)),
+                ),
             }
             match = cls(mode="computer", seats=seats, explain=explain)
         else:
-            black_difficulty = body.get("black_difficulty", "standard")
-            white_difficulty = body.get("white_difficulty", "standard")
-            if black_difficulty not in DIFFICULTIES or white_difficulty not in DIFFICULTIES:
-                raise ValueError("invalid computer difficulty")
+            black_difficulty, black_profile = normalize_computer_settings(
+                body.get("black_difficulty", "standard"),
+                body.get("black_profile"),
+            )
+            white_difficulty, white_profile = normalize_computer_settings(
+                body.get("white_difficulty", "standard"),
+                body.get("white_profile"),
+            )
             base_seed = _seed(body.get("seed", 1))
             match = cls(
                 mode="watch",
                 seats={
-                    BLACK: Seat("computer-black", "computer", "Black AI", black_difficulty, base_seed),
-                    WHITE: Seat("computer-white", "computer", "White AI", white_difficulty, base_seed + 1),
+                    BLACK: Seat(
+                        "computer-black",
+                        "computer",
+                        "Black AI",
+                        difficulty=black_difficulty,
+                        profile=black_profile,
+                        seed=base_seed,
+                    ),
+                    WHITE: Seat(
+                        "computer-white",
+                        "computer",
+                        "White AI",
+                        difficulty=white_difficulty,
+                        profile=white_profile,
+                        seed=base_seed + 1,
+                    ),
                 },
                 explain=explain,
             )
@@ -236,9 +284,11 @@ class MatchConfig:
         if not isinstance(legacy, dict) or not legacy.get("enabled", False):
             raise ValueError("invalid computer configuration")
         computer_color = legacy.get("color")
-        difficulty = legacy.get("difficulty", "standard")
-        if computer_color not in (BLACK, WHITE) or difficulty not in DIFFICULTIES:
+        if computer_color not in (BLACK, WHITE):
             raise ValueError("invalid legacy computer configuration")
+        difficulty, profile = normalize_computer_settings(
+            legacy.get("difficulty", "standard"), legacy.get("profile")
+        )
         explain = legacy.get("explain", True)
         if not isinstance(explain, bool):
             raise ValueError("invalid legacy computer configuration")
@@ -246,7 +296,14 @@ class MatchConfig:
             mode="computer",
             seats={
                 other(computer_color): Seat("human", "human", "You"),
-                computer_color: Seat("computer", "computer", "Computer", difficulty, _seed(legacy.get("seed", 1))),
+                computer_color: Seat(
+                    "computer",
+                    "computer",
+                    "Computer",
+                    difficulty=difficulty,
+                    profile=profile,
+                    seed=_seed(legacy.get("seed", 1)),
+                ),
             },
             explain=explain,
         )
@@ -377,6 +434,7 @@ def public_view(game, match=None, last_decision=None):
             "human_color": match.human_color,
             "computer_color": match.computer_color,
             "difficulty": match.difficulty,
+            "profile": match.profile,
             "explain": match.explain,
             "computer_turn": not game.finished and match.seats[game.to_move].kind == "computer",
             "computer_can_act": match.computer_can_act(game),
@@ -410,12 +468,15 @@ def apply_computer_action(game, match, model=None):
     seat = match.seats[color]
     if seat.kind != "computer" and not game.finished:
         raise Illegal("it is not the computer's turn")
+    selected_profile = get_profile(seat.profile)
+    active_model = MODEL if model is None else model
     decision = choose_decision(
         game,
         color,
         difficulty=seat.difficulty,
         seed=seat.seed,
-        model=model or MODEL,
+        model=active_model if seat.profile == "personal" else None,
+        weights=selected_profile.weights,
     )
     if decision.action == "play":
         game.play(decision.point)
@@ -458,6 +519,9 @@ class CairnHandler(SimpleHTTPRequestHandler):
         route = urlparse(self.path).path
         if route == "/api/training":
             self._json(TRAINER.status())
+            return
+        if route == "/api/profiles":
+            self._json(profiles_public(MODEL.status()))
             return
         if route == "/api/state":
             with GAME_LOCK:

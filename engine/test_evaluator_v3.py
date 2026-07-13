@@ -4,6 +4,7 @@ import unittest
 from cairn import BLACK, WHITE, Game, Illegal, other, resolve, signature
 from opponent import (
     BALANCED_WEIGHTS,
+    _root_candidates,
     _structural_features,
     _transition_features,
     choose_decision,
@@ -333,6 +334,26 @@ class TestV3Measurements(unittest.TestCase):
                     self.assertTrue(math.isfinite(value))
                     self.assertLessEqual(abs(value), 1)
                 self.assertEqual(game.to_dict(), before)
+
+    def test_profile_transition_weights_score_generated_covers(self):
+        game = Game(3)
+        center = max(
+            game.board.points,
+            key=lambda point: (game.board.dist_to_rim()[point], point),
+        )
+        game.state[center] = (WHITE,)
+        for neighbor in game.board.neighbors[center]:
+            game.state[neighbor] = (BLACK,)
+        weights = dict(BALANCED_WEIGHTS)
+        weights["hostile_covers"] = 25
+        candidates = _root_candidates(game, BLACK, weights=weights)
+        cover = next(candidate for candidate in candidates if candidate.point == center)
+        self.assertEqual(cover.transition_bonus, 25)
+        balanced = _root_candidates(game, BLACK)
+        balanced_cover = next(
+            candidate for candidate in balanced if candidate.point == center
+        )
+        self.assertEqual(balanced_cover.transition_bonus, 0)
 
 
 if __name__ == "__main__":
