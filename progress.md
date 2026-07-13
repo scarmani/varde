@@ -118,3 +118,10 @@ Original prompt: yes to all in best order proceed and execute according to your 
   directions, automatic continuation, legacy Advanced migration, profile-aware
   rationales without raw score, semantic state, opened screenshots, and zero
   console errors.
+- Batch 4 complete: the repository-relative four-axis MAP-Elites harness uses
+  candidate-owned random streams, 128-candidate frozen halls, strict in-order
+  reduction, and atomic checkpoints containing pending work and complete evidence.
+- Ten harness tests prove deterministic mutation/binning/replacement, hall
+  selection, byte-identical interruption/resume across worker counts,
+  cancellation, tamper detection, and incomplete accounting. A real two-process
+  smoke completed 4 candidates / 32 games with no illegal or incomplete result.

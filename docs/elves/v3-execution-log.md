@@ -2,14 +2,67 @@
 
 ## Run Digest
 
-- **Last updated:** 2026-07-13 12:03 CDT
+- **Last updated:** 2026-07-13 12:16 CDT
 - **Current phase:** In progress
-- **Active batch:** Entropy check after Batch 3
-- **Last completed batch:** Batch 3 — Browser profile experience
-- **Next exact batch:** Batch 4 — Deterministic MAP-Elites research harness
+- **Active batch:** Batch 5 — Audit, ablation, optimization, and catalog freeze
+- **Last completed batch:** Batch 4 — Deterministic MAP-Elites research harness
+- **Next exact batch:** Batch 5
 - **Active PR:** #1
 - **Docs promoted this run:** `docs/plans/evaluator-profiles-v3.md`
 - **Latest Elves Report:** not generated yet
+
+## 2026-07-13 12:16 CDT
+
+**Batch:** 4 — Deterministic MAP-Elites research harness
+
+**Contract status:** all criteria met
+
+**Timing:** Implement 7m | Validate 4m | Review 1m | Total 12m
+
+**What changed:**
+
+- `research/harness/map_elites_v3.py`: repository-relative four-axis archive
+  search with candidate-owned random streams, calibration, deterministic
+  mutation, fixed paired schedules, frozen hall-of-fame batches, strict in-order
+  reduction, atomic pending-task checkpoints, cancellation, and resume.
+- `engine/test_quality_diversity.py`: archive primitives, worker scheduling,
+  interruption, tamper, incomplete-result, and real-rollout coverage.
+- `research/README.md`: exact initial and resume commands plus evidence semantics.
+
+**Commands and results:**
+
+- `CI=true python3 -m pytest engine -q` — PASS, 101/101.
+- `python3 -m py_compile engine/*.py research/harness/*.py` and
+  `node --check web/game.js` — PASS.
+- Synthetic uninterrupted vs interrupted/resumed run — byte-identical final
+  `state.json` with worker counts 1 then 4 and checkpoint interval 3.
+- Real two-process Casual smoke — 4 candidates, 32 games, 0 illegal/incomplete,
+  4 occupied archive cells; immediate completed-state resume preserved exact
+  SHA-256 `6a0d769f01fd462d3581b80e9c0c550b7dfa7d0b0cd2f491d8a2f570960a84d5`.
+
+**Review findings:**
+
+- Fixed: sorted JSON genome keys originally conflicted with insertion-order
+  validation after resume; checkpoint schemas now compare exact key sets.
+- Fixed: exact Balanced research genomes now use the literal immutable
+  `BALANCED_WEIGHTS` mapping and therefore the parity-locked live search path.
+- Confirmed: search difficulty is configuration, never a genome gene; the 20N
+  watchdog only rejects and records research attempts.
+
+**Regression attestation:**
+
+- Cumulative diff: 21 files, +3540/-97 including operational docs.
+- Shared surfaces: none; the harness consumes public Game/opponent APIs and
+  writes only to its explicit out-of-repository directory.
+- Test baseline: 72 -> 101, delta +29, no removals or skips.
+- Confidence: HIGH. Unit, real-process, real-game, resume, and canonical hash
+  evidence cover the principal determinism and safety risks.
+
+**Commit:** `79c5c6214bb01e9763d790eec0746dfba3a586ec`
+
+**Rollback tag:** `elves/v3-pre-batch-4`
+
+**Next:** Batch 5 audit, ablations, full archive search, and gated catalog freeze.
 
 ## 2026-07-13 12:03 CDT
 

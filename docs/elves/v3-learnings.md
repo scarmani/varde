@@ -21,6 +21,9 @@
 - 2026-07-13: The bundled web-game client captures the canvas and semantic state;
   use a full-page Playwright capture as the complementary check for controls and
   treat isolated canvas artifacts as unresolved until an immediate reproduction.
+- 2026-07-13: Bit-for-bit archive resume requires persisting the unexecuted task
+  batch and its frozen hall, not merely the latest archive. Worker results can
+  then be reduced strictly in candidate-id order regardless of completion order.
 
 ## Product and Domain Invariants
 
@@ -42,3 +45,6 @@
 - 2026-07-13: Full archive and gate runs are evidence jobs, not unit tests. Their
   outputs need explicit paths, source hashes, checkpoints, and honest incomplete
   accounting.
+- 2026-07-13: JSON checkpoints sort mapping keys. Schema validation must compare
+  key sets rather than insertion order, while evaluator catalog construction can
+  retain its stronger ordered-schema check for packaged immutable data.

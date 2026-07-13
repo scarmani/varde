@@ -29,15 +29,15 @@ predeclared evidence gates.
 - **Started:** 2026-07-13 11:33 CDT
 - **User returns:** unknown; assume offline
 - **Time budget:** finite plan, no artificial research shortcut
-- **Average batch time so far:** 9.7 minutes
-- **Batches remaining:** 3 of 6
+- **Average batch time so far:** 10.5 minutes
+- **Batches remaining:** 2 of 6
 
 ## Stop Gate
 
-- **Planned batches remaining:** 3
+- **Planned batches remaining:** 2
 - **Stop allowed right now:** no
-- **Why:** research harness, evidence/curation, and final gates remain
-- **Next required action:** run the three-batch entropy check, then start deterministic MAP-Elites
+- **Why:** evidence/curation and final gates remain
+- **Next required action:** run the evaluator audit, ablations, archive search, and evidence-gated catalog freeze
 
 ## Non-Negotiables
 
@@ -62,11 +62,11 @@ predeclared evidence gates.
 
 **Status:** In progress
 
-**Active batch:** Entropy check after Batch 3, then Batch 4 — Deterministic MAP-Elites
+**Active batch:** Batch 5 — Audit, ablation, optimization, and catalog freeze
 
-**What was just finished:** Batch 3 dynamic profile UI, profile rationales, and Playwright verification
+**What was just finished:** Batch 4 deterministic, resumable four-axis MAP-Elites harness
 
-**Single next action:** audit cumulative patterns and begin the resumable archive harness
+**Single next action:** implement the deterministic 2,000-position audit and paired ablation harness
 
 ## Active Compute
 
@@ -75,23 +75,23 @@ when started and stopped when complete or canceled.
 
 ## Next Exact Batch
 
-**Batch:** 4 — Deterministic MAP-Elites research harness
+**Batch:** 5 — Audit, ablation, optimization, and catalog freeze
 
 **Scope:**
 
-- Implement explicit output/seed/workers/checkpoint/resume research CLI.
-- Add four-axis calibration, archive replacement, mutation, and frozen hall of fame.
-- Persist a deterministic evidence ledger with atomic checkpoints and rejection accounting.
+- Generate and analyze the declared 2,000-position audit corpus.
+- Run the paired development/liberty ablations and the full 2,048-candidate archive search.
+- Select only elites satisfying descriptor separation and update catalog evidence atomically.
 
 **Acceptance criteria:**
 
-- [ ] Candidate IDs fix seeds/opponents independent of scheduling.
-- [ ] Resume and worker-count results are bit-for-bit equivalent.
-- [ ] Binning, replacement, mutation, hall of fame, cancellation, and incomplete attempts pass.
+- [ ] Retained features meet symmetry, prediction, correlation, and latency gates.
+- [ ] Audit and ablation outputs include exact configuration, source, and hashes.
+- [ ] Curated profiles are available only when immutable descriptor criteria are met.
 
-**Risk:** parallel completion order and checkpoint boundaries must not alter floating reductions or archive state.
+**Risk:** expensive evidence jobs must remain honest under cancellation or incomplete rollouts; unavailable profiles must not be forced through.
 
-**Rollback tag:** `elves/v3-pre-batch-4`
+**Rollback tag:** `elves/v3-pre-batch-5`
 
 ## Tool Configuration
 
