@@ -94,3 +94,38 @@ game cutoff.
 The exact checkpoint and compact aggregate are retained in `results/`. Raw
 per-attempt and per-pair JSONL from this run was generated outside the tree at
 `/tmp/cairn-v2-final` and can be reproduced with the commands above.
+
+## Evaluator Profiles V3 quality-diversity search
+
+The V3 harness searches evaluator weights, never search depth or public
+difficulty. Its default run evaluates 512 deterministic calibration genomes
+and 1,536 archive mutations with four paired seeds per candidate (three Toy,
+one Beginner):
+
+```bash
+python3 research/harness/map_elites_v3.py \
+  --output-dir /tmp/varde-map-elites-v3 \
+  --seed 20260713 --workers 8 --checkpoint-interval 128
+```
+
+Resume the same canonical run after an interruption, optionally with a
+different worker count:
+
+```bash
+python3 research/harness/map_elites_v3.py \
+  --output-dir /tmp/varde-map-elites-v3 \
+  --seed 20260713 --workers 4 --checkpoint-interval 128 --resume
+```
+
+Candidate ids determine genomes, parents, opponents, and paired game seeds.
+The hall of fame is frozen for each deterministic 128-candidate batch, worker
+results are committed in candidate-id order, and pending tasks are included in
+the atomic checkpoint. Consequently, a resumed run and an uninterrupted run
+produce byte-identical `state.json` evidence. The state includes every game,
+descriptor, rejection, archive replacement, source/code hash, genome/result
+hash, and the four calibrated bin boundaries.
+
+Create the optional cancel file passed with `--cancel-file` to stop at a safe
+checkpoint. A later `--resume` continues the same scheduled tasks. The 20N
+watchdog is research-only: an incomplete rollout rejects its candidate and is
+recorded; it never changes a live game.
