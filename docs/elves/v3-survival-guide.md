@@ -29,14 +29,15 @@ predeclared evidence gates.
 - **Started:** 2026-07-13 11:33 CDT
 - **User returns:** unknown; assume offline
 - **Time budget:** finite plan, no artificial research shortcut
-- **Batches remaining:** 6 of 6
+- **Average batch time so far:** 9 minutes
+- **Batches remaining:** 5 of 6
 
 ## Stop Gate
 
-- **Planned batches remaining:** 6
+- **Planned batches remaining:** 5
 - **Stop allowed right now:** no
-- **Why:** evaluator, compatibility, browser, research, evidence, and final gates remain
-- **Next required action:** start Batch 1 parity fixtures and V3 feature plumbing
+- **Why:** compatibility, browser, research, evidence, and final gates remain
+- **Next required action:** start Batch 2 profile catalog and seat/API migration
 
 ## Non-Negotiables
 
@@ -61,11 +62,11 @@ predeclared evidence gates.
 
 **Status:** In progress
 
-**Active batch:** Batch 1 — Evaluator parity and V3 measurements
+**Active batch:** Batch 2 — Profile model, API, saves, and Personal migration
 
-**What was just finished:** staging, architecture survey, Fable sanity check, and green baseline
+**What was just finished:** Batch 1 exact parity, V3 telemetry, all-board tests, and latency recovery
 
-**Single next action:** capture seeded evaluator decisions before refactoring constants
+**Single next action:** add the versioned catalog and normalize seat difficulty/profile data
 
 ## Active Compute
 
@@ -74,23 +75,23 @@ when started and stopped when complete or canceled.
 
 ## Next Exact Batch
 
-**Batch:** 1 — Evaluator parity and V3 measurements
+**Batch:** 2 — Profile model, API, saves, and Personal migration
 
 **Scope:**
 
-- Capture seeded Casual/Standard decisions on all boards and special actions.
-- Introduce named Balanced weights without changing arithmetic or tie behavior.
-- Implement and test six bounded, color-symmetric V3 measurements.
+- Add a versioned packaged catalog and immutable profile lookup.
+- Add profile to computer seats, APIs, state, saves, and takeover identity.
+- Normalize legacy Advanced to Standard + Personal without changing the model.
 
 **Acceptance criteria:**
 
-- [ ] Balanced fixture parity is exact.
-- [ ] New feature symmetry, bounds, construction, and non-mutation tests pass.
-- [ ] All 72 baseline tests still pass and `engine/cairn.py` is unchanged.
+- [ ] Catalog validation and unknown/unavailable rejection pass.
+- [ ] Legacy Advanced and missing-profile saves/requests migrate correctly.
+- [ ] Zero-weight Personal equals Balanced and complete-seat takeover is preserved.
 
-**Risk:** shared evaluator ordering can perturb ties even with equal weights.
+**Risk:** normalization must preserve every old request/save while keeping human seats profile-free.
 
-**Rollback tag:** `elves/pre-batch-1`
+**Rollback tag:** `elves/v3-pre-batch-2`
 
 ## Tool Configuration
 

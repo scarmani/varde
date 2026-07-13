@@ -95,3 +95,10 @@ Original prompt: yes to all in best order proceed and execute according to your 
   browser experience, deterministic MAP-Elites, evidence/curation, and final gates.
 - A bounded Fable goal cycle reinforced parity-first architecture. Its unrelated
   direct-to-main suggestion was rejected; product work remains on the owned branch.
+- Batch 1 complete: Balanced now uses a named immutable weight map while exact
+  seeded actions, scores, and node counts remain unchanged on all board sizes and
+  special actions. Ten V3 structural/transition measurements are bounded,
+  color-symmetric, non-mutating, and reuse supplied transitions without nested scans.
+- A first implementation paid V3 telemetry cost at every node; focused latency
+  evidence caught it and the disabled fast path restored roughly 28 ms Toy / 397 ms
+  Full Standard decisions. The Personal nine-feature schema remains exact.

@@ -12,6 +12,9 @@
 - 2026-07-13: The clean baseline is 72 pytest cases plus `node --check
   web/game.js` and Python compilation. The web game exposes
   `window.render_game_to_text` for browser verification.
+- 2026-07-13: Zero-weight V3 features must have a true evaluator fast path.
+  Computing them at every node raised Full Standard latency from roughly 397 ms
+  to 1.38 s even though the absolute performance cap still passed.
 
 ## Product and Domain Invariants
 
@@ -25,6 +28,8 @@
 
 - 2026-07-13: Any refactor of evaluator arithmetic can change deterministic tie
   outcomes; capture exact fixtures before moving constants into a map.
+- 2026-07-13: `normalized_features()` is the exact nine-key Personal V2 schema.
+  Additional evaluator telemetry belongs in a separate API, not that function.
 - 2026-07-13: Full archive and gate runs are evidence jobs, not unit tests. Their
   outputs need explicit paths, source hashes, checkpoints, and honest incomplete
   accounting.

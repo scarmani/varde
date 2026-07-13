@@ -2,14 +2,67 @@
 
 ## Run Digest
 
-- **Last updated:** 2026-07-13 11:33 CDT
+- **Last updated:** 2026-07-13 11:43 CDT
 - **Current phase:** In progress
-- **Active batch:** Batch 1 — Evaluator parity and V3 measurements
-- **Last completed batch:** Session setup
-- **Next exact batch:** Batch 1
+- **Active batch:** Batch 2 — Profile model, API, saves, and Personal migration
+- **Last completed batch:** Batch 1 — Evaluator parity and V3 measurements
+- **Next exact batch:** Batch 2
 - **Active PR:** #1
 - **Docs promoted this run:** `docs/plans/evaluator-profiles-v3.md`
 - **Latest Elves Report:** not generated yet
+
+## 2026-07-13 11:43 CDT
+
+**Batch:** 1 — Evaluator parity and V3 measurements
+
+**Contract status:** all criteria met
+
+**Timing:** Implement 4m | Validate 3m | Review 2m | Total 9m
+
+**What changed:**
+
+- `engine/opponent.py`: immutable Balanced weight map, four structural V3
+  measurements, six transition measurements, and zero-cost disabled fast path.
+- `engine/test_evaluator_v3.py`: exact pre-refactor decision fixtures and
+  constructed/all-board symmetry, bounds, legality, and non-mutation coverage.
+
+**Commands and results:**
+
+- `CI=true python3 -m pytest engine -q` — PASS, 79/79.
+- `node --check web/game.js` and Python compilation — PASS.
+- V2 benchmark smoke — approximately 28/52 ms Toy and 397/742 ms Full for
+  Standard/Personal after fast-path repair, within the historical envelope.
+- `git diff -- engine/cairn.py` — empty.
+
+**Review findings:**
+
+- Fixed: initial zero-weight structural computation raised Full Standard to
+  about 1.38 s and violated the 15% overhead rule. Disabled V3 work is now skipped.
+- Fixed: adding V3 keys to `normalized_features()` broke the persisted learner's
+  exact nine-key contract. Added separate `normalized_v3_features()` instead.
+- Fixed: a capture construction was incorrectly asserted to contain a legal
+  cover. Split capture and legal summit/cover constructions.
+- Intentional: connection leverage uses the terrain-playable precondition, not
+  full history-sensitive legality, to remain a structural non-nested feature.
+
+**Docs:** plan, survival guide, execution log, learnings, and progress updated.
+
+**Regression attestation:**
+
+- Cumulative diff through product commit: 8 files, +1070/-25 including run docs.
+- Shared surface: `engine/opponent.py`; seven direct consumers found across
+  server, learner, research harnesses, and tests. Public signatures remain
+  compatible and the learner's exact feature set is preserved.
+- Test baseline: 72 -> 79, delta +7, no removals or skips.
+- Confidence: HIGH. Exact seeded actions/scores/nodes cover every board and
+  special action, performance returned to baseline, all consumers are green,
+  and the rules engine is untouched.
+
+**Commit:** `6c358e59215896ba26df67f52550e93376110d1b`
+
+**Rollback tag:** `elves/v3-pre-batch-1`
+
+**Next:** Batch 2 catalog, seat/API compatibility, and Personal migration.
 
 ## Session Setup: 2026-07-13 11:33 CDT
 
