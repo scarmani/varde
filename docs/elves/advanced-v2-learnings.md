@@ -21,5 +21,5 @@
 - Claude's research harness hardcodes `/tmp/c2` and `/tmp/lab`; it is not reproducible in-place yet.
 - The research evaluation only asked the current side about resumption, so its relative results are directional, not release evidence.
 - The corrected V2 learner improved Toy results directionally but generalized poorly to Beginner (45%); identical evaluator terms plus three structural features are still insufficient for a strength claim.
-- Full games can be long even under bounded search (1,701 actions observed), so larger-board smoke must stay small and must not be converted into a gameplay cutoff.
+- Full games can be long even under bounded search (1,405 actions in the final exact-model smoke), so larger-board smoke must stay small and must not be converted into a gameplay cutoff.
 - Custom Chromium launches need SwiftShader flags in this environment; otherwise screenshots can contain black GPU artifacts even with correct semantic state and no console error.

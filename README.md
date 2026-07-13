@@ -59,7 +59,7 @@ python3 engine/selfplay.py 3 100 greedy
 python3 engine/selfplay.py 3 100 epsilon
 ```
 
-The executable suite currently has 71 tests covering geometry, terrain,
+The executable suite currently has 72 tests covering geometry, terrain,
 summits, flat capture, collar-dependent wells, wall stranding, eight-support
 twin wells, multi-wave peeling, global mover-suicide, full-stack superko,
 opening placement, pie-rule identity, resumption, scoring, serialization, and
@@ -106,11 +106,11 @@ deliberately reported as evidence that the learning loop runs—not as evidence
 that Advanced is stronger.
 
 After correcting the reply search and retraining V2 from zero for 200 games, a
-fresh 200-game paired gate scored 53.5% overall: 56.33% on Toy, 45.0% on
-Beginner, one-sided 95% paired-bootstrap lower bound 47.75%, and average margin
-+0.23. All games completed legally, but three strength criteria failed, so
-Advanced remains experimental. Current fresh-position p95 is about 28/56 ms on
-Toy and 389/736 ms on Full for Standard/Advanced. Reproduction commands and
+fresh 200-game paired gate scored 52.5% overall: 56.33% on Toy, 41.0% on
+Beginner, one-sided 95% paired-bootstrap lower bound 47.0%, and average margin
+-1.15. All games completed legally, but four strength criteria failed, so
+Advanced remains experimental. Current fresh-position p95 is about 30/55 ms on
+Toy and 388/737 ms on Full for Standard/Advanced. Reproduction commands and
 the exact model checkpoint are in `research/`.
 
 ## Layout

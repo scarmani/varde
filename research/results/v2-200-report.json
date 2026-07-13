@@ -1,6 +1,7 @@
 {
-  "source_sha": "eb3d17883f39e2b535a1025216e86822c336ec1f",
-  "model_sha256": "5a28fab5cd13768f4c597287df48c78363b1f5ce7a94cfc93e50284a439b3273",
+  "source_sha": "28db06b6a5ffdfc0f2108f1321ce794be58f718f",
+  "source_note": "The run used this commit's exact content before the sample-endpoint fix was committed; the post-commit tree was verified clean.",
+  "model_sha256": "a6f122d158b510db550f453623db3248ccd8f3e0c473eeaa0b7d756eb34a1f58",
   "training": {
     "recipe": "margin-v2",
     "seed": 20260712,
@@ -8,7 +9,7 @@
     "games_attempted": 200,
     "games_trained": 200,
     "discarded": 0,
-    "elapsed_seconds": 1644.549
+    "elapsed_seconds": 1683.444
   },
   "heldout": {
     "seed": 9102026,
@@ -17,45 +18,45 @@
     "games": 200,
     "complete_games": 200,
     "incomplete_games": 0,
-    "overall_score": 0.535,
-    "mean_margin": 0.23,
-    "one_sided_95_paired_bootstrap_lower": 0.4775,
+    "overall_score": 0.525,
+    "mean_margin": -1.15,
+    "one_sided_95_paired_bootstrap_lower": 0.47,
     "toy": {
       "games": 150,
       "score": 0.5633333333333334,
-      "mean_margin": 0.8933333333333333
+      "mean_margin": 0.13333333333333333
     },
     "beginner": {
       "games": 50,
-      "score": 0.45,
-      "mean_margin": -1.76
+      "score": 0.41,
+      "mean_margin": -5.0
     },
     "gate": {
       "overall_at_least_60": false,
       "toy_above_50": true,
       "beginner_above_50": false,
       "bootstrap_lower_above_50": false,
-      "positive_margin": true,
+      "positive_margin": false,
       "all_games_complete": true,
       "passed": false
     }
   },
   "fresh_position_p95_ms": {
     "samples": 20,
-    "toy_standard": 28.079040988814086,
-    "toy_advanced": 56.02966697188094,
-    "full_standard": 389.27112496457994,
-    "full_advanced": 736.1369589925744,
+    "toy_standard": 29.506875027436763,
+    "toy_advanced": 54.69725001603365,
+    "full_standard": 387.6985000097193,
+    "full_advanced": 737.3564160079695,
     "toy_under_500": true,
     "full_under_1500": true
   },
   "larger_board_smoke": {
-    "pairs_per_board": 2,
-    "intermediate_games": 4,
-    "full_games": 4,
+    "pairs_per_board": 1,
+    "intermediate_games": 2,
+    "full_games": 2,
     "all_complete": true,
-    "max_intermediate_actions": 979,
-    "max_full_actions": 1701,
+    "max_intermediate_actions": 617,
+    "max_full_actions": 1405,
     "claim_scope": "none"
   }
 }
