@@ -218,6 +218,56 @@ class TestWatchMatch(unittest.TestCase):
         with self.assertRaisesRegex(Illegal, "no human player"):
             assert_human_action(game, match)
 
+    def test_ahead_computer_accepts_then_losing_computer_resumes(self):
+        game = Game(3)
+        match = MatchConfig.from_new_game(game, {"mode": "watch"})
+        game.state[game.board.points[0]] = (BLACK,)
+        game.finished = True
+        game.to_move = BLACK
+
+        accepted = apply_computer_action(game, match)
+        self.assertEqual(accepted.action, "accept")
+        self.assertTrue(match.computer_can_act(game))
+        self.assertEqual(match.next_computer_color(game), WHITE)
+
+        resumed = apply_computer_action(game, match)
+        self.assertEqual(resumed.action, "resume")
+        self.assertFalse(game.finished)
+        self.assertTrue(game.resumption_used)
+        self.assertEqual(match.end_acceptances, set())
+
+    def test_both_computers_may_accept_a_draw(self):
+        game = Game(3)
+        match = MatchConfig.from_new_game(game, {"mode": "watch"})
+        game.finished = True
+        first = apply_computer_action(game, match)
+        second = apply_computer_action(game, match)
+        self.assertEqual((first.action, second.action), ("accept", "accept"))
+        self.assertFalse(match.computer_can_act(game))
+        self.assertTrue(match.end_decided)
+
+    def test_partial_end_acceptance_round_trips(self):
+        game = Game(3)
+        match = MatchConfig.from_new_game(game, {"mode": "watch"})
+        game.finished = True
+        apply_computer_action(game, match)
+        restored_game, restored = load_snapshot(snapshot_payload(game, match))
+        self.assertEqual(restored.end_acceptances, match.end_acceptances)
+        self.assertEqual(
+            restored.next_computer_color(restored_game),
+            match.next_computer_color(game),
+        )
+
+    def test_one_acceptance_finalizes_after_resumption_was_used(self):
+        game = Game(3)
+        match = MatchConfig.from_new_game(game, {"mode": "watch"})
+        game.finished = True
+        game.resumption_used = True
+        decision = apply_computer_action(game, match)
+        self.assertEqual(decision.action, "accept")
+        self.assertTrue(match.end_decided)
+        self.assertFalse(match.computer_can_act(game))
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

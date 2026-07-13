@@ -2,13 +2,37 @@
 
 ## Run Digest
 
-- **Last updated:** 2026-07-12 20:26 CDT
+- **Last updated:** 2026-07-12 20:31 CDT
 - **Current phase:** In progress
-- **Active batch:** Batch 1: Search and ending correctness
-- **Last completed batch:** none
-- **Next exact batch:** Batch 1
+- **Active batch:** Batch 2: Learning V2 and deterministic continuation
+- **Last completed batch:** Batch 1: Search and ending correctness
+- **Next exact batch:** Batch 2
 - **Active PR:** unavailable; repository has no remote
 - **Latest Elves Report:** not generated
+
+## 2026-07-12 20:31 CDT
+
+**Batch:** 1: Search and ending correctness
+**Contract status:** all criteria met
+
+**Timing:** Implement 3m | Validate 1m | Review 1m | Total 5m
+
+**What changed:**
+- `engine/opponent.py`: pass and opening takeover are explicit worst-case replies; pie swap includes pass.
+- `engine/server.py`: persisted seat-identity acceptances replace the one-shot ending flag.
+- Focused category tests cover search nodes, both acceptances, losing-side resumption, final acceptance, and round-trip state.
+
+**Commands:** focused pytest 29 passed; full pytest 67 passed; JavaScript syntax and rules-engine no-diff gates passed.
+
+**Review:** direct cumulative review found no blocker. Verified all consumers of the two shared search helpers and legacy `end_decided` compatibility.
+
+**Decisions:** retained a derived `end_decided` property and save field for old callers while making `end_acceptances` authoritative.
+
+**Regression attestation:** four shared files changed, all computer modes covered by full tests; test count 60 -> 67, none removed/skipped. Confidence HIGH because every added reply/end branch has a category test and `engine/cairn.py` is unchanged.
+
+**Rollback tag:** `elves/pre-batch-1`
+
+**Next:** implement Batch 2 Learning V2 and deterministic continuation.
 
 ## Session Setup: 2026-07-12 20:26 CDT
 

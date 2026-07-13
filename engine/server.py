@@ -65,7 +65,7 @@ class MatchConfig:
     mode: str = "hotseat"
     seats: dict | None = None
     explain: bool = True
-    end_decided: bool = False
+    end_acceptances: set | None = None
 
     def __post_init__(self):
         if self.seats is None:
@@ -73,6 +73,27 @@ class MatchConfig:
                 BLACK: Seat("player-1", "human", "Player 1"),
                 WHITE: Seat("player-2", "human", "Player 2"),
             }
+        if self.end_acceptances is None:
+            self.end_acceptances = set()
+
+    @property
+    def end_decided(self):
+        """Legacy compatibility view: every computer seat has accepted."""
+        computers = {
+            seat.identity for seat in self.seats.values() if seat.kind == "computer"
+        }
+        return bool(computers) and computers <= self.end_acceptances
+
+    @end_decided.setter
+    def end_decided(self, decided):
+        if decided:
+            self.end_acceptances = {
+                seat.identity
+                for seat in self.seats.values()
+                if seat.kind == "computer"
+            }
+        else:
+            self.end_acceptances.clear()
 
     @property
     def human_color(self):
@@ -176,11 +197,38 @@ class MatchConfig:
             end_decided = saved_match.get("end_decided", False)
             if not isinstance(explain, bool) or not isinstance(end_decided, bool):
                 raise ValueError("invalid match flags")
+            seats = {
+                color: Seat.from_dict(raw_seats[color])
+                for color in (BLACK, WHITE)
+            }
+            identities = {seat.identity for seat in seats.values()}
+            if len(identities) != 2:
+                raise ValueError("match seat identities must be unique")
+            raw_acceptances = saved_match.get("end_acceptances")
+            if raw_acceptances is None:
+                acceptances = (
+                    {
+                        seat.identity
+                        for seat in seats.values()
+                        if seat.kind == "computer"
+                    }
+                    if end_decided
+                    else set()
+                )
+            elif (
+                not isinstance(raw_acceptances, list)
+                or any(not isinstance(item, str) for item in raw_acceptances)
+            ):
+                raise ValueError("invalid match end acceptances")
+            else:
+                acceptances = set(raw_acceptances)
+                if len(acceptances) != len(raw_acceptances) or not acceptances <= identities:
+                    raise ValueError("invalid match end acceptances")
             return cls(
                 mode=mode,
-                seats={color: Seat.from_dict(raw_seats[color]) for color in (BLACK, WHITE)},
+                seats=seats,
                 explain=explain,
-                end_decided=end_decided,
+                end_acceptances=acceptances,
             )
         legacy = payload.get("computer")
         if legacy is None:
@@ -208,8 +256,37 @@ class MatchConfig:
 
     def computer_can_act(self, game):
         if game.finished:
-            return any(seat.kind == "computer" for seat in self.seats.values()) and not self.end_decided
+            return self.next_computer_color(game) is not None
         return self.seats[game.to_move].kind == "computer"
+
+    def next_computer_color(self, game):
+        """Return the next computer seat owed an ending decision."""
+        if not game.finished:
+            return game.to_move if self.seats[game.to_move].kind == "computer" else None
+        computers = [
+            color
+            for color in (game.to_move, other(game.to_move))
+            if self.seats[color].kind == "computer"
+        ]
+        if game.resumption_used:
+            return None if self.end_acceptances else (computers[0] if computers else None)
+        for color in computers:
+            if self.seats[color].identity not in self.end_acceptances:
+                return color
+        return None
+
+    def accept_end(self, game, color):
+        if game.resumption_used:
+            self.end_acceptances = {
+                seat.identity
+                for seat in self.seats.values()
+                if seat.kind == "computer"
+            }
+        else:
+            self.end_acceptances.add(self.seats[color].identity)
+
+    def clear_end_acceptances(self):
+        self.end_acceptances.clear()
 
     def swap_owners(self, game=None):
         self.seats[BLACK], self.seats[WHITE] = self.seats[WHITE], self.seats[BLACK]
@@ -222,6 +299,7 @@ class MatchConfig:
             "seats": {color: self.seats[color].to_dict() for color in (BLACK, WHITE)},
             "explain": self.explain,
             "end_decided": self.end_decided,
+            "end_acceptances": sorted(self.end_acceptances),
         }
 
 
@@ -302,6 +380,12 @@ def public_view(game, match=None, last_decision=None):
             "explain": match.explain,
             "computer_turn": not game.finished and match.seats[game.to_move].kind == "computer",
             "computer_can_act": match.computer_can_act(game),
+            "pending_end_deciders": (
+                [match.next_computer_color(game)]
+                if game.finished and match.next_computer_color(game)
+                else []
+            ),
+            "end_acceptances": sorted(match.end_acceptances),
         },
         "learning": MODEL.status(),
         "computer_decision": _decision_payload(last_decision, match.explain),
@@ -320,16 +404,12 @@ def assert_human_action(game, match):
 def apply_computer_action(game, match, model=None):
     if not match.computer_can_act(game):
         raise Illegal("it is not the computer's turn")
-    color = game.to_move
+    color = match.next_computer_color(game) if game.finished else game.to_move
+    if color is None:
+        raise Illegal("it is not the computer's turn")
     seat = match.seats[color]
     if seat.kind != "computer" and not game.finished:
         raise Illegal("it is not the computer's turn")
-    if game.finished and seat.kind != "computer":
-        computers = [item for item in match.seats.values() if item.kind == "computer"]
-        if not computers:
-            raise Illegal("computer opponent is not enabled")
-        seat = computers[0]
-        color = next(key for key, value in match.seats.items() if value is seat)
     decision = choose_decision(
         game,
         color,
@@ -346,8 +426,9 @@ def apply_computer_action(game, match, model=None):
         match.swap_owners(game)
     elif decision.action == "resume":
         game.demand_resumption()
+        match.clear_end_acceptances()
     elif decision.action == "accept":
-        match.end_decided = True
+        match.accept_end(game, color)
     else:
         raise ValueError("unsupported computer action")
     return decision
@@ -431,7 +512,7 @@ class CairnHandler(SimpleHTTPRequestHandler):
                     if point not in GAME.state:
                         raise ValueError("point is off board")
                     GAME.play(point)
-                    MATCH.end_decided = False
+                    MATCH.clear_end_acceptances()
                 elif route == "/api/pass":
                     assert_human_action(GAME, MATCH)
                     GAME.play_pass()
@@ -442,7 +523,7 @@ class CairnHandler(SimpleHTTPRequestHandler):
                 elif route == "/api/resume":
                     assert_human_action(GAME, MATCH)
                     GAME.demand_resumption()
-                    MATCH.end_decided = False
+                    MATCH.clear_end_acceptances()
                 elif route == "/api/computer":
                     LAST_DECISION = apply_computer_action(GAME, MATCH)
                 elif route == "/api/load":

@@ -245,7 +245,19 @@ def _standard_scores(game, candidates, perspective, model=None):
     for candidate in ranked[:10]:
         history = set(game.history)
         history.add(signature(game.board, candidate.state, reply_color))
-        replies = []
+        # Passing is a legal reply.  The board stands pat, but the move count
+        # advances, which can switch off the opening-development feature.
+        replies = [
+            evaluate_state(
+                game.board,
+                candidate.state,
+                perspective,
+                game.moves_played + 2,
+                model,
+            )
+            + CAPTURE_WEIGHT * candidate.captured
+        ]
+        nodes += 1
         for point in game.board.points:
             try:
                 state, captured = resolve(
@@ -265,8 +277,21 @@ def _standard_scores(game, candidates, perspective, model=None):
                 + CAPTURE_WEIGHT * candidate.captured
                 - CAPTURE_WEIGHT * captured
             )
-        worst = min(replies) if replies else candidate.root_score
-        searched.append(replace(candidate, score=worst))
+        # After Black's opening, White may take over instead of placing or
+        # passing.  The original Black seat then evaluates the same board as
+        # White; takeover itself does not increment the placement count.
+        if game.moves_played == 0 and game.to_move == BLACK:
+            replies.append(
+                evaluate_state(
+                    game.board,
+                    candidate.state,
+                    WHITE,
+                    game.moves_played + 1,
+                    model,
+                )
+            )
+            nodes += 1
+        searched.append(replace(candidate, score=min(replies)))
     return searched, nodes
 
 
@@ -300,7 +325,17 @@ def _choose_candidate(game, difficulty, seed, perspective, model=None):
 def _swap_value(game, computer_color, model=None):
     """Worst value after the human's best White reply following a swap."""
     assert computer_color == BLACK
-    replies = []
+    # The new White player may pass after takeover, leaving the board intact
+    # and advancing the move count by one.
+    replies = [
+        evaluate_state(
+            game.board,
+            game.state,
+            computer_color,
+            game.moves_played + 1,
+            model,
+        )
+    ]
     for point in game.legal_placements():
         state, captured = game.try_play(point)
         replies.append(
@@ -309,9 +344,7 @@ def _swap_value(game, computer_color, model=None):
             )
             - CAPTURE_WEIGHT * captured
         )
-    return min(replies) if replies else evaluate_state(
-        game.board, game.state, computer_color, game.moves_played, model
-    )
+    return min(replies)
 
 
 def choose_decision(game, computer_color, difficulty="standard", seed=1, model=None):

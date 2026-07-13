@@ -27,14 +27,15 @@ browser/final review without touching `engine/cairn.py`.
 - **Started:** 2026-07-12 20:26 CDT
 - **User returns:** approximately 2026-07-13 04:26 CDT
 - **Time budget:** approximately 8 hours
-- **Batches remaining:** 4 of 4
+- **Average batch time so far:** 5m
+- **Batches remaining:** 3 of 4
 
 ## Stop Gate
 
-- **Planned batches remaining:** 4
+- **Planned batches remaining:** 3
 - **Stop allowed right now:** no
-- **Why:** implementation has not started
-- **Next required action:** start Batch 1 search and ending correctness
+- **Why:** Learning V2, evidence, and browser review remain
+- **Next required action:** start Batch 2 Learning V2 and deterministic continuation
 
 ## Non-Negotiables
 
@@ -49,11 +50,11 @@ browser/final review without touching `engine/cairn.py`.
 
 **Status:** In progress
 
-**Active batch:** Batch 1: Search and ending correctness
+**Active batch:** Batch 2: Learning V2 and deterministic continuation
 
-**What was just finished:** Baseline preflight passed 60 tests and JavaScript syntax.
+**What was just finished:** Batch 1 added pass/takeover replies and per-seat end acceptance; 67 tests pass.
 
-**Single next action:** implement pass/takeover reply scoring and per-seat ending acceptance.
+**Single next action:** implement version-2 features, recipe, migration, and global attempt indexing.
 
 ## Active Compute
 
@@ -61,12 +62,12 @@ No active paid or long-running compute.
 
 ## Next Exact Batch
 
-**Batch:** 1: Search and ending correctness
+**Batch:** 2: Learning V2 and deterministic continuation
 
-**Scope:** pass replies, opening takeover reply, persisted seat acceptances.
+**Scope:** nine features, margin training recipe, version-2 persistence, global attempt cursor.
 
-**Acceptance criteria:** focused/full tests green; old match saves load; both watch seats decide.
+**Acceptance criteria:** bounded symmetry, v1 migration, partition invariance, persistence/cancel/reset tests.
 
-**Risk:** changing shared opponent search and saved match orchestration can alter every computer mode.
+**Risk:** model migration and deterministic cursors must preserve user data and avoid replay after discards.
 
-**Rollback tag:** `elves/pre-batch-1`
+**Rollback tag:** `elves/pre-batch-2`

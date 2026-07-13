@@ -1,6 +1,7 @@
 import unittest
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from unittest.mock import patch
 
 from cairn import BLACK, WHITE, Game, control
 from learning import LearningModel
@@ -8,6 +9,8 @@ from opponent import (
     _features,
     _group_features,
     _root_candidates,
+    _standard_scores,
+    _swap_value,
     choose_decision,
 )
 from test_cairn import find_single_well, put
@@ -124,6 +127,43 @@ class TestOpponentEvaluation(unittest.TestCase):
         self.assertEqual(control(game.state, core), BLACK)
         self.assertEqual(decision.point, capture)
         self.assertEqual(decision.reason_code, "capture")
+
+    def test_standard_reply_scan_scores_pass_and_counts_its_node(self):
+        game = Game(3)
+        game.play(game.board.points[0])
+        candidate = _root_candidates(game, WHITE)[0]
+        calls = 0
+
+        def evaluation(*_args, **_kwargs):
+            nonlocal calls
+            calls += 1
+            return -100 if calls == 1 else 10
+
+        with patch("opponent.evaluate_state", side_effect=evaluation):
+            scored, nodes = _standard_scores(game, [candidate], WHITE)
+        self.assertEqual(scored[0].score, -100)
+        self.assertEqual(nodes, 1 + calls)
+
+    def test_black_opening_scan_includes_white_takeover(self):
+        game = Game(3)
+        candidate = _root_candidates(game, BLACK)[0]
+
+        def evaluation(_board, _state, perspective, _moves, _model=None):
+            return -75 if perspective == WHITE else 25
+
+        with patch("opponent.evaluate_state", side_effect=evaluation):
+            scored, _ = _standard_scores(game, [candidate], BLACK)
+        self.assertEqual(scored[0].score, -75)
+
+    def test_swap_value_includes_white_pass(self):
+        game = Game(3)
+        game.play(game.board.points[0])
+
+        def evaluation(_board, state, _perspective, _moves, _model=None):
+            return -60 if state is game.state else 15
+
+        with patch("opponent.evaluate_state", side_effect=evaluation):
+            self.assertEqual(_swap_value(game, BLACK), -60)
 
 
 if __name__ == "__main__":

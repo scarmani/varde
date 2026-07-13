@@ -9,10 +9,10 @@
   "execution_log_path": "docs/elves/advanced-v2-execution.md",
   "pr_number": null,
   "continuation_guard": {
-    "remaining_batches": 4,
+    "remaining_batches": 3,
     "stop_allowed": false,
     "checkpoint_is_stop": true,
-    "next_required_action": "Start Batch 1: Search and ending correctness"
+    "next_required_action": "Start Batch 2: Learning V2 and deterministic continuation"
   },
   "test_baseline": {
     "passed": 60,
@@ -22,13 +22,13 @@
     "reason": null
   },
   "current_batch": {
-    "id": 1,
-    "name": "Search and ending correctness",
+    "id": 2,
+    "name": "Learning V2 and deterministic continuation",
     "status": "in_progress"
   },
   "batches": [
-    {"id": 1, "name": "Search and ending correctness", "status": "in_progress", "commit": null, "rollback_tag": "elves/pre-batch-1"},
-    {"id": 2, "name": "Learning V2 and deterministic continuation", "status": "pending", "commit": null, "rollback_tag": "elves/pre-batch-2"},
+    {"id": 1, "name": "Search and ending correctness", "status": "complete", "commit": "pending-batch-1-commit", "rollback_tag": "elves/pre-batch-1"},
+    {"id": 2, "name": "Learning V2 and deterministic continuation", "status": "in_progress", "commit": null, "rollback_tag": "elves/pre-batch-2"},
     {"id": 3, "name": "Reproducible research and strength gate", "status": "pending", "commit": null, "rollback_tag": "elves/pre-batch-3"},
     {"id": 4, "name": "Browser, documentation, and final review", "status": "pending", "commit": null, "rollback_tag": "elves/pre-batch-4"}
   ],
