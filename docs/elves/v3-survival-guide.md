@@ -55,7 +55,7 @@ predeclared evidence gates.
 - [x] GitHub remote/auth verified; local main settled without force
 - [x] Baseline validation green: 72 Python tests, JS syntax, Python compile
 - [x] Run mode, stop gate, and non-negotiables recorded
-- [ ] Feature-branch PR opened and recorded after setup commit
+- [x] Feature-branch PR #1 opened and recorded after setup commit
 
 ## Current Phase
 
@@ -110,7 +110,7 @@ notification: final task response
 - **Learnings:** `docs/elves/v3-learnings.md`
 - **Execution log:** `docs/elves/v3-execution-log.md`
 - **Branch:** `feat/evaluator-profiles-v3`
-- **PR number:** pending setup commit
+- **PR number:** #1
 - **Plan hash at session start:** `401dcf7a54e4bfaae42f7cf9a21b673b`
 
 ## Recovery Order

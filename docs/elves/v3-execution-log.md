@@ -7,7 +7,7 @@
 - **Active batch:** Batch 1 — Evaluator parity and V3 measurements
 - **Last completed batch:** Session setup
 - **Next exact batch:** Batch 1
-- **Active PR:** not created yet
+- **Active PR:** #1
 - **Docs promoted this run:** `docs/plans/evaluator-profiles-v3.md`
 - **Latest Elves Report:** not generated yet
 
@@ -40,6 +40,7 @@ stop, or genuine blocker
   direct-to-main implementation/push recommendation in favor of owned branch.
 - Elves install doctor: WARN — v2.0.0 is available; current fully read skill is
   retained for this run and no installed tooling is changed mid-session.
+- Review surface: PASS — PR #1 opened on the owned feature branch.
 
 **Decision:** The user supplied a decision-complete plan and explicitly asked
 for implementation. Staging and launch are continuous in this task; the durable
