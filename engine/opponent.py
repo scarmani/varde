@@ -8,6 +8,7 @@ not expert strength.
 from dataclasses import asdict, dataclass, replace
 import hashlib
 import time
+from types import MappingProxyType
 
 from cairn import (
     BLACK,
@@ -16,19 +17,38 @@ from cairn import (
     control,
     groups_of,
     has_sky,
+    is_summit,
+    nb_heights,
     other,
     resolve,
     signature,
+    terrain_ok,
 )
 
 
-CONTROL_WEIGHT = 12
-CAPTURE_WEIGHT = 35
-SKY_WEIGHT = 18
-LIBERTY_WEIGHT = 3
-VULNERABLE_WEIGHT = 15
-DEVELOPMENT_WEIGHT = 2
-TERRITORY_WEIGHT = 1
+BALANCED_WEIGHTS = MappingProxyType(
+    {
+        "controlled": 12.0,
+        "captured": 35.0,
+        "skies": 18.0,
+        "liberties": 3.0,
+        "vulnerable": -15.0,
+        "development": 2.0,
+        "territory": 1.0,
+        # V3 measurements begin disabled.  Curated profiles may assign them
+        # weights later, but Balanced must remain the historical evaluator.
+        "control_resilience": 0.0,
+        "latent_reserves": 0.0,
+        "sky_durability": 0.0,
+        "connection": 0.0,
+        "capturing_moves": 0.0,
+        "max_capture": 0.0,
+        "covers": 0.0,
+        "hostile_covers": 0.0,
+        "reinforcements": 0.0,
+        "summits": 0.0,
+    }
+)
 PASS_IMPROVEMENT = 2
 SWAP_MARGIN = 5
 
@@ -61,6 +81,24 @@ class _Features:
     liberties: int
     vulnerable_stones: int
     development: int
+
+
+@dataclass(frozen=True)
+class _StructuralFeatures:
+    control_resilience: int
+    latent_reserves: int
+    sky_durability: int
+    connection: int
+
+
+@dataclass(frozen=True)
+class _TransitionFeatures:
+    capturing_moves: int
+    max_capture: int
+    covers: int
+    hostile_covers: int
+    reinforcements: int
+    summits: int
 
 
 @dataclass(frozen=True)
@@ -110,6 +148,93 @@ def _features(board, state, color, moves_played):
     )
 
 
+def _structural_features(board, state, color):
+    """Return inexpensive V3 structure measurements for one color.
+
+    This routine intentionally performs no legal move generation.  Connection
+    points use only the terrain precondition; full move legality remains the
+    rules engine's responsibility.
+    """
+    resilience = 0
+    reserves = 0
+    durability = 0
+    for point in board.points:
+        stack = state[point]
+        top = control(state, point)
+        if top == color:
+            consecutive = 0
+            for stone in reversed(stack):
+                if stone != color:
+                    break
+                consecutive += 1
+            resilience += min(2, consecutive)
+            if has_sky(board, state, point, None):
+                clearance = min(nb_heights(board, state, point)) - len(stack)
+                durability += min(2, max(0, clearance))
+        elif stack:
+            reserves += sum(stone == color for stone in stack[:-1])
+
+    group_index = {}
+    for index, group in enumerate(groups_of(board, state, color)):
+        for point in group:
+            group_index[point] = index
+    connection = 0
+    for point in board.points:
+        if not terrain_ok(board, state, point):
+            continue
+        adjacent_groups = {
+            group_index[neighbor]
+            for neighbor in board.neighbors[point]
+            if neighbor in group_index
+        }
+        connection += len(adjacent_groups) >= 2
+
+    return _StructuralFeatures(
+        control_resilience=resilience,
+        latent_reserves=reserves,
+        sky_durability=durability,
+        connection=connection,
+    )
+
+
+def _transition_features(board, state, color, transitions):
+    """Summarize already-generated legal transitions for one color.
+
+    Each transition is ``(point, next_state, captured)``.  The function never
+    asks the engine for another move, preventing feature instrumentation from
+    turning the bounded search into an accidental deeper scan.
+    """
+    capturing_moves = 0
+    max_capture = 0
+    covers = 0
+    hostile_covers = 0
+    reinforcements = 0
+    summits = 0
+    for transition in transitions:
+        if isinstance(transition, _Candidate):
+            point = transition.point
+            captured = transition.captured
+        else:
+            point, _next_state, captured = transition
+        capturing_moves += captured > 0
+        max_capture = max(max_capture, captured)
+        if state[point]:
+            covers += 1
+            if control(state, point) == color:
+                reinforcements += 1
+            else:
+                hostile_covers += 1
+        summits += is_summit(board, state, point)
+    return _TransitionFeatures(
+        capturing_moves=capturing_moves,
+        max_capture=max_capture,
+        covers=covers,
+        hostile_covers=hostile_covers,
+        reinforcements=reinforcements,
+        summits=summits,
+    )
+
+
 def _area_score(board, state):
     """Score an arbitrary state without mutating or constructing a Game."""
     from collections import deque
@@ -141,8 +266,13 @@ def _area_score(board, state):
     return scores
 
 
-def normalized_features(board, state, moves_played):
-    """Return color-symmetric, normalized features from Black's perspective."""
+def _normalized_features(board, state, moves_played, include_v3):
+    """Return color-symmetric, normalized features from Black's perspective.
+
+    ``include_v3=False`` is the compatibility fast path used by the existing
+    nine-weight Personal model.  Audits and V3 profiles request the structural
+    candidates explicitly.
+    """
     black = _features(board, state, BLACK, moves_played)
     white = _features(board, state, WHITE, moves_played)
     total = len(board.points)
@@ -170,7 +300,7 @@ def normalized_features(board, state, moves_played):
     def clipped(value):
         return max(-1.0, min(1.0, value))
 
-    return {
+    values = {
         "controlled": (black.controlled - white.controlled) / total,
         "skies": (black.skies - white.skies) / total,
         "liberties": (black.liberties - white.liberties) / (3 * total),
@@ -181,28 +311,120 @@ def normalized_features(board, state, moves_played):
         "rim": (black_rim - white_rim) / max(1, len(board.rim)),
         "groups": clipped(9 * (white_groups - black_groups) / total),
     }
+    if include_v3:
+        black_structure = _structural_features(board, state, BLACK)
+        white_structure = _structural_features(board, state, WHITE)
+        stack_capacity = sum(
+            distance + 1 for distance in board.dist_to_rim().values()
+        )
+        values.update(
+            {
+                "control_resilience": (
+                    black_structure.control_resilience
+                    - white_structure.control_resilience
+                )
+                / (2 * total),
+                "latent_reserves": clipped(
+                    (
+                        black_structure.latent_reserves
+                        - white_structure.latent_reserves
+                    )
+                    / max(1, stack_capacity)
+                ),
+                "sky_durability": (
+                    black_structure.sky_durability
+                    - white_structure.sky_durability
+                )
+                / (2 * total),
+                "connection": (
+                    black_structure.connection - white_structure.connection
+                )
+                / total,
+            }
+        )
+    return {name: clipped(value) for name, value in values.items()}
 
 
-def evaluate_state(board, state, perspective, moves_played, model=None):
+def normalized_features(board, state, moves_played):
+    """Return the existing nine Personal-model features unchanged."""
+    return _normalized_features(board, state, moves_played, include_v3=False)
+
+
+def normalized_v3_features(board, state, moves_played):
+    """Return Personal-model features plus V3 structural telemetry."""
+    return _normalized_features(board, state, moves_played, include_v3=True)
+
+
+def normalized_transition_features(
+    board, state, black_transitions, white_transitions
+):
+    """Return bounded color-symmetric V3 move-set telemetry.
+
+    Callers provide transitions they already generated.  This makes capture
+    initiative and vertical mobility measurable without hidden nested scans.
+    """
+    black = _transition_features(board, state, BLACK, black_transitions)
+    white = _transition_features(board, state, WHITE, white_transitions)
+    total = len(board.points)
+    stack_capacity = sum(distance + 1 for distance in board.dist_to_rim().values())
+
+    def clipped(value):
+        return max(-1.0, min(1.0, value))
+
+    return {
+        "capturing_moves": clipped(
+            (black.capturing_moves - white.capturing_moves) / total
+        ),
+        "max_capture": clipped(
+            (black.max_capture - white.max_capture) / max(1, stack_capacity)
+        ),
+        "covers": clipped((black.covers - white.covers) / total),
+        "hostile_covers": clipped(
+            (black.hostile_covers - white.hostile_covers) / total
+        ),
+        "reinforcements": clipped(
+            (black.reinforcements - white.reinforcements) / total
+        ),
+        "summits": clipped((black.summits - white.summits) / total),
+    }
+
+
+def evaluate_state(
+    board, state, perspective, moves_played, model=None, weights=None
+):
     """Return the fixed-weight static evaluation from ``perspective``."""
+    weights = BALANCED_WEIGHTS if weights is None else weights
     enemy = other(perspective)
     mine = _features(board, state, perspective, moves_played)
     theirs = _features(board, state, enemy, moves_played)
-    value = CONTROL_WEIGHT * (mine.controlled - theirs.controlled)
-    value += SKY_WEIGHT * (mine.skies - theirs.skies)
-    value += LIBERTY_WEIGHT * (mine.liberties - theirs.liberties)
-    value -= VULNERABLE_WEIGHT * (
+    value = weights["controlled"] * (mine.controlled - theirs.controlled)
+    value += weights["skies"] * (mine.skies - theirs.skies)
+    value += weights["liberties"] * (mine.liberties - theirs.liberties)
+    value += weights["vulnerable"] * (
         mine.vulnerable_stones - theirs.vulnerable_stones
     )
-    value += DEVELOPMENT_WEIGHT * (mine.development - theirs.development)
+    value += weights["development"] * (mine.development - theirs.development)
     occupied = mine.controlled + theirs.controlled
     if occupied >= 0.55 * len(board.points):
         score = _area_score(board, state)
-        value += TERRITORY_WEIGHT * (score[perspective] - score[enemy])
+        value += weights["territory"] * (score[perspective] - score[enemy])
+    v3_names = (
+        "control_resilience",
+        "latent_reserves",
+        "sky_durability",
+        "connection",
+    )
+    uses_v3 = any(weights.get(name, 0.0) for name in v3_names)
+    features = None
+    if uses_v3:
+        features = normalized_v3_features(board, state, moves_played)
+        direction = 1 if perspective == BLACK else -1
+        for name in v3_names:
+            value += weights.get(name, 0.0) * features[name] * direction
     if model is not None:
-        value += model.correction(
-            normalized_features(board, state, moves_played), perspective
-        )
+        if features is None:
+            features = normalized_features(board, state, moves_played)
+        value += model.correction(features, perspective)
     return value
 
 
@@ -239,7 +461,7 @@ def _root_candidates(game, perspective, model=None):
         state, captured = game.try_play(point)
         score = evaluate_state(
             game.board, state, perspective, game.moves_played + 1, model
-        ) + CAPTURE_WEIGHT * captured
+        ) + BALANCED_WEIGHTS["captured"] * captured
         reason_code, reason_text = _rationale(
             game, point, state, captured, game.to_move
         )
@@ -276,7 +498,7 @@ def _standard_scores(game, candidates, perspective, model=None):
                 game.moves_played + 2,
                 model,
             )
-            + CAPTURE_WEIGHT * candidate.captured
+            + BALANCED_WEIGHTS["captured"] * candidate.captured
         ]
         nodes += 1
         for point in game.board.points:
@@ -295,8 +517,8 @@ def _standard_scores(game, candidates, perspective, model=None):
                 evaluate_state(
                     game.board, state, perspective, game.moves_played + 2, model
                 )
-                + CAPTURE_WEIGHT * candidate.captured
-                - CAPTURE_WEIGHT * captured
+                + BALANCED_WEIGHTS["captured"] * candidate.captured
+                - BALANCED_WEIGHTS["captured"] * captured
             )
         # After Black's opening, White may take over instead of placing or
         # passing.  The original Black seat then evaluates the same board as
@@ -363,7 +585,7 @@ def _swap_value(game, computer_color, model=None):
             evaluate_state(
                 game.board, state, computer_color, game.moves_played + 1, model
             )
-            - CAPTURE_WEIGHT * captured
+            - BALANCED_WEIGHTS["captured"] * captured
         )
     return min(replies)
 
