@@ -28,7 +28,7 @@
   },
   "batches": [
     {"id": 1, "name": "Search and ending correctness", "status": "complete", "commit": "57fb82eeb7388ac84aab7cb1157f5abd88cb99e2", "rollback_tag": "elves/pre-batch-1"},
-    {"id": 2, "name": "Learning V2 and deterministic continuation", "status": "complete", "commit": "pending-batch-2-commit", "rollback_tag": "elves/pre-batch-2"},
+    {"id": 2, "name": "Learning V2 and deterministic continuation", "status": "complete", "commit": "1f5e2fb0ea9308c24038dee77d287fd819f8fe60", "rollback_tag": "elves/pre-batch-2"},
     {"id": 3, "name": "Reproducible research and strength gate", "status": "in_progress", "commit": null, "rollback_tag": "elves/pre-batch-3"},
     {"id": 4, "name": "Browser, documentation, and final review", "status": "pending", "commit": null, "rollback_tag": "elves/pre-batch-4"}
   ],

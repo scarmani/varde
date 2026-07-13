@@ -1,0 +1,15 @@
+{
+  "format": "cairn-linear-eval",
+  "games_trained": 120,
+  "training_seed": 500,
+  "updated_at": "2026-07-13T00:45:52.412512+00:00",
+  "version": 1,
+  "weights": {
+    "controlled": 2.84593638544099,
+    "development": 0.05984839472140164,
+    "liberties": 0.38884061822876953,
+    "skies": 0.1274066653310149,
+    "territory": 3.3510143230034934,
+    "vulnerable": 0.16930317479493676
+  }
+}
