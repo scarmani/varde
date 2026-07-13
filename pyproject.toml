@@ -3,9 +3,9 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "cairn-game"
+name = "varde-game"
 version = "0.1.0"
-description = "Reference engine and local human/computer client for the Cairn territory game"
+description = "Reference engine and local human/computer client for the Varde territory game (working title Cairn)"
 readme = "README.md"
 requires-python = ">=3.10"
 license = {text = "MIT"}
@@ -15,7 +15,9 @@ dependencies = []
 dev = ["pytest>=8"]
 
 [project.scripts]
+varde-selfplay = "selfplay:main"
 cairn-selfplay = "selfplay:main"
+varde-server = "server:main"
 cairn-server = "server:main"
 
 [tool.setuptools]

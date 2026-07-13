@@ -1,10 +1,17 @@
-# Cairn
+# Varde
 
-[![Tests](https://github.com/scarmani/cairn/actions/workflows/tests.yml/badge.svg)](https://github.com/scarmani/cairn/actions/workflows/tests.yml)
+[![Tests](https://github.com/scarmani/varde/actions/workflows/tests.yml/badge.svg)](https://github.com/scarmani/varde/actions/workflows/tests.yml)
 
-Cairn is a two-player territory game on a honeycomb lattice. Players surround
+Varde — formerly Cairn — is a two-player territory game on a honeycomb lattice. Players surround
 territory, cover occupied columns, and use height-dependent sky liberties to
 survive capture cascades.
+
+**Naming.** The game was designed under the working title *Cairn* and renamed
+**Varde** — the Norwegian word for a summit cairn — because an unrelated 2019
+abstract strategy game already ships as *Cairn* (Matagot). Internal
+identifiers keep the working name for compatibility: module names, the
+`cairn-game` save format, the `~/.cairn` model directory, and historical file
+paths. Existing saves and trained models load unchanged.
 
 This repository contains a tested Python reference engine, an instrumented
 self-play harness, and a dependency-free local web client for human and
@@ -48,7 +55,7 @@ For installed commands:
 
 ```bash
 python3 -m pip install -e . --no-deps
-cairn-server
+varde-server
 ```
 
 ## Verify

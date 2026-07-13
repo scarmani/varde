@@ -212,3 +212,17 @@ There is also a **naming collision**: *Cairn* (Christian Martinez, Matagot,
 unrelated, but it occupies the same shelf. The working title will change
 before any public promotion; until then this repository knowingly carries a
 provisional name.
+
+## Renamed to Varde (2026-07-13)
+
+The working title Cairn collided with Christian Martinez's 2019 Matagot
+release. The plural was checked and rejected: searching "Cairns board game"
+surfaces both the Matagot title and the Cairns (Queensland) gaming community,
+so the plural inherits the collision and adds a city's worth of noise.
+Varde — the Norwegian word for a summit cairn — keeps the name's meaning,
+returned no existing board game on BoardGameGeek when checked, and is short
+and searchable. User-facing surfaces now read Varde. Internal identifiers
+(module names, the `cairn-game` save format, the `~/.cairn` model path) and
+historical file paths keep the working name so existing saves, models, and
+links continue to work; a deeper identifier migration is deliberately
+deferred until after human playtesting.

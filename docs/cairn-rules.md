@@ -1,4 +1,7 @@
-# Cairn
+# Varde
+
+*Formerly the working title "Cairn"; renamed 2026-07-13. Some file and
+format identifiers retain the old name for compatibility.*
 
 A game of territory for two players, Black and White, played with stackable stones on the intersections of a hexagonal board.
 
