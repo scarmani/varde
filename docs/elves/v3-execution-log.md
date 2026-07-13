@@ -2,14 +2,69 @@
 
 ## Run Digest
 
-- **Last updated:** 2026-07-13 11:55 CDT
+- **Last updated:** 2026-07-13 12:03 CDT
 - **Current phase:** In progress
-- **Active batch:** Batch 3 — Browser profile experience
-- **Last completed batch:** Batch 2 — Profile model, API, saves, and Personal migration
-- **Next exact batch:** Batch 3
+- **Active batch:** Entropy check after Batch 3
+- **Last completed batch:** Batch 3 — Browser profile experience
+- **Next exact batch:** Batch 4 — Deterministic MAP-Elites research harness
 - **Active PR:** #1
 - **Docs promoted this run:** `docs/plans/evaluator-profiles-v3.md`
 - **Latest Elves Report:** not generated yet
+
+## 2026-07-13 12:03 CDT
+
+**Batch:** 3 — Browser profile experience
+
+**Contract status:** all criteria met
+
+**Timing:** Implement 3m | Validate 4m | Review 1m | Total 8m
+
+**What changed:**
+
+- `web/index.html` / `web/game.js` / `web/styles.css`: dynamic profile selectors,
+  disabled unavailable entries, independent watch profiles, descriptions,
+  Personal learning labels, and semantic profile state.
+- `engine/server.py` / `engine/opponent.py`: attach profile identity to a decision,
+  prefix rationale text, and remove raw evaluator score from public state.
+
+**Commands and results:**
+
+- `CI=true python3 -m pytest engine -q` — PASS, 91/91.
+- `node --check web/game.js`, Python compile, and diff checks — PASS.
+- Bundled Playwright client — paused Step, actual selector state, human takeover
+  with automatic continuation, computer takeover, and legacy Advanced load all pass.
+- Full-page Playwright — one-computer Personal and independent watch selectors,
+  four disabled unavailable entries, paused watch, and no console errors.
+- Screenshots opened: profile controls and board layout clean at 1280x1000;
+  canvas captures clean after one isolated capture artifact did not reproduce.
+
+**Review findings:**
+
+- Fixed: public decision still exposed evaluator score; server now strips it
+  while direct research decisions retain internal score data.
+- Fixed: BotDecision's new profile field moved to the end to preserve positional
+  compatibility for external constructors.
+- Investigated: one bundled canvas capture contained black quadrants. Immediate
+  bundled and full-page reproductions were clean with identical semantic geometry,
+  establishing an isolated capture artifact rather than a render defect.
+
+**Docs:** UI labels are self-documenting; README remains deferred until frozen
+profile availability is known in Batch 5.
+
+**Regression attestation:**
+
+- Cumulative diff: 18 files, +2280/-97 including operational docs.
+- Shared surfaces: public decision payload and browser initialization. Existing
+  scheduling, capture animation, playback speed, and load logic remain intact.
+- Test baseline: 72 -> 91, delta +19, no removals or skips.
+- Confidence: HIGH. Unit/API proof is paired with semantic and visual browser
+  evidence for both ownership paths, migration, selector availability, and pause.
+
+**Commit:** `9c0085ebf47e4989a75466a225a4a457cbe258a6`
+
+**Rollback tag:** `elves/v3-pre-batch-3`
+
+**Next:** three-batch entropy check, then Batch 4 deterministic MAP-Elites.
 
 ## 2026-07-13 11:55 CDT
 

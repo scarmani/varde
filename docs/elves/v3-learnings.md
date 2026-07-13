@@ -18,6 +18,9 @@
 - 2026-07-13: Zero-weight V3 features must have a true evaluator fast path.
   Computing them at every node raised Full Standard latency from roughly 397 ms
   to 1.38 s even though the absolute performance cap still passed.
+- 2026-07-13: The bundled web-game client captures the canvas and semantic state;
+  use a full-page Playwright capture as the complementary check for controls and
+  treat isolated canvas artifacts as unresolved until an immediate reproduction.
 
 ## Product and Domain Invariants
 

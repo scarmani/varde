@@ -110,3 +110,11 @@ Original prompt: yes to all in best order proceed and execute according to your 
   Mason, Surveyor, and Weaver remain explicitly unavailable until the declared
   archive/evidence run freezes eligible weights. No provisional style is shipped
   by weakening its descriptor gate.
+- Batch 3 complete: dynamic browser selectors separate Casual/Standard search
+  from profile style, independent spectator choices remain paused, unavailable
+  archive profiles are visibly disabled, and Personal learning reports untrained
+  equivalence or its local training count.
+- Browser evidence covers actual selector submission, both pie-rule takeover
+  directions, automatic continuation, legacy Advanced migration, profile-aware
+  rationales without raw score, semantic state, opened screenshots, and zero
+  console errors.

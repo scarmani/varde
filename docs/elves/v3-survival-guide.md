@@ -29,15 +29,15 @@ predeclared evidence gates.
 - **Started:** 2026-07-13 11:33 CDT
 - **User returns:** unknown; assume offline
 - **Time budget:** finite plan, no artificial research shortcut
-- **Average batch time so far:** 10.5 minutes
-- **Batches remaining:** 4 of 6
+- **Average batch time so far:** 9.7 minutes
+- **Batches remaining:** 3 of 6
 
 ## Stop Gate
 
-- **Planned batches remaining:** 4
+- **Planned batches remaining:** 3
 - **Stop allowed right now:** no
-- **Why:** browser, research, evidence, and final gates remain
-- **Next required action:** start Batch 3 profile controls and Personal learning UI migration
+- **Why:** research harness, evidence/curation, and final gates remain
+- **Next required action:** run the three-batch entropy check, then start deterministic MAP-Elites
 
 ## Non-Negotiables
 
@@ -62,11 +62,11 @@ predeclared evidence gates.
 
 **Status:** In progress
 
-**Active batch:** Batch 3 — Browser profile experience
+**Active batch:** Entropy check after Batch 3, then Batch 4 — Deterministic MAP-Elites
 
-**What was just finished:** Batch 2 catalog, API, seat/save compatibility, and Personal migration
+**What was just finished:** Batch 3 dynamic profile UI, profile rationales, and Playwright verification
 
-**Single next action:** replace Advanced selectors with difficulty/profile controls loaded from the catalog
+**Single next action:** audit cumulative patterns and begin the resumable archive harness
 
 ## Active Compute
 
@@ -75,23 +75,23 @@ when started and stopped when complete or canceled.
 
 ## Next Exact Batch
 
-**Batch:** 3 — Browser profile experience
+**Batch:** 4 — Deterministic MAP-Elites research harness
 
 **Scope:**
 
-- Add profile controls for one-computer and independent spectator seats.
-- Rename Advanced training to Personal learning and show equivalence/training state.
-- Add profile descriptions and profile-aware rationale text.
+- Implement explicit output/seed/workers/checkpoint/resume research CLI.
+- Add four-axis calibration, archive replacement, mutation, and frozen hall of fame.
+- Persist a deterministic evidence ledger with atomic checkpoints and rejection accounting.
 
 **Acceptance criteria:**
 
-- [ ] Available profiles submit correctly; unavailable profiles are visibly disabled.
-- [ ] Legacy load, both takeover directions, paused watch, and autoplay remain correct.
-- [ ] Semantic state, screenshots, and console inspection are clean.
+- [ ] Candidate IDs fix seeds/opponents independent of scheduling.
+- [ ] Resume and worker-count results are bit-for-bit equivalent.
+- [ ] Binning, replacement, mutation, hall of fame, cancellation, and incomplete attempts pass.
 
-**Risk:** asynchronous autoplay must not submit stale seat settings after takeover or load.
+**Risk:** parallel completion order and checkpoint boundaries must not alter floating reductions or archive state.
 
-**Rollback tag:** `elves/v3-pre-batch-3`
+**Rollback tag:** `elves/v3-pre-batch-4`
 
 ## Tool Configuration
 
