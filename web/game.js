@@ -461,14 +461,17 @@ function renderTraining(status) {
   training = status;
   const model = status.model || game?.learning || {games_trained: 0};
   const count = model.games_trained || 0;
+  const attempts = model.games_attempted || 0;
   if (status.running) {
-    trainingStatus.textContent = `Training ${status.completed}/${status.total} · ${count} games learned`;
+    trainingStatus.textContent = `Training ${status.completed}/${status.total} · ${count} learned · ${attempts} attempted`;
   } else if (status.error) {
     trainingStatus.textContent = `Training stopped: ${status.error}`;
   } else if (status.cancel_requested && status.completed < status.total) {
-    trainingStatus.textContent = `Canceled after ${status.completed}/${status.total} · ${count} games learned`;
+    trainingStatus.textContent = `Canceled after ${status.completed}/${status.total} · ${count} learned · ${attempts} attempted`;
+  } else if (model.needs_retraining) {
+    trainingStatus.textContent = `Legacy model: ${count} game${count === 1 ? "" : "s"} retained · Reset before V2 retraining`;
   } else {
-    trainingStatus.textContent = `Advanced model: ${count} game${count === 1 ? "" : "s"} trained`;
+    trainingStatus.textContent = `Advanced V2: ${count} trained · ${attempts} attempted`;
   }
   trainButton.disabled = Boolean(status.running);
   cancelTrainingButton.disabled = !status.running;

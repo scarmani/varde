@@ -12,6 +12,7 @@ from learning import (
     LearningModel,
     RECIPE,
     TrainingService,
+    sample_weights,
     training_board_size,
 )
 from opponent import normalized_features
@@ -107,6 +108,11 @@ class TestLearningModel(unittest.TestCase):
 
 
 class TestTrainingService(unittest.TestCase):
+    def test_sample_weights_span_recipe_endpoints(self):
+        self.assertEqual(sample_weights(0), [])
+        self.assertEqual(sample_weights(1), [0.4])
+        self.assertEqual(sample_weights(4), [0.4, 0.6, 0.8, 1.0])
+
     def test_training_board_mix_continues_across_batch_boundaries(self):
         self.assertEqual(
             [training_board_size(index) for index in range(8)],

@@ -50,6 +50,18 @@ def training_board_size(attempt_index):
     return TRAINING_BOARD_MIX[attempt_index % len(TRAINING_BOARD_MIX)]
 
 
+def sample_weights(count):
+    if count <= 0:
+        return []
+    if count == 1:
+        return [SAMPLE_INITIAL_WEIGHT]
+    return [
+        SAMPLE_INITIAL_WEIGHT
+        + (1.0 - SAMPLE_INITIAL_WEIGHT) * index / (count - 1)
+        for index in range(count)
+    ]
+
+
 @dataclass
 class LearningModel:
     path: Path = field(default_factory=default_model_path)
@@ -274,14 +286,10 @@ def play_training_game(model, seed, index, cancel_event):
     outcome = 0.5 + 0.5 * math.tanh(
         margin / (MARGIN_SCALE * len(game.board.points))
     )
-    count = max(1, len(feature_samples))
+    weights = sample_weights(len(feature_samples))
     samples = [
-        (
-            features,
-            SAMPLE_INITIAL_WEIGHT
-            + (1.0 - SAMPLE_INITIAL_WEIGHT) * (sample_index + 1) / count,
-        )
-        for sample_index, features in enumerate(feature_samples)
+        (features, weight)
+        for features, weight in zip(feature_samples, weights)
     ]
     return samples, outcome, True
 
