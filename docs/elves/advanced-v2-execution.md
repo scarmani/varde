@@ -2,13 +2,37 @@
 
 ## Run Digest
 
-- **Last updated:** 2026-07-12 20:31 CDT
+- **Last updated:** 2026-07-12 20:39 CDT
 - **Current phase:** In progress
-- **Active batch:** Batch 2: Learning V2 and deterministic continuation
-- **Last completed batch:** Batch 1: Search and ending correctness
-- **Next exact batch:** Batch 2
+- **Active batch:** Batch 3: Reproducible research and strength gate
+- **Last completed batch:** Batch 2: Learning V2 and deterministic continuation
+- **Next exact batch:** Batch 3
 - **Active PR:** unavailable; repository has no remote
 - **Latest Elves Report:** not generated
+
+## 2026-07-12 20:39 CDT
+
+**Batch:** 2: Learning V2 and deterministic continuation
+**Contract status:** all criteria met
+
+**Timing:** Implement 5m | Validate 2m | Review 1m | Total 8m
+
+**What changed:**
+- `engine/learning.py`: format 2 migration, nine weights, evidence-backed recipe, global attempt cursor, seed continuity, and persistent discarded attempts.
+- `engine/opponent.py`: bounded color-symmetric height, rim, and consolidation features.
+- `engine/server.py`: omitted seeds continue the stored deterministic sequence.
+
+**Commands:** focused tests 38 passed; full suite 71 passed; one real training game completed in 3.4s and persisted/reloaded nine weights.
+
+**Review:** all consumers of model status, feature names, and training start were inspected. Historical research monkeypatches are intentionally deferred to Batch 3 repair.
+
+**Decisions:** migrated models retain all old weights and remain marked `needs_retraining` even after mixed updates; only Reset establishes a clean V2 recipe.
+
+**Regression attestation:** four shared files changed; test count 67 -> 71, none removed/skipped. Confidence HIGH for persistence/continuation because partitioned and single batches produce identical attempt streams and weights.
+
+**Rollback tag:** `elves/pre-batch-2`
+
+**Next:** make research reproducible and execute the predeclared strength gate.
 
 ## 2026-07-12 20:31 CDT
 

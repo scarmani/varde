@@ -481,8 +481,8 @@ class CairnHandler(SimpleHTTPRequestHandler):
                         raise ValueError("training games must be 10, 50, or 200")
                     if games not in TRAINING_BATCHES:
                         raise ValueError("training games must be 10, 50, or 200")
-                    training_seed = _seed(
-                        body.get("seed", MODEL.training_seed + 1)
+                    training_seed = (
+                        _seed(body["seed"]) if "seed" in body else None
                     )
                     TRAINER.start(games, training_seed)
                 elif route == "/api/training/cancel":

@@ -152,6 +152,24 @@ def normalized_features(board, state, moves_played):
     if occupied >= 0.55 * total:
         score = _area_score(board, state)
         territory = (score[BLACK] - score[WHITE]) / total
+    black_height = 0
+    white_height = 0
+    black_rim = 0
+    white_rim = 0
+    for point in board.points:
+        color = control(state, point)
+        if color == BLACK:
+            black_height += len(state[point])
+            black_rim += point in board.rim
+        elif color == WHITE:
+            white_height += len(state[point])
+            white_rim += point in board.rim
+    black_groups = len(groups_of(board, state, BLACK))
+    white_groups = len(groups_of(board, state, WHITE))
+
+    def clipped(value):
+        return max(-1.0, min(1.0, value))
+
     return {
         "controlled": (black.controlled - white.controlled) / total,
         "skies": (black.skies - white.skies) / total,
@@ -159,6 +177,9 @@ def normalized_features(board, state, moves_played):
         "vulnerable": (white.vulnerable_stones - black.vulnerable_stones) / total,
         "development": (black.development - white.development) / (total * max_distance),
         "territory": territory,
+        "height": clipped((black_height - white_height) / total),
+        "rim": (black_rim - white_rim) / max(1, len(board.rim)),
+        "groups": clipped(9 * (white_groups - black_groups) / total),
     }
 
 

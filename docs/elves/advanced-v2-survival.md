@@ -27,15 +27,15 @@ browser/final review without touching `engine/cairn.py`.
 - **Started:** 2026-07-12 20:26 CDT
 - **User returns:** approximately 2026-07-13 04:26 CDT
 - **Time budget:** approximately 8 hours
-- **Average batch time so far:** 5m
-- **Batches remaining:** 3 of 4
+- **Average batch time so far:** 6m
+- **Batches remaining:** 2 of 4
 
 ## Stop Gate
 
-- **Planned batches remaining:** 3
+- **Planned batches remaining:** 2
 - **Stop allowed right now:** no
-- **Why:** Learning V2, evidence, and browser review remain
-- **Next required action:** start Batch 2 Learning V2 and deterministic continuation
+- **Why:** evidence gate and browser/final review remain
+- **Next required action:** start Batch 3 reproducible research and strength gate
 
 ## Non-Negotiables
 
@@ -50,11 +50,11 @@ browser/final review without touching `engine/cairn.py`.
 
 **Status:** In progress
 
-**Active batch:** Batch 2: Learning V2 and deterministic continuation
+**Active batch:** Batch 3: Reproducible research and strength gate
 
-**What was just finished:** Batch 1 added pass/takeover replies and per-seat end acceptance; 67 tests pass.
+**What was just finished:** Batch 2 added model V2, nine features, margin training, migration, and a global attempt cursor; 71 tests pass.
 
-**Single next action:** implement version-2 features, recipe, migration, and global attempt indexing.
+**Single next action:** repair the research harness, train 200 games, and run the paired gate.
 
 ## Active Compute
 
@@ -62,12 +62,12 @@ No active paid or long-running compute.
 
 ## Next Exact Batch
 
-**Batch:** 2: Learning V2 and deterministic continuation
+**Batch:** 3: Reproducible research and strength gate
 
-**Scope:** nine features, margin training recipe, version-2 persistence, global attempt cursor.
+**Scope:** repository-relative CLI harness, historical evidence metadata, 200-game training and paired evaluation.
 
-**Acceptance criteria:** bounded symmetry, v1 migration, partition invariance, persistence/cancel/reset tests.
+**Acceptance criteria:** reproducible artifacts, complete paired results, performance/smoke report, honest gate verdict.
 
-**Risk:** model migration and deterministic cursors must preserve user data and avoid replay after discards.
+**Risk:** long deterministic compute must not be mistaken for a game rule or produce a strength claim from incomplete evidence.
 
-**Rollback tag:** `elves/pre-batch-2`
+**Rollback tag:** `elves/pre-batch-3`
