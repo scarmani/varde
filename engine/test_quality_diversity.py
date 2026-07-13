@@ -10,6 +10,7 @@ from research.harness.map_elites_v3 import (
     WEIGHT_BOUNDS,
     _make_batch,
     _runtime_weights,
+    audited_mutation_bounds,
     archive_cell,
     archive_insert,
     balanced_genome,
@@ -84,6 +85,40 @@ def sample_result(candidate_id, quality, descriptors=None):
 class TestQualityDiversityPrimitives(unittest.TestCase):
     def test_exact_balanced_genome_uses_parity_locked_runtime_mapping(self):
         self.assertIs(_runtime_weights(balanced_genome()), BALANCED_WEIGHTS)
+
+    def test_audit_rejected_features_are_frozen_at_zero(self):
+        with TemporaryDirectory() as directory:
+            decisions = {
+                name: {"accepted_for_optimization": name == "covers"}
+                for name in (
+                    "control_resilience",
+                    "latent_reserves",
+                    "sky_durability",
+                    "connection",
+                    "capturing_moves",
+                    "max_capture",
+                    "covers",
+                    "hostile_covers",
+                    "reinforcements",
+                    "summits",
+                )
+            }
+            payload = {
+                "format": "varde-evaluator-audit",
+                "version": 3,
+                "status": "complete",
+                "analysis": {"candidate_decisions": decisions},
+            }
+            payload["report_hash"] = stable_hash(payload)
+            path = Path(directory) / "audit.json"
+            path.write_text(json.dumps(payload))
+            bounds, report_hash, accepted = audited_mutation_bounds(path)
+            self.assertEqual(report_hash, payload["report_hash"])
+            self.assertEqual(accepted, ("covers",))
+            self.assertNotEqual(bounds["covers"], (0.0, 0.0))
+            self.assertEqual(bounds["connection"], (0.0, 0.0))
+            genome = random_genome(8, 2, bounds)
+            self.assertEqual(genome["connection"], 0.0)
 
     def test_random_and_mutated_genomes_are_deterministic_and_bounded(self):
         first = random_genome(17, 4)

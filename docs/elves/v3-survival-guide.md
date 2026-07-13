@@ -70,8 +70,13 @@ predeclared evidence gates.
 
 ## Active Compute
 
-No active paid or long-running compute. Full research jobs must be recorded here
-when started and stopped when complete or canceled.
+No active compute while the audited mutation schema is committed. Completed
+source-pinned evidence remains at `/tmp/varde-v3-evidence-7fd3f16/`:
+
+- Audit: 2,000 positions, 200 grouped games, five accepted V3 candidates.
+- Ablations: 180 pairs / 360 Standard games, zero incomplete.
+
+Next launch is the 2,048-candidate archive against the accepted audit schema.
 
 ## Next Exact Batch
 

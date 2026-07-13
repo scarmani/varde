@@ -46,6 +46,18 @@ DEFAULT_BATCH_SIZE = 128
 DEFAULT_CHECKPOINT = 128
 WATCHDOG_MULTIPLIER = 20
 PAIR_BOARDS = (3, 3, 3, 4)
+V3_MUTATION_CANDIDATES = (
+    "control_resilience",
+    "latent_reserves",
+    "sky_durability",
+    "connection",
+    "capturing_moves",
+    "max_capture",
+    "covers",
+    "hostile_covers",
+    "reinforcements",
+    "summits",
+)
 
 # Bounds are intentionally conservative until the Batch 5 audit narrows the
 # active mutation schema.  Search depth and difficulty are never genome genes.
@@ -151,10 +163,11 @@ def _runtime_weights(genome):
     return BALANCED_WEIGHTS if genome == balanced_genome() else genome
 
 
-def validate_genome(genome):
-    if not isinstance(genome, dict) or set(genome) != set(WEIGHT_BOUNDS):
+def validate_genome(genome, bounds=None):
+    active_bounds = WEIGHT_BOUNDS if bounds is None else bounds
+    if not isinstance(genome, dict) or set(genome) != set(active_bounds):
         raise ValueError("invalid evaluator genome schema")
-    for name, (lower, upper) in WEIGHT_BOUNDS.items():
+    for name, (lower, upper) in active_bounds.items():
         value = genome[name]
         if (
             isinstance(value, bool)
@@ -166,27 +179,62 @@ def validate_genome(genome):
     return genome
 
 
-def random_genome(master_seed, candidate_id):
+def random_genome(master_seed, candidate_id, bounds=None):
+    active_bounds = WEIGHT_BOUNDS if bounds is None else bounds
     rng = random.Random(derive_seed(master_seed, "random-genome", candidate_id))
     genome = {
         name: round(rng.uniform(lower, upper), 12)
-        for name, (lower, upper) in WEIGHT_BOUNDS.items()
+        for name, (lower, upper) in active_bounds.items()
     }
-    return validate_genome(genome)
+    return validate_genome(genome, active_bounds)
 
 
-def mutate_genome(parent, master_seed, candidate_id):
-    validate_genome(parent)
+def mutate_genome(parent, master_seed, candidate_id, bounds=None):
+    active_bounds = WEIGHT_BOUNDS if bounds is None else bounds
+    validate_genome(parent, active_bounds)
     rng = random.Random(derive_seed(master_seed, "mutation", candidate_id))
     child = {}
-    forced = rng.randrange(len(WEIGHT_BOUNDS))
-    for index, (name, (lower, upper)) in enumerate(WEIGHT_BOUNDS.items()):
+    mutable = [
+        index
+        for index, (_name, (lower, upper)) in enumerate(active_bounds.items())
+        if lower != upper
+    ]
+    if not mutable:
+        raise ValueError("mutation schema has no mutable evaluator weights")
+    forced = mutable[rng.randrange(len(mutable))]
+    for index, (name, (lower, upper)) in enumerate(active_bounds.items()):
         value = float(parent[name])
-        if index == forced or rng.random() < 0.28:
+        if lower != upper and (index == forced or rng.random() < 0.28):
             sigma = 0.12 * (upper - lower)
             value += rng.gauss(0.0, sigma)
         child[name] = round(max(lower, min(upper, value)), 12)
-    return validate_genome(child)
+    return validate_genome(child, active_bounds)
+
+
+def audited_mutation_bounds(path):
+    """Load the audit gate and freeze rejected V3 weights at zero."""
+    payload = json.loads(Path(path).read_text())
+    expected = payload.get("report_hash")
+    canonical = {
+        key: value for key, value in payload.items() if key != "report_hash"
+    }
+    if not isinstance(expected, str) or stable_hash(canonical) != expected:
+        raise ValueError("audit report hash mismatch")
+    if payload.get("format") != "varde-evaluator-audit" or payload.get("version") != 3:
+        raise ValueError("unsupported evaluator audit")
+    if payload.get("status") != "complete":
+        raise ValueError("evaluator audit is not complete")
+    decisions = payload.get("analysis", {}).get("candidate_decisions", {})
+    if set(decisions) != set(V3_MUTATION_CANDIDATES):
+        raise ValueError("audit candidate schema mismatch")
+    bounds = dict(WEIGHT_BOUNDS)
+    accepted = []
+    for name in V3_MUTATION_CANDIDATES:
+        if decisions[name].get("accepted_for_optimization") is True:
+            accepted.append(name)
+        else:
+            bounds[name] = (0.0, 0.0)
+    return bounds, expected, tuple(accepted)
 
 
 def _sigmoid(value):
@@ -572,12 +620,17 @@ def _make_batch(state):
         stop = min(stop, calibration_count)
     frozen_hall = deepcopy(state["hall_of_fame"])
     occupied = sorted(state["archive"])
+    bounds = {
+        name: tuple(state["mutation_bounds"][name]) for name in WEIGHT_BOUNDS
+    }
     tasks = []
     for candidate_id in range(start, stop):
         if candidate_id < calibration_count:
             kind = "calibration"
             parent_id = None
-            genome = random_genome(state["master_seed"], candidate_id)
+            genome = random_genome(
+                state["master_seed"], candidate_id, bounds
+            )
         else:
             kind = "mutation"
             selector = derive_seed(
@@ -587,11 +640,16 @@ def _make_batch(state):
                 parent = state["archive"][occupied[selector % len(occupied)]]
                 parent_id = parent["candidate_id"]
                 genome = mutate_genome(
-                    parent["genome"], state["master_seed"], candidate_id
+                    parent["genome"],
+                    state["master_seed"],
+                    candidate_id,
+                    bounds,
                 )
             else:
                 parent_id = None
-                genome = random_genome(state["master_seed"], candidate_id)
+                genome = random_genome(
+                    state["master_seed"], candidate_id, bounds
+                )
         tasks.append(
             {
                 "candidate_id": candidate_id,
@@ -637,7 +695,16 @@ def _load_state(path):
     return payload
 
 
-def new_state(seed, calibration_count, mutations, batch_size, difficulty):
+def new_state(
+    seed,
+    calibration_count,
+    mutations,
+    batch_size,
+    difficulty,
+    mutation_bounds=None,
+    audit_report_hash=None,
+    accepted_v3=(),
+):
     if calibration_count < 4 or calibration_count % 4:
         raise ValueError("calibration count must be a positive multiple of four")
     if mutations < 0:
@@ -646,14 +713,26 @@ def new_state(seed, calibration_count, mutations, batch_size, difficulty):
         raise ValueError("batch size must be positive")
     if difficulty not in ("casual", "standard"):
         raise ValueError("research difficulty must be casual or standard")
+    active_bounds = WEIGHT_BOUNDS if mutation_bounds is None else mutation_bounds
+    if set(active_bounds) != set(WEIGHT_BOUNDS):
+        raise ValueError("invalid mutation schema")
+    for name, (lower, upper) in active_bounds.items():
+        if not all(isinstance(value, (int, float)) and math.isfinite(value) for value in (lower, upper)) or lower > upper:
+            raise ValueError(f"invalid mutation bounds: {name}")
     return {
         "format": FORMAT,
         "version": VERSION,
         "recipe": RECIPE,
         "source_commit": source_commit(),
         "code_hash": _code_hash(),
-        "feature_schema_hash": stable_hash(list(WEIGHT_BOUNDS)),
+        "feature_schema_hash": stable_hash(
+            {name: list(values) for name, values in active_bounds.items()}
+        ),
         "master_seed": int(seed),
+        "mutation_bounds": {
+            name: [float(lower), float(upper)]
+            for name, (lower, upper) in active_bounds.items()
+        },
         "configuration": {
             "calibration_count": calibration_count,
             "batch_size": batch_size,
@@ -663,6 +742,8 @@ def new_state(seed, calibration_count, mutations, batch_size, difficulty):
             "games_per_candidate": 2 * len(PAIR_BOARDS),
             "watchdog_multiplier": WATCHDOG_MULTIPLIER,
             "bins_per_axis": 4,
+            "audit_report_hash": audit_report_hash,
+            "accepted_v3_features": list(accepted_v3),
         },
         "target_candidates": calibration_count + mutations,
         "next_candidate": 0,
@@ -672,13 +753,28 @@ def new_state(seed, calibration_count, mutations, batch_size, difficulty):
         "archive": {},
         "archive_replacements": [],
         "hall_of_fame": refresh_hall_of_fame([]),
+        "balanced_reference": None,
         "attempts": [],
         "counters": {
             "candidates_attempted": 0,
             "candidates_rejected": 0,
             "games_attempted": 0,
             "games_incomplete": 0,
+            "reference_games_attempted": 0,
         },
+    }
+
+
+def _balanced_reference_task(state):
+    balanced = {"id": "balanced", "genome": balanced_genome()}
+    return {
+        "candidate_id": -1,
+        "kind": "balanced_reference",
+        "parent_id": None,
+        "genome": balanced_genome(),
+        "opponents": [deepcopy(balanced) for _ in PAIR_BOARDS],
+        "master_seed": state["master_seed"],
+        "difficulty": state["configuration"]["difficulty"],
     }
 
 
@@ -719,6 +815,10 @@ def _validate_result(result, expected_id):
 
 def _commit_result(state, result):
     _validate_result(result, state["next_candidate"])
+    bounds = {
+        name: tuple(state["mutation_bounds"][name]) for name in WEIGHT_BOUNDS
+    }
+    validate_genome(result["genome"], bounds)
     state["attempts"].append(result)
     state["next_candidate"] += 1
     counters = state["counters"]
@@ -760,6 +860,7 @@ def run_optimizer(
     resume=False,
     cancel_file=None,
     max_candidates=None,
+    audit_report=None,
     evaluator: Callable = evaluate_candidate,
 ):
     """Run or resume the optimizer and return its canonical checkpoint state."""
@@ -768,6 +869,14 @@ def run_optimizer(
     output_dir = Path(output_dir)
     state_path = output_dir / "state.json"
     output_dir.mkdir(parents=True, exist_ok=True)
+    if audit_report is not None:
+        mutation_bounds, audit_hash, accepted_v3 = audited_mutation_bounds(
+            audit_report
+        )
+    else:
+        mutation_bounds = None
+        audit_hash = None
+        accepted_v3 = ()
     if resume:
         if not state_path.exists():
             raise ValueError("no optimizer checkpoint to resume")
@@ -781,6 +890,15 @@ def run_optimizer(
             or config["difficulty"] != difficulty
         ):
             raise ValueError("resume configuration does not match checkpoint")
+        if audit_report is not None and (
+            config.get("audit_report_hash") != audit_hash
+            or state["mutation_bounds"]
+            != {
+                name: [float(lower), float(upper)]
+                for name, (lower, upper) in mutation_bounds.items()
+            }
+        ):
+            raise ValueError("resume audit does not match checkpoint")
         requested_target = calibration_count + mutations
         if requested_target < state["target_candidates"]:
             raise ValueError("cannot shorten a resumed optimizer run")
@@ -790,12 +908,33 @@ def run_optimizer(
         if state_path.exists():
             raise ValueError("output already contains a checkpoint; use --resume")
         state = new_state(
-            seed, calibration_count, mutations, batch_size, difficulty
+            seed,
+            calibration_count,
+            mutations,
+            batch_size,
+            difficulty,
+            mutation_bounds,
+            audit_hash,
+            accepted_v3,
         )
         _checkpoint(state_path, state)
 
     committed_this_run = 0
     cancel_path = Path(cancel_file) if cancel_file else None
+    if cancel_path and cancel_path.exists():
+        state["status"] = "cancelled"
+        _checkpoint(state_path, state)
+        return state
+    if state.get("balanced_reference") is None:
+        reference = evaluator(_balanced_reference_task(state))
+        _validate_result(reference, -1)
+        if reference["rejected"]:
+            raise RuntimeError("Balanced reference rollout was rejected")
+        state["balanced_reference"] = reference
+        state["counters"]["reference_games_attempted"] = int(
+            reference.get("games_attempted", 0)
+        )
+        _checkpoint(state_path, state)
     stop_requested = False
     while state["next_candidate"] < state["target_candidates"]:
         if cancel_path and cancel_path.exists():
@@ -855,6 +994,11 @@ def main():
     parser.add_argument("--difficulty", choices=("casual", "standard"), default="standard")
     parser.add_argument("--resume", action="store_true")
     parser.add_argument("--cancel-file", type=Path)
+    parser.add_argument(
+        "--audit-report",
+        type=Path,
+        help="freeze audit-rejected V3 candidates at zero",
+    )
     args = parser.parse_args()
     state = run_optimizer(
         args.output_dir,
@@ -867,6 +1011,7 @@ def main():
         difficulty=args.difficulty,
         resume=args.resume,
         cancel_file=args.cancel_file,
+        audit_report=args.audit_report,
     )
     print(args.output_dir / "state.json")
     print(

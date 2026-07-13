@@ -1,0 +1,167 @@
+{
+  "ablation": {
+    "games": 360,
+    "incomplete_pairs": 0,
+    "overall": {
+      "both_disabled": {
+        "captures_per_game": 10.641666666666667,
+        "consolidation_rate": 0.6386213887480994,
+        "contact_rate": 0.47153235343808075,
+        "edge_reach": 0.7590725806451613,
+        "engagement_rate": 0.2633064516129032,
+        "games": 120,
+        "hostile_cover_rate": 0.06673424564960298,
+        "incomplete_games": 0,
+        "mean_actions": 185.075,
+        "mean_margin": -57.583333333333336,
+        "pairs": 60,
+        "reinforcement_rate": 0.12248690657205609,
+        "score_rate": 0.004166666666666667,
+        "stratum": "overall",
+        "variant": "both_disabled",
+        "verticality_rate": 0.18922115222165906
+      },
+      "development_disabled": {
+        "captures_per_game": 30.866666666666667,
+        "consolidation_rate": 0.5641302216120808,
+        "contact_rate": 0.5294175328495784,
+        "edge_reach": 0.6339381720430107,
+        "engagement_rate": 0.39395161290322583,
+        "games": 120,
+        "hostile_cover_rate": 0.12777015101000197,
+        "incomplete_games": 0,
+        "mean_actions": 221.69166666666666,
+        "mean_margin": -11.166666666666666,
+        "pairs": 60,
+        "reinforcement_rate": 0.16797411257109238,
+        "score_rate": 0.4166666666666667,
+        "stratum": "overall",
+        "variant": "development_disabled",
+        "verticality_rate": 0.29574426358109435
+      },
+      "liberty_disabled": {
+        "captures_per_game": 29.733333333333334,
+        "consolidation_rate": 0.626466197483472,
+        "contact_rate": 0.6403284282362978,
+        "edge_reach": 0.4055779569892473,
+        "engagement_rate": 0.6439516129032258,
+        "games": 120,
+        "hostile_cover_rate": 0.15834932821497122,
+        "incomplete_games": 0,
+        "mean_actions": 224.51666666666668,
+        "mean_margin": -31.2,
+        "pairs": 60,
+        "reinforcement_rate": 0.17381104713158457,
+        "score_rate": 0.16666666666666666,
+        "stratum": "overall",
+        "variant": "liberty_disabled",
+        "verticality_rate": 0.3321603753465558
+      }
+    },
+    "pairs": 180,
+    "report_hash": "3b138d02ae424f5cca0d79f23049ba6cd104f7590344f46790649e081e233415"
+  },
+  "audit": {
+    "baseline_full_p95_ms": 391.14966697525233,
+    "baseline_log_loss": 0.49461048094213966,
+    "candidates": {
+      "capturing_moves": {
+        "accepted_for_optimization": true,
+        "finite_bounded": true,
+        "latency_added_fraction": 0.049273443738734324,
+        "latency_p95_ms": 410.4229580843821,
+        "max_abs_correlation": 0.7504569755683407,
+        "max_symmetry_error": 0.0,
+        "relative_log_loss_improvement": 4.648525168768659e-05
+      },
+      "connection": {
+        "accepted_for_optimization": false,
+        "finite_bounded": true,
+        "latency_added_fraction": 2.5607170568492275,
+        "latency_p95_ms": 1392.773290979676,
+        "max_abs_correlation": 0.9159848267047183,
+        "max_symmetry_error": 0.0,
+        "relative_log_loss_improvement": 0.0003483152132332829
+      },
+      "control_resilience": {
+        "accepted_for_optimization": false,
+        "finite_bounded": true,
+        "latency_added_fraction": 2.6211215797372915,
+        "latency_p95_ms": 1416.4004999911413,
+        "max_abs_correlation": 0.9914115045728754,
+        "max_symmetry_error": 0.0,
+        "relative_log_loss_improvement": 0.005615051866911837
+      },
+      "covers": {
+        "accepted_for_optimization": true,
+        "finite_bounded": true,
+        "latency_added_fraction": 0.004199799333029164,
+        "latency_p95_ms": 392.79241708572954,
+        "max_abs_correlation": 0.6545866522463772,
+        "max_symmetry_error": 0.0,
+        "relative_log_loss_improvement": 0.0014537994057830653
+      },
+      "hostile_covers": {
+        "accepted_for_optimization": true,
+        "finite_bounded": true,
+        "latency_added_fraction": 0.0012978817924720332,
+        "latency_p95_ms": 391.657333006151,
+        "max_abs_correlation": 0.2879651259748045,
+        "max_symmetry_error": 0.0,
+        "relative_log_loss_improvement": 8.936790338926026e-06
+      },
+      "latent_reserves": {
+        "accepted_for_optimization": false,
+        "finite_bounded": true,
+        "latency_added_fraction": 2.678520219848923,
+        "latency_p95_ms": 1438.851958955638,
+        "max_abs_correlation": 0.8349997585813961,
+        "max_symmetry_error": 0.0,
+        "relative_log_loss_improvement": 0.00019682527971154155
+      },
+      "max_capture": {
+        "accepted_for_optimization": true,
+        "finite_bounded": true,
+        "latency_added_fraction": 0.04624444692824459,
+        "latency_p95_ms": 409.23816699068993,
+        "max_abs_correlation": 0.6450637867727016,
+        "max_symmetry_error": 0.0,
+        "relative_log_loss_improvement": 6.599850216351734e-06
+      },
+      "reinforcements": {
+        "accepted_for_optimization": false,
+        "finite_bounded": true,
+        "latency_added_fraction": 0.02665230688972242,
+        "latency_p95_ms": 401.5747079392895,
+        "max_abs_correlation": 0.8694466732297907,
+        "max_symmetry_error": 0.0,
+        "relative_log_loss_improvement": 0.0011590695428683388
+      },
+      "sky_durability": {
+        "accepted_for_optimization": false,
+        "finite_bounded": true,
+        "latency_added_fraction": 2.612991274955127,
+        "latency_p95_ms": 1413.2203339831904,
+        "max_abs_correlation": 1.0,
+        "max_symmetry_error": 0.0,
+        "relative_log_loss_improvement": 6.799587303596939e-06
+      },
+      "summits": {
+        "accepted_for_optimization": true,
+        "finite_bounded": true,
+        "latency_added_fraction": 0.005600370449554193,
+        "latency_p95_ms": 393.3402500115335,
+        "max_abs_correlation": 0.8379458875949911,
+        "max_symmetry_error": 0.0,
+        "relative_log_loss_improvement": 0.00036771908645418774
+      }
+    },
+    "positions": 2000,
+    "positions_hash": "97bbe0f298b02f34c13b2545b80d60cdc4dfd5c89f118db8ca4b88a7c962f803",
+    "report_hash": "c17b291dcc0ee7c767daef55c3a1cbf0be7d83fee46215c1e3a972c099f0d9a1",
+    "retained_log_loss": 0.4936791827878353
+  },
+  "format": "varde-v3-audit-ablation-summary",
+  "source_commit": "7fd3f1637bf282fb47b6a2f3e806fc59107e32b9",
+  "version": 3
+}
