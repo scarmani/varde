@@ -185,3 +185,30 @@ a global attempt cursor, so split batches neither replay games nor change the
 result. Version-1 models are retained and visibly marked for retraining rather
 than silently discarded. Strength remains an empirical question governed by
 the paired gate documented in `research/README.md`.
+
+## Lineage and prior art (2026-07-13)
+
+Cairn is a descendant of Go: groups, liberties, capture by surround, suicide,
+positional superko, area scoring, and the pie rule are all inherited, and the
+design should always say so plainly. Research into neighboring designs found
+no game combining Cairn's terrain rule, summit majority, strict skies,
+top-layer peeling with recursive capture waves, and collar-conditional life —
+but it did find genuine neighbors that deserve acknowledgment:
+
+- **Margo** (Cameron Browne) is the closest mechanical ancestor: Go-like
+  connected groups and freedom-based capture played with stackable pieces,
+  including buried pieces that outlive capture, suicide-with-capture, ko, and
+  a swap rule. Cairn arrived at columns, skies, and peeling independently, but
+  Margo owns the broad idea of "Go liberties plus vertical stacking."
+- **Rosette** (Abstract Games issue 13, 2003) is a Go variant played on the
+  intersections of a hexagonal tessellation — the same three-neighbor
+  honeycomb topology as Cairn's board, with ordinary flat stones.
+- **Tumbleweed** (Mike Zapawa) shares the hexagonal board, variable-height
+  stacks, pie rule, and territorial scoring, though its line-of-sight
+  mechanics involve no groups or liberties.
+
+There is also a **naming collision**: *Cairn* (Christian Martinez, Matagot,
+2019) is an existing two-player abstract strategy game. Its mechanics are
+unrelated, but it occupies the same shelf. The working title will change
+before any public promotion; until then this repository knowingly carries a
+provisional name.

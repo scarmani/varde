@@ -1,5 +1,7 @@
 # Cairn
 
+[![Tests](https://github.com/scarmani/cairn/actions/workflows/tests.yml/badge.svg)](https://github.com/scarmani/cairn/actions/workflows/tests.yml)
+
 Cairn is a two-player territory game on a honeycomb lattice. Players surround
 territory, cover occupied columns, and use height-dependent sky liberties to
 survive capture cascades.
