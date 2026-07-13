@@ -9,3 +9,4 @@ playwright-artifacts/
 .playwright-mcp/
 docs/audit/
 .DS_Store
+_to_delete/
