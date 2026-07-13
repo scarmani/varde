@@ -1,0 +1,61 @@
+{
+  "source_sha": "eb3d17883f39e2b535a1025216e86822c336ec1f",
+  "model_sha256": "5a28fab5cd13768f4c597287df48c78363b1f5ce7a94cfc93e50284a439b3273",
+  "training": {
+    "recipe": "margin-v2",
+    "seed": 20260712,
+    "games_requested": 200,
+    "games_attempted": 200,
+    "games_trained": 200,
+    "discarded": 0,
+    "elapsed_seconds": 1644.549
+  },
+  "heldout": {
+    "seed": 9102026,
+    "toy_pairs": 75,
+    "beginner_pairs": 25,
+    "games": 200,
+    "complete_games": 200,
+    "incomplete_games": 0,
+    "overall_score": 0.535,
+    "mean_margin": 0.23,
+    "one_sided_95_paired_bootstrap_lower": 0.4775,
+    "toy": {
+      "games": 150,
+      "score": 0.5633333333333334,
+      "mean_margin": 0.8933333333333333
+    },
+    "beginner": {
+      "games": 50,
+      "score": 0.45,
+      "mean_margin": -1.76
+    },
+    "gate": {
+      "overall_at_least_60": false,
+      "toy_above_50": true,
+      "beginner_above_50": false,
+      "bootstrap_lower_above_50": false,
+      "positive_margin": true,
+      "all_games_complete": true,
+      "passed": false
+    }
+  },
+  "fresh_position_p95_ms": {
+    "samples": 20,
+    "toy_standard": 28.079040988814086,
+    "toy_advanced": 56.02966697188094,
+    "full_standard": 389.27112496457994,
+    "full_advanced": 736.1369589925744,
+    "toy_under_500": true,
+    "full_under_1500": true
+  },
+  "larger_board_smoke": {
+    "pairs_per_board": 2,
+    "intermediate_games": 4,
+    "full_games": 4,
+    "all_complete": true,
+    "max_intermediate_actions": 979,
+    "max_full_actions": 1701,
+    "claim_scope": "none"
+  }
+}

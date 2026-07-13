@@ -164,3 +164,24 @@ explicitly experimental. In the first small held-out diagnostic after eight
 training games it scored 3 wins and 5 losses against Standard with colors
 alternated. This does not demonstrate improvement and is not a release gate;
 larger held-out samples should guide later feature and training changes.
+
+## Corrected search and Advanced V2 (2026-07-12)
+
+Standard's two-ply reply scan now treats pass as a legal opponent reply, both
+after ordinary candidates and while evaluating a pie-rule takeover. Black
+opening search also includes White's legal takeover as a reply. These are
+search corrections, not rule changes; `engine/cairn.py` remains unchanged.
+
+Computer-vs-computer endings now ask both persisted seat identities whether to
+accept the first two-pass result. The first acceptance does not deny the other
+seat its one legal resumption opportunity. Resuming clears both acceptances;
+after that opportunity has been used, one acceptance finalizes the result.
+
+Advanced V2 retains the six normalized evaluator terms and adds bounded stack
+height, rim control, and group-consolidation features. It learns a margin-based
+target from every second position after move six, weights later samples more,
+and explores only on the learner's early moves. Training is deterministic over
+a global attempt cursor, so split batches neither replay games nor change the
+result. Version-1 models are retained and visibly marked for retraining rather
+than silently discarded. Strength remains an empirical question governed by
+the paired gate documented in `research/README.md`.

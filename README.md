@@ -38,7 +38,9 @@ Standard. The learning panel runs separate deterministic background self-play
 batches of 10, 50, or 200 games and supports progress, cancellation, and reset.
 The model is saved atomically at `~/.cairn/advanced-model.json`. Training uses a
 20N operational watchdog and discards incomplete training games; playable games
-have no move or turn cutoff. Training count is not a strength claim.
+have no move or turn cutoff. Version-1 models are retained, identified in the
+UI, and require Reset before clean V2 retraining. Training count is not a
+strength claim.
 
 For installed commands:
 
@@ -57,7 +59,7 @@ python3 engine/selfplay.py 3 100 greedy
 python3 engine/selfplay.py 3 100 epsilon
 ```
 
-The executable suite currently has 60 tests covering geometry, terrain,
+The executable suite currently has 71 tests covering geometry, terrain,
 summits, flat capture, collar-dependent wells, wall stranding, eight-support
 twin wells, multi-wave peeling, global mover-suicide, full-stack superko,
 opening placement, pie-rule identity, resumption, scoring, serialization, and
@@ -103,6 +105,14 @@ Full. A small held-out diagnostic after eight training games produced 3 wins and
 deliberately reported as evidence that the learning loop runs—not as evidence
 that Advanced is stronger.
 
+After correcting the reply search and retraining V2 from zero for 200 games, a
+fresh 200-game paired gate scored 53.5% overall: 56.33% on Toy, 45.0% on
+Beginner, one-sided 95% paired-bootstrap lower bound 47.75%, and average margin
++0.23. All games completed legally, but three strength criteria failed, so
+Advanced remains experimental. Current fresh-position p95 is about 28/56 ms on
+Toy and 389/736 ms on Full for Standard/Advanced. Reproduction commands and
+the exact model checkpoint are in `research/`.
+
 ## Layout
 
 - `docs/cairn-rules.md` — standalone rules, revision 1.2
@@ -113,6 +123,7 @@ that Advanced is stronger.
 - `engine/test_cairn.py` — known-answer position and controller tests
 - `engine/selfplay.py` — random, greedy, and epsilon-greedy telemetry
 - `engine/server.py` — local JSON API and static-file server
+- `research/` — reproducible V2 training, paired evaluation, and checkpoints
 - `web/` — responsive canvas hotseat client
 - `progress.md` — implementation and handoff log
 

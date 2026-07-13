@@ -2,13 +2,35 @@
 
 ## Run Digest
 
-- **Last updated:** 2026-07-12 20:39 CDT
+- **Last updated:** 2026-07-12 22:18 CDT
 - **Current phase:** In progress
-- **Active batch:** Batch 3: Reproducible research and strength gate
-- **Last completed batch:** Batch 2: Learning V2 and deterministic continuation
-- **Next exact batch:** Batch 3
+- **Active batch:** Batch 4: Browser, documentation, and final review
+- **Last completed batch:** Batch 3: Reproducible research and strength gate
+- **Next exact batch:** Batch 4
 - **Active PR:** unavailable; repository has no remote
 - **Latest Elves Report:** not generated
+
+## 2026-07-12 22:18 CDT
+
+**Batch:** 3: Reproducible research and strength gate
+**Contract status:** all criteria met
+
+**Timing:** Implement 8m | Train/evaluate 87m | Review 4m | Total 99m
+
+**What changed:** repository-relative parameterized harnesses replace temporary
+monkeypatch scripts; historical checkpoints are isolated; exact V2 checkpoint
+and aggregate report are retained.
+
+**Evidence:** training completed 200/200 with zero discard. Held-out completed
+200/200 legal games and failed the strength gate at 53.5% overall, 56.33% Toy,
+45.0% Beginner, 47.75% bootstrap lower bound, +0.23 margin. No stronger claim.
+Performance p95 28/56 ms Toy and 389/736 ms Full. Eight n=5/n=6 smoke games
+completed, longest 1,701 actions.
+
+**Regression attestation:** exact tracked checkpoint hash matches evaluated
+model; `engine/cairn.py` unchanged; compilation and diff checks pass.
+
+**Next:** browser proof, final test pass, cumulative review, report, cleanup.
 
 ## 2026-07-12 20:39 CDT
 

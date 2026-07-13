@@ -1,0 +1,21 @@
+{
+  "format": "cairn-linear-eval",
+  "games_attempted": 200,
+  "games_trained": 200,
+  "needs_retraining": false,
+  "recipe": "margin-v2",
+  "training_seed": 20260712,
+  "updated_at": "2026-07-13T02:11:36.046646+00:00",
+  "version": 2,
+  "weights": {
+    "controlled": 2.465371730747214,
+    "development": 0.07167785357995834,
+    "groups": -0.20784942989057267,
+    "height": 1.4982554325404884,
+    "liberties": 0.26686733726458084,
+    "rim": 0.41384636804956515,
+    "skies": 0.2347893683283837,
+    "territory": 2.792895556290018,
+    "vulnerable": 0.33471725922368867
+  }
+}

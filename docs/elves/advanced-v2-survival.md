@@ -27,15 +27,15 @@ browser/final review without touching `engine/cairn.py`.
 - **Started:** 2026-07-12 20:26 CDT
 - **User returns:** approximately 2026-07-13 04:26 CDT
 - **Time budget:** approximately 8 hours
-- **Average batch time so far:** 6m
-- **Batches remaining:** 2 of 4
+- **Average batch time so far:** 57m
+- **Batches remaining:** 1 of 4
 
 ## Stop Gate
 
-- **Planned batches remaining:** 2
+- **Planned batches remaining:** 1
 - **Stop allowed right now:** no
-- **Why:** evidence gate and browser/final review remain
-- **Next required action:** start Batch 3 reproducible research and strength gate
+- **Why:** final cumulative review and cleanup remain
+- **Next required action:** finish Batch 4 and satisfy the Stop Gate
 
 ## Non-Negotiables
 
@@ -50,24 +50,26 @@ browser/final review without touching `engine/cairn.py`.
 
 **Status:** In progress
 
-**Active batch:** Batch 3: Reproducible research and strength gate
+**Active batch:** Batch 4: Browser, documentation, and final review
 
-**What was just finished:** Batch 2 added model V2, nine features, margin training, migration, and a global attempt cursor; 71 tests pass.
+**What was just finished:** Batch 3 trained 200/200 games, ran all 100 paired seeds, recorded an honest failed strength gate, passed both latency budgets, and completed eight larger-board smoke games.
 
-**Single next action:** repair the research harness, train 200 games, and run the paired gate.
+**Single next action:** complete final browser evidence, cumulative diff review, report, and cleanup.
 
 ## Active Compute
 
-No active paid or long-running compute.
+| Resource | Purpose | Current status | Last verified | Stop / repurpose trigger |
+| --- | --- | --- | --- | --- |
+No active long-running compute. The raw completed evidence remains in `/tmp/cairn-v2-final`.
 
 ## Next Exact Batch
 
-**Batch:** 3: Reproducible research and strength gate
+**Batch:** 4: Browser, documentation, and final review
 
-**Scope:** repository-relative CLI harness, historical evidence metadata, 200-game training and paired evaluation.
+**Scope:** UI migration/status messaging, Playwright proof, full regression, cumulative review, and run cleanup.
 
-**Acceptance criteria:** reproducible artifacts, complete paired results, performance/smoke report, honest gate verdict.
+**Acceptance criteria:** required browser interactions and screenshots, no console errors, all tests and integrity gates green, clean branch, Elves report generated.
 
-**Risk:** long deterministic compute must not be mistaken for a game rule or produce a strength claim from incomplete evidence.
+**Risk:** direct API browser checks must be paired with rendered UI/state inspection; failed strength gate must not be worded as improvement.
 
-**Rollback tag:** `elves/pre-batch-3`
+**Rollback tag:** `elves/pre-batch-4`

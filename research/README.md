@@ -68,3 +68,29 @@ claim requires all of the following:
 If any condition fails, Advanced remains explicitly experimental. Intermediate
 and Full smoke matches are non-claim generalization checks because the learner
 trains only on the deterministic 3:1 Toy/Beginner mix.
+
+## V2 result (200 training games)
+
+The fresh V2 run completed all 200 training attempts with no discard. The
+frozen model (`SHA-256 5a28fab5cd13768f4c597287df48c78363b1f5ce7a94cfc93e50284a439b3273`)
+then completed all 200 held-out games:
+
+| Measurement | Result | Gate |
+|---|---:|---:|
+| Overall score | 53.5% | fail (needs 60%) |
+| Toy score | 56.33% | pass (above 50%) |
+| Beginner score | 45.0% | fail (above 50%) |
+| One-sided 95% paired-bootstrap lower bound | 47.75% | fail (above 50%) |
+| Average margin | +0.23 | pass (positive) |
+| Illegal, crashed, or incomplete games | 0 | pass |
+
+Advanced V2 therefore does **not** earn a stronger-than-Standard claim and
+remains experimental. Fresh-position p95 was 28/56 ms on Toy and 389/736 ms
+on Full for Standard/Advanced, within both performance budgets. Four
+Intermediate and four Full non-claim games all completed; the longest Full
+game took 1,701 actions, further supporting the decision not to impose a live
+game cutoff.
+
+The exact checkpoint and compact aggregate are retained in `results/`. Raw
+per-attempt and per-pair JSONL from this run was generated outside the tree at
+`/tmp/cairn-v2-final` and can be reproduced with the commands above.

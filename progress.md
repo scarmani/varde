@@ -68,3 +68,20 @@ Original prompt: yes to all in best order proceed and execute according to your 
 - Final evaluator audit separated strict skies from capped ordinary empty-point
   liberties, preventing a real sky from being counted twice while retaining its
   group-life and dedicated sky-weight effects.
+
+## Corrected search and Advanced Learning V2
+
+- Corrected every shared two-ply path to score an opponent pass, including the
+  pie-rule value, and added legal White takeover as a Black-opening reply.
+- Replaced the global computer-ending decision with persisted per-seat
+  acceptances. In spectator games the first accepting AI no longer prevents the
+  other seat from using the rules' one permitted resumption.
+- Added the bounded height, rim, and group-consolidation features and migrated
+  the model format to nine-weight V2 without deleting legacy six-weight models.
+- Made training use margin targets, time-weighted samples, learner-only opening
+  exploration, a global attempt ordinal, and a fixed master seed. Split batches
+  are reproducibly equivalent to a single batch and discarded attempts still
+  advance the cursor.
+- Replaced the temporary-path research scripts with repository-relative,
+  parameterized training, paired evaluation, benchmark, and larger-board smoke
+  harnesses. Historical checkpoints are clearly isolated from production.
