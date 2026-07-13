@@ -65,6 +65,7 @@ class BotDecision:
     score: float = 0.0
     nodes: int = 0
     elapsed_ms: float = 0.0
+    profile: str = ""
 
     def to_dict(self):
         payload = asdict(self)

@@ -266,6 +266,23 @@ class TestComputerMatch(unittest.TestCase):
         decision = apply_computer_action(game, match)
         view = public_view(game, match, decision)
         self.assertEqual(view["computer_decision"]["reason_text"], "")
+        self.assertNotIn("score", view["computer_decision"])
+
+    def test_public_rationale_names_profile_without_raw_score(self):
+        game = Game(3)
+        match = MatchConfig.from_new_game(
+            game,
+            {
+                "mode": "computer",
+                "human_color": WHITE,
+                "profile": "personal",
+            },
+        )
+        decision = apply_computer_action(game, match)
+        payload = public_view(game, match, decision)["computer_decision"]
+        self.assertEqual(payload["profile"], "personal")
+        self.assertTrue(payload["reason_text"].startswith("Personal: "))
+        self.assertNotIn("score", payload)
 
     def test_computer_resumes_when_behind_and_accepts_when_ahead(self):
         game = Game(2)

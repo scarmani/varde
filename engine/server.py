@@ -1,7 +1,7 @@
 """Dependency-free local web server for Cairn play and AI training."""
 
 import argparse
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 import json
 import threading
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
@@ -387,8 +387,12 @@ def _decision_payload(decision, explain):
     if decision is None:
         return None
     payload = decision.to_dict()
+    payload.pop("score", None)
     if not explain:
         payload["reason_text"] = ""
+    elif decision.profile:
+        label = get_profile(decision.profile).label
+        payload["reason_text"] = f"{label}: {payload['reason_text']}"
     return payload
 
 
@@ -478,6 +482,7 @@ def apply_computer_action(game, match, model=None):
         model=active_model if seat.profile == "personal" else None,
         weights=selected_profile.weights,
     )
+    decision = replace(decision, profile=seat.profile)
     if decision.action == "play":
         game.play(decision.point)
     elif decision.action == "pass":

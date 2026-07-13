@@ -9,10 +9,14 @@ const sizeSelect = document.querySelector("#board-size");
 const modeSelect = document.querySelector("#game-mode");
 const colorSelect = document.querySelector("#human-color");
 const difficultySelect = document.querySelector("#difficulty");
+const profileSelect = document.querySelector("#profile");
 const blackDifficultySelect = document.querySelector("#black-difficulty");
+const blackProfileSelect = document.querySelector("#black-profile");
 const whiteDifficultySelect = document.querySelector("#white-difficulty");
+const whiteProfileSelect = document.querySelector("#white-profile");
 const explainCheckbox = document.querySelector("#explain-moves");
 const aiNote = document.querySelector("#ai-note");
+const profileNote = document.querySelector("#profile-note");
 const spectatorControls = document.querySelector("#spectator-controls");
 const playButton = document.querySelector("#play-btn");
 const stepButton = document.querySelector("#step-btn");
@@ -36,6 +40,7 @@ let visual = null;
 let watchPlaying = false;
 let training = null;
 let trainingPoll = null;
+let profileCatalog = null;
 
 const savedSpeed = Number(localStorage.getItem("cairn-playback-speed"));
 const playbackSpeed = [1200, 500, 100].includes(savedSpeed) ? savedSpeed : 500;
@@ -58,16 +63,70 @@ async function request(path, body = null) {
   return payload;
 }
 
+function profileById(profileId) {
+  return profileCatalog?.profiles?.find((profile) => profile.id === profileId);
+}
+
+function populateProfileSelect(select, prefix) {
+  const selected = select.value || "balanced";
+  select.replaceChildren(...profileCatalog.profiles.map((profile) => {
+    const option = document.createElement("option");
+    option.value = profile.id;
+    option.disabled = !profile.available;
+    option.textContent = `${prefix}${profile.label}${profile.available ? "" : " — unavailable"}`;
+    return option;
+  }));
+  select.value = profileById(selected)?.available ? selected : "balanced";
+}
+
+function installProfileCatalog(catalog) {
+  profileCatalog = catalog;
+  populateProfileSelect(profileSelect, "Profile: ");
+  populateProfileSelect(blackProfileSelect, "Black profile: ");
+  populateProfileSelect(whiteProfileSelect, "White profile: ");
+  updateProfileNote();
+}
+
+function describeProfile(profileId) {
+  const profile = profileById(profileId);
+  if (!profile) return "Profile information unavailable.";
+  if (profile.id === "personal") {
+    const model = training?.model || game?.learning || profile;
+    const count = model.games_trained ?? profile.training_count ?? 0;
+    if (!count) {
+      return "Personal is untrained and currently equivalent to Balanced.";
+    }
+    return `Personal adds your local model trained on ${count} game${count === 1 ? "" : "s"}.`;
+  }
+  return profile.description;
+}
+
+function updateProfileNote() {
+  if (!profileNote) return;
+  if (modeSelect.value === "watch") {
+    profileNote.textContent = `Black — ${describeProfile(blackProfileSelect.value)} White — ${describeProfile(whiteProfileSelect.value)}`;
+  } else {
+    profileNote.textContent = describeProfile(profileSelect.value);
+  }
+}
+
 function syncSetupControls() {
   if (!game?.match) return;
   modeSelect.value = game.match.mode;
   if (game.match.human_color) colorSelect.value = game.match.human_color;
   difficultySelect.value = game.match.difficulty;
+  if (game.match.profile) profileSelect.value = game.match.profile;
   if (game.match.seats?.B?.difficulty) {
     blackDifficultySelect.value = game.match.seats.B.difficulty;
   }
+  if (game.match.seats?.B?.profile) {
+    blackProfileSelect.value = game.match.seats.B.profile;
+  }
   if (game.match.seats?.W?.difficulty) {
     whiteDifficultySelect.value = game.match.seats.W.difficulty;
+  }
+  if (game.match.seats?.W?.profile) {
+    whiteProfileSelect.value = game.match.seats.W.profile;
   }
   explainCheckbox.checked = game.match.explain;
   updateSetupVisibility();
@@ -86,6 +145,7 @@ function updateSetupVisibility() {
     element.hidden = !(versus || watch);
   });
   spectatorControls.hidden = !watch;
+  updateProfileNote();
 }
 
 function captureWaveDuration() {
@@ -400,8 +460,11 @@ document.querySelector("#new-btn").addEventListener("click", async () => {
       mode: modeSelect.value,
       human_color: colorSelect.value,
       difficulty: difficultySelect.value,
+      profile: profileSelect.value,
       black_difficulty: blackDifficultySelect.value,
+      black_profile: blackProfileSelect.value,
       white_difficulty: whiteDifficultySelect.value,
+      white_profile: whiteProfileSelect.value,
       explain: explainCheckbox.checked,
     }));
   } catch (error) {
@@ -412,6 +475,9 @@ passButton.addEventListener("click", async () => humanAction("/api/pass"));
 swapButton.addEventListener("click", async () => humanAction("/api/swap"));
 resumeButton.addEventListener("click", async () => humanAction("/api/resume"));
 modeSelect.addEventListener("change", updateSetupVisibility);
+profileSelect.addEventListener("change", updateProfileNote);
+blackProfileSelect.addEventListener("change", updateProfileNote);
+whiteProfileSelect.addEventListener("change", updateProfileNote);
 
 playButton.addEventListener("click", () => {
   if (watchPlaying) {
@@ -469,13 +535,16 @@ function renderTraining(status) {
   } else if (status.cancel_requested && status.completed < status.total) {
     trainingStatus.textContent = `Canceled after ${status.completed}/${status.total} · ${count} learned · ${attempts} attempted`;
   } else if (model.needs_retraining) {
-    trainingStatus.textContent = `Legacy model: ${count} game${count === 1 ? "" : "s"} retained · Reset before V2 retraining`;
+    trainingStatus.textContent = `Legacy Personal model: ${count} game${count === 1 ? "" : "s"} retained · Reset before V2 retraining`;
+  } else if (!count) {
+    trainingStatus.textContent = "Personal: untrained · equivalent to Balanced";
   } else {
-    trainingStatus.textContent = `Advanced V2: ${count} trained · ${attempts} attempted`;
+    trainingStatus.textContent = `Personal V2: ${count} trained · ${attempts} attempted`;
   }
   trainButton.disabled = Boolean(status.running);
   cancelTrainingButton.disabled = !status.running;
   resetTrainingButton.disabled = Boolean(status.running);
+  updateProfileNote();
 }
 
 async function refreshTraining() {
@@ -514,7 +583,7 @@ cancelTrainingButton.addEventListener("click", async () => {
 });
 
 resetTrainingButton.addEventListener("click", async () => {
-  if (!confirm("Reset Advanced learning to zero games?")) return;
+  if (!confirm("Reset Personal learning to zero games?")) return;
   try {
     renderTraining(await request("/api/training/reset", {}));
   } catch (error) {
@@ -566,6 +635,17 @@ window.render_game_to_text = () => JSON.stringify({
     action_in_flight: actionInFlight,
   },
   training,
+  profiles: profileCatalog ? {
+    version: profileCatalog.version,
+    catalog_hash: profileCatalog.catalog_hash,
+    available: profileCatalog.profiles.filter((profile) => profile.available).map((profile) => profile.id),
+    selected: {
+      versus: profileSelect.value,
+      black: blackProfileSelect.value,
+      white: whiteProfileSelect.value,
+    },
+    description: profileNote?.textContent,
+  } : null,
   visual: visual ? {
     board_scale: BOARD_SCALE,
     spacing: visual.spacing,
@@ -577,7 +657,8 @@ window.render_game_to_text = () => JSON.stringify({
   capture_animation_wave: animation?.index ?? null,
 });
 
-request("/api/state").then((initial) => {
+Promise.all([request("/api/profiles"), request("/api/state")]).then(([catalog, initial]) => {
+  installProfileCatalog(catalog);
   if (initial.match.mode === "watch") stopPlayback();
   setGame(initial, initial.match.mode !== "watch");
 }).catch((error) => { message.textContent = error.message; });
