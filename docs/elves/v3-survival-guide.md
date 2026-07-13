@@ -29,15 +29,15 @@ predeclared evidence gates.
 - **Started:** 2026-07-13 11:33 CDT
 - **User returns:** unknown; assume offline
 - **Time budget:** finite plan, no artificial research shortcut
-- **Average batch time so far:** 9 minutes
-- **Batches remaining:** 5 of 6
+- **Average batch time so far:** 10.5 minutes
+- **Batches remaining:** 4 of 6
 
 ## Stop Gate
 
-- **Planned batches remaining:** 5
+- **Planned batches remaining:** 4
 - **Stop allowed right now:** no
-- **Why:** compatibility, browser, research, evidence, and final gates remain
-- **Next required action:** start Batch 2 profile catalog and seat/API migration
+- **Why:** browser, research, evidence, and final gates remain
+- **Next required action:** start Batch 3 profile controls and Personal learning UI migration
 
 ## Non-Negotiables
 
@@ -62,11 +62,11 @@ predeclared evidence gates.
 
 **Status:** In progress
 
-**Active batch:** Batch 2 — Profile model, API, saves, and Personal migration
+**Active batch:** Batch 3 — Browser profile experience
 
-**What was just finished:** Batch 1 exact parity, V3 telemetry, all-board tests, and latency recovery
+**What was just finished:** Batch 2 catalog, API, seat/save compatibility, and Personal migration
 
-**Single next action:** add the versioned catalog and normalize seat difficulty/profile data
+**Single next action:** replace Advanced selectors with difficulty/profile controls loaded from the catalog
 
 ## Active Compute
 
@@ -75,23 +75,23 @@ when started and stopped when complete or canceled.
 
 ## Next Exact Batch
 
-**Batch:** 2 — Profile model, API, saves, and Personal migration
+**Batch:** 3 — Browser profile experience
 
 **Scope:**
 
-- Add a versioned packaged catalog and immutable profile lookup.
-- Add profile to computer seats, APIs, state, saves, and takeover identity.
-- Normalize legacy Advanced to Standard + Personal without changing the model.
+- Add profile controls for one-computer and independent spectator seats.
+- Rename Advanced training to Personal learning and show equivalence/training state.
+- Add profile descriptions and profile-aware rationale text.
 
 **Acceptance criteria:**
 
-- [ ] Catalog validation and unknown/unavailable rejection pass.
-- [ ] Legacy Advanced and missing-profile saves/requests migrate correctly.
-- [ ] Zero-weight Personal equals Balanced and complete-seat takeover is preserved.
+- [ ] Available profiles submit correctly; unavailable profiles are visibly disabled.
+- [ ] Legacy load, both takeover directions, paused watch, and autoplay remain correct.
+- [ ] Semantic state, screenshots, and console inspection are clean.
 
-**Risk:** normalization must preserve every old request/save while keeping human seats profile-free.
+**Risk:** asynchronous autoplay must not submit stale seat settings after takeover or load.
 
-**Rollback tag:** `elves/v3-pre-batch-2`
+**Rollback tag:** `elves/v3-pre-batch-3`
 
 ## Tool Configuration
 

@@ -102,3 +102,11 @@ Original prompt: yes to all in best order proceed and execute according to your 
 - A first implementation paid V3 telemetry cost at every node; focused latency
   evidence caught it and the disabled fast path restored roughly 28 ms Toy / 397 ms
   Full Standard decisions. The Personal nine-feature schema remains exact.
+- Batch 2 complete: computer seats now store independent Casual/Standard
+  difficulty and evaluator profile, legacy Advanced normalizes to Standard +
+  Personal, version-1 saves and complete-seat takeover remain compatible, and
+  `GET /api/profiles` exposes catalog availability without raw weights.
+- The packaged catalog starts with Balanced and Personal available; Raider,
+  Mason, Surveyor, and Weaver remain explicitly unavailable until the declared
+  archive/evidence run freezes eligible weights. No provisional style is shipped
+  by weakening its descriptor gate.

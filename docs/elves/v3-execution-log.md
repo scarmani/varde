@@ -2,14 +2,73 @@
 
 ## Run Digest
 
-- **Last updated:** 2026-07-13 11:43 CDT
+- **Last updated:** 2026-07-13 11:55 CDT
 - **Current phase:** In progress
-- **Active batch:** Batch 2 — Profile model, API, saves, and Personal migration
-- **Last completed batch:** Batch 1 — Evaluator parity and V3 measurements
-- **Next exact batch:** Batch 2
+- **Active batch:** Batch 3 — Browser profile experience
+- **Last completed batch:** Batch 2 — Profile model, API, saves, and Personal migration
+- **Next exact batch:** Batch 3
 - **Active PR:** #1
 - **Docs promoted this run:** `docs/plans/evaluator-profiles-v3.md`
 - **Latest Elves Report:** not generated yet
+
+## 2026-07-13 11:55 CDT
+
+**Batch:** 2 — Profile model, API, saves, and Personal migration
+
+**Contract status:** all criteria met
+
+**Timing:** Implement 6m | Validate 4m | Review 2m | Total 12m
+
+**What changed:**
+
+- `engine/profiles.py`: packaged V3 catalog, immutable lookups, validation,
+  public metadata, unavailable-profile fail-closed behavior, and legacy normalization.
+- `engine/server.py`: profile-aware computer seats, requests, public state,
+  version-1 saves, and `GET /api/profiles`.
+- `engine/opponent.py`: independent style weights with a literal historical
+  Balanced/Personal hot path and transition scoring for non-Balanced profiles.
+- `engine/learning.py`: learner now explicitly means Standard search + Personal
+  model while the fixed opponent receives no learned correction.
+
+**Commands and results:**
+
+- `CI=true python3 -m pytest engine -q` — PASS, 90/90.
+- Editable install/import — PASS; catalog version/hash accessible.
+- Live HTTP smoke — profiles 200, Advanced migration 200, independent watch
+  profiles 200, unavailable Raider 400 with explicit error.
+- Exact-head A/B and corrected benchmark — Standard about 27/398 ms,
+  Personal about 55/752 ms on Toy/Full.
+- JavaScript/Python syntax and rules no-diff checks — PASS.
+
+**Review findings:**
+
+- Fixed: generic profile plumbing appeared to double Standard latency. Exact
+  A/B showed the old benchmark supplied the model to both arms; the new API
+  correctly interpreted Standard + model as Personal. Benchmark now supplies
+  the model only to its Personal arm.
+- Fixed: preserved a literal Balanced/Personal search path so style branching
+  cannot tax the default evaluator at each reply node.
+- Intentional: curated archive profiles remain unavailable until Batch 5
+  evidence freezes eligible weights; the API exposes this state honestly.
+
+**Docs:** run docs and progress updated; user-facing README deferred to the
+browser/final documentation batches so instructions match the completed UI.
+
+**Regression attestation:**
+
+- Cumulative diff: 15 files, +2080/-86 including operational docs.
+- Shared surfaces: opponent (server, learner, research and tests), server
+  seat/save API, and packaging module list. All direct consumers and editable
+  install were exercised.
+- Test baseline: 72 -> 90, delta +18, no removals or skips.
+- Confidence: HIGH. Compatibility paths, live HTTP shapes, exact model behavior,
+  and performance were checked independently; the rules engine is untouched.
+
+**Commit:** `cbe1fd7da2111123f3260efb559eebb96b2743bb`
+
+**Rollback tag:** `elves/v3-pre-batch-2`
+
+**Next:** Batch 3 browser profile controls and Personal learning presentation.
 
 ## 2026-07-13 11:43 CDT
 
