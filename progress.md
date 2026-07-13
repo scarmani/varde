@@ -85,3 +85,13 @@ Original prompt: yes to all in best order proceed and execute according to your 
 - Replaced the temporary-path research scripts with repository-relative,
   parameterized training, paired evaluation, benchmark, and larger-board smoke
   harnesses. Historical checkpoints are clearly isolated from production.
+
+## Evaluator Profiles V3 and quality-diversity search
+
+- Began the approved finite implementation on `feat/evaluator-profiles-v3`.
+- Baseline is clean at `1da66f7`: 72 pytest cases, JavaScript syntax, and Python
+  compilation pass; `engine/cairn.py` is protected as an explicit no-change surface.
+- Decomposed the run into evaluator parity/features, profile compatibility/API,
+  browser experience, deterministic MAP-Elites, evidence/curation, and final gates.
+- A bounded Fable goal cycle reinforced parity-first architecture. Its unrelated
+  direct-to-main suggestion was rejected; product work remains on the owned branch.
