@@ -20,6 +20,11 @@ class TestPublicView(unittest.TestCase):
         self.assertEqual(view["score"], {BLACK: 0, WHITE: 0})
         self.assertEqual(view["match"]["mode"], "hotseat")
 
+    def test_full_board_is_exposed_through_public_view(self):
+        view = public_view(Game(6))
+        self.assertEqual(len(view["points"]), 216)
+        self.assertEqual(sum(point["legal"] for point in view["points"]), 216)
+
     def test_opening_exposes_swap_and_identity(self):
         game = Game(3)
         game.play(game.board.points[0])
@@ -92,8 +97,26 @@ class TestComputerMatch(unittest.TestCase):
         self.assertEqual(restored_match.difficulty, "casual")
         self.assertFalse(restored_match.explain)
         self.assertEqual(restored_match.seed, 91)
+        game.players = {BLACK: "Ada", WHITE: "Grace"}
         _, old_match = load_snapshot(game.to_dict())
         self.assertEqual(old_match.mode, "hotseat")
+        self.assertEqual(old_match.seats[BLACK].name, "Ada")
+        self.assertEqual(old_match.seats[WHITE].name, "Grace")
+
+    def test_legacy_computer_save_is_accepted(self):
+        game = Game(3)
+        payload = game.to_dict()
+        payload["computer"] = {
+            "enabled": True,
+            "color": WHITE,
+            "difficulty": "casual",
+            "explain": False,
+            "seed": 43,
+        }
+        _, match = load_snapshot(payload)
+        self.assertEqual(match.mode, "computer")
+        self.assertEqual(match.computer_color, WHITE)
+        self.assertEqual(match.seed, 43)
 
     def test_public_view_can_hide_rationale_text(self):
         game = Game(3)
@@ -123,6 +146,77 @@ class TestComputerMatch(unittest.TestCase):
         accepted = apply_computer_action(game, match)
         self.assertEqual(accepted.action, "accept")
         self.assertTrue(match.end_decided)
+
+
+class TestWatchMatch(unittest.TestCase):
+    def test_independent_computers_each_take_one_atomic_action(self):
+        game = Game(3)
+        match = MatchConfig.from_new_game(
+            game,
+            {
+                "mode": "watch",
+                "black_difficulty": "casual",
+                "white_difficulty": "advanced",
+                "seed": 18,
+            },
+        )
+        self.assertEqual(match.seats[BLACK].difficulty, "casual")
+        self.assertEqual(match.seats[WHITE].difficulty, "advanced")
+        first = apply_computer_action(game, match)
+        self.assertEqual(first.action, "play")
+        self.assertEqual(game.moves_played, 1)
+        apply_computer_action(game, match)
+        self.assertTrue(game.swap_decided or game.moves_played == 2)
+
+    def test_takeover_swaps_complete_seat_identities(self):
+        game = Game(3)
+        match = MatchConfig.from_new_game(
+            game,
+            {
+                "mode": "watch",
+                "black_difficulty": "casual",
+                "white_difficulty": "advanced",
+                "seed": 75,
+            },
+        )
+        opening = game.board.points[0]
+        game.play(opening)
+        black_identity = match.seats[BLACK].identity
+        white_identity = match.seats[WHITE].identity
+        black_seed = match.seats[BLACK].seed
+        white_seed = match.seats[WHITE].seed
+        game.take_over()
+        match.swap_owners(game)
+        self.assertEqual(match.seats[BLACK].identity, white_identity)
+        self.assertEqual(match.seats[WHITE].identity, black_identity)
+        self.assertEqual(match.seats[BLACK].seed, white_seed)
+        self.assertEqual(match.seats[WHITE].seed, black_seed)
+        self.assertEqual(match.seats[BLACK].difficulty, "advanced")
+        self.assertEqual(match.seats[WHITE].difficulty, "casual")
+
+    def test_watch_save_round_trip_preserves_both_seats(self):
+        game = Game(6)
+        match = MatchConfig.from_new_game(
+            game,
+            {
+                "mode": "watch",
+                "black_difficulty": "advanced",
+                "white_difficulty": "standard",
+                "seed": 101,
+            },
+        )
+        restored_game, restored = load_snapshot(snapshot_payload(game, match))
+        self.assertEqual(restored_game.board.n, 6)
+        self.assertEqual(restored.snapshot_data(), match.snapshot_data())
+
+    def test_watch_match_never_accepts_a_human_action(self):
+        game = Game(3)
+        match = MatchConfig.from_new_game(game, {"mode": "watch"})
+        with self.assertRaisesRegex(Illegal, "wait for the computer"):
+            assert_human_action(game, match)
+        game.finished = True
+        with self.assertRaisesRegex(Illegal, "no human player"):
+            assert_human_action(game, match)
 
 
 if __name__ == "__main__":

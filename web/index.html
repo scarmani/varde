@@ -22,21 +22,34 @@
         <select id="game-mode" aria-label="Game mode">
           <option value="hotseat">Two players</option>
           <option value="computer">Vs computer</option>
+          <option value="watch">Watch two computers</option>
         </select>
         <select id="board-size" aria-label="Board size">
-          <option value="3">Learning · 54 points</option>
-          <option value="4">Standard · 96 points</option>
-          <option value="5">Long · 150 points</option>
+          <option value="3">Toy (54 points)</option>
+          <option value="4">Beginner (96 points)</option>
+          <option value="5">Intermediate (150 points)</option>
+          <option value="6">Full (216 points)</option>
         </select>
-        <select id="human-color" class="computer-setting" aria-label="Your color">
+        <select id="human-color" class="versus-setting" aria-label="Your color">
           <option value="B">Play Black</option>
           <option value="W">Play White</option>
         </select>
-        <select id="difficulty" class="computer-setting" aria-label="Computer difficulty">
+        <select id="difficulty" class="versus-setting" aria-label="Computer difficulty">
           <option value="casual">Casual computer</option>
           <option value="standard" selected>Standard computer</option>
+          <option value="advanced">Advanced computer</option>
         </select>
-        <label class="toggle computer-setting">
+        <select id="black-difficulty" class="watch-setting" aria-label="Black computer difficulty">
+          <option value="casual">Black: Casual</option>
+          <option value="standard" selected>Black: Standard</option>
+          <option value="advanced">Black: Advanced</option>
+        </select>
+        <select id="white-difficulty" class="watch-setting" aria-label="White computer difficulty">
+          <option value="casual">White: Casual</option>
+          <option value="standard" selected>White: Standard</option>
+          <option value="advanced">White: Advanced</option>
+        </select>
+        <label class="toggle any-computer-setting">
           <input id="explain-moves" type="checkbox" checked>
           Explain moves
         </label>
@@ -47,6 +60,29 @@
         <button id="save-btn">Save</button>
         <button id="load-btn">Load</button>
         <input id="load-file" type="file" accept="application/json" hidden>
+      </div>
+      <div id="spectator-controls" class="subcontrols" hidden aria-label="Spectator playback controls">
+        <strong>Spectator</strong>
+        <button id="play-btn" class="accent">Play</button>
+        <button id="step-btn">Step</button>
+        <select id="playback-speed" aria-label="Playback speed">
+          <option value="1200">Slow</option>
+          <option value="500" selected>Normal</option>
+          <option value="100">Fast</option>
+        </select>
+        <span id="playback-note">Paused</span>
+      </div>
+      <div class="subcontrols training-controls" aria-label="Advanced computer training controls">
+        <strong>Advanced learning</strong>
+        <select id="training-games" aria-label="Training batch size">
+          <option value="10">10 games</option>
+          <option value="50">50 games</option>
+          <option value="200">200 games</option>
+        </select>
+        <button id="train-btn">Train</button>
+        <button id="cancel-training-btn" disabled>Cancel</button>
+        <button id="reset-training-btn">Reset</button>
+        <span id="training-status" aria-live="polite">Advanced model: loading…</span>
       </div>
     </section>
 

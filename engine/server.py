@@ -1,4 +1,4 @@
-"""Dependency-free local web server for Cairn hotseat and computer play."""
+"""Dependency-free local web server for Cairn play and AI training."""
 
 import argparse
 from dataclasses import dataclass
@@ -9,106 +9,224 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 from cairn import BLACK, WHITE, Game, Illegal, has_sky, other
-from opponent import DIFFICULTIES, BotDecision, choose_decision
+from learning import LearningModel, TRAINING_BATCHES, TrainingService
+from opponent import DIFFICULTIES, choose_decision
 
 
 WEB_ROOT = Path(__file__).resolve().parent.parent / "web"
 GAME_LOCK = threading.Lock()
 
 
+def _seed(value):
+    if isinstance(value, bool) or not isinstance(value, int):
+        raise ValueError("seed must be an integer")
+    return value
+
+
+@dataclass
+class Seat:
+    identity: str
+    kind: str
+    name: str
+    difficulty: str | None = None
+    seed: int = 1
+
+    def to_dict(self):
+        return {
+            "identity": self.identity,
+            "kind": self.kind,
+            "name": self.name,
+            "difficulty": self.difficulty,
+            "seed": self.seed,
+        }
+
+    @classmethod
+    def from_dict(cls, payload):
+        if not isinstance(payload, dict) or payload.get("kind") not in ("human", "computer"):
+            raise ValueError("invalid match seat")
+        difficulty = payload.get("difficulty")
+        if payload["kind"] == "computer" and difficulty not in DIFFICULTIES:
+            raise ValueError("invalid computer difficulty")
+        if payload["kind"] == "human":
+            difficulty = None
+        seed = payload.get("seed", 1)
+        seed = _seed(seed)
+        return cls(
+            identity=str(payload.get("identity", payload.get("name", "Player")))[:40],
+            kind=payload["kind"],
+            name=str(payload.get("name", "Player"))[:40],
+            difficulty=difficulty,
+            seed=seed,
+        )
+
+
 @dataclass
 class MatchConfig:
     mode: str = "hotseat"
-    human_color: str | None = None
-    computer_color: str | None = None
-    difficulty: str = "standard"
+    seats: dict | None = None
     explain: bool = True
-    seed: int = 1
     end_decided: bool = False
+
+    def __post_init__(self):
+        if self.seats is None:
+            self.seats = {
+                BLACK: Seat("player-1", "human", "Player 1"),
+                WHITE: Seat("player-2", "human", "Player 2"),
+            }
+
+    @property
+    def human_color(self):
+        colors = [color for color, seat in self.seats.items() if seat.kind == "human"]
+        return colors[0] if len(colors) == 1 else None
+
+    @human_color.setter
+    def human_color(self, color):
+        if color not in (BLACK, WHITE) or self.computer_color is None:
+            raise ValueError("human color is only available in a one-computer match")
+        if self.human_color != color:
+            self.swap_owners()
+
+    @property
+    def computer_color(self):
+        colors = [color for color, seat in self.seats.items() if seat.kind == "computer"]
+        return colors[0] if len(colors) == 1 else None
+
+    @computer_color.setter
+    def computer_color(self, color):
+        if color not in (BLACK, WHITE) or self.computer_color is None:
+            raise ValueError("computer color is only available in a one-computer match")
+        if self.computer_color != color:
+            self.swap_owners()
+
+    @property
+    def difficulty(self):
+        color = self.computer_color
+        return self.seats[color].difficulty if color else "standard"
+
+    @property
+    def seed(self):
+        color = self.computer_color
+        return self.seats[color].seed if color else 1
 
     @classmethod
     def from_new_game(cls, game, body):
         mode = body.get("mode", "hotseat")
-        if mode not in ("hotseat", "computer"):
-            raise ValueError("mode must be hotseat or computer")
-        if mode == "hotseat":
-            return cls()
-        human_color = body.get("human_color", BLACK)
-        if human_color not in (BLACK, WHITE):
-            raise ValueError("human_color must be B or W")
-        difficulty = body.get("difficulty", "standard")
-        if difficulty not in DIFFICULTIES:
-            raise ValueError("difficulty must be casual or standard")
+        if mode == "computer_vs_computer":
+            mode = "watch"
+        if mode not in ("hotseat", "computer", "watch"):
+            raise ValueError("mode must be hotseat, computer, or watch")
         explain = body.get("explain", True)
         if not isinstance(explain, bool):
             raise ValueError("explain must be boolean")
-        seed = body.get("seed", 1)
-        if not isinstance(seed, int):
-            raise ValueError("seed must be an integer")
-        computer_color = other(human_color)
-        game.players = {
-            human_color: "You",
-            computer_color: "Computer",
-        }
-        return cls(
-            mode="computer",
-            human_color=human_color,
-            computer_color=computer_color,
-            difficulty=difficulty,
-            explain=explain,
-            seed=seed,
-        )
+        if mode == "hotseat":
+            players = body.get("players", {})
+            if players and (
+                not isinstance(players, dict)
+                or set(players) != {BLACK, WHITE}
+                or not all(isinstance(name, str) and name for name in players.values())
+            ):
+                raise ValueError("players must contain non-empty B and W names")
+            match = cls(mode="hotseat", explain=explain)
+            if players:
+                match.seats[BLACK].name = players[BLACK][:40]
+                match.seats[WHITE].name = players[WHITE][:40]
+        elif mode == "computer":
+            human_color = body.get("human_color", BLACK)
+            if human_color not in (BLACK, WHITE):
+                raise ValueError("human_color must be B or W")
+            difficulty = body.get("difficulty", "standard")
+            if difficulty not in DIFFICULTIES:
+                raise ValueError("invalid computer difficulty")
+            computer_color = other(human_color)
+            seats = {
+                human_color: Seat("human", "human", "You"),
+                computer_color: Seat("computer", "computer", "Computer", difficulty, _seed(body.get("seed", 1))),
+            }
+            match = cls(mode="computer", seats=seats, explain=explain)
+        else:
+            black_difficulty = body.get("black_difficulty", "standard")
+            white_difficulty = body.get("white_difficulty", "standard")
+            if black_difficulty not in DIFFICULTIES or white_difficulty not in DIFFICULTIES:
+                raise ValueError("invalid computer difficulty")
+            base_seed = _seed(body.get("seed", 1))
+            match = cls(
+                mode="watch",
+                seats={
+                    BLACK: Seat("computer-black", "computer", "Black AI", black_difficulty, base_seed),
+                    WHITE: Seat("computer-white", "computer", "White AI", white_difficulty, base_seed + 1),
+                },
+                explain=explain,
+            )
+        match.sync_players(game)
+        return match
 
     @classmethod
     def from_snapshot(cls, payload):
-        saved = payload.get("computer")
-        if saved is None:
+        saved_match = payload.get("match")
+        if saved_match is not None:
+            if not isinstance(saved_match, dict):
+                raise ValueError("invalid match configuration")
+            mode = saved_match.get("mode", "hotseat")
+            if mode not in ("hotseat", "computer", "watch"):
+                raise ValueError("invalid match mode")
+            raw_seats = saved_match.get("seats", {})
+            if set(raw_seats) != {BLACK, WHITE}:
+                raise ValueError("invalid match seats")
+            explain = saved_match.get("explain", True)
+            end_decided = saved_match.get("end_decided", False)
+            if not isinstance(explain, bool) or not isinstance(end_decided, bool):
+                raise ValueError("invalid match flags")
+            return cls(
+                mode=mode,
+                seats={color: Seat.from_dict(raw_seats[color]) for color in (BLACK, WHITE)},
+                explain=explain,
+                end_decided=end_decided,
+            )
+        legacy = payload.get("computer")
+        if legacy is None:
             return cls()
-        if not isinstance(saved, dict) or not saved.get("enabled", False):
+        if not isinstance(legacy, dict) or not legacy.get("enabled", False):
             raise ValueError("invalid computer configuration")
-        computer_color = saved.get("color")
-        if computer_color not in (BLACK, WHITE):
-            raise ValueError("invalid computer color")
-        difficulty = saved.get("difficulty", "standard")
-        if difficulty not in DIFFICULTIES:
-            raise ValueError("invalid computer difficulty")
-        explain = saved.get("explain", True)
-        seed = saved.get("seed", 1)
-        if not isinstance(explain, bool) or not isinstance(seed, int):
-            raise ValueError("invalid computer configuration")
+        computer_color = legacy.get("color")
+        difficulty = legacy.get("difficulty", "standard")
+        if computer_color not in (BLACK, WHITE) or difficulty not in DIFFICULTIES:
+            raise ValueError("invalid legacy computer configuration")
+        explain = legacy.get("explain", True)
+        if not isinstance(explain, bool):
+            raise ValueError("invalid legacy computer configuration")
         return cls(
             mode="computer",
-            human_color=other(computer_color),
-            computer_color=computer_color,
-            difficulty=difficulty,
+            seats={
+                other(computer_color): Seat("human", "human", "You"),
+                computer_color: Seat("computer", "computer", "Computer", difficulty, _seed(legacy.get("seed", 1))),
+            },
             explain=explain,
-            seed=seed,
         )
 
-    def computer_can_act(self, game):
-        if self.mode != "computer":
-            return False
-        if game.finished:
-            return not self.end_decided
-        return game.to_move == self.computer_color
+    def sync_players(self, game):
+        game.players = {color: self.seats[color].name for color in (BLACK, WHITE)}
 
-    def swap_owners(self):
-        if self.mode == "computer":
-            self.human_color = other(self.human_color)
-            self.computer_color = other(self.computer_color)
+    def computer_can_act(self, game):
+        if game.finished:
+            return any(seat.kind == "computer" for seat in self.seats.values()) and not self.end_decided
+        return self.seats[game.to_move].kind == "computer"
+
+    def swap_owners(self, game=None):
+        self.seats[BLACK], self.seats[WHITE] = self.seats[WHITE], self.seats[BLACK]
+        if game is not None:
+            self.sync_players(game)
 
     def snapshot_data(self):
-        if self.mode != "computer":
-            return None
         return {
-            "enabled": True,
-            "color": self.computer_color,
-            "difficulty": self.difficulty,
+            "mode": self.mode,
+            "seats": {color: self.seats[color].to_dict() for color in (BLACK, WHITE)},
             "explain": self.explain,
-            "seed": self.seed,
+            "end_decided": self.end_decided,
         }
 
 
+MODEL = LearningModel.load()
+TRAINER = TrainingService(MODEL)
 GAME = Game(3)
 MATCH = MatchConfig()
 LAST_DECISION = None
@@ -116,14 +234,18 @@ LAST_DECISION = None
 
 def snapshot_payload(game, match):
     payload = game.to_dict()
-    computer = match.snapshot_data()
-    if computer is not None:
-        payload["computer"] = computer
+    payload["match"] = match.snapshot_data()
     return payload
 
 
 def load_snapshot(payload):
-    return Game.from_dict(payload), MatchConfig.from_snapshot(payload)
+    game = Game.from_dict(payload)
+    match = MatchConfig.from_snapshot(payload)
+    if "match" not in payload and "computer" not in payload:
+        match.seats[BLACK].name = game.players[BLACK]
+        match.seats[WHITE].name = game.players[WHITE]
+    match.sync_players(game)
+    return game, match
 
 
 def _decision_payload(decision, explain):
@@ -139,23 +261,23 @@ def public_view(game, match=None, last_decision=None):
     match = match or MatchConfig()
     legal = set() if game.finished else set(game.legal_placements())
     board = game.board
-    points = []
-    for point in board.points:
-        points.append(
-            {
-                "coord": list(point),
-                "stack": list(game.state[point]),
-                "rim": point in board.rim,
-                "deep": point in board.deep,
-                "legal": point in legal,
-                "sky": has_sky(board, game.state, point, None),
-            }
-        )
-    edges = []
-    for point in board.points:
-        for neighbor in board.neighbors[point]:
-            if point < neighbor:
-                edges.append([list(point), list(neighbor)])
+    points = [
+        {
+            "coord": list(point),
+            "stack": list(game.state[point]),
+            "rim": point in board.rim,
+            "deep": point in board.deep,
+            "legal": point in legal,
+            "sky": has_sky(board, game.state, point, None),
+        }
+        for point in board.points
+    ]
+    edges = [
+        [list(point), list(neighbor)]
+        for point in board.points
+        for neighbor in board.neighbors[point]
+        if point < neighbor
+    ]
     return {
         "n": board.n,
         "points": points,
@@ -170,42 +292,50 @@ def public_view(game, match=None, last_decision=None):
         "resumption_used": game.resumption_used,
         "swap_available": game.swap_available,
         "score": game.score(),
-        "capture_waves": [
-            [list(point) for point in wave] for wave in game.last_capture_waves
-        ],
+        "capture_waves": [[list(point) for point in wave] for wave in game.last_capture_waves],
         "match": {
             "mode": match.mode,
+            "seats": {color: match.seats[color].to_dict() for color in (BLACK, WHITE)},
             "human_color": match.human_color,
             "computer_color": match.computer_color,
             "difficulty": match.difficulty,
             "explain": match.explain,
-            "computer_turn": (
-                match.mode == "computer"
-                and not game.finished
-                and game.to_move == match.computer_color
-            ),
+            "computer_turn": not game.finished and match.seats[game.to_move].kind == "computer",
             "computer_can_act": match.computer_can_act(game),
         },
+        "learning": MODEL.status(),
         "computer_decision": _decision_payload(last_decision, match.explain),
     }
 
 
 def assert_human_action(game, match):
-    if match.mode == "computer" and not game.finished:
-        if game.to_move == match.computer_color:
-            raise Illegal("wait for the computer's move")
+    if game.finished:
+        if not any(seat.kind == "human" for seat in match.seats.values()):
+            raise Illegal("no human player is seated in this match")
+        return
+    if not game.finished and match.seats[game.to_move].kind != "human":
+        raise Illegal("wait for the computer's move")
 
 
-def apply_computer_action(game, match):
-    if match.mode != "computer":
-        raise Illegal("computer opponent is not enabled")
+def apply_computer_action(game, match, model=None):
     if not match.computer_can_act(game):
         raise Illegal("it is not the computer's turn")
+    color = game.to_move
+    seat = match.seats[color]
+    if seat.kind != "computer" and not game.finished:
+        raise Illegal("it is not the computer's turn")
+    if game.finished and seat.kind != "computer":
+        computers = [item for item in match.seats.values() if item.kind == "computer"]
+        if not computers:
+            raise Illegal("computer opponent is not enabled")
+        seat = computers[0]
+        color = next(key for key, value in match.seats.items() if value is seat)
     decision = choose_decision(
         game,
-        match.computer_color,
-        difficulty=match.difficulty,
-        seed=match.seed,
+        color,
+        difficulty=seat.difficulty,
+        seed=seat.seed,
+        model=model or MODEL,
     )
     if decision.action == "play":
         game.play(decision.point)
@@ -213,7 +343,7 @@ def apply_computer_action(game, match):
         game.play_pass()
     elif decision.action == "swap":
         game.take_over()
-        match.swap_owners()
+        match.swap_owners(game)
     elif decision.action == "resume":
         game.demand_resumption()
     elif decision.action == "accept":
@@ -245,6 +375,9 @@ class CairnHandler(SimpleHTTPRequestHandler):
 
     def do_GET(self):
         route = urlparse(self.path).path
+        if route == "/api/training":
+            self._json(TRAINER.status())
+            return
         if route == "/api/state":
             with GAME_LOCK:
                 self._json(public_view(GAME, MATCH, LAST_DECISION))
@@ -260,19 +393,32 @@ class CairnHandler(SimpleHTTPRequestHandler):
         route = urlparse(self.path).path
         try:
             body = self._body()
+            if route.startswith("/api/training/"):
+                if route == "/api/training/start":
+                    games = body.get("games", 10)
+                    if isinstance(games, bool) or not isinstance(games, int):
+                        raise ValueError("training games must be 10, 50, or 200")
+                    if games not in TRAINING_BATCHES:
+                        raise ValueError("training games must be 10, 50, or 200")
+                    training_seed = _seed(
+                        body.get("seed", MODEL.training_seed + 1)
+                    )
+                    TRAINER.start(games, training_seed)
+                elif route == "/api/training/cancel":
+                    TRAINER.cancel()
+                elif route == "/api/training/reset":
+                    TRAINER.reset()
+                else:
+                    self._json({"error": "unknown training route"}, 404)
+                    return
+                self._json(TRAINER.status())
+                return
             with GAME_LOCK:
                 if route == "/api/new":
                     n = int(body.get("n", 3))
-                    if n not in (3, 4, 5):
-                        raise ValueError("board size must be 3, 4, or 5")
+                    if n not in (3, 4, 5, 6):
+                        raise ValueError("board size must be 3, 4, 5, or 6")
                     game = Game(n)
-                    names = body.get("players", {})
-                    if names and body.get("mode", "hotseat") == "hotseat":
-                        for color in (BLACK, WHITE):
-                            name = names.get(color)
-                            if not isinstance(name, str) or not name.strip():
-                                raise ValueError("both player names are required")
-                            game.players[color] = name.strip()[:40]
                     MATCH = MatchConfig.from_new_game(game, body)
                     GAME = game
                     LAST_DECISION = None
@@ -292,7 +438,7 @@ class CairnHandler(SimpleHTTPRequestHandler):
                 elif route == "/api/swap":
                     assert_human_action(GAME, MATCH)
                     GAME.take_over()
-                    MATCH.swap_owners()
+                    MATCH.swap_owners(GAME)
                 elif route == "/api/resume":
                     assert_human_action(GAME, MATCH)
                     GAME.demand_resumption()
@@ -300,7 +446,10 @@ class CairnHandler(SimpleHTTPRequestHandler):
                 elif route == "/api/computer":
                     LAST_DECISION = apply_computer_action(GAME, MATCH)
                 elif route == "/api/load":
-                    GAME, MATCH = load_snapshot(body)
+                    loaded_game, loaded_match = load_snapshot(body)
+                    if loaded_game.board.n not in (3, 4, 5, 6):
+                        raise ValueError("board size must be 3, 4, 5, or 6")
+                    GAME, MATCH = loaded_game, loaded_match
                     LAST_DECISION = None
                 else:
                     self._json({"error": "unknown API route"}, 404)

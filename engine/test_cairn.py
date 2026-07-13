@@ -74,7 +74,7 @@ def find_twin_well(board):
 # ---------------------------------------------------------------------- geometry
 class TestGeometry(unittest.TestCase):
     def test_counts(self):
-        for n in (2, 3, 4):
+        for n in (2, 3, 4, 5, 6):
             b = Board(n)
             self.assertEqual(len(b.points), 6 * n * n)
             self.assertEqual(len(b.rim), 6 * n)
@@ -98,7 +98,7 @@ class TestGeometry(unittest.TestCase):
         self.assertEqual(pairs, 6)
 
     def test_max_distance_to_rim(self):
-        for n in (2, 3, 4):
+        for n in (2, 3, 4, 5, 6):
             b = Board(n)
             self.assertEqual(max(b.dist_to_rim().values()), 2 * (n - 1))
 

@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "cairn-game"
 version = "0.1.0"
-description = "Reference engine and local hotseat client for the Cairn territory game"
+description = "Reference engine and local human/computer client for the Cairn territory game"
 readme = "README.md"
 requires-python = ">=3.10"
 license = {text = "MIT"}
@@ -19,7 +19,7 @@ cairn-selfplay = "selfplay:main"
 cairn-server = "server:main"
 
 [tool.setuptools]
-py-modules = ["cairn", "opponent", "selfplay", "server"]
+py-modules = ["cairn", "learning", "opponent", "selfplay", "server"]
 package-dir = {"" = "engine"}
 
 [tool.pytest.ini_options]

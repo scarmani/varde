@@ -41,3 +41,30 @@ Original prompt: yes to all in best order proceed and execute according to your 
   resumption, compatible save/load, and unchanged hotseat play.
 - Bot audit: Casual 20/20 ended below 8N; Standard 20/20 ended naturally, with
   19 below 8N and one at 489 turns. Decision latency stayed inside both budgets.
+
+## Expanded boards, spectator mode, and learning AI
+
+- Approved plan recorded in the task: Toy/Beginner/Intermediate/Full boards,
+  proportional rendering at the former n=5 ratio, 10% larger lattice, two-computer
+  playback, and a persistent Advanced linear evaluator trained by background self-play.
+- Added n=6/216-point support and exact renamed labels. Canvas geometry now derives
+  stones, glyphs, rings, line widths, fonts, and hit targets from projected spacing.
+- Replaced one computer owner with two serializable seats. Complete identities,
+  difficulty, and deterministic seed move together under pie-rule takeover; legacy
+  version-1 saves with a top-level `computer` section still load.
+- Added Advanced search, normalized color-symmetric features, atomic model persistence,
+  background training/cancel/reset service, and training-only 20N watchdog. Live games
+  still have no turn cutoff.
+- Added paused spectator Play/Pause/Step and 1200/500/100 ms speed controls plus
+  independent Black/White difficulty selectors. Loaded spectator saves start paused.
+- Final automated checkpoint: 60 pytest cases and `node --check web/game.js` pass.
+  Playwright covered all four board sizes, paused load, exact Step, Play/Pause and
+  speed, both human colors, takeover, hit-testing, training/cancel/reset, fullscreen,
+  and a two-wave Fast capture in 155 ms with no console errors.
+- Fresh-position p95 was 26/44 ms on Toy and 411/682 ms on Full for
+  Standard/Advanced. Eight deterministic training games persisted finite weights;
+  a small color-alternated held-out sample was 3 wins and 5 losses versus Standard,
+  so no strength improvement is claimed.
+- Final evaluator audit separated strict skies from capped ordinary empty-point
+  liberties, preventing a real sky from being counted twice while retaining its
+  group-life and dedicated sky-weight effects.

@@ -145,3 +145,22 @@ test watchdog. Standard ended all games naturally, but one took 489 turns
 (9.06N); no gameplay cutoff was added. This is an intentional distinction:
 finite-state superko proves eventual termination, while the watchdog measures
 whether a policy terminates within a practical experimental budget.
+
+## Expanded playtest surface (2026-07-12)
+
+The client now names the four supported lattices Toy (54 points), Beginner
+(96), Intermediate (150), and Full (216). The projected lattice is 10% larger
+than the original rendering and all stones and annotations share the original
+Intermediate diameter-to-spacing ratio. This is a presentation change, not a
+rules change.
+
+Computer seats are now symmetric saved identities, enabling paused
+computer-vs-computer playback with independent difficulty and speed controls.
+Pie-rule takeover exchanges the complete seats, including seeds and difficulty.
+
+Advanced adds a versioned, persistent linear correction to Standard's bounded
+search. It begins at zero, trains in cancellable background self-play, and is
+explicitly experimental. In the first small held-out diagnostic after eight
+training games it scored 3 wins and 5 losses against Standard with colors
+alternated. This does not demonstrate improvement and is not a release gate;
+larger held-out samples should guide later feature and training changes.

@@ -8,7 +8,7 @@ A game of territory for two players, Black and White, played with stackable ston
 
 The board is a hexagon-shaped patch of the honeycomb lattice, *n* cells per side, played on its 6n² intersections (*points*). Every interior point has three neighbors. A point with a missing off-board neighbor is a **rim** point; each missing neighbor counts as a *phantom column* of permanent height zero — it affects heights, but is never occupied, never a liberty, never territory, and never borders a region. The board's visible edge alternates between rim points (6n of them) and ordinary three-neighbor points, except at the six corners, where two rim points sit side by side.
 
-Suggested sizes: n = 3 (54 points) for learning, n = 4 (96 points) as standard, n = 5 (150 points) for long games.
+Board sizes: **Toy**, n = 3 (54 points); **Beginner**, n = 4 (96 points); **Intermediate**, n = 5 (150 points); and **Full**, n = 6 (216 points).
 
 Stones are flat counters, stackable, their color visible from the side of a stack. Captured stones return to their owner. A supply of about one and a half stones per point, per color, covers practical play; the theoretical ceiling is higher (300 stones total at n = 4), so serious play may prefer a digital board.
 

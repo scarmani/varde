@@ -9,8 +9,20 @@ const sizeSelect = document.querySelector("#board-size");
 const modeSelect = document.querySelector("#game-mode");
 const colorSelect = document.querySelector("#human-color");
 const difficultySelect = document.querySelector("#difficulty");
+const blackDifficultySelect = document.querySelector("#black-difficulty");
+const whiteDifficultySelect = document.querySelector("#white-difficulty");
 const explainCheckbox = document.querySelector("#explain-moves");
 const aiNote = document.querySelector("#ai-note");
+const spectatorControls = document.querySelector("#spectator-controls");
+const playButton = document.querySelector("#play-btn");
+const stepButton = document.querySelector("#step-btn");
+const speedSelect = document.querySelector("#playback-speed");
+const playbackNote = document.querySelector("#playback-note");
+const trainingGamesSelect = document.querySelector("#training-games");
+const trainButton = document.querySelector("#train-btn");
+const cancelTrainingButton = document.querySelector("#cancel-training-btn");
+const resetTrainingButton = document.querySelector("#reset-training-btn");
+const trainingStatus = document.querySelector("#training-status");
 
 let game = null;
 let projected = new Map();
@@ -19,6 +31,18 @@ let animation = null;
 let lastFrame = performance.now();
 let thinking = false;
 let computerSequence = 0;
+let actionInFlight = false;
+let visual = null;
+let watchPlaying = false;
+let training = null;
+let trainingPoll = null;
+
+const savedSpeed = Number(localStorage.getItem("cairn-playback-speed"));
+const playbackSpeed = [1200, 500, 100].includes(savedSpeed) ? savedSpeed : 500;
+speedSelect.value = String(playbackSpeed);
+
+const BOARD_SCALE = 1.1;
+const STONE_RADIUS_PER_SCALE = 0.8291732589425476;
 
 const keyOf = (coord) => `${coord[0]},${coord[1]}`;
 
@@ -39,23 +63,55 @@ function syncSetupControls() {
   modeSelect.value = game.match.mode;
   if (game.match.human_color) colorSelect.value = game.match.human_color;
   difficultySelect.value = game.match.difficulty;
+  if (game.match.seats?.B?.difficulty) {
+    blackDifficultySelect.value = game.match.seats.B.difficulty;
+  }
+  if (game.match.seats?.W?.difficulty) {
+    whiteDifficultySelect.value = game.match.seats.W.difficulty;
+  }
   explainCheckbox.checked = game.match.explain;
   updateSetupVisibility();
 }
 
 function updateSetupVisibility() {
-  const computer = modeSelect.value === "computer";
-  document.querySelectorAll(".computer-setting").forEach((element) => {
-    element.hidden = !computer;
+  const versus = modeSelect.value === "computer";
+  const watch = modeSelect.value === "watch";
+  document.querySelectorAll(".versus-setting").forEach((element) => {
+    element.hidden = !versus;
   });
+  document.querySelectorAll(".watch-setting").forEach((element) => {
+    element.hidden = !watch;
+  });
+  document.querySelectorAll(".any-computer-setting").forEach((element) => {
+    element.hidden = !(versus || watch);
+  });
+  spectatorControls.hidden = !watch;
+}
+
+function captureWaveDuration() {
+  return game?.match?.mode === "watch" && Number(speedSelect.value) === 100 ? 80 : 500;
+}
+
+function stopPlayback({cancelWait = true} = {}) {
+  watchPlaying = false;
+  playButton.textContent = "Play";
+  playbackNote.textContent = "Paused";
+  if (cancelWait) computerSequence += 1;
+  if (!actionInFlight) thinking = false;
+  updateControls();
 }
 
 function setGame(next, schedule = true) {
   game = next;
   sizeSelect.value = String(game.n);
-  if (game.capture_waves.length) {
-    animation = {waves: game.capture_waves, elapsed: 0, index: 0};
-  }
+  animation = game.capture_waves.length
+    ? {
+      waves: game.capture_waves,
+      elapsed: 0,
+      index: 0,
+      duration: captureWaveDuration(),
+    }
+    : null;
   message.textContent = "";
   syncSetupControls();
   const decision = game.computer_decision;
@@ -92,22 +148,44 @@ function updateControls() {
   resumeButton.hidden = !game.resumption_available;
   resumeButton.disabled = thinking || Boolean(game.match?.computer_can_act);
   canvas.style.cursor = computerTurn ? "wait" : "default";
+  const watch = game.match?.mode === "watch";
+  spectatorControls.hidden = !watch;
+  playButton.disabled = !watch || !game.match?.computer_can_act;
+  stepButton.disabled = !watch || watchPlaying || thinking || !game.match?.computer_can_act;
+  if (watch && !game.match?.computer_can_act && watchPlaying) {
+    stopPlayback({cancelWait: false});
+  }
 }
 
-async function scheduleComputerMove() {
+async function scheduleComputerMove(forceOne = false) {
   if (!game?.match?.computer_can_act || thinking) return;
+  const watch = game.match.mode === "watch";
+  if (watch && !watchPlaying && !forceOne) return;
   const sequence = ++computerSequence;
   thinking = true;
   updateControls();
-  const waveDelay = Math.max(350, (game.capture_waves?.length || 0) * 520);
+  const waves = game.capture_waves?.length || 0;
+  const waveDelay = watch
+    ? Math.max(forceOne ? 0 : Number(speedSelect.value), waves * captureWaveDuration())
+    : Math.max(350, waves * 520);
   await new Promise((resolve) => setTimeout(resolve, waveDelay));
-  if (sequence !== computerSequence) return;
+  if (sequence !== computerSequence) {
+    if (!actionInFlight) {
+      thinking = false;
+      updateControls();
+    }
+    return;
+  }
   try {
+    actionInFlight = true;
     const next = await request("/api/computer", {});
+    actionInFlight = false;
     thinking = false;
-    setGame(next);
+    setGame(next, !forceOne);
   } catch (error) {
+    actionInFlight = false;
     thinking = false;
+    if (watch) stopPlayback({cancelWait: false});
     message.textContent = error.message;
     updateControls();
   }
@@ -133,12 +211,22 @@ function makeProjection() {
   const minX = Math.min(...xs), maxX = Math.max(...xs);
   const minY = Math.min(...ys), maxY = Math.max(...ys);
   const pad = 58;
-  const scale = Math.min(
+  const baseScale = Math.min(
     (canvas.width - 2 * pad) / Math.max(1, maxX - minX),
     (canvas.height - 2 * pad) / Math.max(1, maxY - minY),
   );
+  const scale = baseScale * BOARD_SCALE;
   const offsetX = (canvas.width - (maxX - minX) * scale) / 2;
   const offsetY = (canvas.height - (maxY - minY) * scale) / 2;
+  const spacing = 2 * scale;
+  const stoneRadius = STONE_RADIUS_PER_SCALE * scale;
+  visual = {
+    scale,
+    spacing,
+    stoneRadius,
+    lineWidth: Math.max(1.5, Math.min(3, spacing * 0.05)),
+    hitRadius: spacing * 0.48,
+  };
   projected = new Map(cart.map((p) => [p.key, {
     x: offsetX + (p.x - minX) * scale,
     y: offsetY + (p.y - minY) * scale,
@@ -161,7 +249,7 @@ function draw() {
 
   ctx.lineCap = "round";
   ctx.strokeStyle = "rgba(83,71,50,.48)";
-  ctx.lineWidth = 3;
+  ctx.lineWidth = visual.lineWidth;
   for (const [a, b] of game.edges) {
     const pa = projected.get(keyOf(a));
     const pb = projected.get(keyOf(b));
@@ -181,34 +269,51 @@ function draw() {
     const top = point.stack.at(-1);
     if (point.legal) {
       ctx.beginPath();
-      ctx.arc(pos.x, pos.y, top ? 20 : 10, 0, Math.PI * 2);
+      ctx.arc(
+        pos.x,
+        pos.y,
+        top ? visual.stoneRadius * 1.33 : visual.stoneRadius * 0.67,
+        0,
+        Math.PI * 2,
+      );
       ctx.strokeStyle = "rgba(74,112,70,.75)";
-      ctx.lineWidth = top ? 3 : 2;
+      ctx.lineWidth = top ? visual.lineWidth : Math.max(1.5, visual.lineWidth * 0.7);
       ctx.stroke();
     }
     if (!top) {
       ctx.beginPath();
-      ctx.arc(pos.x, pos.y, point.rim ? 4 : 5, 0, Math.PI * 2);
+      ctx.arc(
+        pos.x,
+        pos.y,
+        visual.stoneRadius * (point.rim ? 0.22 : 0.27),
+        0,
+        Math.PI * 2,
+      );
       ctx.fillStyle = point.deep ? "#725f3f" : "#8b7958";
       ctx.fill();
     } else {
-      const radius = 15;
+      const radius = visual.stoneRadius;
       ctx.beginPath();
       ctx.arc(pos.x, pos.y, radius, 0, Math.PI * 2);
       ctx.fillStyle = top === "B" ? "#252923" : "#f7f3e8";
       ctx.fill();
       ctx.strokeStyle = top === "B" ? "#050605" : "#777369";
-      ctx.lineWidth = 2;
+      ctx.lineWidth = Math.max(1.5, visual.lineWidth * 0.75);
       ctx.stroke();
 
       const shown = point.stack.slice(-5);
       shown.forEach((color, index) => {
         ctx.fillStyle = color === "B" ? "#292d27" : "#f7f3e8";
-        ctx.fillRect(pos.x + 17, pos.y + 8 - index * 5, 9, 4);
+        ctx.fillRect(
+          pos.x + radius * 1.13,
+          pos.y + radius * 0.53 - index * radius * 0.33,
+          radius * 0.6,
+          Math.max(2, radius * 0.27),
+        );
       });
       if (point.stack.length > 1) {
         ctx.fillStyle = top === "B" ? "#fff" : "#222";
-        ctx.font = "700 10px system-ui";
+        ctx.font = `700 ${Math.max(8, radius * 0.67)}px system-ui`;
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
         ctx.fillText(String(point.stack.length), pos.x, pos.y + 1);
@@ -216,18 +321,18 @@ function draw() {
     }
     if (point.sky) {
       ctx.beginPath();
-      ctx.moveTo(pos.x, pos.y - 28);
-      ctx.lineTo(pos.x + 6, pos.y - 20);
-      ctx.lineTo(pos.x - 6, pos.y - 20);
+      ctx.moveTo(pos.x, pos.y - visual.stoneRadius * 1.87);
+      ctx.lineTo(pos.x + visual.stoneRadius * 0.4, pos.y - visual.stoneRadius * 1.33);
+      ctx.lineTo(pos.x - visual.stoneRadius * 0.4, pos.y - visual.stoneRadius * 1.33);
       ctx.closePath();
       ctx.fillStyle = "#c67c25";
       ctx.fill();
     }
     if (activeWave.has(key)) {
       ctx.beginPath();
-      ctx.arc(pos.x, pos.y, 25, 0, Math.PI * 2);
+      ctx.arc(pos.x, pos.y, visual.stoneRadius * 1.67, 0, Math.PI * 2);
       ctx.strokeStyle = "#e4572e";
-      ctx.lineWidth = 6;
+      ctx.lineWidth = Math.max(3, visual.lineWidth * 2);
       ctx.stroke();
     }
   }
@@ -270,7 +375,7 @@ function nearestPoint(event) {
     const d = Math.hypot(mouse.x - pos.x, mouse.y - pos.y);
     if (d < distance) { best = key; distance = d; }
   }
-  return distance <= 28 ? best : null;
+  return distance <= visual.hitRadius ? best : null;
 }
 
 canvas.addEventListener("mousemove", (event) => {
@@ -288,14 +393,15 @@ canvas.addEventListener("click", async (event) => {
 
 document.querySelector("#new-btn").addEventListener("click", async () => {
   if (game.moves_played && !confirm("Start a new game?")) return;
-  computerSequence += 1;
-  thinking = false;
+  stopPlayback();
   try {
     setGame(await request("/api/new", {
       n: Number(sizeSelect.value),
       mode: modeSelect.value,
       human_color: colorSelect.value,
       difficulty: difficultySelect.value,
+      black_difficulty: blackDifficultySelect.value,
+      white_difficulty: whiteDifficultySelect.value,
       explain: explainCheckbox.checked,
     }));
   } catch (error) {
@@ -306,6 +412,28 @@ passButton.addEventListener("click", async () => humanAction("/api/pass"));
 swapButton.addEventListener("click", async () => humanAction("/api/swap"));
 resumeButton.addEventListener("click", async () => humanAction("/api/resume"));
 modeSelect.addEventListener("change", updateSetupVisibility);
+
+playButton.addEventListener("click", () => {
+  if (watchPlaying) {
+    stopPlayback();
+    return;
+  }
+  if (!game?.match?.computer_can_act) return;
+  watchPlaying = true;
+  playButton.textContent = "Pause";
+  playbackNote.textContent = `${speedSelect.options[speedSelect.selectedIndex].text} playback`;
+  updateControls();
+  scheduleComputerMove();
+});
+
+stepButton.addEventListener("click", () => scheduleComputerMove(true));
+
+speedSelect.addEventListener("change", () => {
+  localStorage.setItem("cairn-playback-speed", speedSelect.value);
+  if (watchPlaying) {
+    playbackNote.textContent = `${speedSelect.options[speedSelect.selectedIndex].text} playback`;
+  }
+});
 
 document.querySelector("#save-btn").addEventListener("click", async () => {
   const snapshot = await request("/api/snapshot");
@@ -320,11 +448,75 @@ document.querySelector("#load-btn").addEventListener("click", () => document.que
 document.querySelector("#load-file").addEventListener("change", async (event) => {
   const file = event.target.files[0];
   if (!file) return;
-  computerSequence += 1;
-  thinking = false;
-  try { setGame(await request("/api/load", JSON.parse(await file.text()))); }
+  stopPlayback();
+  try {
+    const loaded = await request("/api/load", JSON.parse(await file.text()));
+    setGame(loaded, loaded.match.mode !== "watch");
+  }
   catch (error) { message.textContent = error.message; }
   event.target.value = "";
+});
+
+function renderTraining(status) {
+  training = status;
+  const model = status.model || game?.learning || {games_trained: 0};
+  const count = model.games_trained || 0;
+  if (status.running) {
+    trainingStatus.textContent = `Training ${status.completed}/${status.total} · ${count} games learned`;
+  } else if (status.error) {
+    trainingStatus.textContent = `Training stopped: ${status.error}`;
+  } else if (status.cancel_requested && status.completed < status.total) {
+    trainingStatus.textContent = `Canceled after ${status.completed}/${status.total} · ${count} games learned`;
+  } else {
+    trainingStatus.textContent = `Advanced model: ${count} game${count === 1 ? "" : "s"} trained`;
+  }
+  trainButton.disabled = Boolean(status.running);
+  cancelTrainingButton.disabled = !status.running;
+  resetTrainingButton.disabled = Boolean(status.running);
+}
+
+async function refreshTraining() {
+  try {
+    const status = await request("/api/training");
+    renderTraining(status);
+    if (status.running) {
+      clearTimeout(trainingPoll);
+      trainingPoll = setTimeout(refreshTraining, 500);
+    }
+  } catch (error) {
+    trainingStatus.textContent = error.message;
+  }
+}
+
+trainButton.addEventListener("click", async () => {
+  try {
+    renderTraining(await request("/api/training/start", {
+      games: Number(trainingGamesSelect.value),
+    }));
+    clearTimeout(trainingPoll);
+    trainingPoll = setTimeout(refreshTraining, 300);
+  } catch (error) {
+    trainingStatus.textContent = error.message;
+  }
+});
+
+cancelTrainingButton.addEventListener("click", async () => {
+  try {
+    renderTraining(await request("/api/training/cancel", {}));
+    clearTimeout(trainingPoll);
+    trainingPoll = setTimeout(refreshTraining, 300);
+  } catch (error) {
+    trainingStatus.textContent = error.message;
+  }
+});
+
+resetTrainingButton.addEventListener("click", async () => {
+  if (!confirm("Reset Advanced learning to zero games?")) return;
+  try {
+    renderTraining(await request("/api/training/reset", {}));
+  } catch (error) {
+    trainingStatus.textContent = error.message;
+  }
 });
 
 document.addEventListener("keydown", async (event) => {
@@ -337,7 +529,7 @@ document.addEventListener("keydown", async (event) => {
 function advanceTime(ms) {
   if (animation) {
     animation.elapsed += ms;
-    animation.index = Math.floor(animation.elapsed / 500);
+    animation.index = Math.floor(animation.elapsed / animation.duration);
     if (animation.index >= animation.waves.length) animation = null;
   }
   draw();
@@ -365,10 +557,26 @@ window.render_game_to_text = () => JSON.stringify({
   score: game?.score,
   match: game?.match,
   computer_decision: game?.computer_decision,
+  playback: {
+    playing: watchPlaying,
+    speed_ms: Number(speedSelect.value),
+    action_in_flight: actionInFlight,
+  },
+  training,
+  visual: visual ? {
+    board_scale: BOARD_SCALE,
+    spacing: visual.spacing,
+    stone_radius: visual.stoneRadius,
+    diameter_ratio: 2 * visual.stoneRadius / visual.spacing,
+  } : null,
   legal_points: game?.points.filter((p) => p.legal).map((p) => p.coord),
   occupied: game?.points.filter((p) => p.stack.length).map((p) => ({coord: p.coord, stack: p.stack, sky: p.sky})),
   capture_animation_wave: animation?.index ?? null,
 });
 
-request("/api/state").then(setGame).catch((error) => { message.textContent = error.message; });
+request("/api/state").then((initial) => {
+  if (initial.match.mode === "watch") stopPlayback();
+  setGame(initial, initial.match.mode !== "watch");
+}).catch((error) => { message.textContent = error.message; });
+refreshTraining();
 requestAnimationFrame(frame);

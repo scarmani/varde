@@ -32,7 +32,7 @@ TERRITORY_WEIGHT = 1
 PASS_IMPROVEMENT = 2
 SWAP_MARGIN = 5
 
-DIFFICULTIES = frozenset(("casual", "standard"))
+DIFFICULTIES = frozenset(("casual", "standard", "advanced"))
 
 
 @dataclass(frozen=True)
@@ -87,7 +87,7 @@ def _group_features(board, state, color):
         }
         group_skies = sum(has_sky(board, state, point, None) for point in group)
         skies += group_skies
-        liberties += min(3, len(empty) + group_skies)
+        liberties += min(3, len(empty))
         if len(empty) == 1 and group_skies == 0:
             vulnerable_stones += len(group)
     return skies, liberties, vulnerable_stones
@@ -141,7 +141,28 @@ def _area_score(board, state):
     return scores
 
 
-def evaluate_state(board, state, perspective, moves_played):
+def normalized_features(board, state, moves_played):
+    """Return color-symmetric, normalized features from Black's perspective."""
+    black = _features(board, state, BLACK, moves_played)
+    white = _features(board, state, WHITE, moves_played)
+    total = len(board.points)
+    max_distance = max(1, 2 * (board.n - 1))
+    occupied = black.controlled + white.controlled
+    territory = 0.0
+    if occupied >= 0.55 * total:
+        score = _area_score(board, state)
+        territory = (score[BLACK] - score[WHITE]) / total
+    return {
+        "controlled": (black.controlled - white.controlled) / total,
+        "skies": (black.skies - white.skies) / total,
+        "liberties": (black.liberties - white.liberties) / (3 * total),
+        "vulnerable": (white.vulnerable_stones - black.vulnerable_stones) / total,
+        "development": (black.development - white.development) / (total * max_distance),
+        "territory": territory,
+    }
+
+
+def evaluate_state(board, state, perspective, moves_played, model=None):
     """Return the fixed-weight static evaluation from ``perspective``."""
     enemy = other(perspective)
     mine = _features(board, state, perspective, moves_played)
@@ -157,6 +178,10 @@ def evaluate_state(board, state, perspective, moves_played):
     if occupied >= 0.55 * len(board.points):
         score = _area_score(board, state)
         value += TERRITORY_WEIGHT * (score[perspective] - score[enemy])
+    if model is not None:
+        value += model.correction(
+            normalized_features(board, state, moves_played), perspective
+        )
     return value
 
 
@@ -187,12 +212,12 @@ def _rationale(game, point, next_state, captured, mover):
     return "develop", "Developed a flexible position toward the interior."
 
 
-def _root_candidates(game, perspective):
+def _root_candidates(game, perspective, model=None):
     candidates = []
     for point in game.legal_placements():
         state, captured = game.try_play(point)
         score = evaluate_state(
-            game.board, state, perspective, game.moves_played + 1
+            game.board, state, perspective, game.moves_played + 1, model
         ) + CAPTURE_WEIGHT * captured
         reason_code, reason_text = _rationale(
             game, point, state, captured, game.to_move
@@ -211,7 +236,7 @@ def _root_candidates(game, perspective):
     return candidates
 
 
-def _standard_scores(game, candidates, perspective):
+def _standard_scores(game, candidates, perspective, model=None):
     """Apply a full opponent-reply scan to the best ten root candidates."""
     ranked = sorted(candidates, key=lambda item: item.root_score, reverse=True)
     searched = []
@@ -235,7 +260,7 @@ def _standard_scores(game, candidates, perspective):
             nodes += 1
             replies.append(
                 evaluate_state(
-                    game.board, state, perspective, game.moves_played + 2
+                    game.board, state, perspective, game.moves_played + 2, model
                 )
                 + CAPTURE_WEIGHT * candidate.captured
                 - CAPTURE_WEIGHT * captured
@@ -245,13 +270,16 @@ def _standard_scores(game, candidates, perspective):
     return searched, nodes
 
 
-def _choose_candidate(game, difficulty, seed, perspective):
-    candidates = _root_candidates(game, perspective)
+def _choose_candidate(game, difficulty, seed, perspective, model=None):
+    evaluation_model = model if difficulty == "advanced" else None
+    candidates = _root_candidates(game, perspective, evaluation_model)
     nodes = len(candidates)
     if not candidates:
         return None, nodes, candidates
-    if difficulty == "standard":
-        pool, nodes = _standard_scores(game, candidates, perspective)
+    if difficulty in ("standard", "advanced"):
+        pool, nodes = _standard_scores(
+            game, candidates, perspective, evaluation_model
+        )
         best = max(item.score for item in pool)
         tied = [item for item in pool if item.score == best]
         chosen = min(
@@ -269,7 +297,7 @@ def _choose_candidate(game, difficulty, seed, perspective):
     return pool[index], nodes, candidates
 
 
-def _swap_value(game, computer_color):
+def _swap_value(game, computer_color, model=None):
     """Worst value after the human's best White reply following a swap."""
     assert computer_color == BLACK
     replies = []
@@ -277,20 +305,20 @@ def _swap_value(game, computer_color):
         state, captured = game.try_play(point)
         replies.append(
             evaluate_state(
-                game.board, state, computer_color, game.moves_played + 1
+                game.board, state, computer_color, game.moves_played + 1, model
             )
             - CAPTURE_WEIGHT * captured
         )
     return min(replies) if replies else evaluate_state(
-        game.board, game.state, computer_color, game.moves_played
+        game.board, game.state, computer_color, game.moves_played, model
     )
 
 
-def choose_decision(game, computer_color, difficulty="standard", seed=1):
+def choose_decision(game, computer_color, difficulty="standard", seed=1, model=None):
     """Choose one computer action without mutating ``game``."""
     started = time.perf_counter()
     if difficulty not in DIFFICULTIES:
-        raise ValueError("difficulty must be casual or standard")
+        raise ValueError("difficulty must be casual, standard, or advanced")
     if computer_color not in (BLACK, WHITE):
         raise ValueError("computer color must be B or W")
 
@@ -323,11 +351,17 @@ def choose_decision(game, computer_color, difficulty="standard", seed=1):
         raise ValueError("it is not the computer's turn")
 
     if game.swap_available and computer_color == WHITE:
-        stay, nodes, _ = _choose_candidate(game, difficulty, seed, WHITE)
+        stay, nodes, _ = _choose_candidate(game, difficulty, seed, WHITE, model)
         stay_value = stay.score if stay else evaluate_state(
-            game.board, game.state, WHITE, game.moves_played
+            game.board,
+            game.state,
+            WHITE,
+            game.moves_played,
+            model if difficulty == "advanced" else None,
         )
-        swap_value = _swap_value(game, BLACK)
+        swap_value = _swap_value(
+            game, BLACK, model if difficulty == "advanced" else None
+        )
         if swap_value >= stay_value + SWAP_MARGIN:
             return BotDecision(
                 action="swap",
@@ -339,7 +373,7 @@ def choose_decision(game, computer_color, difficulty="standard", seed=1):
             )
 
     chosen, nodes, all_candidates = _choose_candidate(
-        game, difficulty, seed, computer_color
+        game, difficulty, seed, computer_color, model
     )
     if chosen is None:
         decision = BotDecision(
@@ -350,7 +384,11 @@ def choose_decision(game, computer_color, difficulty="standard", seed=1):
         )
     else:
         baseline = evaluate_state(
-            game.board, game.state, computer_color, game.moves_played
+            game.board,
+            game.state,
+            computer_color,
+            game.moves_played,
+            model if difficulty == "advanced" else None,
         )
         best_root = max(item.root_score for item in all_candidates)
         if (
