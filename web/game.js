@@ -6,6 +6,7 @@ const passButton = document.querySelector("#pass-btn");
 const swapButton = document.querySelector("#swap-btn");
 const resumeButton = document.querySelector("#resume-btn");
 const sizeSelect = document.querySelector("#board-size");
+const rulesSelect = document.querySelector("#ruleset");
 const modeSelect = document.querySelector("#game-mode");
 const colorSelect = document.querySelector("#human-color");
 const difficultySelect = document.querySelector("#difficulty");
@@ -112,6 +113,7 @@ function updateProfileNote() {
 
 function syncSetupControls() {
   if (!game?.match) return;
+  if (game.rules) rulesSelect.value = game.rules;
   modeSelect.value = game.match.mode;
   if (game.match.human_color) colorSelect.value = game.match.human_color;
   difficultySelect.value = game.match.difficulty;
@@ -186,8 +188,9 @@ function updateControls() {
   // During play the whole-region score is misleading (one stone can
   // "border" the entire open board), so show outright control instead.
   const control = game.control || game.score;
-  const controlText = `Black ${control.B} · White ${control.W}`;
-  const scoreText = `Black ${game.score.B} · White ${game.score.W}`;
+  const rulesTag = game.rules === "rosette" ? " · rosette" : "";
+  const controlText = `Black ${control.B} · White ${control.W}${rulesTag}`;
+  const scoreText = `Black ${game.score.B} · White ${game.score.W}${rulesTag}`;
   const setTurnText = (primary, secondary) => {
     const small = document.createElement("small");
     small.textContent = secondary;
@@ -433,6 +436,7 @@ function canvasPoint(event) {
 }
 
 function nearestPoint(event) {
+  if (!visual) return null;
   const mouse = canvasPoint(event);
   let best = null;
   let distance = Infinity;
@@ -462,6 +466,7 @@ document.querySelector("#new-btn").addEventListener("click", async () => {
   try {
     setGame(await request("/api/new", {
       n: Number(sizeSelect.value),
+      rules: rulesSelect.value,
       mode: modeSelect.value,
       human_color: colorSelect.value,
       difficulty: difficultySelect.value,

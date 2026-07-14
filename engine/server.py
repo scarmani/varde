@@ -8,7 +8,7 @@ from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import urlparse
 
-from cairn import BLACK, WHITE, Game, Illegal, has_sky, other
+from cairn import BLACK, RULESETS, WHITE, Game, Illegal, has_sky, other
 from learning import LearningModel, TRAINING_BATCHES, TrainingService
 from opponent import choose_decision
 from profiles import (
@@ -421,6 +421,7 @@ def public_view(game, match=None, last_decision=None):
     ]
     return {
         "n": board.n,
+        "rules": game.rules,
         "points": points,
         "edges": edges,
         "to_move": game.to_move,
@@ -572,7 +573,10 @@ class CairnHandler(SimpleHTTPRequestHandler):
                     n = int(body.get("n", 3))
                     if n not in (3, 4, 5, 6):
                         raise ValueError("board size must be 3, 4, 5, or 6")
-                    game = Game(n)
+                    rules = body.get("rules", "classic")
+                    if rules not in RULESETS:
+                        raise ValueError("rules must be classic or rosette")
+                    game = Game(n, rules=rules)
                     MATCH = MatchConfig.from_new_game(game, body)
                     GAME = game
                     LAST_DECISION = None

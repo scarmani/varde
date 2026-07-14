@@ -242,6 +242,20 @@ class TestComputerMatch(unittest.TestCase):
                     },
                 )
 
+    def test_rosette_games_expose_rules_and_round_trip(self):
+        game = Game(3, rules="rosette")
+        match = MatchConfig.from_new_game(
+            game,
+            {"mode": "computer", "human_color": BLACK, "profile": "balanced"},
+        )
+        view = public_view(game, match)
+        self.assertEqual(view["rules"], "rosette")
+        payload = snapshot_payload(game, match)
+        restored, _ = load_snapshot(payload)
+        self.assertEqual(restored.rules, "rosette")
+        classic_view = public_view(Game(3), match)
+        self.assertEqual(classic_view["rules"], "classic")
+
     def test_curated_profiles_are_accepted_in_both_modes(self):
         for profile in ("mason", "surveyor"):
             with self.subTest(profile=profile, mode="computer"):
