@@ -229,6 +229,11 @@ def summarize_gates(curation, games, seed):
         )
         for profile_id in curation["selected"]
     }
+    individually_eligible = {
+        profile_id
+        for profile_id, profile in profiles.items()
+        if profile["passed_individual_gates"]
+    }
     pairwise = {}
     ids = list(profiles)
     for left_index, left in enumerate(ids):
@@ -238,20 +243,37 @@ def summarize_gates(curation, games, seed):
                 profiles[right]["mean_descriptors"],
                 curation["descriptor_scales"],
             )
+            eligible_pair = left in individually_eligible and right in individually_eligible
             pairwise[f"{left}-{right}"] = {
                 "distance": distance,
                 "at_least_10": distance >= 1.0,
+                "eligible_pair": eligible_pair,
             }
-    pairwise_passed = all(item["at_least_10"] for item in pairwise.values())
-    for profile in profiles.values():
-        profile["passed"] = profile["passed_individual_gates"] and pairwise_passed
+    pairwise_passed = all(
+        item["at_least_10"]
+        for item in pairwise.values()
+        if item["eligible_pair"]
+    )
+    for profile_id, profile in profiles.items():
+        conflicts = sorted(
+            pair_id
+            for pair_id, item in pairwise.items()
+            if item["eligible_pair"]
+            and not item["at_least_10"]
+            and profile_id in pair_id.split("-")
+        )
+        profile["pairwise_conflicts"] = conflicts
+        profile["passed"] = profile["passed_individual_gates"] and not conflicts
+    available_profiles = [
+        profile_id for profile_id in ids if profiles[profile_id]["passed"]
+    ]
     return {
         "profiles": profiles,
         "pairwise_normalized_descriptor_distance": pairwise,
         "pairwise_gate_passed": pairwise_passed,
+        "available_profiles": available_profiles,
         "all_profiles_passed": bool(profiles)
-        and pairwise_passed
-        and all(profile["passed_individual_gates"] for profile in profiles.values()),
+        and all(profile["passed"] for profile in profiles.values()),
     }
 
 

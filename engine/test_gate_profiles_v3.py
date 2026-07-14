@@ -5,6 +5,7 @@ from research.harness.gate_profiles_v3 import (
     one_sided_bootstrap_lower,
     pooled_effect_size,
     profile_gate_jobs,
+    summarize_gates,
 )
 from research.harness.map_elites_v3 import balanced_genome
 
@@ -56,6 +57,70 @@ class TestProfileGate(unittest.TestCase):
         self.assertGreater(
             pooled_effect_size([0.8, 0.9, 1.0], [0.0, 0.1, 0.2]),
             0.8,
+        )
+
+    def test_failed_profile_does_not_poison_pairwise_gate_for_passers(self):
+        curation = {
+            "selected": {
+                "raider": {},
+                "mason": {},
+                "surveyor": {},
+            },
+            "descriptor_scales": {
+                "engagement": 1.0,
+                "verticality": 1.0,
+                "edge_reach": 1.0,
+                "consolidation": 1.0,
+            },
+        }
+        profiles = {
+            "raider": {
+                "passed_individual_gates": False,
+                "mean_descriptors": {
+                    "engagement": 0.0,
+                    "verticality": 0.0,
+                    "edge_reach": 2.0,
+                    "consolidation": 0.0,
+                },
+            },
+            "mason": {
+                "passed_individual_gates": True,
+                "mean_descriptors": {
+                    "engagement": 0.0,
+                    "verticality": 2.0,
+                    "edge_reach": 0.0,
+                    "consolidation": 0.0,
+                },
+            },
+            "surveyor": {
+                "passed_individual_gates": True,
+                "mean_descriptors": {
+                    "engagement": 0.0,
+                    "verticality": 0.0,
+                    "edge_reach": 2.0,
+                    "consolidation": 0.0,
+                },
+            },
+        }
+
+        import research.harness.gate_profiles_v3 as gate
+
+        original = gate.summarize_profile
+        gate.summarize_profile = lambda profile_id, *_args: dict(profiles[profile_id])
+        try:
+            summary = summarize_gates(curation, [], seed=9)
+        finally:
+            gate.summarize_profile = original
+
+        self.assertFalse(summary["profiles"]["raider"]["passed"])
+        self.assertTrue(summary["profiles"]["mason"]["passed"])
+        self.assertTrue(summary["profiles"]["surveyor"]["passed"])
+        self.assertEqual(summary["available_profiles"], ["mason", "surveyor"])
+        self.assertTrue(summary["pairwise_gate_passed"])
+        self.assertFalse(
+            summary["pairwise_normalized_descriptor_distance"]["raider-surveyor"][
+                "eligible_pair"
+            ]
         )
 
 
