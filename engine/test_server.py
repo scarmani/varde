@@ -231,7 +231,7 @@ class TestComputerMatch(unittest.TestCase):
         self.assertEqual(payload["match"]["seats"][WHITE]["profile"], "personal")
 
     def test_unknown_and_unavailable_profiles_are_rejected(self):
-        for profile in ("missing", "raider"):
+        for profile in ("missing", "raider", "weaver"):
             with self.subTest(profile=profile), self.assertRaises(ValueError):
                 MatchConfig.from_new_game(
                     Game(3),
@@ -239,6 +239,44 @@ class TestComputerMatch(unittest.TestCase):
                         "mode": "computer",
                         "human_color": BLACK,
                         "profile": profile,
+                    },
+                )
+
+    def test_curated_profiles_are_accepted_in_both_modes(self):
+        for profile in ("mason", "surveyor"):
+            with self.subTest(profile=profile, mode="computer"):
+                match = MatchConfig.from_new_game(
+                    Game(3),
+                    {
+                        "mode": "computer",
+                        "human_color": BLACK,
+                        "difficulty": "standard",
+                        "profile": profile,
+                    },
+                )
+                self.assertEqual(match.seats[WHITE].profile, profile)
+        watch = MatchConfig.from_new_game(
+            Game(3),
+            {
+                "mode": "watch",
+                "black_difficulty": "standard",
+                "black_profile": "surveyor",
+                "white_difficulty": "casual",
+                "white_profile": "mason",
+                "seed": 41,
+            },
+        )
+        self.assertEqual(watch.seats[BLACK].profile, "surveyor")
+        self.assertEqual(watch.seats[WHITE].profile, "mason")
+        for profile in ("raider", "weaver"):
+            with self.subTest(profile=profile, mode="watch"), self.assertRaises(
+                ValueError
+            ):
+                MatchConfig.from_new_game(
+                    Game(3),
+                    {
+                        "mode": "watch",
+                        "black_profile": profile,
                     },
                 )
 

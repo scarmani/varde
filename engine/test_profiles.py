@@ -53,6 +53,9 @@ class TestProfileCatalog(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "not available"):
             get_profile("raider")
         self.assertFalse(get_profile("raider", require_available=False).available)
+        self.assertTrue(get_profile("mason").available)
+        self.assertTrue(get_profile("surveyor").available)
+        self.assertEqual(len(get_profile("mason").model_hash), 64)
 
     def test_difficulty_and_style_are_orthogonal_with_legacy_migration(self):
         self.assertEqual(DIFFICULTIES, {"casual", "standard"})
@@ -82,6 +85,10 @@ class TestProfileCatalog(unittest.TestCase):
         self.assertEqual(by_id["personal"]["training_count"], 17)
         self.assertTrue(by_id["personal"]["needs_retraining"])
         self.assertFalse(by_id["raider"]["available"])
+        self.assertIn("availability_reason", by_id["raider"])
+        self.assertTrue(by_id["mason"]["available"])
+        self.assertTrue(by_id["surveyor"]["available"])
+        self.assertNotIn("weights", by_id["mason"])
 
 
 if __name__ == "__main__":
