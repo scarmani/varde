@@ -183,23 +183,28 @@ function setGame(next, schedule = true) {
 
 function updateControls() {
   if (!game) return;
-  const score = `Black ${game.score.B} · White ${game.score.W}`;
+  // During play the whole-region score is misleading (one stone can
+  // "border" the entire open board), so show outright control instead.
+  const control = game.control || game.score;
+  const controlText = `Black ${control.B} · White ${control.W}`;
+  const scoreText = `Black ${game.score.B} · White ${game.score.W}`;
   const setTurnText = (primary, secondary) => {
     const small = document.createElement("small");
     small.textContent = secondary;
     turnStatus.replaceChildren(document.createTextNode(primary), small);
   };
   if (thinking) {
-    setTurnText("Computer is thinking…", score);
+    setTurnText("Computer is thinking…", controlText);
   } else if (game.finished) {
     const result = game.score.B === game.score.W
       ? "Draw"
-      : `${game.score.B > game.score.W ? "Black" : "White"} leads`;
-    setTurnText(result, score);
+      : `${game.score.B > game.score.W ? "Black" : "White"} wins`;
+    const ending = game.no_progress_end ? " · ended by stagnation" : "";
+    setTurnText(result, `${scoreText}${ending}`);
   } else {
     setTurnText(
       `${game.current_player} · ${game.to_move === "B" ? "Black" : "White"} to move`,
-      `${score} · move ${game.moves_played + 1}`,
+      `${controlText} · move ${game.moves_played + 1}`,
     );
   }
   const computerTurn = game.match?.computer_turn || thinking;

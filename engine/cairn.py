@@ -1,10 +1,11 @@
 """Cairn rules engine (reference implementation).
 
-Implements the Cairn rules document (rev 1.2) exactly:
+Implements the Cairn rules document (rev 1.3) exactly:
 board, terrain, summits, skies with placed-this-turn exclusion,
 simultaneous capture waves with per-wave re-evaluation, global
 mover suicide, situational superko over full stacks, scoring,
-two-pass ending with one resumption.
+two-pass ending with one resumption, and the stagnation ending
+(NO_PROGRESS_LIMIT quiet moves end the game finally).
 
 Colors are 'B' and 'W'. A stack is a tuple of colors, bottom to top.
 Points are integer (x, y) pairs on an exact scaled lattice.
@@ -13,6 +14,11 @@ Points are integer (x, y) pairs on an exact scaled lattice.
 from collections import deque
 
 BLACK, WHITE = "B", "W"
+
+# A move is "quiet" when it captures nothing and changes no column's
+# control: a pass, or a placement onto a column the mover already
+# controls. This many consecutive quiet moves end the game finally.
+NO_PROGRESS_LIMIT = 12
 
 
 def other(color):
@@ -236,8 +242,10 @@ class Game:
         self.history = set()
         self.history.add(signature(self.board, self.state, self.to_move))
         self.consecutive_passes = 0
+        self.quiet_moves = 0
         self.moves_played = 0
         self.finished = False
+        self.no_progress_end = False
         self.resumption_used = False
         self.players = {BLACK: "Player 1", WHITE: "Player 2"}
         self.swap_decided = False
@@ -279,6 +287,8 @@ class Game:
     def play(self, p):
         if self.finished:
             raise Illegal("game over")
+        mover = self.to_move
+        prior_control = control(self.state, p)
         waves = []
         st, captured = resolve(
             self.board, self.state, p, self.to_move, self.history, trace=waves
@@ -288,10 +298,17 @@ class Game:
         self.to_move = other(self.to_move)
         self.history.add(signature(self.board, self.state, self.to_move))
         self.consecutive_passes = 0
+        if captured or prior_control != mover:
+            self.quiet_moves = 0
+        else:
+            self.quiet_moves += 1
         self.moves_played += 1
         if was_swap_reply:
             self.swap_decided = True
         self.last_capture_waves = waves
+        if self.quiet_moves >= NO_PROGRESS_LIMIT:
+            self.finished = True
+            self.no_progress_end = True
         return captured
 
     def play_pass(self):
@@ -304,18 +321,35 @@ class Game:
         self.to_move = other(self.to_move)
         self.history.add(signature(self.board, self.state, self.to_move))
         self.consecutive_passes += 1
+        self.quiet_moves += 1
         self.moves_played += 1
         if self.consecutive_passes >= 2:
             self.finished = True
+        if self.quiet_moves >= NO_PROGRESS_LIMIT:
+            self.finished = True
+            self.no_progress_end = True
         self.last_capture_waves = []
 
+    @property
+    def resumption_available(self):
+        return (
+            self.finished
+            and not self.resumption_used
+            and not self.no_progress_end
+        )
+
     def demand_resumption(self):
-        """Once per game, after two passes; normal turn order continues."""
-        if not self.finished or self.resumption_used:
+        """Once per game, after two passes; normal turn order continues.
+
+        A stagnation ending is final: it already proves that neither
+        player can make progress, so it cannot be reopened.
+        """
+        if not self.resumption_available:
             raise Illegal("no resumption available")
         self.resumption_used = True
         self.finished = False
         self.consecutive_passes = 0
+        self.quiet_moves = 0
         self.last_capture_waves = []
 
     def legal_placements(self):
@@ -330,13 +364,18 @@ class Game:
                 pass
         return out
 
-    def score(self):
-        b = self.board
+    def control_count(self):
+        """Points controlled outright, without empty-region attribution."""
         pts = {BLACK: 0, WHITE: 0}
-        for p in b.points:
+        for p in self.board.points:
             c = control(self.state, p)
             if c:
                 pts[c] += 1
+        return pts
+
+    def score(self):
+        b = self.board
+        pts = self.control_count()
         seen = set()
         for p in b.points:
             if p in seen or self.state[p]:
@@ -375,8 +414,10 @@ class Game:
             "to_move": self.to_move,
             "history": history,
             "consecutive_passes": self.consecutive_passes,
+            "quiet_moves": self.quiet_moves,
             "moves_played": self.moves_played,
             "finished": self.finished,
+            "no_progress_end": self.no_progress_end,
             "resumption_used": self.resumption_used,
             "players": dict(self.players),
             "swap_decided": self.swap_decided,
@@ -418,8 +459,10 @@ class Game:
         current = signature(game.board, game.state, game.to_move)
         game.history.add(current)
         game.consecutive_passes = int(payload.get("consecutive_passes", 0))
+        game.quiet_moves = int(payload.get("quiet_moves", 0))
         game.moves_played = int(payload.get("moves_played", 0))
         game.finished = bool(payload.get("finished", False))
+        game.no_progress_end = bool(payload.get("no_progress_end", False))
         game.resumption_used = bool(payload.get("resumption_used", False))
         players = payload.get("players", {})
         if set(players) != {BLACK, WHITE} or not all(

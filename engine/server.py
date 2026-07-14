@@ -320,6 +320,8 @@ class MatchConfig:
         """Return the next computer seat owed an ending decision."""
         if not game.finished:
             return game.to_move if self.seats[game.to_move].kind == "computer" else None
+        if game.no_progress_end:
+            return None
         computers = [
             color
             for color in (game.to_move, other(game.to_move))
@@ -427,10 +429,12 @@ def public_view(game, match=None, last_decision=None):
         "moves_played": game.moves_played,
         "consecutive_passes": game.consecutive_passes,
         "finished": game.finished,
-        "resumption_available": game.finished and not game.resumption_used,
+        "no_progress_end": game.no_progress_end,
+        "resumption_available": game.resumption_available,
         "resumption_used": game.resumption_used,
         "swap_available": game.swap_available,
         "score": game.score(),
+        "control": game.control_count(),
         "capture_waves": [[list(point) for point in wave] for wave in game.last_capture_waves],
         "match": {
             "mode": match.mode,
