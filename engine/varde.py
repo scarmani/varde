@@ -292,7 +292,7 @@ def group_alive(board, state, comp, placed, rules="classic"):
                 return True
     if rules == "rosette":
         return group_has_ring(board, comp)
-    if rules in BREATH_RULESETS:
+    if rules in FLAT_RULESETS:
         return False  # flat game: empty-adjacent points are the only liberties
     for p in comp:
         if has_sky(board, state, p, placed):
@@ -344,7 +344,7 @@ def resolve(
     #    they belong to an enemy group breathing through skies alone.
     #    Breath rulesets are flat games: no stacking except cap rescues.
     if state[p]:
-        if rules in BREATH_RULESETS and not allow_stack:
+        if rules in FLAT_RULESETS and not allow_stack:
             raise Illegal("stack")
         if rules == "rosette" and not _enemy_column_is_sky_bound(
             board, state, p, color
@@ -354,7 +354,7 @@ def resolve(
     # 1. terrain and summits govern the stacked rulesets only; breath
     #    games are flat (a cap rescue lands unconditionally)
     summit = False
-    if rules not in BREATH_RULESETS:
+    if rules not in FLAT_RULESETS:
         if not terrain_ok(board, state, p):
             raise Illegal("terrain")
         summit = is_summit(board, state, p)
@@ -437,8 +437,14 @@ EXTENSION_RULES = {
     "breath-run": {"scope": "chain", "after_move": False},
     "breath-cap": {"scope": "adjacent", "after_move": True},
 }
+# Flat rulesets play without stacking, skies, terrain, or summits.
+# The breath subset additionally checks the mover's liberty BEFORE
+# captures; gjerde-go keeps ordinary Go resolution (captures first),
+# so eye-fills can capture and classic life-and-death returns.
 BREATH_RULESETS = ("breath",) + tuple(EXTENSION_RULES) + ("gjerde",)
-RULESETS = ("classic", "rosette") + BREATH_RULESETS
+FLAT_RULESETS = BREATH_RULESETS + ("gjerde-go",)
+GJERDE_RULESETS = ("gjerde", "gjerde-go")
+RULESETS = ("classic", "rosette") + FLAT_RULESETS
 
 
 class Game:
@@ -448,7 +454,7 @@ class Game:
                 "rules must be one of: " + ", ".join(RULESETS)
             )
         self.rules = rules
-        self.board = KagomeBoard(n) if rules == "gjerde" else Board(n)
+        self.board = KagomeBoard(n) if rules in GJERDE_RULESETS else Board(n)
         self.state = empty_state(self.board)
         self.to_move = BLACK
         self.history = set()
@@ -726,7 +732,7 @@ class Game:
         return score_cells(self.board, self.state)
 
     def score(self):
-        if self.rules == "gjerde":
+        if self.rules in GJERDE_RULESETS:
             return self._score_cells()
         b = self.board
         pts = self.control_count()
