@@ -1,6 +1,6 @@
-"""Cairn rules engine (reference implementation).
+"""Varde rules engine (reference implementation).
 
-Implements the Cairn rules document (rev 1.3) exactly:
+Implements the Varde rules document (rev 1.3) exactly:
 board, terrain, summits, skies with placed-this-turn exclusion,
 simultaneous capture waves with per-wave re-evaluation, global
 mover suicide, situational superko over full stacks, scoring,
@@ -558,7 +558,7 @@ class Game:
             for sig in sorted(self.history, key=repr)
         ]
         return {
-            "format": "cairn-game",
+            "format": "varde-game",
             "version": 1,
             "n": self.board.n,
             "rules": self.rules,
@@ -579,8 +579,8 @@ class Game:
     @classmethod
     def from_dict(cls, payload):
         """Restore a snapshot created by :meth:`to_dict`."""
-        if payload.get("format") != "cairn-game" or payload.get("version") != 1:
-            raise ValueError("unsupported Cairn snapshot")
+        if payload.get("format") not in ("varde-game", "cairn-game") or payload.get("version") != 1:
+            raise ValueError("unsupported Varde snapshot")
         n = payload.get("n")
         if not isinstance(n, int) or n < 1:
             raise ValueError("invalid board size")

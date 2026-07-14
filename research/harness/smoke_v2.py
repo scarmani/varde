@@ -6,7 +6,7 @@ from dataclasses import asdict
 from pathlib import Path
 
 from common import play_heldout_game, source_sha, write_json_atomic
-from cairn import BLACK, other
+from varde import BLACK, other
 from learning import LearningModel
 
 
@@ -15,7 +15,7 @@ def main():
     parser.add_argument("model", type=Path)
     parser.add_argument("--pairs", type=int, default=2)
     parser.add_argument("--seed", type=int, default=8102026)
-    parser.add_argument("--output", type=Path, default=Path("/tmp/cairn-v2/smoke.json"))
+    parser.add_argument("--output", type=Path, default=Path("/tmp/varde-v2/smoke.json"))
     args = parser.parse_args()
     model = LearningModel.load(args.model)
     if model.load_error:

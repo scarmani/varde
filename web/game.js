@@ -43,7 +43,10 @@ let training = null;
 let trainingPoll = null;
 let profileCatalog = null;
 
-const savedSpeed = Number(localStorage.getItem("cairn-playback-speed"));
+const savedSpeed = Number(
+  localStorage.getItem("varde-playback-speed")
+  ?? localStorage.getItem("cairn-playback-speed"),
+);
 const playbackSpeed = [1200, 500, 100].includes(savedSpeed) ? savedSpeed : 500;
 speedSelect.value = String(playbackSpeed);
 
@@ -505,7 +508,7 @@ playButton.addEventListener("click", () => {
 stepButton.addEventListener("click", () => scheduleComputerMove(true));
 
 speedSelect.addEventListener("change", () => {
-  localStorage.setItem("cairn-playback-speed", speedSelect.value);
+  localStorage.setItem("varde-playback-speed", speedSelect.value);
   if (watchPlaying) {
     playbackNote.textContent = `${speedSelect.options[speedSelect.selectedIndex].text} playback`;
   }
@@ -516,7 +519,7 @@ document.querySelector("#save-btn").addEventListener("click", async () => {
   const blob = new Blob([JSON.stringify(snapshot, null, 2)], {type: "application/json"});
   const link = document.createElement("a");
   link.href = URL.createObjectURL(blob);
-  link.download = "cairn-game.json";
+  link.download = "varde-game.json";
   link.click();
   URL.revokeObjectURL(link.href);
 });

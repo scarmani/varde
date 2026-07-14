@@ -5,7 +5,7 @@ from tempfile import TemporaryDirectory
 import threading
 import unittest
 
-from cairn import BLACK, Game
+from varde import BLACK, Game
 from learning import (
     FEATURE_NAMES,
     LEGACY_FEATURE_NAMES,

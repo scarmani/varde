@@ -4,7 +4,7 @@
 
 Correct the bounded computer search and two-computer ending protocol, then train
 and evaluate a versioned nine-feature Advanced model against that corrected
-Standard baseline. Keep `engine/cairn.py` unchanged and retain local-only play.
+Standard baseline. Keep `engine/varde.py` unchanged and retain local-only play.
 
 ## Batches
 
@@ -54,7 +54,7 @@ cumulative review are clean on the current branch tip.
 
 ## Non-Negotiables
 
-- Do not modify `engine/cairn.py`.
+- Do not modify `engine/varde.py`.
 - Do not enforce a move cutoff in live games.
 - Do not silently discard or overwrite a version-1 user model.
 - Do not claim Advanced is stronger unless the paired gate passes.

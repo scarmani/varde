@@ -1,7 +1,7 @@
 import math
 import unittest
 
-from cairn import BLACK, WHITE, Game, Illegal, other, resolve, signature
+from varde import BLACK, WHITE, Game, Illegal, other, resolve, signature
 from opponent import (
     BALANCED_WEIGHTS,
     _root_candidates,

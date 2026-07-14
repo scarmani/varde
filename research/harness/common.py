@@ -1,4 +1,4 @@
-"""Reproducible training/evaluation helpers for Cairn Advanced V2."""
+"""Reproducible training/evaluation helpers for Varde Advanced V2."""
 
 from dataclasses import asdict, dataclass
 import hashlib
@@ -14,7 +14,7 @@ ENGINE_ROOT = REPO_ROOT / "engine"
 if str(ENGINE_ROOT) not in sys.path:
     sys.path.insert(0, str(ENGINE_ROOT))
 
-from cairn import BLACK, Game, other  # noqa: E402
+from varde import BLACK, Game, other  # noqa: E402
 from learning import TRAINING_WATCHDOG_MULTIPLIER  # noqa: E402
 from opponent import choose_decision  # noqa: E402
 

@@ -1,11 +1,11 @@
-"""Cairn position suite.
+"""Varde position suite.
 
 Every test encodes a known-answer position from the design analysis.
-Run: python3 -m unittest test_cairn -v
+Run: python3 -m unittest test_varde -v
 """
 
 import unittest
-from cairn import (
+from varde import (
     Board, Game, Illegal, BLACK, WHITE, empty_state, resolve, signature,
     control, height, groups_of, group_alive, has_sky, terrain_ok, is_summit,
     NO_PROGRESS_LIMIT,
@@ -627,7 +627,7 @@ class TestScoring(unittest.TestCase):
 def ring_of_cell(q, r):
     """The six lattice points around one hexagonal cell."""
     cx, cy = 3 * q, 2 * r + q
-    from cairn import CORNERS
+    from varde import CORNERS
     return [(cx + dx, cy + dy) for dx, dy in CORNERS]
 
 
@@ -800,7 +800,7 @@ def breath_game(to_move, rules="breath"):
 
 def enclosure_of_point(g, eye):
     """White ring enclosing `eye`, from the three cells around it."""
-    from cairn import CORNERS
+    from varde import CORNERS
     comp = set()
     for q in range(-2, 3):
         for r in range(-2, 3):

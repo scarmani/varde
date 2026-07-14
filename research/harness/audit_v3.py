@@ -25,7 +25,7 @@ if str(ENGINE_ROOT) not in sys.path:
 if str(HARNESS_ROOT) not in sys.path:
     sys.path.insert(0, str(HARNESS_ROOT))
 
-from cairn import BLACK, WHITE, Game, Illegal, control, other, resolve  # noqa: E402
+from varde import BLACK, WHITE, Game, Illegal, control, other, resolve  # noqa: E402
 from learning import FEATURE_NAMES  # noqa: E402
 from opponent import (  # noqa: E402
     BALANCED_WEIGHTS,

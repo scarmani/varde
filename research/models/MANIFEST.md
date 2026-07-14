@@ -2,7 +2,7 @@
 
 These four small files preserve Claude's directional experiments against
 commit `6fb779c`. They are evidence artifacts, not production defaults and are
-never loaded automatically by Cairn.
+never loaded automatically by Varde.
 
 - `stock-80.json`, `stock.json`: six-feature outcome learner at 80/120 Toy games.
 - `v1-80.json`, `v1.json`: experimental nine-feature margin learner at 80/120 Toy games.

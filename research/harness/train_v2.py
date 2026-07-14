@@ -15,7 +15,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--games", type=int, default=200)
     parser.add_argument("--seed", type=int, default=20260712)
-    parser.add_argument("--output-dir", type=Path, default=Path("/tmp/cairn-v2"))
+    parser.add_argument("--output-dir", type=Path, default=Path("/tmp/varde-v2"))
     parser.add_argument("--resume", action="store_true")
     args = parser.parse_args()
     if args.games <= 0:

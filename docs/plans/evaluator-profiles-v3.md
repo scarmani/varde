@@ -19,7 +19,7 @@ learner; curated profiles must be backed by reproducible offline evidence.
 
 ### Out of scope
 
-- Changes to `engine/cairn.py` or the rules.
+- Changes to `engine/varde.py` or the rules.
 - Search depth as part of a profile genome.
 - Live-game move or time cutoffs.
 - Overwriting a user's Personal model.
@@ -46,7 +46,7 @@ learner; curated profiles must be backed by reproducible offline evidence.
   not mutate its input.
 - Constructed resilience, reserves, sky, connection/cut, cover, hostile-cover,
   reinforcement, summit, and capture cases pass.
-- `engine/cairn.py` has no diff.
+- `engine/varde.py` has no diff.
 
 **Risk:** evaluator plumbing is a high-fan-out surface where even algebraically
 equivalent ordering could change seeded ties.
@@ -164,14 +164,14 @@ the honest result is an unavailable catalog entry, not threshold weakening.
   floor and its descriptor-shift/separation gates.
 - Standard and Personal p95 stay below 500 ms on Toy and 1.5 s on Full.
 - All unit, syntax, API, save/load, research determinism, and browser gates pass.
-- `git diff 1da66f7...HEAD -- engine/cairn.py` is empty.
+- `git diff 1da66f7...HEAD -- engine/varde.py` is empty.
 
 **Risk:** full evidence runs are compute-heavy; incomplete runs are failures,
 not license to publish provisional profiles as validated.
 
 ## Non-negotiables
 
-- Do not modify `engine/cairn.py` or the game rules.
+- Do not modify `engine/varde.py` or the game rules.
 - Do not add a move or time cutoff to live games.
 - Do not overwrite or silently migrate away a user's Personal model.
 - Balanced remains behaviorally identical; profiles change style, not depth.
@@ -189,7 +189,7 @@ not license to publish provisional profiles as validated.
 
 ## Notes
 
-- Public name is Varde. Existing Cairn modules, save identifiers, preferences,
+- Public name is Varde. Existing Varde modules, save identifiers, preferences,
   model paths, and historical evidence remain for compatibility.
 - Curated profiles are immutable browser choices. Personal is the only local
   profile changed by background learning.

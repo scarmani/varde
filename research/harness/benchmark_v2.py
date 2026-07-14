@@ -7,7 +7,7 @@ import statistics
 import time
 
 from common import write_json_atomic
-from cairn import BLACK, Game
+from varde import BLACK, Game
 from learning import LearningModel
 from opponent import choose_decision
 
@@ -21,7 +21,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("model", type=Path)
     parser.add_argument("--samples", type=int, default=20)
-    parser.add_argument("--output", type=Path, default=Path("/tmp/cairn-v2/benchmark.json"))
+    parser.add_argument("--output", type=Path, default=Path("/tmp/varde-v2/benchmark.json"))
     args = parser.parse_args()
     model = LearningModel.load(args.model)
     if model.load_error:

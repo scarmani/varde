@@ -1,4 +1,4 @@
-"""Dependency-free local web server for Cairn play and AI training."""
+"""Dependency-free local web server for Varde play and AI training."""
 
 import argparse
 from dataclasses import dataclass, replace
@@ -8,7 +8,7 @@ from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import urlparse
 
-from cairn import BLACK, RULESETS, WHITE, Game, Illegal, has_sky, other
+from varde import BLACK, RULESETS, WHITE, Game, Illegal, has_sky, other
 from learning import LearningModel, TRAINING_BATCHES, TrainingService
 from opponent import choose_decision
 from profiles import (
@@ -505,7 +505,7 @@ def apply_computer_action(game, match, model=None):
     return decision
 
 
-class CairnHandler(SimpleHTTPRequestHandler):
+class VardeHandler(SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, directory=str(WEB_ROOT), **kwargs)
 
@@ -617,16 +617,16 @@ class CairnHandler(SimpleHTTPRequestHandler):
             self._json({"error": str(exc)}, 400)
 
     def log_message(self, format, *args):
-        print(f"[cairn] {self.address_string()} {format % args}")
+        print(f"[varde] {self.address_string()} {format % args}")
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Run the local Cairn web game")
+    parser = argparse.ArgumentParser(description="Run the local Varde web game")
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=8000)
     args = parser.parse_args()
-    server = ThreadingHTTPServer((args.host, args.port), CairnHandler)
-    print(f"Cairn ready at http://{args.host}:{args.port}")
+    server = ThreadingHTTPServer((args.host, args.port), VardeHandler)
+    print(f"Varde ready at http://{args.host}:{args.port}")
     try:
         server.serve_forever()
     except KeyboardInterrupt:

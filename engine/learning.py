@@ -1,4 +1,4 @@
-"""Persistent linear learning model and background trainer for Cairn."""
+"""Persistent linear learning model and background trainer for Varde."""
 
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
@@ -9,7 +9,7 @@ from pathlib import Path
 import random
 import threading
 
-from cairn import BLACK, Game, other
+from varde import BLACK, Game, other
 
 
 LEGACY_FEATURE_NAMES = (
@@ -21,7 +21,8 @@ LEGACY_FEATURE_NAMES = (
     "territory",
 )
 FEATURE_NAMES = LEGACY_FEATURE_NAMES + ("height", "rim", "groups")
-MODEL_FORMAT = "cairn-linear-eval"
+MODEL_FORMAT = "varde-linear-eval"
+LEGACY_MODEL_FORMAT = "cairn-linear-eval"
 MODEL_VERSION = 2
 RECIPE = "margin-v2"
 EARLY_LEARNING_RATE = 0.05
@@ -42,8 +43,14 @@ TRAINING_WATCHDOG_MULTIPLIER = 20
 
 
 def default_model_path():
-    override = os.environ.get("CAIRN_MODEL_PATH")
-    return Path(override).expanduser() if override else Path.home() / ".cairn" / "advanced-model.json"
+    override = os.environ.get("VARDE_MODEL_PATH") or os.environ.get("CAIRN_MODEL_PATH")
+    if override:
+        return Path(override).expanduser()
+    new = Path.home() / ".varde" / "advanced-model.json"
+    legacy = Path.home() / ".cairn" / "advanced-model.json"
+    if not new.exists() and legacy.exists():
+        return legacy
+    return new
 
 
 def training_board_size(attempt_index):
@@ -82,7 +89,7 @@ class LearningModel:
             return model
         try:
             payload = json.loads(model.path.read_text())
-            if payload.get("format") != MODEL_FORMAT:
+            if payload.get("format") not in (MODEL_FORMAT, LEGACY_MODEL_FORMAT):
                 raise ValueError("unsupported learning model")
             version = payload.get("version")
             raw = payload.get("weights", {})

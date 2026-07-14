@@ -2,9 +2,9 @@
 
 ## Repo Conventions
 
-- 2026-07-13: Varde is the public name; Cairn module names, save format, browser
+- 2026-07-13: Varde is the public name; Varde module names, save format, browser
   preferences, and `~/.cairn/advanced-model.json` remain compatibility surfaces.
-- 2026-07-13: The rules engine is isolated in `engine/cairn.py`; opponent work
+- 2026-07-13: The rules engine is isolated in `engine/varde.py`; opponent work
   must consume its legality and resolution APIs without editing it.
 - 2026-07-13: Profile selection normalizes at the seat boundary. Legacy
   Advanced is Standard + Personal; direct opponent calls retain Advanced only

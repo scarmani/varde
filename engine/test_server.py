@@ -2,7 +2,7 @@ import unittest
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
-from cairn import BLACK, WHITE, Game, Illegal
+from varde import BLACK, WHITE, Game, Illegal
 from learning import LearningModel
 from server import (
     MatchConfig,
