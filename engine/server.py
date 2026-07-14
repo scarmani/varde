@@ -431,6 +431,11 @@ def public_view(game, match=None, last_decision=None):
             "extension": point in extensions,
             "sky": has_sky(board, game.state, point, None),
             "group_libs": group_libs.get(point),
+            "segment": (
+                [list(v) for v in board.segments[point]]
+                if hasattr(board, "segments")
+                else None
+            ),
         }
         for point in board.points
     ]

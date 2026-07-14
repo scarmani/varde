@@ -21,6 +21,7 @@ from varde import (
     nb_heights,
     other,
     resolve,
+    score_cells,
     signature,
     terrain_ok,
 )
@@ -1058,10 +1059,17 @@ def greedy_decision(game, computer_color, style, seed=1):
                 1 for q in game.board.points
                 if state[q] and state[q][-1] == computer_color
             )
+            fenced = 0.0
+            if game.rules == "gjerde":
+                # Defense in a fencing game means completed fields:
+                # score the fenced-cell differential of the candidate.
+                cells = score_cells(game.board, state)
+                fenced = 30.0 * (cells[computer_color] - cells[enemy])
             score = (
                 10.0 * own_libs
                 - 50.0 * own_imperiled
                 + 20.0 * captured
+                + fenced
                 + 1.0 * controlled
             )
         key = (score, -_duel_tiebreak(point, seed))

@@ -114,6 +114,9 @@ class KagomeBoard:
         if len(set(mids)) != len(edge_sets):
             raise ValueError("line midpoints are not unique")
         self.points = sorted(mids)
+        self.segments = {
+            midpoint(e): tuple(sorted(e)) for e in edge_sets
+        }
         self.index = {p: i for i, p in enumerate(self.points)}
         by_vertex = {}
         for edge in edge_sets:
@@ -160,6 +163,36 @@ class KagomeBoard:
                 self.edge_cells.setdefault(line, []).append(cell)
 
     dist_to_rim = Board.dist_to_rim
+
+
+def score_cells(board, state):
+    """Gjerde: fenced fields. A connected region of cells (adjacent
+    through unclaimed lines) belongs to whoever claimed every line on
+    its boundary; lines themselves score nothing."""
+    pts = {BLACK: 0, WHITE: 0}
+    seen = set()
+    for start in board.cells:
+        if start in seen:
+            continue
+        region = []
+        border = set()
+        dq = deque([start])
+        seen.add(start)
+        while dq:
+            cell = dq.popleft()
+            region.append(cell)
+            for line in board.cell_edges[cell]:
+                stack = state[line]
+                if stack:
+                    border.add(stack[-1])
+                else:
+                    for nb in board.edge_cells[line]:
+                        if nb != cell and nb not in seen:
+                            seen.add(nb)
+                            dq.append(nb)
+        if len(border) == 1:
+            pts[border.pop()] += len(region)
+    return pts
 
 
 # ---------------------------------------------------------------------------
@@ -690,34 +723,7 @@ class Game:
         return pts
 
     def _score_cells(self):
-        """Gjerde: fenced fields. A connected region of cells (adjacent
-        through unclaimed lines) belongs to whoever claimed every line
-        on its boundary; lines themselves score nothing."""
-        b = self.board
-        pts = {BLACK: 0, WHITE: 0}
-        seen = set()
-        for start in b.cells:
-            if start in seen:
-                continue
-            region = []
-            border = set()
-            dq = deque([start])
-            seen.add(start)
-            while dq:
-                cell = dq.popleft()
-                region.append(cell)
-                for line in b.cell_edges[cell]:
-                    stack = self.state[line]
-                    if stack:
-                        border.add(stack[-1])
-                    else:
-                        for nb in b.edge_cells[line]:
-                            if nb != cell and nb not in seen:
-                                seen.add(nb)
-                                dq.append(nb)
-            if len(border) == 1:
-                pts[border.pop()] += len(region)
-        return pts
+        return score_cells(self.board, self.state)
 
     def score(self):
         if self.rules == "gjerde":

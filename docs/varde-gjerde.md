@@ -57,10 +57,14 @@ six per board size) and Balanced-mirror games:
 | Mirrors n=4 | margins 7–8 of 37 cells, 165–168 actions |
 | Mirrors n=5 | margins 4–5 of 61 cells, 250–262 actions |
 
-Caveats: the greedy defender's objective ignores fencing entirely, so
-the duel sweep overstates the attack bias; the Toy board (19 cells)
-produced a mirror draw and is too coarse to score — treat n=4 as the
-minimum real board. In over-the-board play against the Attacker
+Caveats: the Toy board (19 cells) produced a mirror draw and is too
+coarse to score — treat n=4 as the minimum real board. A second duel
+round with a fence-aware defender (its objective now values the
+fenced-cell differential, and it visibly completes loops) still lost
+12-0 with unchanged margins: at one-ply depth, killing decisively
+outraces fencing — a ten-line fence loses the tempo war against a
+hunter. Whether deeper search or human play rebalances this is the
+ruleset's central open question. In over-the-board play against the Attacker
 profile, a single heavy group was netted and annihilated despite the
 four-liberty geometry: liberties are shared resources, and a swarm of
 cheap contact stones starves one big group faster than it can capture
