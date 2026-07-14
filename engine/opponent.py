@@ -283,7 +283,10 @@ def _normalized_features(board, state, moves_played, include_v3):
     max_distance = max(1, 2 * (board.n - 1))
     occupied = black.controlled + white.controlled
     territory = 0.0
-    if occupied >= 0.55 * total:
+    if hasattr(board, "cells"):
+        cells = score_cells(board, state)
+        territory = (cells[BLACK] - cells[WHITE]) / max(1, len(board.cells))
+    elif occupied >= 0.55 * total:
         score = _area_score(board, state)
         territory = (score[BLACK] - score[WHITE]) / total
     black_height = 0
@@ -409,7 +412,13 @@ def evaluate_state(
     )
     value += weights["development"] * (mine.development - theirs.development)
     occupied = mine.controlled + theirs.controlled
-    if occupied >= 0.55 * len(board.points):
+    if hasattr(board, "cells"):
+        # Gjerde: fenced fields are the game's only score. Value them
+        # from the first move — fences complete midgame, and a 0.55
+        # occupancy gate would blind the evaluator for most of it.
+        cells = score_cells(board, state)
+        value += 25.0 * (cells[perspective] - cells[enemy])
+    elif occupied >= 0.55 * len(board.points):
         score = _area_score(board, state)
         value += weights["territory"] * (score[perspective] - score[enemy])
     v3_names = (
