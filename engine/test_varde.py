@@ -789,6 +789,76 @@ class TestRosetteRules(unittest.TestCase):
         self.assertEqual(attempt(g, p), ("illegal", "suicide"))
 
 
+# ---------------------------------------------------------------------- gjerde
+def gjerde_game(to_move, n=3):
+    g = Game(n, rules="gjerde")
+    g.to_move = to_move
+    g.moves_played = 6
+    g.history = {signature(g.board, g.state, to_move)}
+    return g
+
+
+class TestGjerde(unittest.TestCase):
+    def test_kagome_structure(self):
+        from collections import Counter
+        b = Game(3, rules="gjerde").board
+        self.assertEqual(len(b.points), 72)
+        self.assertEqual(len(b.cells), 19)
+        degrees = Counter(len(v) for v in b.neighbors.values())
+        self.assertEqual(dict(degrees), {2: 6, 3: 24, 4: 42})
+        for cell in b.cells:
+            self.assertEqual(len(b.cell_edges[cell]), 6)
+
+    def test_one_cell_fence_is_a_trap(self):
+        g = gjerde_game(BLACK)
+        fence = g.board.cell_edges[(0, 0)]
+        for line in fence:
+            put(g, line, WHITE)
+        outside = sorted(
+            {nb for line in fence for nb in g.board.neighbors[line]}
+            - set(fence)
+        )
+        for line in outside[:-1]:
+            put(g, line, BLACK)
+        g.history = {signature(g.board, g.state, BLACK)}
+        status, captured = attempt(g, outside[-1])
+        self.assertEqual((status, captured), ("legal", 6))
+
+    def test_two_cell_fence_is_life_and_scores_two(self):
+        g = gjerde_game(BLACK)
+        b = g.board
+        first = set(b.cell_edges[(0, 0)])
+        second = set(b.cell_edges[(1, 0)])
+        shared = (first & second).pop()
+        fence = sorted((first | second) - {shared})
+        self.assertEqual(len(fence), 10)
+        for line in fence:
+            put(g, line, WHITE)
+        seal(g, fence, BLACK, keep=(shared,))
+        g.history = {signature(g.board, g.state, BLACK)}
+        self.assertEqual(attempt(g, shared), ("illegal", "suicide"))
+        self.assertEqual(g._score_cells()[WHITE], 2)
+
+    def test_mixed_borders_score_nothing(self):
+        g = gjerde_game(BLACK)
+        b = g.board
+        put(g, b.cell_edges[(0, 0)][0], WHITE)
+        put(g, b.cell_edges[(0, 0)][1], BLACK)
+        score = g.score()
+        self.assertEqual(score, {BLACK: 0, WHITE: 0})
+
+    def test_gjerde_round_trips(self):
+        g = Game(3, rules="gjerde")
+        g.play(g.legal_placements()[7])
+        restored = Game.from_dict(g.to_dict())
+        self.assertEqual(restored.rules, "gjerde")
+        self.assertEqual(restored.state, g.state)
+        self.assertEqual(restored.score(), g.score())
+        self.assertEqual(
+            restored.legal_placements(), g.legal_placements()
+        )
+
+
 # ---------------------------------------------------------------------- breath
 def breath_game(to_move, rules="breath"):
     g = Game(3, rules=rules)

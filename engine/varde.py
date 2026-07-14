@@ -82,6 +82,86 @@ class Board:
         return dist
 
 
+class KagomeBoard:
+    """The hex grid's lines as playing points (Gjerde).
+
+    This is the line graph of the honeycomb — the kagome lattice. Each
+    point is the coordinate sum of a line's two endpoints (twice its
+    midpoint, so everything stays integral). Interior lines touch four
+    others, boundary lines three, and the six corner lines two. Cells
+    are the hexagonal fields the lines can fence.
+    """
+
+    EXPECTED_DEGREE = 4
+
+    def __init__(self, n):
+        self.n = n
+        base = Board(n)
+        edge_sets = sorted(
+            {
+                frozenset((p, q))
+                for p in base.points
+                for q in base.neighbors[p]
+            },
+            key=lambda e: tuple(sorted(e)),
+        )
+
+        def midpoint(edge):
+            (x1, y1), (x2, y2) = sorted(edge)
+            return (x1 + x2, y1 + y2)
+
+        mids = [midpoint(e) for e in edge_sets]
+        if len(set(mids)) != len(edge_sets):
+            raise ValueError("line midpoints are not unique")
+        self.points = sorted(mids)
+        self.index = {p: i for i, p in enumerate(self.points)}
+        by_vertex = {}
+        for edge in edge_sets:
+            for vertex in edge:
+                by_vertex.setdefault(vertex, []).append(midpoint(edge))
+        nbrs = {p: set() for p in self.points}
+        for incident in by_vertex.values():
+            for a in incident:
+                for b in incident:
+                    if a != b:
+                        nbrs[a].add(b)
+        self.neighbors = {p: tuple(sorted(v)) for p, v in nbrs.items()}
+        self.phantoms = {
+            p: self.EXPECTED_DEGREE - len(self.neighbors[p])
+            for p in self.points
+        }
+        self.rim = frozenset(p for p in self.points if self.phantoms[p] > 0)
+        self.deep = frozenset(
+            p
+            for p in self.points
+            if p not in self.rim
+            and all(nb not in self.rim for nb in self.neighbors[p])
+        )
+        self.cells = []
+        self.cell_edges = {}
+        for q in range(-(n - 1), n):
+            for r in range(-(n - 1), n):
+                if abs(q + r) > n - 1:
+                    continue
+                cx, cy = 3 * q, 2 * r + q
+                corners = [(cx + dx, cy + dy) for dx, dy in CORNERS]
+                lines = tuple(sorted(
+                    (
+                        corners[i][0] + corners[(i + 1) % 6][0],
+                        corners[i][1] + corners[(i + 1) % 6][1],
+                    )
+                    for i in range(6)
+                ))
+                self.cells.append((q, r))
+                self.cell_edges[(q, r)] = lines
+        self.edge_cells = {}
+        for cell, lines in self.cell_edges.items():
+            for line in lines:
+                self.edge_cells.setdefault(line, []).append(cell)
+
+    dist_to_rim = Board.dist_to_rim
+
+
 # ---------------------------------------------------------------------------
 # Position primitives.  state: dict point -> tuple(stack, bottom..top)
 # ---------------------------------------------------------------------------
@@ -324,7 +404,7 @@ EXTENSION_RULES = {
     "breath-run": {"scope": "chain", "after_move": False},
     "breath-cap": {"scope": "adjacent", "after_move": True},
 }
-BREATH_RULESETS = ("breath",) + tuple(EXTENSION_RULES)
+BREATH_RULESETS = ("breath",) + tuple(EXTENSION_RULES) + ("gjerde",)
 RULESETS = ("classic", "rosette") + BREATH_RULESETS
 
 
@@ -335,7 +415,7 @@ class Game:
                 "rules must be one of: " + ", ".join(RULESETS)
             )
         self.rules = rules
-        self.board = Board(n)
+        self.board = KagomeBoard(n) if rules == "gjerde" else Board(n)
         self.state = empty_state(self.board)
         self.to_move = BLACK
         self.history = set()
@@ -609,7 +689,39 @@ class Game:
                 pts[c] += 1
         return pts
 
+    def _score_cells(self):
+        """Gjerde: fenced fields. A connected region of cells (adjacent
+        through unclaimed lines) belongs to whoever claimed every line
+        on its boundary; lines themselves score nothing."""
+        b = self.board
+        pts = {BLACK: 0, WHITE: 0}
+        seen = set()
+        for start in b.cells:
+            if start in seen:
+                continue
+            region = []
+            border = set()
+            dq = deque([start])
+            seen.add(start)
+            while dq:
+                cell = dq.popleft()
+                region.append(cell)
+                for line in b.cell_edges[cell]:
+                    stack = self.state[line]
+                    if stack:
+                        border.add(stack[-1])
+                    else:
+                        for nb in b.edge_cells[line]:
+                            if nb != cell and nb not in seen:
+                                seen.add(nb)
+                                dq.append(nb)
+            if len(border) == 1:
+                pts[border.pop()] += len(region)
+        return pts
+
     def score(self):
+        if self.rules == "gjerde":
+            return self._score_cells()
         b = self.board
         pts = self.control_count()
         seen = set()
