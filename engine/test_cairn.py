@@ -789,5 +789,159 @@ class TestRosetteRules(unittest.TestCase):
         self.assertEqual(attempt(g, p), ("illegal", "suicide"))
 
 
+# ---------------------------------------------------------------------- breath
+def breath_game(to_move, rules="breath"):
+    g = Game(3, rules=rules)
+    g.to_move = to_move
+    g.moves_played = 6
+    g.history = {signature(g.board, g.state, to_move)}
+    return g
+
+
+def enclosure_of_point(g, eye):
+    """White ring enclosing `eye`, from the three cells around it."""
+    from cairn import CORNERS
+    comp = set()
+    for q in range(-2, 3):
+        for r in range(-2, 3):
+            cell = [(3 * q + dx, 2 * r + q + dy) for dx, dy in CORNERS]
+            if eye in cell:
+                comp.update(cell)
+    comp.discard(eye)
+    return sorted(comp)
+
+
+class TestBreathRules(unittest.TestCase):
+    def test_no_stacking_ever(self):
+        g = breath_game(BLACK)
+        p = deep_point(g.board)
+        put(g, p, WHITE)
+        g.history = {signature(g.board, g.state, BLACK)}
+        self.assertEqual(attempt(g, p), ("illegal", "stack"))
+
+    def test_open_field_capture_still_works(self):
+        g = breath_game(BLACK)
+        p = deep_point(g.board)
+        put(g, p, WHITE)
+        a, b, c = g.board.neighbors[p]
+        put(g, a, BLACK)
+        put(g, b, BLACK)
+        g.history = {signature(g.board, g.state, BLACK)}
+        status, captured = attempt(g, c)
+        self.assertEqual((status, captured), ("legal", 1))
+
+    def test_one_point_eye_is_unconditional_life(self):
+        g = breath_game(BLACK)
+        eye = (2, 0)
+        comp = enclosure_of_point(g, eye)
+        for p in comp:
+            put(g, p, WHITE)
+        seal(g, comp, BLACK, keep=(eye,))
+        g.history = {signature(g.board, g.state, BLACK)}
+        self.assertEqual(attempt(g, eye), ("illegal", "suicide"))
+
+    def test_wells_of_any_size_cannot_be_finished(self):
+        # White encloses eye plus a second cavity point next to it; Black
+        # may fill early cavity points but never the last one.
+        g = breath_game(BLACK)
+        eye = (2, 0)
+        comp = set(enclosure_of_point(g, eye))
+        extra = (4, 0)          # neighbor of the eye: cavity of size two
+        comp.discard(extra)
+        comp = sorted(comp)
+        for p in comp:
+            put(g, p, WHITE)
+        # grow the wall so the two-point cavity {eye, extra} is enclosed
+        for nb in g.board.neighbors[extra]:
+            if not g.state[nb] and nb != eye:
+                put(g, nb, WHITE)
+        seal(
+            g,
+            [p for p in g.board.points if g.state[p]],
+            BLACK,
+            keep=(eye, extra),
+        )
+        g.history = {signature(g.board, g.state, BLACK)}
+        status, captured = attempt(g, extra)   # first cavity fill breathes
+        self.assertEqual((status, captured), ("legal", 0))
+        g.play(extra)
+        g.history.add(signature(g.board, g.state, BLACK))
+        g.to_move = BLACK
+        self.assertEqual(attempt(g, eye), ("illegal", "suicide"))
+
+    def test_bare_face_ring_dies(self):
+        g = breath_game(BLACK)
+        ring = ring_of_cell(0, 0)
+        for p in ring:
+            put(g, p, WHITE)
+        outside = sorted(
+            {nb for p in ring for nb in g.board.neighbors[p]} - set(ring)
+        )
+        for p in outside[:-1]:
+            put(g, p, BLACK)
+        g.history = {signature(g.board, g.state, BLACK)}
+        status, captured = attempt(g, outside[-1])
+        self.assertEqual((status, captured), ("legal", 6))
+
+
+class TestBreathExtend(unittest.TestCase):
+    def setup_atari(self):
+        """White stone at a deep point with exactly one liberty left."""
+        g = breath_game(WHITE, rules="breath-extend")
+        p = deep_point(g.board)
+        a, b, c = g.board.neighbors[p]
+        put(g, p, WHITE)
+        put(g, a, BLACK)
+        put(g, b, BLACK)
+        g.history = {signature(g.board, g.state, WHITE)}
+        return g, p, c
+
+    def test_extension_is_free_and_turn_continues(self):
+        g, p, lib = self.setup_atari()
+        self.assertEqual(g.extension_candidates(), [lib])
+        g.play_extension(lib)
+        self.assertEqual(g.to_move, WHITE)      # still White's turn
+        self.assertEqual(g.state[lib], (WHITE,))
+        self.assertEqual(g.extension_candidates(), [])  # once per turn
+        with self.assertRaisesRegex(Illegal, "already used"):
+            g.play_extension(lib)
+        g.play(g.legal_placements()[0])         # normal move completes turn
+        self.assertEqual(g.to_move, BLACK)
+        self.assertFalse(g.extension_used)
+
+    def test_extension_requires_sole_liberty(self):
+        g = breath_game(WHITE, rules="breath-extend")
+        p = deep_point(g.board)
+        put(g, p, WHITE)                        # three liberties
+        g.history = {signature(g.board, g.state, WHITE)}
+        with self.assertRaisesRegex(Illegal, "sole liberty"):
+            g.play_extension(g.board.neighbors[p][0])
+
+    def test_extension_into_dead_end_is_illegal(self):
+        g, p, lib = self.setup_atari()
+        for nb in g.board.neighbors[lib]:
+            if nb != p and not g.state[nb]:
+                put(g, nb, BLACK)               # seal the flight square
+        g.history = {signature(g.board, g.state, WHITE)}
+        self.assertEqual(g.extension_candidates(), [])
+        with self.assertRaisesRegex(Illegal, "suicide"):
+            g.play_extension(lib)
+
+    def test_extension_absent_from_other_rulesets(self):
+        g = breath_game(WHITE, rules="breath")
+        with self.assertRaisesRegex(Illegal, "no extension"):
+            g.play_extension(deep_point(g.board))
+
+    def test_extension_state_round_trips(self):
+        g, p, lib = self.setup_atari()
+        g.play_extension(lib)
+        restored = Game.from_dict(g.to_dict())
+        self.assertTrue(restored.extension_used)
+        self.assertEqual(restored.rules, "breath-extend")
+        legacy = g.to_dict()
+        del legacy["extension_used"]
+        self.assertFalse(Game.from_dict(legacy).extension_used)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)
