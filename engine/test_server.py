@@ -256,6 +256,21 @@ class TestComputerMatch(unittest.TestCase):
         classic_view = public_view(Game(3), match)
         self.assertEqual(classic_view["rules"], "classic")
 
+    def test_view_exposes_liberty_counts_and_phantoms_for_breath(self):
+        game = Game(3, rules="breath")
+        game.play(game.legal_placements()[10])
+        view = public_view(game, MatchConfig())
+        occupied = [p for p in view["points"] if p["stack"]]
+        self.assertTrue(all(
+            isinstance(p["group_libs"], int) for p in occupied
+        ))
+        rims = [p for p in view["points"] if p["rim"]]
+        self.assertTrue(all(p["phantoms"] >= 1 for p in rims))
+        classic_view = public_view(Game(3), MatchConfig())
+        self.assertTrue(all(
+            p["group_libs"] is None for p in classic_view["points"]
+        ))
+
     def test_breath_extend_flows_through_view_and_computer(self):
         game = Game(3, rules="breath-extend")
         match = MatchConfig.from_new_game(

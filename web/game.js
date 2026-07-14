@@ -342,6 +342,39 @@ function draw() {
     ctx.stroke();
   }
 
+  // Phantom edges: every rim point is missing a neighbor, and forgetting
+  // that is the single most punishing misread in the game. Draw a stub
+  // toward off-board space with a bar across its end: no liberty here.
+  const centerX = canvas.width / 2;
+  const centerY = canvas.height / 2;
+  for (const point of game.points) {
+    if (!point.phantoms) continue;
+    const pos = projected.get(keyOf(point.coord));
+    const away = Math.atan2(pos.y - centerY, pos.x - centerX);
+    for (let i = 0; i < point.phantoms; i += 1) {
+      const angle = away + (i - (point.phantoms - 1) / 2) * 0.7;
+      const sx = pos.x + Math.cos(angle) * visual.stoneRadius * 0.9;
+      const sy = pos.y + Math.sin(angle) * visual.stoneRadius * 0.9;
+      const ex = pos.x + Math.cos(angle) * visual.stoneRadius * 1.8;
+      const ey = pos.y + Math.sin(angle) * visual.stoneRadius * 1.8;
+      ctx.strokeStyle = "rgba(140,60,45,.5)";
+      ctx.lineWidth = Math.max(1, visual.lineWidth * 0.6);
+      ctx.beginPath();
+      ctx.moveTo(sx, sy);
+      ctx.lineTo(ex, ey);
+      ctx.stroke();
+      const bar = visual.stoneRadius * 0.45;
+      ctx.beginPath();
+      ctx.moveTo(ex + Math.cos(angle + Math.PI / 2) * bar,
+                 ey + Math.sin(angle + Math.PI / 2) * bar);
+      ctx.lineTo(ex + Math.cos(angle - Math.PI / 2) * bar,
+                 ey + Math.sin(angle - Math.PI / 2) * bar);
+      ctx.stroke();
+    }
+  }
+  ctx.strokeStyle = "rgba(83,71,50,.48)";
+  ctx.lineWidth = visual.lineWidth;
+
   const activeWave = animation && animation.index < animation.waves.length
     ? new Set(animation.waves[animation.index].map(keyOf))
     : new Set();
@@ -403,6 +436,19 @@ function draw() {
         ctx.textBaseline = "middle";
         ctx.fillText(String(point.stack.length), pos.x, pos.y + 1);
       }
+      // Liberty warnings (flat rulesets): red ring at one liberty,
+      // amber at two — the bookkeeping the lattice punishes hardest.
+      if (point.group_libs === 1 || point.group_libs === 2) {
+        ctx.beginPath();
+        ctx.arc(pos.x, pos.y, radius * 1.18, 0, Math.PI * 2);
+        ctx.strokeStyle = point.group_libs === 1
+          ? "rgba(196,49,32,.9)"
+          : "rgba(214,138,32,.75)";
+        ctx.lineWidth = Math.max(
+          1.5, visual.lineWidth * (point.group_libs === 1 ? 1.1 : 0.7),
+        );
+        ctx.stroke();
+      }
     }
     if (point.sky) {
       ctx.beginPath();
@@ -441,7 +487,15 @@ function drawInspector(key) {
   const stack = point.stack.length ? point.stack.join(" → ") : "empty";
   ctx.fillText(`Stack: ${stack} · height ${point.stack.length}`, 32, 65);
   ctx.fillStyle = "#66675f";
-  ctx.fillText(`${point.legal ? "Legal" : "Not legal"}${point.sky ? " · sky liberty" : ""}`, 32, 84);
+  const libsNote = Number.isInteger(point.group_libs)
+    ? ` · group liberties: ${point.group_libs}`
+    : "";
+  const rimNote = point.phantoms ? " · rim (phantom neighbor)" : "";
+  ctx.fillText(
+    `${point.legal ? "Legal" : "Not legal"}`
+    + `${point.sky ? " · sky liberty" : ""}${libsNote}${rimNote}`,
+    32, 84,
+  );
 }
 
 function canvasPoint(event) {

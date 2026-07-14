@@ -125,3 +125,30 @@ even terminate, which defeats its simplicity.
 
 Attacker and Defender are playable in the browser as computer
 profiles under every ruleset.
+
+## Discoveries from human play (breath-run vs Attacker)
+
+Two properties surfaced in over-the-board play that the automated
+probes had not named:
+
+**Corner micro-life.** The board's six corners are pairs of degree-two
+points. Two stones flanking such a point can never be captured: the
+final fill would be a stone with zero pre-capture liberties, which
+breath-first forbids even when it would capture. The flanked point is
+an *eternal liberty* — a two-stone fortress, and the miniature form of
+breath's cavity-life. The same construction protects a larger army
+that shares the flanked point (three friendly neighbors around any
+point make it unfillable). Corners therefore carry real value, as in
+Go, and late-game "ataris" against eternal points are empty threats.
+
+**The mutual squeeze.** Under breath-run, herding an enemy chain with
+sequential ataris harvests whole rescue-turns of tempo — but every
+forced rescue-extension is also a stone placed against the herder's
+own walls. A chased chain traces the contour of the chaser: the
+caterpillar strangles the shepherd. Chasing profits only a player who
+keeps counting their own liberties while collecting tempi; in the
+recorded game the herder (a 22-stone advantage in forced tempi) lost
+a seven-stone group to exactly this and the game with it, 32–22.
+Liberty bookkeeping is the game's central skill, which is why the
+client now draws warning rings on one- and two-liberty groups and
+marks every phantom edge on the rim.
