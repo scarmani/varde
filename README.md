@@ -2,13 +2,13 @@
 
 [![Tests](https://github.com/scarmani/varde/actions/workflows/tests.yml/badge.svg)](https://github.com/scarmani/varde/actions/workflows/tests.yml)
 
-Varde — formerly Cairn — is a two-player territory game on a honeycomb lattice. Players surround
+Varde — formerly Varde — is a two-player territory game on a honeycomb lattice. Players surround
 territory, cover occupied columns, and use height-dependent sky liberties to
 survive capture cascades.
 
-**Naming.** The game was designed under the working title *Cairn* and renamed
+**Naming.** The game was designed under the working title *Varde* and renamed
 **Varde** — the Norwegian word for a summit cairn — because an unrelated 2019
-abstract strategy game already ships as *Cairn* (Matagot). Internal
+abstract strategy game already ships as *Varde* (Matagot). Internal
 identifiers keep the working name for compatibility: module names, the
 `cairn-game` save format, the `~/.cairn` model directory, and historical file
 paths. Existing saves and trained models load unchanged.
@@ -76,7 +76,7 @@ the browser-facing public state, two computer seats, legacy saves, deterministic
 Advanced evaluation, model persistence, and training cancellation.
 
 The `8N` limit used by diagnostic self-play is a watchdog for comparing
-policies, not a game rule or playable-program ceiling. Full-superko Cairn is
+policies, not a game rule or playable-program ceiling. Full-superko Varde is
 mathematically finite because terrain bounds every stack height and placements
 cannot repeat a recorded position. A policy that reaches the watchdog is
 reported as a long game; the application does not force it to end.
@@ -137,11 +137,11 @@ Evidence summaries live in `research/results/`.
 
 - `docs/varde-rules.md` — standalone rules, revision 1.3 (adds the stagnation ending)
 - `docs/design-history.md` — design lineage, retired claims, and playtest gates
-- `engine/cairn.py` — reference rules engine and versioned snapshots
+- `engine/varde.py` — reference rules engine and versioned snapshots
 - `engine/opponent.py` — local Casual/Standard computer opponent with profile weights
 - `engine/profiles.py` — versioned evaluator-profile catalog with validation evidence
 - `engine/learning.py` — persistent linear model and background self-play trainer
-- `engine/test_cairn.py` — known-answer position and controller tests
+- `engine/test_varde.py` — known-answer position and controller tests
 - `engine/selfplay.py` — random, greedy, and epsilon-greedy telemetry
 - `engine/server.py` — local JSON API and static-file server
 - `research/` — reproducible V2 training, paired evaluation, and checkpoints

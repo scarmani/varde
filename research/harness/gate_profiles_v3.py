@@ -23,7 +23,7 @@ for path in (HARNESS_ROOT, ENGINE_ROOT):
     if str(path) not in sys.path:
         sys.path.insert(0, str(path))
 
-from cairn import BLACK, WHITE  # noqa: E402
+from varde import BLACK, WHITE  # noqa: E402
 from curate_v3 import PROFILE_RULES, load_hashed, normalized_distance  # noqa: E402
 from map_elites_v3 import (  # noqa: E402
     DESCRIPTORS,

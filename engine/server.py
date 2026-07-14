@@ -1,4 +1,4 @@
-"""Dependency-free local web server for Cairn play and AI training."""
+"""Dependency-free local web server for Varde play and AI training."""
 
 import argparse
 from dataclasses import dataclass, replace
@@ -8,7 +8,7 @@ from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import urlparse
 
-from cairn import BLACK, WHITE, Game, Illegal, has_sky, other
+from varde import BLACK, RULESETS, WHITE, Game, Illegal, has_sky, other
 from learning import LearningModel, TRAINING_BATCHES, TrainingService
 from opponent import choose_decision
 from profiles import (
@@ -401,6 +401,7 @@ def _decision_payload(decision, explain):
 def public_view(game, match=None, last_decision=None):
     match = match or MatchConfig()
     legal = set() if game.finished else set(game.legal_placements())
+    extensions = set(game.extension_candidates())
     board = game.board
     points = [
         {
@@ -409,6 +410,7 @@ def public_view(game, match=None, last_decision=None):
             "rim": point in board.rim,
             "deep": point in board.deep,
             "legal": point in legal,
+            "extension": point in extensions,
             "sky": has_sky(board, game.state, point, None),
         }
         for point in board.points
@@ -421,6 +423,7 @@ def public_view(game, match=None, last_decision=None):
     ]
     return {
         "n": board.n,
+        "rules": game.rules,
         "points": points,
         "edges": edges,
         "to_move": game.to_move,
@@ -478,6 +481,10 @@ def apply_computer_action(game, match, model=None):
         raise Illegal("it is not the computer's turn")
     selected_profile = get_profile(seat.profile)
     active_model = MODEL if model is None else model
+    if not game.finished:
+        candidates = game.extension_candidates()
+        if candidates:
+            game.play_extension(candidates[0])
     decision = choose_decision(
         game,
         color,
@@ -504,7 +511,7 @@ def apply_computer_action(game, match, model=None):
     return decision
 
 
-class CairnHandler(SimpleHTTPRequestHandler):
+class VardeHandler(SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, directory=str(WEB_ROOT), **kwargs)
 
@@ -572,7 +579,12 @@ class CairnHandler(SimpleHTTPRequestHandler):
                     n = int(body.get("n", 3))
                     if n not in (3, 4, 5, 6):
                         raise ValueError("board size must be 3, 4, 5, or 6")
-                    game = Game(n)
+                    rules = body.get("rules", "classic")
+                    if rules not in RULESETS:
+                        raise ValueError(
+                            "rules must be one of: " + ", ".join(RULESETS)
+                        )
+                    game = Game(n, rules=rules)
                     MATCH = MatchConfig.from_new_game(game, body)
                     GAME = game
                     LAST_DECISION = None
@@ -585,6 +597,16 @@ class CairnHandler(SimpleHTTPRequestHandler):
                     if point not in GAME.state:
                         raise ValueError("point is off board")
                     GAME.play(point)
+                    MATCH.clear_end_acceptances()
+                elif route == "/api/extend":
+                    assert_human_action(GAME, MATCH)
+                    raw = body.get("point")
+                    if not isinstance(raw, list) or len(raw) != 2:
+                        raise ValueError("point must be [x,y]")
+                    point = (int(raw[0]), int(raw[1]))
+                    if point not in GAME.state:
+                        raise ValueError("point is off board")
+                    GAME.play_extension(point)
                     MATCH.clear_end_acceptances()
                 elif route == "/api/pass":
                     assert_human_action(GAME, MATCH)
@@ -613,16 +635,16 @@ class CairnHandler(SimpleHTTPRequestHandler):
             self._json({"error": str(exc)}, 400)
 
     def log_message(self, format, *args):
-        print(f"[cairn] {self.address_string()} {format % args}")
+        print(f"[varde] {self.address_string()} {format % args}")
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Run the local Cairn web game")
+    parser = argparse.ArgumentParser(description="Run the local Varde web game")
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=8000)
     args = parser.parse_args()
-    server = ThreadingHTTPServer((args.host, args.port), CairnHandler)
-    print(f"Cairn ready at http://{args.host}:{args.port}")
+    server = ThreadingHTTPServer((args.host, args.port), VardeHandler)
+    print(f"Varde ready at http://{args.host}:{args.port}")
     try:
         server.serve_forever()
     except KeyboardInterrupt:

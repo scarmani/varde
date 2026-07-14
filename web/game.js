@@ -6,6 +6,7 @@ const passButton = document.querySelector("#pass-btn");
 const swapButton = document.querySelector("#swap-btn");
 const resumeButton = document.querySelector("#resume-btn");
 const sizeSelect = document.querySelector("#board-size");
+const rulesSelect = document.querySelector("#ruleset");
 const modeSelect = document.querySelector("#game-mode");
 const colorSelect = document.querySelector("#human-color");
 const difficultySelect = document.querySelector("#difficulty");
@@ -42,7 +43,10 @@ let training = null;
 let trainingPoll = null;
 let profileCatalog = null;
 
-const savedSpeed = Number(localStorage.getItem("cairn-playback-speed"));
+const savedSpeed = Number(
+  localStorage.getItem("varde-playback-speed")
+  ?? localStorage.getItem("cairn-playback-speed"),
+);
 const playbackSpeed = [1200, 500, 100].includes(savedSpeed) ? savedSpeed : 500;
 speedSelect.value = String(playbackSpeed);
 
@@ -112,6 +116,7 @@ function updateProfileNote() {
 
 function syncSetupControls() {
   if (!game?.match) return;
+  if (game.rules) rulesSelect.value = game.rules;
   modeSelect.value = game.match.mode;
   if (game.match.human_color) colorSelect.value = game.match.human_color;
   difficultySelect.value = game.match.difficulty;
@@ -186,8 +191,9 @@ function updateControls() {
   // During play the whole-region score is misleading (one stone can
   // "border" the entire open board), so show outright control instead.
   const control = game.control || game.score;
-  const controlText = `Black ${control.B} · White ${control.W}`;
-  const scoreText = `Black ${game.score.B} · White ${game.score.W}`;
+  const rulesTag = game.rules && game.rules !== "classic" ? ` · ${game.rules}` : "";
+  const controlText = `Black ${control.B} · White ${control.W}${rulesTag}`;
+  const scoreText = `Black ${game.score.B} · White ${game.score.W}${rulesTag}`;
   const setTurnText = (primary, secondary) => {
     const small = document.createElement("small");
     small.textContent = secondary;
@@ -206,6 +212,13 @@ function updateControls() {
       `${game.current_player} · ${game.to_move === "B" ? "Black" : "White"} to move`,
       `${controlText} · move ${game.moves_played + 1}`,
     );
+  }
+  if (
+    !thinking && !game.finished && !game.match?.computer_turn
+    && game.points?.some((p) => p.extension)
+  ) {
+    message.textContent =
+      "Free extension available — the amber point rescues your group without costing your move.";
   }
   const computerTurn = game.match?.computer_turn || thinking;
   passButton.disabled = game.finished || game.moves_played === 0 || computerTurn;
@@ -341,7 +354,9 @@ function draw() {
         0,
         Math.PI * 2,
       );
-      ctx.strokeStyle = "rgba(74,112,70,.75)";
+      ctx.strokeStyle = point.extension
+        ? "rgba(191,111,42,.95)"
+        : "rgba(74,112,70,.75)";
       ctx.lineWidth = top ? visual.lineWidth : Math.max(1.5, visual.lineWidth * 0.7);
       ctx.stroke();
     }
@@ -433,6 +448,7 @@ function canvasPoint(event) {
 }
 
 function nearestPoint(event) {
+  if (!visual) return null;
   const mouse = canvasPoint(event);
   let best = null;
   let distance = Infinity;
@@ -453,6 +469,12 @@ canvas.addEventListener("click", async (event) => {
   const key = nearestPoint(event);
   const point = game.points.find((p) => keyOf(p.coord) === key);
   if (!point || !point.legal || game.finished) return;
+  // A free extension keeps the turn: clicking its marked point is
+  // strictly better than playing there, so it takes precedence.
+  if (point.extension) {
+    await humanAction("/api/extend", {point: point.coord});
+    return;
+  }
   await humanAction("/api/play", {point: point.coord});
 });
 
@@ -462,6 +484,7 @@ document.querySelector("#new-btn").addEventListener("click", async () => {
   try {
     setGame(await request("/api/new", {
       n: Number(sizeSelect.value),
+      rules: rulesSelect.value,
       mode: modeSelect.value,
       human_color: colorSelect.value,
       difficulty: difficultySelect.value,
@@ -500,7 +523,7 @@ playButton.addEventListener("click", () => {
 stepButton.addEventListener("click", () => scheduleComputerMove(true));
 
 speedSelect.addEventListener("change", () => {
-  localStorage.setItem("cairn-playback-speed", speedSelect.value);
+  localStorage.setItem("varde-playback-speed", speedSelect.value);
   if (watchPlaying) {
     playbackNote.textContent = `${speedSelect.options[speedSelect.selectedIndex].text} playback`;
   }
@@ -511,7 +534,7 @@ document.querySelector("#save-btn").addEventListener("click", async () => {
   const blob = new Blob([JSON.stringify(snapshot, null, 2)], {type: "application/json"});
   const link = document.createElement("a");
   link.href = URL.createObjectURL(blob);
-  link.download = "cairn-game.json";
+  link.download = "varde-game.json";
   link.click();
   URL.revokeObjectURL(link.href);
 });

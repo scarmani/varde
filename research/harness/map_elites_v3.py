@@ -30,7 +30,7 @@ ENGINE_ROOT = REPO_ROOT / "engine"
 if str(ENGINE_ROOT) not in sys.path:
     sys.path.insert(0, str(ENGINE_ROOT))
 
-from cairn import BLACK, WHITE, Game, Illegal, control, other  # noqa: E402
+from varde import BLACK, WHITE, Game, Illegal, control, other  # noqa: E402
 from opponent import BALANCED_WEIGHTS, choose_decision  # noqa: E402
 
 

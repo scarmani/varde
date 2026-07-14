@@ -1,4 +1,4 @@
-"""Instrumented Cairn self-play smoke tests.
+"""Instrumented Varde self-play smoke tests.
 
 Policies are diagnostic, not claims about strong play:
 
@@ -13,7 +13,7 @@ import random
 import statistics
 import sys
 
-from cairn import BLACK, WHITE, Game, Illegal, height
+from varde import BLACK, WHITE, Game, Illegal, height
 
 
 def scan_placements(game):
@@ -32,7 +32,7 @@ def scan_placements(game):
 
 def greedy_move(game, rng, legal):
     """Return the move with best immediate area gain, or None to pass."""
-    from cairn import other
+    from varde import other
 
     me = game.to_move
     base = game.score()

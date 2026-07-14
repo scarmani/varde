@@ -3,7 +3,7 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 import unittest
 
-from cairn import BLACK
+from varde import BLACK
 
 from research.harness.map_elites_v3 import (
     DESCRIPTORS,

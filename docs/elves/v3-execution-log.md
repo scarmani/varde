@@ -54,7 +54,7 @@
 
 **Regression attestation:**
 
-- `engine/cairn.py` diff against `1da66f7` remains empty.
+- `engine/varde.py` diff against `1da66f7` remains empty.
 - Test baseline: 117 -> 118 with the new acceptance/rejection server test.
 - Confidence: HIGH. Every shipped number traces to a hashed evidence file.
 
@@ -178,7 +178,7 @@ profile availability is known in Batch 5.
   historical V2 research artifacts, and the unchanged Personal model path.
 - README terminology is intentionally deferred until Batch 5 determines which
   curated profiles satisfy their immutable availability gates.
-- `git diff --check 1da66f7...HEAD` passed and `engine/cairn.py` is absent from
+- `git diff --check 1da66f7...HEAD` passed and `engine/varde.py` is absent from
   the cumulative changed-file list.
 
 **Decision:** no entropy repair is warranted; proceed to Batch 4.
@@ -263,7 +263,7 @@ browser/final documentation batches so instructions match the completed UI.
 - `node --check web/game.js` and Python compilation — PASS.
 - V2 benchmark smoke — approximately 28/52 ms Toy and 397/742 ms Full for
   Standard/Personal after fast-path repair, within the historical envelope.
-- `git diff -- engine/cairn.py` — empty.
+- `git diff -- engine/varde.py` — empty.
 
 **Review findings:**
 

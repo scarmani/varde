@@ -4,7 +4,7 @@
 
 Implement `docs/plans/evaluator-profiles-v3.md` completely on an owned feature
 branch. Preserve exact Balanced decisions, all compatibility surfaces, the
-Personal model, and `engine/cairn.py`; publish only profiles that pass the
+Personal model, and `engine/varde.py`; publish only profiles that pass the
 predeclared evidence gates.
 
 ## Run Control
@@ -16,7 +16,7 @@ predeclared evidence gates.
 - **Checkpoint semantics:** none
 - **May continue after checkpoint:** yes
 - **Actual stop conditions:** all batches complete and verified, explicit user stop, or a genuine blocker with no safe workaround
-- **Workspace ownership:** `feat/evaluator-profiles-v3` in `/Users/armand/Development/cairn`; no other active writer
+- **Workspace ownership:** `feat/evaluator-profiles-v3` in `/Users/armand/Development/varde`; no other active writer
 - **Branch tip at start:** `1da66f7a40bd6c336d2a5fd5bc472ff2ddf040bc`
 - **Merge policy:** user-merges; never merge this run
 - **Final-response policy:** disallowed while planned work remains
@@ -41,7 +41,7 @@ predeclared evidence gates.
 
 ## Non-Negotiables
 
-- Never modify `engine/cairn.py` or live game rules.
+- Never modify `engine/varde.py` or live game rules.
 - Never add live-game cutoffs or optimize search depth as style.
 - Never overwrite the Personal model or weaken legacy compatibility.
 - Never weaken, skip, or delete tests to clear a gate.
@@ -116,6 +116,6 @@ notification: final task response
 
 Read this guide, `.elves-session.json`, learnings, plan, execution log,
 `progress.md`, then the first incomplete batch. Confirm HEAD has not moved to an
-unknown commit and `engine/cairn.py` still has no diff before resuming.
+unknown commit and `engine/varde.py` still has no diff before resuming.
 
 # READ THIS FILE FIRST AFTER ANY COMPACTION OR RESTART

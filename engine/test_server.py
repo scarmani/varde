@@ -2,7 +2,7 @@ import unittest
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
-from cairn import BLACK, WHITE, Game, Illegal
+from varde import BLACK, WHITE, Game, Illegal
 from learning import LearningModel
 from server import (
     MatchConfig,
@@ -241,6 +241,33 @@ class TestComputerMatch(unittest.TestCase):
                         "profile": profile,
                     },
                 )
+
+    def test_rosette_games_expose_rules_and_round_trip(self):
+        game = Game(3, rules="rosette")
+        match = MatchConfig.from_new_game(
+            game,
+            {"mode": "computer", "human_color": BLACK, "profile": "balanced"},
+        )
+        view = public_view(game, match)
+        self.assertEqual(view["rules"], "rosette")
+        payload = snapshot_payload(game, match)
+        restored, _ = load_snapshot(payload)
+        self.assertEqual(restored.rules, "rosette")
+        classic_view = public_view(Game(3), match)
+        self.assertEqual(classic_view["rules"], "classic")
+
+    def test_breath_extend_flows_through_view_and_computer(self):
+        game = Game(3, rules="breath-extend")
+        match = MatchConfig.from_new_game(
+            game,
+            {"mode": "computer", "human_color": WHITE, "profile": "balanced"},
+        )
+        apply_computer_action(game, match)      # Black opens
+        view = public_view(game, match)
+        self.assertEqual(view["rules"], "breath-extend")
+        self.assertIn("extension", view["points"][0])
+        # No group is in atari on move two: no extension flagged
+        self.assertFalse(any(p["extension"] for p in view["points"]))
 
     def test_curated_profiles_are_accepted_in_both_modes(self):
         for profile in ("mason", "surveyor"):

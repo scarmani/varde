@@ -29,24 +29,24 @@ They are never loaded by the application.
 ## Reproducible V2 workflow
 
 Run commands from the repository root. Output paths are explicit and default to
-`/tmp/cairn-v2`, keeping generated evidence out of the source tree.
+`/tmp/varde-v2`, keeping generated evidence out of the source tree.
 
 ```bash
 python3 research/harness/train_v2.py \
-  --games 200 --seed 20260712 --output-dir /tmp/cairn-v2
+  --games 200 --seed 20260712 --output-dir /tmp/varde-v2
 
 python3 research/harness/evaluate_v2.py \
-  /tmp/cairn-v2/advanced-model-v2.json \
+  /tmp/varde-v2/advanced-model-v2.json \
   --toy-pairs 75 --beginner-pairs 25 --seed 9102026 \
-  --output-dir /tmp/cairn-v2
+  --output-dir /tmp/varde-v2
 
 python3 research/harness/benchmark_v2.py \
-  /tmp/cairn-v2/advanced-model-v2.json \
-  --samples 20 --output /tmp/cairn-v2/benchmark.json
+  /tmp/varde-v2/advanced-model-v2.json \
+  --samples 20 --output /tmp/varde-v2/benchmark.json
 
 python3 research/harness/smoke_v2.py \
-  /tmp/cairn-v2/advanced-model-v2.json \
-  --pairs 2 --output /tmp/cairn-v2/smoke.json
+  /tmp/varde-v2/advanced-model-v2.json \
+  --pairs 2 --output /tmp/varde-v2/smoke.json
 ```
 
 Training logs every global attempt to `training.jsonl`; evaluation logs every
@@ -93,7 +93,7 @@ game cutoff.
 
 The exact checkpoint and compact aggregate are retained in `results/`. Raw
 per-attempt and per-pair JSONL from this run was generated outside the tree at
-`/tmp/cairn-v2-final` and can be reproduced with the commands above.
+`/tmp/varde-v2-final` and can be reproduced with the commands above.
 
 ## Evaluator Profiles V3 quality-diversity search
 

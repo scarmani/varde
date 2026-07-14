@@ -1,4 +1,4 @@
-"""Bounded, rule-aware computer opponent for Cairn.
+"""Bounded, rule-aware computer opponent for Varde.
 
 The opponent deliberately uses shallow heuristic search rather than the
 self-play policies.  It is intended to provide coherent local practice play,
@@ -10,7 +10,7 @@ import hashlib
 import time
 from types import MappingProxyType
 
-from cairn import (
+from varde import (
     BLACK,
     Illegal,
     WHITE,

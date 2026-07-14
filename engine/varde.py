@@ -1,6 +1,6 @@
-"""Cairn rules engine (reference implementation).
+"""Varde rules engine (reference implementation).
 
-Implements the Cairn rules document (rev 1.3) exactly:
+Implements the Varde rules document (rev 1.3) exactly:
 board, terrain, summits, skies with placed-this-turn exclusion,
 simultaneous capture waves with per-wave re-evaluation, global
 mover suicide, situational superko over full stacks, scoring,
@@ -179,6 +179,8 @@ def group_alive(board, state, comp, placed, rules="classic"):
                 return True
     if rules == "rosette":
         return group_has_ring(board, comp)
+    if rules in BREATH_RULESETS:
+        return False  # flat game: empty-adjacent points are the only liberties
     for p in comp:
         if has_sky(board, state, p, placed):
             return True
@@ -221,9 +223,14 @@ def resolve(board, state, p, color, history, trace=None, rules="classic"):
     `history` is a set of signatures already recorded.
     """
     # 0. rosette stacking gate: occupied columns accept a stone only when
-    #    they belong to an enemy group breathing through skies alone
-    if rules == "rosette" and state[p]:
-        if not _enemy_column_is_sky_bound(board, state, p, color):
+    #    they belong to an enemy group breathing through skies alone.
+    #    Breath rulesets are flat games: no stacking at all.
+    if state[p]:
+        if rules in BREATH_RULESETS:
+            raise Illegal("stack")
+        if rules == "rosette" and not _enemy_column_is_sky_bound(
+            board, state, p, color
+        ):
             raise Illegal("stack")
 
     # 1. terrain
@@ -236,6 +243,15 @@ def resolve(board, state, p, color, history, trace=None, rules="classic"):
     st[p] = st[p] + (color,)
     placed = p
     enemy = other(color)
+
+    # 2b. breath-first: the placed group must have a liberty counted
+    #     before any removals — capture never legalizes a breathless stone
+    if rules in BREATH_RULESETS:
+        comp = next(
+            g for g in groups_of(board, st, color) if p in g
+        )
+        if not group_alive(board, st, comp, placed, rules):
+            raise Illegal("suicide")
 
     # 3. summit: two-of-three majority, or an enemy group without a liberty
     #    at this moment, before any removal
@@ -283,7 +299,8 @@ def resolve(board, state, p, color, history, trace=None, rules="classic"):
 # ---------------------------------------------------------------------------
 # Game controller: turns, passes, resumption, scoring
 # ---------------------------------------------------------------------------
-RULESETS = ("classic", "rosette")
+RULESETS = ("classic", "rosette", "breath", "breath-extend")
+BREATH_RULESETS = ("breath", "breath-extend")
 
 
 class Game:
@@ -302,6 +319,7 @@ class Game:
         self.finished = False
         self.no_progress_end = False
         self.resumption_used = False
+        self.extension_used = False
         self.players = {BLACK: "Player 1", WHITE: "Player 2"}
         self.swap_decided = False
         self.last_capture_waves = []
@@ -342,6 +360,75 @@ class Game:
             rules=self.rules,
         )
 
+    def extension_candidates(self):
+        """Sole liberties of the mover's one-liberty groups (breath-extend).
+
+        Returns the points where the mover could legally place the
+        optional pre-move extension this turn.
+        """
+        if (
+            self.rules != "breath-extend"
+            or self.finished
+            or self.extension_used
+        ):
+            return []
+        out = set()
+        for comp in groups_of(self.board, self.state, self.to_move):
+            libs = {
+                nb
+                for q in comp
+                for nb in self.board.neighbors[q]
+                if not self.state[nb]
+            }
+            if len(libs) == 1:
+                out.update(libs)
+        legal = []
+        for p in sorted(out):
+            try:
+                resolve(
+                    self.board, self.state, p, self.to_move, self.history,
+                    rules=self.rules,
+                )
+                legal.append(p)
+            except Illegal:
+                pass
+        return legal
+
+    def play_extension(self, p):
+        """Breath-extend: freely extend one atari'd group into its sole
+        liberty. The turn does not pass; a normal move must follow."""
+        if self.rules != "breath-extend":
+            raise Illegal("no extension in this ruleset")
+        if self.finished:
+            raise Illegal("game over")
+        if self.extension_used:
+            raise Illegal("extension already used this turn")
+        eligible = False
+        for comp in groups_of(self.board, self.state, self.to_move):
+            libs = {
+                nb
+                for q in comp
+                for nb in self.board.neighbors[q]
+                if not self.state[nb]
+            }
+            if libs == {p}:
+                eligible = True
+                break
+        if not eligible:
+            raise Illegal("extension must fill a group's sole liberty")
+        waves = []
+        st, captured = resolve(
+            self.board, self.state, p, self.to_move, self.history,
+            trace=waves, rules=self.rules,
+        )
+        self.state = st
+        self.history.add(signature(self.board, self.state, self.to_move))
+        self.extension_used = True
+        self.consecutive_passes = 0
+        self.quiet_moves = 0
+        self.last_capture_waves = waves
+        return captured
+
     def play(self, p):
         if self.finished:
             raise Illegal("game over")
@@ -365,6 +452,7 @@ class Game:
         if was_swap_reply:
             self.swap_decided = True
         self.last_capture_waves = waves
+        self.extension_used = False
         if self.quiet_moves >= NO_PROGRESS_LIMIT:
             self.finished = True
             self.no_progress_end = True
@@ -387,6 +475,7 @@ class Game:
         if self.quiet_moves >= NO_PROGRESS_LIMIT:
             self.finished = True
             self.no_progress_end = True
+        self.extension_used = False
         self.last_capture_waves = []
 
     @property
@@ -469,7 +558,7 @@ class Game:
             for sig in sorted(self.history, key=repr)
         ]
         return {
-            "format": "cairn-game",
+            "format": "varde-game",
             "version": 1,
             "n": self.board.n,
             "rules": self.rules,
@@ -482,6 +571,7 @@ class Game:
             "finished": self.finished,
             "no_progress_end": self.no_progress_end,
             "resumption_used": self.resumption_used,
+            "extension_used": self.extension_used,
             "players": dict(self.players),
             "swap_decided": self.swap_decided,
         }
@@ -489,8 +579,8 @@ class Game:
     @classmethod
     def from_dict(cls, payload):
         """Restore a snapshot created by :meth:`to_dict`."""
-        if payload.get("format") != "cairn-game" or payload.get("version") != 1:
-            raise ValueError("unsupported Cairn snapshot")
+        if payload.get("format") not in ("varde-game", "cairn-game") or payload.get("version") != 1:
+            raise ValueError("unsupported Varde snapshot")
         n = payload.get("n")
         if not isinstance(n, int) or n < 1:
             raise ValueError("invalid board size")
@@ -530,6 +620,7 @@ class Game:
         game.finished = bool(payload.get("finished", False))
         game.no_progress_end = bool(payload.get("no_progress_end", False))
         game.resumption_used = bool(payload.get("resumption_used", False))
+        game.extension_used = bool(payload.get("extension_used", False))
         players = payload.get("players", {})
         if set(players) != {BLACK, WHITE} or not all(
             isinstance(name, str) and name for name in players.values()

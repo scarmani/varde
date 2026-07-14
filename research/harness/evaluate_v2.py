@@ -20,7 +20,7 @@ def main():
     parser.add_argument("--toy-pairs", type=int, default=75)
     parser.add_argument("--beginner-pairs", type=int, default=25)
     parser.add_argument("--seed", type=int, default=9102026)
-    parser.add_argument("--output-dir", type=Path, default=Path("/tmp/cairn-v2"))
+    parser.add_argument("--output-dir", type=Path, default=Path("/tmp/varde-v2"))
     args = parser.parse_args()
     if args.toy_pairs < 0 or args.beginner_pairs < 0:
         parser.error("pair counts cannot be negative")

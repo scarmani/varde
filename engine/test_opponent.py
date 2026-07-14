@@ -3,7 +3,7 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 from unittest.mock import patch
 
-from cairn import BLACK, WHITE, Game, control
+from varde import BLACK, WHITE, Game, control
 from learning import LearningModel
 from opponent import (
     _features,
@@ -13,7 +13,7 @@ from opponent import (
     _swap_value,
     choose_decision,
 )
-from test_cairn import find_single_well, put
+from test_varde import find_single_well, put
 
 
 class TestOpponentEvaluation(unittest.TestCase):

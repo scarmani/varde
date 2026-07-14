@@ -1,6 +1,6 @@
-# Cairn — design history and playtest protocol
+# Varde — design history and playtest protocol
 
-This document preserves the design lineage (formerly "Grounded Cairn"),
+This document preserves the design lineage (formerly "Grounded Varde"),
 including retired claims and the playtest protocol. The rules in
 `varde-rules.md` are authoritative; this file explains why they are what
 they are, and what remains open.
@@ -10,7 +10,7 @@ they are, and what remains open.
 The game emerged from an adversarial exchange between two AI systems, each
 round attacking the other's ruleset with concrete positions. Major stages:
 
-1. **Cairn v1–v2** — global height-3 cap, surface control, universal skies.
+1. **Varde v1–v2** — global height-3 cap, surface control, universal skies.
    Broken: only full-height groups were capturable; capping was
    unconditionally legal; endgame cap–recap grind.
 2. **Terrain ceiling (v3)** — "place only while the column is ≤ every
@@ -21,7 +21,7 @@ round attacking the other's ruleset with concrete positions. Major stages:
    erosion line broke two-eye life. An impossibility argument was framed:
    surface readability + enemy capping + classical life seemed jointly
    unsatisfiable.
-4. **Dormant sky + majority summits (Grounded Cairn)** — both human-proposed.
+4. **Dormant sky + majority summits (Grounded Varde)** — both human-proposed.
    The dormant sky (a newborn stone cannot breathe through the sky it just
    created) made eye invasion suicide, deleting the phase machinery; the
    majority summit rule made capping shape-dependent. The "impossibility"
@@ -117,7 +117,7 @@ Sample-size note: bands assume ≥100 games per condition.
 
 ## Engine status (2026-07-12)
 
-`engine/cairn.py` implements the rules procedure and exposes each capture wave
+`engine/varde.py` implements the rules procedure and exposes each capture wave
 separately. The executable suite covers the known collar-condition,
 wall-stranding, eight-support twin-well, peel-that-kills, opening-placement,
 swap-identity, and serialization cases. Self-play results are diagnostic only:
@@ -170,7 +170,7 @@ larger held-out samples should guide later feature and training changes.
 Standard's two-ply reply scan now treats pass as a legal opponent reply, both
 after ordinary candidates and while evaluating a pie-rule takeover. Black
 opening search also includes White's legal takeover as a reply. These are
-search corrections, not rule changes; `engine/cairn.py` remains unchanged.
+search corrections, not rule changes; `engine/varde.py` remains unchanged.
 
 Computer-vs-computer endings now ask both persisted seat identities whether to
 accept the first two-pass result. The first acceptance does not deny the other
@@ -188,26 +188,26 @@ the paired gate documented in `research/README.md`.
 
 ## Lineage and prior art (2026-07-13)
 
-Cairn is a descendant of Go: groups, liberties, capture by surround, suicide,
+Varde is a descendant of Go: groups, liberties, capture by surround, suicide,
 positional superko, area scoring, and the pie rule are all inherited, and the
 design should always say so plainly. Research into neighboring designs found
-no game combining Cairn's terrain rule, summit majority, strict skies,
+no game combining Varde's terrain rule, summit majority, strict skies,
 top-layer peeling with recursive capture waves, and collar-conditional life —
 but it did find genuine neighbors that deserve acknowledgment:
 
 - **Margo** (Cameron Browne) is the closest mechanical ancestor: Go-like
   connected groups and freedom-based capture played with stackable pieces,
   including buried pieces that outlive capture, suicide-with-capture, ko, and
-  a swap rule. Cairn arrived at columns, skies, and peeling independently, but
+  a swap rule. Varde arrived at columns, skies, and peeling independently, but
   Margo owns the broad idea of "Go liberties plus vertical stacking."
 - **Rosette** (Abstract Games issue 13, 2003) is a Go variant played on the
   intersections of a hexagonal tessellation — the same three-neighbor
-  honeycomb topology as Cairn's board, with ordinary flat stones.
+  honeycomb topology as Varde's board, with ordinary flat stones.
 - **Tumbleweed** (Mike Zapawa) shares the hexagonal board, variable-height
   stacks, pie rule, and territorial scoring, though its line-of-sight
   mechanics involve no groups or liberties.
 
-There is also a **naming collision**: *Cairn* (Christian Martinez, Matagot,
+There is also a **naming collision**: *Varde* (Christian Martinez, Matagot,
 2019) is an existing two-player abstract strategy game. Its mechanics are
 unrelated, but it occupies the same shelf. The working title will change
 before any public promotion; until then this repository knowingly carries a
@@ -215,7 +215,7 @@ provisional name.
 
 ## Renamed to Varde (2026-07-13)
 
-The working title Cairn collided with Christian Martinez's 2019 Matagot
+The working title Varde collided with Christian Martinez's 2019 Matagot
 release. The plural was checked and rejected: searching "Cairns board game"
 surfaces both the Matagot title and the Cairns (Queensland) gaming community,
 so the plural inherits the collision and adds a city's worth of noise.

@@ -34,7 +34,7 @@ Original prompt: yes to all in best order proceed and execute according to your 
 - Browser controls and automatic computer-turn sequencing implemented; visual and
   end-to-end interaction verification remains.
 - The 8N boundary remains a self-play watchdog only. A temporary 6N forced-pass
-  policy was rejected because full-superko Cairn already terminates mathematically;
+  policy was rejected because full-superko Varde already terminates mathematically;
   long bot games must be measured honestly, not shortened by an extra rule.
 - Browser verification completed for both human colors, human and computer swap
   paths, thinking-state locking, rationales, capture animation, automatic
@@ -90,7 +90,7 @@ Original prompt: yes to all in best order proceed and execute according to your 
 
 - Began the approved finite implementation on `feat/evaluator-profiles-v3`.
 - Baseline is clean at `1da66f7`: 72 pytest cases, JavaScript syntax, and Python
-  compilation pass; `engine/cairn.py` is protected as an explicit no-change surface.
+  compilation pass; `engine/varde.py` is protected as an explicit no-change surface.
 - Decomposed the run into evaluator parity/features, profile compatibility/API,
   browser experience, deterministic MAP-Elites, evidence/curation, and final gates.
 - A bounded Fable goal cycle reinforced parity-first architecture. Its unrelated

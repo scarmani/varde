@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "varde-game"
 version = "0.1.0"
-description = "Reference engine and local human/computer client for the Varde territory game (working title Cairn)"
+description = "Reference engine and local human/computer client for the Varde territory game"
 readme = "README.md"
 requires-python = ">=3.10"
 license = {text = "MIT"}
@@ -16,12 +16,10 @@ dev = ["pytest>=8"]
 
 [project.scripts]
 varde-selfplay = "selfplay:main"
-cairn-selfplay = "selfplay:main"
 varde-server = "server:main"
-cairn-server = "server:main"
 
 [tool.setuptools]
-py-modules = ["cairn", "learning", "opponent", "profiles", "selfplay", "server"]
+py-modules = ["varde", "learning", "opponent", "profiles", "selfplay", "server"]
 package-dir = {"" = "engine"}
 
 [tool.pytest.ini_options]
