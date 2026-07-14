@@ -21,7 +21,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent / "engine"))
 
-from varde import BLACK, WHITE, Game, groups_of, other
+from varde import BLACK, EXTENSION_RULES, WHITE, Game, groups_of, other
 
 
 def _tiebreak(point, seed):
@@ -94,6 +94,32 @@ def defender_move(game, seed):
 MOVERS = {"attacker": attacker_move, "defender": defender_move}
 
 
+def take_extensions(game, role, extensions):
+    """Mode-aware extension policy shared by both duelists."""
+    spec = EXTENSION_RULES.get(game.rules)
+    if spec is None:
+        return
+    if not spec["after_move"]:
+        imperiled = 0
+        for comp in groups_of(game.board, game.state, game.to_move):
+            libs = {
+                nb
+                for q in comp
+                for nb in game.board.neighbors[q]
+                if not game.state[nb]
+            }
+            if len(libs) == 1:
+                imperiled += len(comp)
+        if imperiled < 2:
+            return
+    while True:
+        candidates = game.extension_candidates()
+        if not candidates:
+            return
+        game.play_extension(candidates[0])
+        extensions[role] += 1
+
+
 def run_duel(rules, black_role, white_role, n, seed, move_cap=3000):
     game = Game(n, rules=rules)
     roles = {BLACK: black_role, WHITE: white_role}
@@ -103,11 +129,10 @@ def run_duel(rules, black_role, white_role, n, seed, move_cap=3000):
     while not game.finished and game.moves_played < move_cap:
         color = game.to_move
         role = roles[color]
-        if rules == "breath-extend":
-            candidates = game.extension_candidates()
-            if candidates:
-                game.play_extension(candidates[0])
-                extensions[role] += 1
+        take_extensions(game, role, extensions)
+        if game.extension_only_turn:
+            game.finish_extensions()
+            continue
         point = MOVERS[role](game, seed)
         if point is None:
             game.play_pass()
@@ -139,7 +164,7 @@ def main():
     args = parser.parse_args()
     args.output.parent.mkdir(parents=True, exist_ok=True)
     results = []
-    for rules in ("classic", "rosette", "breath", "breath-extend"):
+    for rules in ("breath",) + tuple(EXTENSION_RULES):
         for n, seeds in ((4, (1, 2, 3)), (6, (1,))):
             for seed in seeds:
                 for black_role, white_role in (

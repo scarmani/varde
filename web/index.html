@@ -34,7 +34,12 @@
           <option value="classic">Classic rules</option>
           <option value="rosette">Rosette rules (experimental)</option>
           <option value="breath">Breath rules (experimental)</option>
-          <option value="breath-extend">Breath + free extension (experimental)</option>
+          <option value="breath-extend">Breath + one free extension (experimental)</option>
+          <option value="breath-extend-multi">Breath + multi-group extensions (experimental)</option>
+          <option value="breath-extend-run">Breath + chain extension (experimental)</option>
+          <option value="breath-rescue">Breath, extensions replace the move (experimental)</option>
+          <option value="breath-run">Breath, chain replaces the move (experimental)</option>
+          <option value="breath-cap">Breath + cap rescue (experimental)</option>
         </select>
         <select id="human-color" class="versus-setting" aria-label="Your color">
           <option value="B">Play Black</option>
@@ -69,6 +74,7 @@
         <button id="pass-btn">Pass</button>
         <button id="swap-btn" class="accent" hidden>Take over Black</button>
         <button id="resume-btn" class="accent" hidden>Resume once</button>
+        <button id="finish-ext-btn" class="accent" hidden>End extension turn</button>
         <button id="save-btn">Save</button>
         <button id="load-btn">Load</button>
         <input id="load-file" type="file" accept="application/json" hidden>
