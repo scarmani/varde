@@ -191,7 +191,7 @@ function updateControls() {
   // During play the whole-region score is misleading (one stone can
   // "border" the entire open board), so show outright control instead.
   const control = game.control || game.score;
-  const rulesTag = game.rules === "rosette" ? " · rosette" : "";
+  const rulesTag = game.rules && game.rules !== "classic" ? ` · ${game.rules}` : "";
   const controlText = `Black ${control.B} · White ${control.W}${rulesTag}`;
   const scoreText = `Black ${game.score.B} · White ${game.score.W}${rulesTag}`;
   const setTurnText = (primary, secondary) => {
@@ -212,6 +212,13 @@ function updateControls() {
       `${game.current_player} · ${game.to_move === "B" ? "Black" : "White"} to move`,
       `${controlText} · move ${game.moves_played + 1}`,
     );
+  }
+  if (
+    !thinking && !game.finished && !game.match?.computer_turn
+    && game.points?.some((p) => p.extension)
+  ) {
+    message.textContent =
+      "Free extension available — the amber point rescues your group without costing your move.";
   }
   const computerTurn = game.match?.computer_turn || thinking;
   passButton.disabled = game.finished || game.moves_played === 0 || computerTurn;
@@ -347,7 +354,9 @@ function draw() {
         0,
         Math.PI * 2,
       );
-      ctx.strokeStyle = "rgba(74,112,70,.75)";
+      ctx.strokeStyle = point.extension
+        ? "rgba(191,111,42,.95)"
+        : "rgba(74,112,70,.75)";
       ctx.lineWidth = top ? visual.lineWidth : Math.max(1.5, visual.lineWidth * 0.7);
       ctx.stroke();
     }
@@ -460,6 +469,12 @@ canvas.addEventListener("click", async (event) => {
   const key = nearestPoint(event);
   const point = game.points.find((p) => keyOf(p.coord) === key);
   if (!point || !point.legal || game.finished) return;
+  // A free extension keeps the turn: clicking its marked point is
+  // strictly better than playing there, so it takes precedence.
+  if (point.extension) {
+    await humanAction("/api/extend", {point: point.coord});
+    return;
+  }
   await humanAction("/api/play", {point: point.coord});
 });
 

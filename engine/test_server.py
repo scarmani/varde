@@ -256,6 +256,19 @@ class TestComputerMatch(unittest.TestCase):
         classic_view = public_view(Game(3), match)
         self.assertEqual(classic_view["rules"], "classic")
 
+    def test_breath_extend_flows_through_view_and_computer(self):
+        game = Game(3, rules="breath-extend")
+        match = MatchConfig.from_new_game(
+            game,
+            {"mode": "computer", "human_color": WHITE, "profile": "balanced"},
+        )
+        apply_computer_action(game, match)      # Black opens
+        view = public_view(game, match)
+        self.assertEqual(view["rules"], "breath-extend")
+        self.assertIn("extension", view["points"][0])
+        # No group is in atari on move two: no extension flagged
+        self.assertFalse(any(p["extension"] for p in view["points"]))
+
     def test_curated_profiles_are_accepted_in_both_modes(self):
         for profile in ("mason", "surveyor"):
             with self.subTest(profile=profile, mode="computer"):

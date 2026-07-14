@@ -401,6 +401,7 @@ def _decision_payload(decision, explain):
 def public_view(game, match=None, last_decision=None):
     match = match or MatchConfig()
     legal = set() if game.finished else set(game.legal_placements())
+    extensions = set(game.extension_candidates())
     board = game.board
     points = [
         {
@@ -409,6 +410,7 @@ def public_view(game, match=None, last_decision=None):
             "rim": point in board.rim,
             "deep": point in board.deep,
             "legal": point in legal,
+            "extension": point in extensions,
             "sky": has_sky(board, game.state, point, None),
         }
         for point in board.points
@@ -479,6 +481,10 @@ def apply_computer_action(game, match, model=None):
         raise Illegal("it is not the computer's turn")
     selected_profile = get_profile(seat.profile)
     active_model = MODEL if model is None else model
+    if not game.finished:
+        candidates = game.extension_candidates()
+        if candidates:
+            game.play_extension(candidates[0])
     decision = choose_decision(
         game,
         color,
@@ -575,7 +581,9 @@ class VardeHandler(SimpleHTTPRequestHandler):
                         raise ValueError("board size must be 3, 4, 5, or 6")
                     rules = body.get("rules", "classic")
                     if rules not in RULESETS:
-                        raise ValueError("rules must be classic or rosette")
+                        raise ValueError(
+                            "rules must be one of: " + ", ".join(RULESETS)
+                        )
                     game = Game(n, rules=rules)
                     MATCH = MatchConfig.from_new_game(game, body)
                     GAME = game
@@ -589,6 +597,16 @@ class VardeHandler(SimpleHTTPRequestHandler):
                     if point not in GAME.state:
                         raise ValueError("point is off board")
                     GAME.play(point)
+                    MATCH.clear_end_acceptances()
+                elif route == "/api/extend":
+                    assert_human_action(GAME, MATCH)
+                    raw = body.get("point")
+                    if not isinstance(raw, list) or len(raw) != 2:
+                        raise ValueError("point must be [x,y]")
+                    point = (int(raw[0]), int(raw[1]))
+                    if point not in GAME.state:
+                        raise ValueError("point is off board")
+                    GAME.play_extension(point)
                     MATCH.clear_end_acceptances()
                 elif route == "/api/pass":
                     assert_human_action(GAME, MATCH)
