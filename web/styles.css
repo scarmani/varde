@@ -49,6 +49,9 @@ footer { display: flex; flex-wrap: wrap; gap: 12px 22px; align-items: center; pa
 .legend { display: inline-block; width: 11px; height: 11px; margin-right: 5px; vertical-align: -1px; }
 .legend.legal { border: 2px solid #71936d; border-radius: 50%; }
 .legend.sky { background: #c98835; clip-path: polygon(50% 0, 100% 100%, 0 100%); }
+.legend.atari { border: 2px solid rgba(196,49,32,.9); border-radius: 50%; }
+.legend.lowlibs { border: 2px solid rgba(214,138,32,.75); border-radius: 50%; }
+.legend.phantom { background: rgba(140,60,45,.5); height: 3px; vertical-align: 3px; }
 #message { margin-left: auto; color: #a13d2e; font-weight: 700; }
 #ai-note { flex-basis: 100%; color: var(--moss); font-weight: 700; }
 kbd { border: 1px solid #aaa08c; border-bottom-width: 2px; border-radius: 4px; padding: 1px 5px; background: #f9f5ea; }

@@ -9,8 +9,8 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 from varde import (
-    BLACK, EXTENSION_RULES, RULESETS, WHITE, Game, Illegal, groups_of,
-    has_sky, other,
+    BLACK, BREATH_RULESETS, EXTENSION_RULES, RULESETS, WHITE, Game,
+    Illegal, groups_of, has_sky, other,
 )
 from learning import LearningModel, TRAINING_BATCHES, TrainingService
 from opponent import BotDecision, choose_decision, greedy_decision
@@ -406,15 +406,31 @@ def public_view(game, match=None, last_decision=None):
     legal = set() if game.finished else set(game.legal_placements())
     extensions = set(game.extension_candidates())
     board = game.board
+    # Flat rulesets: annotate every stone with its group's liberty count
+    # so the client can warn about imperiled groups.
+    group_libs = {}
+    if game.rules in BREATH_RULESETS:
+        for color in (BLACK, WHITE):
+            for comp in groups_of(board, game.state, color):
+                libs = len({
+                    nb
+                    for q in comp
+                    for nb in board.neighbors[q]
+                    if not game.state[nb]
+                })
+                for q in comp:
+                    group_libs[q] = libs
     points = [
         {
             "coord": list(point),
             "stack": list(game.state[point]),
             "rim": point in board.rim,
+            "phantoms": board.phantoms[point],
             "deep": point in board.deep,
             "legal": point in legal,
             "extension": point in extensions,
             "sky": has_sky(board, game.state, point, None),
+            "group_libs": group_libs.get(point),
         }
         for point in board.points
     ]
