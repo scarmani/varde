@@ -8,6 +8,32 @@ liberties**, boundary lines three, and exactly six corner lines two.
 The degree-3 pathology of the vertex game — two-contact atari,
 unrunnable ladders — is repaired by geometry rather than by rules.
 
+## Two resolution variants
+
+`gjerde` uses breath-first resolution (suicide checked before
+captures): any single enclosed line is unconditional life, so a
+two-cell fence lives, there is no nakade, and ko shapes are illegal.
+`gjerde-go` uses ordinary Go resolution (captures first): the
+eye-fill capture returns, a two-cell fence dies, minimal life is a
+three-cell fence with its two non-adjacent interior walls as eyes,
+and cavity life-and-death plus ko come back (superko applies).
+
+Breath-first was invented to repair the trivalent vertex game, where
+eyes were nearly impossible to make; the kagome's four-liberty,
+two-eye-capable geometry may not need the repair. Which variant plays
+better is an open, empirical question — both are implemented, and
+boards up to n=8 (169 cells) are available for either.
+
+First probes of the split (same seeds, fence-aware Standard): under
+`gjerde-go` the Standard still beat the greedy Attacker 8-0, but every
+game was a **total wipe** — the greedy never builds two eyes, and
+classic resolution kills everything eyeless, where breath had kept
+margins to 1-13 cells. Standard mirrors came out sane in both
+variants (gjerde-go 6 and 20 of 37; gjerde 5-8). Reading: breath acts
+as Gjerde's wipe-dampener and forgiveness mechanism; classic
+resolution restores nakade, ko, and Go's sterner life — sharper and
+less forgiving. A matter of taste that human play should decide.
+
 ## Rules
 
 1. Players alternately claim empty lines. Lines meeting at a shared

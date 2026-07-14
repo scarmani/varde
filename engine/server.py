@@ -9,8 +9,8 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 from varde import (
-    BLACK, BREATH_RULESETS, EXTENSION_RULES, RULESETS, WHITE, Game,
-    Illegal, groups_of, has_sky, other,
+    BLACK, BREATH_RULESETS, EXTENSION_RULES, GJERDE_RULESETS, RULESETS,
+    WHITE, Game, Illegal, groups_of, has_sky, other,
 )
 from learning import LearningModel, TRAINING_BATCHES, TrainingService
 from opponent import BotDecision, choose_decision, greedy_decision
@@ -644,12 +644,15 @@ class VardeHandler(SimpleHTTPRequestHandler):
             with GAME_LOCK:
                 if route == "/api/new":
                     n = int(body.get("n", 3))
-                    if n not in (3, 4, 5, 6):
-                        raise ValueError("board size must be 3, 4, 5, or 6")
                     rules = body.get("rules", "classic")
                     if rules not in RULESETS:
                         raise ValueError(
                             "rules must be one of: " + ", ".join(RULESETS)
+                        )
+                    largest = 8 if rules in GJERDE_RULESETS else 6
+                    if not 3 <= n <= largest:
+                        raise ValueError(
+                            f"board size must be 3-{largest} for {rules}"
                         )
                     game = Game(n, rules=rules)
                     MATCH = MatchConfig.from_new_game(game, body)

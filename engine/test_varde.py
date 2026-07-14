@@ -847,6 +847,44 @@ class TestGjerde(unittest.TestCase):
         score = g.score()
         self.assertEqual(score, {BLACK: 0, WHITE: 0})
 
+    def test_gjerde_go_two_cell_fence_dies_but_three_cells_live(self):
+        # Standard Go resolution: the eye-fill capture returns, so one
+        # interior wall is not life — but two non-adjacent walls are.
+        g = gjerde_game(BLACK, n=4)
+        g.rules = "gjerde-go"
+        b = g.board
+        first = set(b.cell_edges[(0, 0)])
+        second = set(b.cell_edges[(1, 0)])
+        shared = (first & second).pop()
+        fence = sorted((first | second) - {shared})
+        for line in fence:
+            put(g, line, WHITE)
+        seal(g, fence, BLACK, keep=(shared,))
+        g.history = {signature(g.board, g.state, BLACK)}
+        status, captured = attempt(g, shared)
+        self.assertEqual((status, captured), ("legal", 10))
+
+        g2 = gjerde_game(BLACK, n=4)
+        g2.rules = "gjerde-go"
+        b2 = g2.board
+        cells = [set(b2.cell_edges[c]) for c in ((0, 0), (1, 0), (2, 0))]
+        w1 = (cells[0] & cells[1]).pop()
+        w2 = (cells[1] & cells[2]).pop()
+        fence3 = sorted((cells[0] | cells[1] | cells[2]) - {w1, w2})
+        for line in fence3:
+            put(g2, line, WHITE)
+        seal(g2, fence3, BLACK, keep=(w1, w2))
+        g2.history = {signature(g2.board, g2.state, BLACK)}
+        self.assertEqual(attempt(g2, w1), ("illegal", "suicide"))
+        self.assertEqual(attempt(g2, w2), ("illegal", "suicide"))
+
+    def test_large_boards_for_gjerde(self):
+        for n, cells in ((7, 127), (8, 169)):
+            g = Game(n, rules="gjerde")
+            self.assertEqual(len(g.board.cells), cells)
+            g.play(g.legal_placements()[0])
+            self.assertEqual(g.to_move, WHITE)
+
     def test_gjerde_round_trips(self):
         g = Game(3, rules="gjerde")
         g.play(g.legal_placements()[7])
