@@ -914,7 +914,7 @@ def choose_decision(
         raise ValueError("computer color must be B or W")
 
     if game.finished:
-        if not game.resumption_used:
+        if game.resumption_available:
             score = game.score()
             if score[computer_color] < score[other(computer_color)]:
                 decision = BotDecision(

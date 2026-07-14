@@ -2,7 +2,7 @@
 
 This document preserves the design lineage (formerly "Grounded Cairn"),
 including retired claims and the playtest protocol. The rules in
-`cairn-rules.md` are authoritative; this file explains why they are what
+`varde-rules.md` are authoritative; this file explains why they are what
 they are, and what remains open.
 
 ## How the design was reached

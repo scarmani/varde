@@ -61,6 +61,8 @@ Two consecutive passes end the game.
 
 Once per game, either player may then demand that play resume instead. Play continues in normal turn order — the player after the second pass moves — and the game ends finally upon the next two consecutive passes.
 
+**Stagnation.** A move is *quiet* when it is a pass, or a placement that captures nothing and changes no column's control — that is, a placement onto a column the mover already controls. Twelve consecutive quiet moves end the game at once, and this ending is final: resumption may not be demanded, since twelve quiet moves are themselves the proof that neither player can make progress. (Placing on an empty point, covering an enemy column, and any capture all reset the count. Height alone scores nothing, so a game that has stopped exchanging control has stopped mattering; this rule merely writes that fact down. A player who believes progress is still possible need only make one progressing move every twelve.)
+
 **Score.** One point for each point you control. Then take each *empty region* — a maximal connected set of empty points — and its *border*, the occupied points adjacent to it: if the border is not empty and belongs entirely to one color, that color scores every point of the region. Regions bordered by both colors, or by nothing, count for no one. Height is worth nothing; buried stones are worth nothing. The higher score wins; equal scores draw. (There is no komi and the board is even-sized, so draws are genuinely possible.)
 
 There is no agreement about dead stones. If you believe stones are dead, prove it — play. Filling inside your own territory costs nothing under this scoring, so demonstration is always affordable.

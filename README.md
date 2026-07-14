@@ -135,7 +135,7 @@ Evidence summaries live in `research/results/`.
 
 ## Layout
 
-- `docs/cairn-rules.md` — standalone rules, revision 1.2
+- `docs/varde-rules.md` — standalone rules, revision 1.3 (adds the stagnation ending)
 - `docs/design-history.md` — design lineage, retired claims, and playtest gates
 - `engine/cairn.py` — reference rules engine and versioned snapshots
 - `engine/opponent.py` — local Casual/Standard computer opponent with profile weights

@@ -8,6 +8,7 @@ import unittest
 from cairn import (
     Board, Game, Illegal, BLACK, WHITE, empty_state, resolve, signature,
     control, height, groups_of, group_alive, has_sky, terrain_ok, is_summit,
+    NO_PROGRESS_LIMIT,
 )
 
 
@@ -503,6 +504,92 @@ class TestGameController(unittest.TestCase):
         g.play_pass()
         with self.assertRaisesRegex(Illegal, "game over"):
             g.play(g.legal_placements()[0] if g.legal_placements() else g.board.points[1])
+
+
+# ---------------------------------------------------------------------- stagnation
+def white_plateau(g, liberties=1):
+    """Fill the board with a White plateau, leaving rim liberties empty.
+
+    Returns the empty rim points. Interior points can then be capped by
+    White (summit with unanimous friendly majority) without capture,
+    control change, or suicide -- the canonical quiet move.
+    """
+    b = g.board
+    empties = sorted(b.rim)[:liberties]
+    for p in b.points:
+        if p not in empties:
+            put(g, p, WHITE)
+    g.to_move = WHITE
+    g.moves_played = 4
+    g.history = {signature(b, g.state, WHITE)}
+    return empties
+
+
+def quiet_stack_points(g, count):
+    """Interior White points whose neighbors are all occupied."""
+    b = g.board
+    out = [
+        p for p in sorted(b.deep)
+        if all(g.state[nb] for nb in b.neighbors[p])
+    ]
+    assert len(out) >= count
+    return out[:count]
+
+
+class TestStagnation(unittest.TestCase):
+    def test_quiet_moves_end_the_game_finally(self):
+        g = fresh(3)
+        white_plateau(g)
+        stacks = quiet_stack_points(g, NO_PROGRESS_LIMIT // 2)
+        for i, p in enumerate(stacks):
+            self.assertFalse(g.finished)
+            g.play(p)                      # White stacks its own column
+            self.assertEqual(g.quiet_moves, 2 * i + 1)
+            g.play_pass()                  # Black passes
+        self.assertEqual(g.quiet_moves, NO_PROGRESS_LIMIT)
+        self.assertTrue(g.finished)
+        self.assertTrue(g.no_progress_end)
+        self.assertFalse(g.resumption_available)
+        with self.assertRaisesRegex(Illegal, "no resumption"):
+            g.demand_resumption()
+
+    def test_progress_resets_the_quiet_count(self):
+        g = fresh(3)
+        r1, r2 = white_plateau(g, liberties=2)
+        stacks = quiet_stack_points(g, NO_PROGRESS_LIMIT // 2)
+        for p in stacks[:5]:
+            g.play(p)
+            g.play_pass()
+        self.assertEqual(g.quiet_moves, 10)
+        g.play(r1)                         # empty point: control changes
+        self.assertEqual(g.quiet_moves, 0)
+        self.assertFalse(g.finished)
+
+    def test_two_pass_end_still_allows_resumption(self):
+        g = fresh(2)
+        g.play(g.board.points[0])
+        g.play_pass()
+        g.play_pass()
+        self.assertTrue(g.finished)
+        self.assertFalse(g.no_progress_end)
+        self.assertTrue(g.resumption_available)
+        g.demand_resumption()
+        self.assertEqual(g.quiet_moves, 0)
+
+    def test_stagnation_state_round_trips_and_defaults(self):
+        g = fresh(3)
+        white_plateau(g)
+        g.play(quiet_stack_points(g, 1)[0])
+        g.play_pass()
+        restored = Game.from_dict(g.to_dict())
+        self.assertEqual(restored.quiet_moves, 2)
+        self.assertFalse(restored.no_progress_end)
+        legacy = g.to_dict()
+        del legacy["quiet_moves"]
+        del legacy["no_progress_end"]
+        old = Game.from_dict(legacy)
+        self.assertEqual(old.quiet_moves, 0)
+        self.assertFalse(old.no_progress_end)
 
 
 # ---------------------------------------------------------------------- scoring
