@@ -60,43 +60,36 @@ predeclared evidence gates.
 
 ## Current Phase
 
-**Status:** In progress
+**Status:** Complete — PR #1 awaits user review; do not merge automatically
 
-**Active batch:** Batch 5 — Audit, ablation, optimization, and catalog freeze
+**Active batch:** none
 
-**What was just finished:** Batch 4 deterministic, resumable four-axis MAP-Elites harness
+**What was just finished:** Batch 6 catalog freeze, final gates, benchmark, and
+browser proof. Mason and Surveyor ship; Raider and Weaver are omitted with
+recorded reasons (engagement did not reproduce held-out; strength floor failed).
 
-**Single next action:** implement the deterministic 2,000-position audit and paired ablation harness
+**Single next action:** none. Any future Raider/Weaver work requires a new,
+separately declared research cycle with redefined descriptors or optimizer.
 
 ## Active Compute
 
-No active compute while the audited mutation schema is committed. Completed
-source-pinned evidence remains at `/tmp/varde-v3-evidence-7fd3f16/`:
+No active compute. All evidence jobs are complete.
 
-- Audit: 2,000 positions, 200 grouped games, five accepted V3 candidates.
-- Ablations: 180 pairs / 360 Standard games, zero incomplete.
+- Committed summary: `research/results/v3-final-evidence-summary.json`
+  (stage hashes, gate metrics, omission reasons, candidate and model hashes).
+- Committed benchmark: `research/results/v3-final-benchmark.json`.
+- Raw evidence (including the 197 MB archive `state.json`, sha256
+  `c0cd56f1b73744ebe731f11dc64f50af2ebeffddbe85d9f28da4ff0b7c3b3c81`) is
+  retained durably at `~/varde-v3-evidence/varde-v3-evidence-bb82da3/` with a
+  transient copy at `/tmp/varde-v3-evidence-bb82da3/`.
 
-Next launch is the 2,048-candidate archive against the accepted audit schema.
+The single permitted 2,048-mutation refinement has been consumed. Do not run
+further MAP-Elites refinements under this plan.
 
 ## Next Exact Batch
 
-**Batch:** 5 — Audit, ablation, optimization, and catalog freeze
-
-**Scope:**
-
-- Generate and analyze the declared 2,000-position audit corpus.
-- Run the paired development/liberty ablations and the full 2,048-candidate archive search.
-- Select only elites satisfying descriptor separation and update catalog evidence atomically.
-
-**Acceptance criteria:**
-
-- [ ] Retained features meet symmetry, prediction, correlation, and latency gates.
-- [ ] Audit and ablation outputs include exact configuration, source, and hashes.
-- [ ] Curated profiles are available only when immutable descriptor criteria are met.
-
-**Risk:** expensive evidence jobs must remain honest under cancellation or incomplete rollouts; unavailable profiles must not be forced through.
-
-**Rollback tag:** `elves/v3-pre-batch-5`
+None. The plan's six batches are complete. The remaining human step is user
+review of PR #1; the task contract forbids automatic merge.
 
 ## Tool Configuration
 

@@ -33,6 +33,14 @@
   a learned correction to Balanced and must not be represented as a deeper
   search level.
 
+- 2026-07-14: Archive descriptors are optimizer-side estimates. Raider looked
+  sufficiently engaging inside the archive but reversed direction under
+  held-out gate games; behavior claims must always be re-measured on held-out
+  play before shipping a profile.
+- 2026-07-14: Behavioral distinctness and playable strength are independent
+  failures. Weaver maximized its descriptor shift (effect 3.58) while scoring
+  18.5%; a style that always loses is not a product feature.
+
 ## Known Traps
 
 - 2026-07-13: Any refactor of evaluator arithmetic can change deterministic tie
@@ -48,3 +56,9 @@
 - 2026-07-13: JSON checkpoints sort mapping keys. Schema validation must compare
   key sets rather than insertion order, while evaluator catalog construction can
   retain its stronger ordered-schema check for packaged immutable data.
+- 2026-07-14: Pairwise eligibility gates must only compare profiles that passed
+  their individual gates; otherwise one failing profile can veto valid ones
+  through aggregation (fixed in `8cc09b7`).
+- 2026-07-14: Evidence stored under `/tmp` does not survive macOS cleanup.
+  Copy raw archives to a durable location and commit a hashed compact summary
+  before ending a research cycle.

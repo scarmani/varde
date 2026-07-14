@@ -122,12 +122,24 @@ Advanced remains experimental. Current fresh-position p95 is about 30/55 ms on
 Toy and 388/737 ms on Full for Standard/Advanced. Reproduction commands and
 the exact model checkpoint are in `research/`.
 
+The V3 evaluator-profile cycle separates search difficulty (Casual/Standard)
+from playing style. A deterministic 4,096-candidate MAP-Elites run over five
+audit-retained evaluator features produced two shipped styles: **Mason**
+(vertical play through covers, stacks, and durable skies) and **Surveyor**
+(rim use and broad territorial reach). Both passed 100-pair strength and
+behavior gates against Balanced; Raider and Weaver failed their predeclared
+gates and are visible but unavailable. Profiles are offered as different, not
+stronger — the catalog records `strength_claim: false`. The legacy Advanced
+setting now loads as Standard difficulty with the Personal (learned) profile.
+Evidence summaries live in `research/results/`.
+
 ## Layout
 
 - `docs/cairn-rules.md` — standalone rules, revision 1.2
 - `docs/design-history.md` — design lineage, retired claims, and playtest gates
 - `engine/cairn.py` — reference rules engine and versioned snapshots
-- `engine/opponent.py` — local Casual, Standard, and Advanced computer opponent
+- `engine/opponent.py` — local Casual/Standard computer opponent with profile weights
+- `engine/profiles.py` — versioned evaluator-profile catalog with validation evidence
 - `engine/learning.py` — persistent linear model and background self-play trainer
 - `engine/test_cairn.py` — known-answer position and controller tests
 - `engine/selfplay.py` — random, greedy, and epsilon-greedy telemetry

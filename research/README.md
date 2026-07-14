@@ -97,6 +97,15 @@ per-attempt and per-pair JSONL from this run was generated outside the tree at
 
 ## Evaluator Profiles V3 quality-diversity search
 
+**Final outcome (2026-07-14).** The declared run is complete: 4,096 candidates,
+32,768 games, 219/256 occupied cells, six watchdog rejections, one permitted
+refinement consumed. Mason and Surveyor passed their 100-pair gates and ship in
+the catalog; Raider (held-out engagement moved the wrong way) and Weaver (below
+the strength floor) are recorded as unavailable with reasons. The compact
+committed record is `research/results/v3-final-evidence-summary.json`; the raw
+archive checkpoint is retained outside the repository and pinned by sha256 in
+that summary. The commands below remain for reproduction.
+
 The V3 harness searches evaluator weights, never search depth or public
 difficulty. Its default run evaluates 512 deterministic calibration genomes
 and 1,536 archive mutations with four paired seeds per candidate (three Toy,

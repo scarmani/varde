@@ -2,14 +2,61 @@
 
 ## Run Digest
 
-- **Last updated:** 2026-07-13 12:16 CDT
-- **Current phase:** In progress
-- **Active batch:** Batch 5 — Audit, ablation, optimization, and catalog freeze
-- **Last completed batch:** Batch 4 — Deterministic MAP-Elites research harness
-- **Next exact batch:** Batch 5
+- **Last updated:** 2026-07-14 00:55 CDT
+- **Current phase:** Complete — awaiting user PR review
+- **Active batch:** none
+- **Last completed batch:** Batch 6 — Catalog freeze, final gates, and browser proof
+- **Next exact batch:** none; do not merge PR #1 without user review
 - **Active PR:** #1
 - **Docs promoted this run:** `docs/plans/evaluator-profiles-v3.md`
 - **Latest Elves Report:** not generated yet
+
+## 2026-07-14 00:55 CDT
+
+**Batch:** 5+6 — Audit, ablation, optimization, curation, gates, catalog freeze
+
+**Contract status:** all criteria met; two of four curated styles shipped
+
+**What changed:**
+
+- Audit: 2,000 deterministic positions accepted five transition candidates
+  (capturing moves, max capture, covers, hostile covers, summits) and kept five
+  structural candidates as zero-weight telemetry after latency gates.
+- Ablation: 180 pairs confirmed development (41.67%) and liberty (16.67%)
+  contribute real strength; both-disabled scored 0.42%. Balanced unchanged.
+- MAP-Elites: 4,096 candidates / 32,768 games / 219 occupied cells; six
+  candidates rejected on watchdog-incomplete rollouts; one permitted
+  refinement consumed. State hash `38136c95…3422`.
+- Gates (100 paired seeds each, source `8cc09b7`): Mason 76.75% overall with
+  verticality effect 1.264 — qualified. Surveyor 51.75% with edge-reach effect
+  3.008 — qualified. Raider engagement moved the wrong way (−0.687) — omitted.
+  Weaver 18.50% overall — omitted. Mason–Surveyor descriptor distance 3.132.
+- Smoke: 464/464 games complete across all matchups, Intermediate, and Full.
+- Catalog frozen at commit `84771d4` with stage hashes, availability reasons,
+  and `strength_claim: false`; compact evidence summary committed at
+  `research/results/v3-final-evidence-summary.json`; raw archive retained
+  externally (sha256 `c0cd56f1…3c81`).
+- Final-head benchmark: all eight profile/board configurations under limits
+  (worst: untrained Personal Full p95 1,213 ms < 1,500 ms), recorded in
+  `research/results/v3-final-benchmark.json`.
+- Final browser pass on the frozen catalog: human vs Mason and vs Surveyor,
+  independent spectator seats, human and AI pie takeover with complete seat
+  exchange, paused spectator load, step/play/speed controls, capture-wave
+  animation, save/load with legacy Advanced migration, trained and untrained
+  Personal displays, profile-aware rationales, zero console errors. Fullscreen
+  was verified by code and the earlier pass; the embedded test pane denies the
+  Fullscreen API by policy.
+
+**Review findings:**
+
+- Fixed earlier: gate availability aggregation no longer lets an individually
+  failing profile veto valid profiles through pairwise checks (`8cc09b7`).
+
+**Regression attestation:**
+
+- `engine/cairn.py` diff against `1da66f7` remains empty.
+- Test baseline: 117 -> 118 with the new acceptance/rejection server test.
+- Confidence: HIGH. Every shipped number traces to a hashed evidence file.
 
 ## 2026-07-13 12:16 CDT
 

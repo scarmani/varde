@@ -106,9 +106,9 @@ Original prompt: yes to all in best order proceed and execute according to your 
   difficulty and evaluator profile, legacy Advanced normalizes to Standard +
   Personal, version-1 saves and complete-seat takeover remain compatible, and
   `GET /api/profiles` exposes catalog availability without raw weights.
-- The packaged catalog starts with Balanced and Personal available; Raider,
-  Mason, Surveyor, and Weaver remain explicitly unavailable until the declared
-  archive/evidence run freezes eligible weights. No provisional style is shipped
+- The packaged catalog started with Balanced and Personal available; the
+  declared archive/evidence run has since frozen Mason and Surveyor as
+  available (see the Batch 5–6 entry below). No provisional style was shipped
   by weakening its descriptor gate.
 - Batch 3 complete: dynamic browser selectors separate Casual/Standard search
   from profile style, independent spectator choices remain paused, unavailable
@@ -125,3 +125,22 @@ Original prompt: yes to all in best order proceed and execute according to your 
   selection, byte-identical interruption/resume across worker counts,
   cancellation, tamper detection, and incomplete accounting. A real two-process
   smoke completed 4 candidates / 32 games with no illegal or incomplete result.
+- Batches 5–6 complete: the 2,000-position audit retained five transition
+  features (capturing moves, max capture, covers, hostile covers, summits) and
+  kept five structural features as zero-weight telemetry on latency grounds;
+  the 4,096-candidate / 32,768-game MAP-Elites run (one permitted refinement
+  included) filled 219 of 256 cells with six honest watchdog rejections.
+- Final 100-pair gates shipped two of four curated styles: Mason (76.75%
+  overall against Balanced, verticality effect 1.264) and Surveyor (51.75%,
+  edge-reach effect 3.008). Raider was omitted because its held-out engagement
+  moved in the wrong direction; Weaver was omitted below the strength floor.
+  Profiles are described as different, not stronger; the catalog records
+  `strength_claim: false`, availability reasons, and every stage hash. Compact
+  evidence lives in `research/results/v3-final-evidence-summary.json` and
+  `research/results/v3-final-benchmark.json`; the raw archive is retained
+  outside the repository by sha256.
+- A final browser pass on the frozen catalog verified human and spectator play
+  with Mason and Surveyor, human and AI pie takeover with complete seat
+  exchange, paused spectator loads, playback controls, capture-wave animation,
+  save/load with legacy Advanced migration, trained/untrained Personal
+  displays, and zero console errors.
