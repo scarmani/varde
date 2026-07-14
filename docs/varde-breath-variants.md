@@ -38,29 +38,55 @@ Breath, plus one optional pre-move:
 
 Because the extension is optional and breath-checked, extending into a
 dead end or into one's own last cavity point is simply illegal — the
-mechanic can never force self-harm. Effects on play:
+mechanic can never force self-harm. Every atari is answerable at zero
+tempo; killing reduces to herding a group into a dead end where the
+extension is breath-illegal; a doomed group poses a real
+abandon-or-crawl decision.
 
-- Every atari is answerable at zero tempo, so ladders and chases cost
-  the attacker one move per step and the defender nothing.
-- One placement removes at most one liberty, so every kill passes
-  through atari — and therefore through an extension offer. Killing
-  reduces to **herding a group into a dead end** where the extension
-  is breath-illegal (rim corners, pre-sealed corridors).
-- Double atari is largely answerable (extend one group, save the other
-  with the normal move); only triple threats and sealed flight squares
-  win material.
-- A doomed group poses a real decision: crawling costs nothing but
-  enlarges the eventual capture; abandoning early is often correct.
+## Playtest evidence
 
-## Playtest evidence (same seeds as prior ruleset tests)
-
-See `research` notes and the session evidence archive; summary:
+Instrumented games, identical seeds across all four rulesets
+(classic-tuned AIs; `a` = actions, `e` = free extensions B/W):
 
 | Matchup | classic 1.3 | rosette | breath | breath-extend |
 |---|---|---|---|---|
-| Balanced mirror, Full, s11 | 704 · 172–44 | 429 · 101–115 | 244 · 111–105 | (table filled from instrumented run) |
+| Balanced mirror n=6 s11 | 704a · 172–44 | 429a · 101–115 | 244a · 111–105 | 247a · 96–120 · e46/35 |
+| Mason–Surveyor n=6 s12 | 436a · 124–92 | 219a · 97–119 | 219a · 94–122 | 219a · 95–121 · e7/11 |
+| Balanced mirror n=6 s13 | 766a · 139–77 | 386a · 121–95 | 244a · 113–103 | 219a · 116–100 · e25/25 |
+| Mason–Surveyor n=5 s14 | 186a · 64–86 | 171a · 61–89 | 155a · 63–87 | 153a · 68–82 · e4/6 |
+| Balanced mirror n=6 s15 | 940a · 94–122 | 333a · 97–119 | 256a · 124–91 | 224a · 114–102 · e33/30 |
+| Surveyor–Mason n=6 s12 | 294a · 98–118 | 219a · 119–97 | 217a · 122–94 | 219a · 122–94 · e10/3 |
+| **mean abs. margin** | **23.3 % of board** | 11.3 % | 10.8 % | **9.7 %** |
+| **mean length** | 554 | 293 | 222 | **214** |
+| **mean stones captured** | 219 | 99 | 18 | 44 |
 
-The rim's phantom neighbors remain the dominant newcomer trap in all
-rulesets: rim stones carry two liberties, not three, and misreading
-this loses stones in every variant. Any UI for these variants should
-render phantom edges explicitly.
+Breath games run at Go-like density (~1 action per point) with the
+closest margins measured in any ruleset. The extension mechanic roughly
+doubles fighting relative to plain breath — the safety net encourages
+contact play — while tightening margins further.
+
+## Attack/defense balance probe
+
+One-ply greedy duelists (`research/harness/duel_players.py`): the
+attacker maximizes captures and starves enemy liberties; the defender
+maximizes its own liberties and safety. Eight games per ruleset
+(n=4 ×3 seeds and n=6 ×1, both color assignments):
+
+| Ruleset | Attacker wins | Defender wins | Margins |
+|---|---|---|---|
+| classic | 3 | 5 | mostly total wipes (96–216) |
+| rosette | 1 | 7 | all total wipes |
+| breath | 2 | 6 | **2–40 points** |
+| breath-extend | 0 | 8 | 2–84 points |
+
+Reading: classic is coin-flip annihilation; rosette punishes pure
+aggression but still ends in wipes; **breath is the closest to a real
+attack/defense equilibrium** — tight margins, and the attacker role
+wins both large-board games; breath-extend systematically favors
+defense (pure aggression never wins), confirming that stacking two
+attacker-dampeners on the same lattice overshoots.
+
+A caveat and a recurring observation: the duelists are one-ply
+caricatures, and in every ruleset the rim's phantom neighbors remain
+the dominant trap — rim stones have two liberties, not three. Any UI
+for these variants should render phantom edges explicitly.
