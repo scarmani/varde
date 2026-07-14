@@ -37,17 +37,23 @@
         <select id="difficulty" class="versus-setting" aria-label="Computer difficulty">
           <option value="casual">Casual computer</option>
           <option value="standard" selected>Standard computer</option>
-          <option value="advanced">Advanced computer</option>
+        </select>
+        <select id="profile" class="versus-setting" aria-label="Computer profile">
+          <option value="balanced">Profile: Balanced</option>
         </select>
         <select id="black-difficulty" class="watch-setting" aria-label="Black computer difficulty">
           <option value="casual">Black: Casual</option>
           <option value="standard" selected>Black: Standard</option>
-          <option value="advanced">Black: Advanced</option>
+        </select>
+        <select id="black-profile" class="watch-setting" aria-label="Black computer profile">
+          <option value="balanced">Black profile: Balanced</option>
         </select>
         <select id="white-difficulty" class="watch-setting" aria-label="White computer difficulty">
           <option value="casual">White: Casual</option>
           <option value="standard" selected>White: Standard</option>
-          <option value="advanced">White: Advanced</option>
+        </select>
+        <select id="white-profile" class="watch-setting" aria-label="White computer profile">
+          <option value="balanced">White profile: Balanced</option>
         </select>
         <label class="toggle any-computer-setting">
           <input id="explain-moves" type="checkbox" checked>
@@ -61,6 +67,10 @@
         <button id="load-btn">Load</button>
         <input id="load-file" type="file" accept="application/json" hidden>
       </div>
+      <div id="profile-controls" class="subcontrols profile-controls any-computer-setting" hidden aria-label="Computer profile description">
+        <strong>Style</strong>
+        <span id="profile-note">Balanced uses the original evaluator.</span>
+      </div>
       <div id="spectator-controls" class="subcontrols" hidden aria-label="Spectator playback controls">
         <strong>Spectator</strong>
         <button id="play-btn" class="accent">Play</button>
@@ -72,8 +82,8 @@
         </select>
         <span id="playback-note">Paused</span>
       </div>
-      <div class="subcontrols training-controls" aria-label="Advanced computer training controls">
-        <strong>Advanced learning</strong>
+      <div class="subcontrols training-controls" aria-label="Personal computer learning controls">
+        <strong>Personal learning</strong>
         <select id="training-games" aria-label="Training batch size">
           <option value="10">10 games</option>
           <option value="50">50 games</option>
@@ -82,7 +92,7 @@
         <button id="train-btn">Train</button>
         <button id="cancel-training-btn" disabled>Cancel</button>
         <button id="reset-training-btn">Reset</button>
-        <span id="training-status" aria-live="polite">Advanced model: loading…</span>
+        <span id="training-status" aria-live="polite">Personal model: loading…</span>
       </div>
     </section>
 

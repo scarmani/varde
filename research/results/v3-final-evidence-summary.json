@@ -1,0 +1,406 @@
+{
+ "curation": {
+  "balanced_descriptors": {
+   "consolidation": 0.3375796178343949,
+   "edge_reach": 0.4607218683651804,
+   "engagement": 0.535031847133758,
+   "verticality": 0.2757475083056478
+  },
+  "descriptor_scales": {
+   "consolidation": 0.08998839856044914,
+   "edge_reach": 0.09934468422778675,
+   "engagement": 0.10230706223129389,
+   "verticality": 0.1143629936684592
+  },
+  "rules": {
+   "mason": {
+    "minimum_shift": 0.1,
+    "primary_descriptor": "verticality"
+   },
+   "raider": {
+    "minimum_shift": 0.15,
+    "primary_descriptor": "engagement"
+   },
+   "surveyor": {
+    "minimum_shift": 0.15,
+    "primary_descriptor": "edge_reach"
+   },
+   "weaver": {
+    "minimum_shift": 0.15,
+    "primary_descriptor": "consolidation"
+   }
+  },
+  "selection_complete": true
+ },
+ "description": "Compact committed record of the V3 evaluator-profile research cycle. Raw evidence (including the 197MB MAP-Elites archive checkpoint) is retained externally; every stage below carries a content hash so the raw files can be re-verified against this summary.",
+ "format": "varde-v3-final-evidence-summary",
+ "gate": {
+  "available_profiles": [
+   "mason",
+   "surveyor"
+  ],
+  "configuration": {
+   "beginner_pairs": 25,
+   "bootstrap_samples": 10000,
+   "paired_colors": [
+    "B",
+    "W"
+   ],
+   "seed": 20260713,
+   "toy_pairs": 75,
+   "workers_excluded_from_canonical_result": true
+  },
+  "pairwise_normalized_descriptor_distance": {
+   "mason-raider": {
+    "at_least_10": true,
+    "distance": 2.7911734615770816,
+    "eligible_pair": false
+   },
+   "mason-surveyor": {
+    "at_least_10": true,
+    "distance": 3.1317179116022884,
+    "eligible_pair": true
+   },
+   "mason-weaver": {
+    "at_least_10": true,
+    "distance": 4.596146858773092,
+    "eligible_pair": false
+   },
+   "raider-surveyor": {
+    "at_least_10": false,
+    "distance": 0.7177197608085317,
+    "eligible_pair": false
+   },
+   "raider-weaver": {
+    "at_least_10": true,
+    "distance": 5.6780147523528575,
+    "eligible_pair": false
+   },
+   "surveyor-weaver": {
+    "at_least_10": true,
+    "distance": 6.32302151583752,
+    "eligible_pair": false
+   }
+  },
+  "profiles": {
+   "mason": {
+    "beginner_score": 0.83,
+    "bootstrap_lower_95": 0.7175,
+    "candidate_id": 2652,
+    "games": 200,
+    "gates": {
+     "all_games_complete": true,
+     "beginner_score_at_least_40": true,
+     "bootstrap_lower_at_least_35": true,
+     "overall_score_at_least_45": true,
+     "primary_effect_size_at_least_08": true,
+     "primary_shift_all_color_strata": true,
+     "toy_score_at_least_40": true
+    },
+    "mean_margin": 30.0,
+    "model_hash": "9bce1f5cb18c0ccefbbe25df8e2ff40b8499fe77ad4aed300ad885557988fca7",
+    "overall_score": 0.7675,
+    "passed": true,
+    "primary_descriptor": "verticality",
+    "primary_effect_size": 1.2642819627408186,
+    "toy_score": 0.7466666666666667
+   },
+   "raider": {
+    "beginner_score": 0.76,
+    "bootstrap_lower_95": 0.495,
+    "candidate_id": 1784,
+    "games": 200,
+    "gates": {
+     "all_games_complete": true,
+     "beginner_score_at_least_40": true,
+     "bootstrap_lower_at_least_35": true,
+     "overall_score_at_least_45": true,
+     "primary_effect_size_at_least_08": false,
+     "primary_shift_all_color_strata": false,
+     "toy_score_at_least_40": true
+    },
+    "mean_margin": 6.66,
+    "model_hash": "7eef6e75ac2e8121b9549badfcd2bbf2deab5ba60a1df62622def09a3220701e",
+    "overall_score": 0.5475,
+    "passed": false,
+    "primary_descriptor": "engagement",
+    "primary_effect_size": -0.6870570604421322,
+    "toy_score": 0.4766666666666667
+   },
+   "surveyor": {
+    "beginner_score": 0.72,
+    "bootstrap_lower_95": 0.465,
+    "candidate_id": 2112,
+    "games": 200,
+    "gates": {
+     "all_games_complete": true,
+     "beginner_score_at_least_40": true,
+     "bootstrap_lower_at_least_35": true,
+     "overall_score_at_least_45": true,
+     "primary_effect_size_at_least_08": true,
+     "primary_shift_all_color_strata": true,
+     "toy_score_at_least_40": true
+    },
+    "mean_margin": 0.94,
+    "model_hash": "38d994c87a0a5667d95164a02258bf84da17a4151cd7f11a4fbc19195fe8a9d8",
+    "overall_score": 0.5175,
+    "passed": true,
+    "primary_descriptor": "edge_reach",
+    "primary_effect_size": 3.0080988061833347,
+    "toy_score": 0.45
+   },
+   "weaver": {
+    "beginner_score": 0.06,
+    "bootstrap_lower_95": 0.1425,
+    "candidate_id": 1587,
+    "games": 200,
+    "gates": {
+     "all_games_complete": true,
+     "beginner_score_at_least_40": false,
+     "bootstrap_lower_at_least_35": false,
+     "overall_score_at_least_45": false,
+     "primary_effect_size_at_least_08": true,
+     "primary_shift_all_color_strata": true,
+     "toy_score_at_least_40": false
+    },
+    "mean_margin": -34.27,
+    "model_hash": "712b36c480bc199fb306a21a9ca6e86f8a459724cfe9af87874bcb8bd9fddd14",
+    "overall_score": 0.185,
+    "passed": false,
+    "primary_descriptor": "consolidation",
+    "primary_effect_size": 3.5834165411494387,
+    "toy_score": 0.22666666666666666
+   }
+  }
+ },
+ "optimizer": {
+  "archive_capacity": 256,
+  "candidates": 4096,
+  "games": 32768,
+  "occupied_archive_cells": 219,
+  "recipe": "map-elites-v3-audit-gated-4096",
+  "rejected_candidates": 6
+ },
+ "outcome": {
+  "note": "Mason and Surveyor ship as behaviorally different profiles, not as stronger opponents. Raider and Weaver were omitted because they failed their predeclared gates; their definitions were not weakened to force a pass.",
+  "omitted": {
+   "raider": "Held-out games did not reproduce increased engagement.",
+   "weaver": "Held-out play fell below the required strength floor."
+  },
+  "qualified": [
+   "mason",
+   "surveyor"
+  ],
+  "strength_claim": false
+ },
+ "raw_archive_sha256": "c0cd56f1b73744ebe731f11dc64f50af2ebeffddbe85d9f28da4ff0b7c3b3c81",
+ "raw_evidence_location": "external: varde-v3-evidence-bb82da3/archive (not committed)",
+ "smoke": {
+  "configuration": {
+   "larger_pairs_per_board": 4,
+   "matchup_mix": "75% Toy / 25% Beginner",
+   "matchup_pairs": 20,
+   "seed": 20260713,
+   "workers_excluded_from_canonical_result": true
+  },
+  "summaries": {
+   "balanced-vs-mason": {
+    "captures_per_game": 33.7,
+    "complete": true,
+    "games": 40,
+    "kind": "matchup",
+    "max_actions": 817,
+    "mean_actions": 234.7,
+    "mean_margin": -24.8,
+    "score_rate": 0.2625
+   },
+   "balanced-vs-raider": {
+    "captures_per_game": 19.025,
+    "complete": true,
+    "games": 40,
+    "kind": "matchup",
+    "max_actions": 496,
+    "mean_actions": 168.1,
+    "mean_margin": -3.7,
+    "score_rate": 0.4625
+   },
+   "balanced-vs-surveyor": {
+    "captures_per_game": 33.9,
+    "complete": true,
+    "games": 40,
+    "kind": "matchup",
+    "max_actions": 490,
+    "mean_actions": 185.6,
+    "mean_margin": 1.25,
+    "score_rate": 0.5
+   },
+   "balanced-vs-weaver": {
+    "captures_per_game": 38.075,
+    "complete": true,
+    "games": 40,
+    "kind": "matchup",
+    "max_actions": 494,
+    "mean_actions": 197.175,
+    "mean_margin": 28.15,
+    "score_rate": 0.7
+   },
+   "mason-n5": {
+    "captures_per_game": 99.25,
+    "complete": true,
+    "games": 8,
+    "kind": "larger",
+    "max_actions": 1258,
+    "mean_actions": 872.125,
+    "mean_margin": 34.5,
+    "score_rate": 0.625
+   },
+   "mason-n6": {
+    "captures_per_game": 166,
+    "complete": true,
+    "games": 8,
+    "kind": "larger",
+    "max_actions": 1984,
+    "mean_actions": 1433.5,
+    "mean_margin": 70.5,
+    "score_rate": 0.75
+   },
+   "mason-vs-raider": {
+    "captures_per_game": 19.675,
+    "complete": true,
+    "games": 40,
+    "kind": "matchup",
+    "max_actions": 772,
+    "mean_actions": 187.85,
+    "mean_margin": 12.75,
+    "score_rate": 0.6
+   },
+   "mason-vs-surveyor": {
+    "captures_per_game": 49.05,
+    "complete": true,
+    "games": 40,
+    "kind": "matchup",
+    "max_actions": 723,
+    "mean_actions": 257.025,
+    "mean_margin": 45.2,
+    "score_rate": 0.875
+   },
+   "mason-vs-weaver": {
+    "captures_per_game": 34.075,
+    "complete": true,
+    "games": 40,
+    "kind": "matchup",
+    "max_actions": 480,
+    "mean_actions": 197.65,
+    "mean_margin": 48.675,
+    "score_rate": 0.95
+   },
+   "raider-n5": {
+    "captures_per_game": 36.375,
+    "complete": true,
+    "games": 8,
+    "kind": "larger",
+    "max_actions": 1045,
+    "mean_actions": 462.25,
+    "mean_margin": 61,
+    "score_rate": 1.0
+   },
+   "raider-n6": {
+    "captures_per_game": 63.75,
+    "complete": true,
+    "games": 8,
+    "kind": "larger",
+    "max_actions": 1679,
+    "mean_actions": 870.625,
+    "mean_margin": 79.25,
+    "score_rate": 0.875
+   },
+   "raider-vs-surveyor": {
+    "captures_per_game": 38.175,
+    "complete": true,
+    "games": 40,
+    "kind": "matchup",
+    "max_actions": 420,
+    "mean_actions": 176.975,
+    "mean_margin": 16.25,
+    "score_rate": 0.6625
+   },
+   "raider-vs-weaver": {
+    "captures_per_game": 33.05,
+    "complete": true,
+    "games": 40,
+    "kind": "matchup",
+    "max_actions": 283,
+    "mean_actions": 136.2,
+    "mean_margin": 62.85,
+    "score_rate": 1.0
+   },
+   "surveyor-n5": {
+    "captures_per_game": 52,
+    "complete": true,
+    "games": 8,
+    "kind": "larger",
+    "max_actions": 850,
+    "mean_actions": 472,
+    "mean_margin": 26,
+    "score_rate": 0.75
+   },
+   "surveyor-n6": {
+    "captures_per_game": 35.375,
+    "complete": true,
+    "games": 8,
+    "kind": "larger",
+    "max_actions": 999,
+    "mean_actions": 607.625,
+    "mean_margin": 64.25,
+    "score_rate": 0.875
+   },
+   "surveyor-vs-weaver": {
+    "captures_per_game": 32.675,
+    "complete": true,
+    "games": 40,
+    "kind": "matchup",
+    "max_actions": 200,
+    "mean_actions": 123,
+    "mean_margin": 64.5,
+    "score_rate": 1.0
+   },
+   "weaver-n5": {
+    "captures_per_game": 74.625,
+    "complete": true,
+    "games": 8,
+    "kind": "larger",
+    "max_actions": 908,
+    "mean_actions": 567,
+    "mean_margin": -114,
+    "score_rate": 0.0
+   },
+   "weaver-n6": {
+    "captures_per_game": 221.125,
+    "complete": true,
+    "games": 8,
+    "kind": "larger",
+    "max_actions": 1551,
+    "mean_actions": 1228,
+    "mean_margin": -57.5,
+    "score_rate": 0.25
+   }
+  },
+  "total_games": 464
+ },
+ "source_commits": {
+  "audit": "7fd3f1637bf282fb47b6a2f3e806fc59107e32b9",
+  "catalog_baseline": "1da66f7a40bd6c336d2a5fd5bc472ff2ddf040bc",
+  "gate_and_smoke": "8cc09b730df668830bf038880dc557b0842bd2dd",
+  "optimizer": "bb82da31067a4e69db6cc91dea4165fd022be6a9"
+ },
+ "stage_hashes": {
+  "audit_report": "c17b291dcc0ee7c767daef55c3a1cbf0be7d83fee46215c1e3a972c099f0d9a1",
+  "curation": "ca3efec8a71d7095a241ca5c478e16d4737fb1ad4251dca048261b6f0204253a",
+  "gate": "070cd30a2a3be769c7a62663dcf6b025ec71abc12daf9da6327637296e31f5c0",
+  "gate_code": "caa149e686ebf191d830f2999c7ab93af3f9817de3546cd80778844507c82ef6",
+  "optimizer_state": "38136c9585127a8fe9412dfa9d085df90199de3b2f79fa78c9ab30b274433422",
+  "smoke": "349c95e52a92c0d26eef94a252832553ed5a6088a1b6a52e8d5456bfc1480a78",
+  "smoke_code": "1a8deedf54b9182a60f2da2f000171992469c7a225ef4883f6e8ebb5416f44fc"
+ },
+ "version": 1
+}

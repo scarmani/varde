@@ -1,0 +1,54 @@
+{
+ "acceptance": {
+  "full_under_1500ms": true,
+  "toy_under_500ms": true
+ },
+ "full_balanced": {
+  "max_ms": 767.46,
+  "median_ms": 644.68,
+  "p95_ms": 723.43,
+  "samples": 20
+ },
+ "full_mason": {
+  "max_ms": 492.84,
+  "median_ms": 467.09,
+  "p95_ms": 490.6,
+  "samples": 20
+ },
+ "full_personal": {
+  "max_ms": 1250.05,
+  "median_ms": 987.0,
+  "p95_ms": 1213.28,
+  "samples": 20
+ },
+ "full_surveyor": {
+  "max_ms": 491.57,
+  "median_ms": 466.3,
+  "p95_ms": 491.45,
+  "samples": 20
+ },
+ "toy_balanced": {
+  "max_ms": 61.18,
+  "median_ms": 53.33,
+  "p95_ms": 56.77,
+  "samples": 20
+ },
+ "toy_mason": {
+  "max_ms": 91.96,
+  "median_ms": 55.35,
+  "p95_ms": 89.2,
+  "samples": 20
+ },
+ "toy_personal": {
+  "max_ms": 106.18,
+  "median_ms": 102.18,
+  "p95_ms": 105.88,
+  "samples": 20
+ },
+ "toy_surveyor": {
+  "max_ms": 54.68,
+  "median_ms": 50.46,
+  "p95_ms": 54.44,
+  "samples": 20
+ }
+}

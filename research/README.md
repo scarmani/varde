@@ -94,3 +94,98 @@ game cutoff.
 The exact checkpoint and compact aggregate are retained in `results/`. Raw
 per-attempt and per-pair JSONL from this run was generated outside the tree at
 `/tmp/cairn-v2-final` and can be reproduced with the commands above.
+
+## Evaluator Profiles V3 quality-diversity search
+
+**Final outcome (2026-07-14).** The declared run is complete: 4,096 candidates,
+32,768 games, 219/256 occupied cells, six watchdog rejections, one permitted
+refinement consumed. Mason and Surveyor passed their 100-pair gates and ship in
+the catalog; Raider (held-out engagement moved the wrong way) and Weaver (below
+the strength floor) are recorded as unavailable with reasons. The compact
+committed record is `research/results/v3-final-evidence-summary.json`; the raw
+archive checkpoint is retained outside the repository and pinned by sha256 in
+that summary. The commands below remain for reproduction.
+
+The V3 harness searches evaluator weights, never search depth or public
+difficulty. Its default run evaluates 512 deterministic calibration genomes
+and 1,536 archive mutations with four paired seeds per candidate (three Toy,
+one Beginner):
+
+```bash
+python3 research/harness/map_elites_v3.py \
+  --output-dir /tmp/varde-map-elites-v3 \
+  --seed 20260713 --workers 8 --checkpoint-interval 128
+```
+
+Resume the same canonical run after an interruption, optionally with a
+different worker count:
+
+```bash
+python3 research/harness/map_elites_v3.py \
+  --output-dir /tmp/varde-map-elites-v3 \
+  --seed 20260713 --workers 4 --checkpoint-interval 128 --resume
+```
+
+Candidate ids determine genomes, parents, opponents, and paired game seeds.
+The hall of fame is frozen for each deterministic 128-candidate batch, worker
+results are committed in candidate-id order, and pending tasks are included in
+the atomic checkpoint. Consequently, a resumed run and an uninterrupted run
+produce byte-identical `state.json` evidence. The state includes every game,
+descriptor, rejection, archive replacement, source/code hash, genome/result
+hash, and the four calibrated bin boundaries.
+
+Create the optional cancel file passed with `--cancel-file` to stop at a safe
+checkpoint. A later `--resume` continues the same scheduled tasks. The 20N
+watchdog is research-only: an incomplete rollout rejects its candidate and is
+recorded; it never changes a live game.
+
+### V3 audit, ablation, curation, and gates
+
+Generate the declared 2,000-position audit and the three paired evaluator
+ablations before starting the archive. Rejected V3 candidates remain telemetry
+with immutable zero search weight:
+
+```bash
+python3 research/harness/audit_v3.py \
+  --output-dir /tmp/varde-audit-v3 --seed 20260713 --workers 8
+
+python3 research/harness/ablate_v3.py \
+  --output-dir /tmp/varde-ablation-v3 --seed 20260713 --workers 8 \
+  --toy-pairs 40 --beginner-pairs 20 --difficulty standard
+
+python3 research/harness/map_elites_v3.py \
+  --output-dir /tmp/varde-map-elites-v3 --seed 20260713 --workers 16 \
+  --checkpoint-interval 128 \
+  --audit-report /tmp/varde-audit-v3/audit-v3.json
+
+python3 research/harness/curate_v3.py \
+  /tmp/varde-map-elites-v3/state.json \
+  /tmp/varde-audit-v3/audit-v3.json \
+  --output /tmp/varde-map-elites-v3/curation-v3.json
+```
+
+If and only if curation reports a missing profile, perform the plan's one
+additional 2,048-mutation refinement by extending the total mutation target
+from 1,536 to 3,584:
+
+```bash
+python3 research/harness/map_elites_v3.py \
+  --output-dir /tmp/varde-map-elites-v3 --seed 20260713 --workers 16 \
+  --checkpoint-interval 128 --mutations 3584 --resume \
+  --audit-report /tmp/varde-audit-v3/audit-v3.json
+```
+
+After rerunning curation, the final paired release gate is:
+
+```bash
+python3 research/harness/gate_profiles_v3.py \
+  /tmp/varde-map-elites-v3/curation-v3.json \
+  --output /tmp/varde-map-elites-v3/profile-gates-v3.json \
+  --seed 20260713 --workers 16 --toy-pairs 75 --beginner-pairs 25
+```
+
+The curator never relaxes the declared descriptor shifts or normalized-distance
+threshold. It reports a profile missing when no eligible elite exists. The gate
+uses separate Balanced reference games on the same seeds and requires the
+strength floors, descriptor shifts in both colors and strata, effect size, and
+pairwise diversity before a curated profile can be exposed by the application.

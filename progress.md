@@ -85,3 +85,62 @@ Original prompt: yes to all in best order proceed and execute according to your 
 - Replaced the temporary-path research scripts with repository-relative,
   parameterized training, paired evaluation, benchmark, and larger-board smoke
   harnesses. Historical checkpoints are clearly isolated from production.
+
+## Evaluator Profiles V3 and quality-diversity search
+
+- Began the approved finite implementation on `feat/evaluator-profiles-v3`.
+- Baseline is clean at `1da66f7`: 72 pytest cases, JavaScript syntax, and Python
+  compilation pass; `engine/cairn.py` is protected as an explicit no-change surface.
+- Decomposed the run into evaluator parity/features, profile compatibility/API,
+  browser experience, deterministic MAP-Elites, evidence/curation, and final gates.
+- A bounded Fable goal cycle reinforced parity-first architecture. Its unrelated
+  direct-to-main suggestion was rejected; product work remains on the owned branch.
+- Batch 1 complete: Balanced now uses a named immutable weight map while exact
+  seeded actions, scores, and node counts remain unchanged on all board sizes and
+  special actions. Ten V3 structural/transition measurements are bounded,
+  color-symmetric, non-mutating, and reuse supplied transitions without nested scans.
+- A first implementation paid V3 telemetry cost at every node; focused latency
+  evidence caught it and the disabled fast path restored roughly 28 ms Toy / 397 ms
+  Full Standard decisions. The Personal nine-feature schema remains exact.
+- Batch 2 complete: computer seats now store independent Casual/Standard
+  difficulty and evaluator profile, legacy Advanced normalizes to Standard +
+  Personal, version-1 saves and complete-seat takeover remain compatible, and
+  `GET /api/profiles` exposes catalog availability without raw weights.
+- The packaged catalog started with Balanced and Personal available; the
+  declared archive/evidence run has since frozen Mason and Surveyor as
+  available (see the Batch 5–6 entry below). No provisional style was shipped
+  by weakening its descriptor gate.
+- Batch 3 complete: dynamic browser selectors separate Casual/Standard search
+  from profile style, independent spectator choices remain paused, unavailable
+  archive profiles are visibly disabled, and Personal learning reports untrained
+  equivalence or its local training count.
+- Browser evidence covers actual selector submission, both pie-rule takeover
+  directions, automatic continuation, legacy Advanced migration, profile-aware
+  rationales without raw score, semantic state, opened screenshots, and zero
+  console errors.
+- Batch 4 complete: the repository-relative four-axis MAP-Elites harness uses
+  candidate-owned random streams, 128-candidate frozen halls, strict in-order
+  reduction, and atomic checkpoints containing pending work and complete evidence.
+- Ten harness tests prove deterministic mutation/binning/replacement, hall
+  selection, byte-identical interruption/resume across worker counts,
+  cancellation, tamper detection, and incomplete accounting. A real two-process
+  smoke completed 4 candidates / 32 games with no illegal or incomplete result.
+- Batches 5–6 complete: the 2,000-position audit retained five transition
+  features (capturing moves, max capture, covers, hostile covers, summits) and
+  kept five structural features as zero-weight telemetry on latency grounds;
+  the 4,096-candidate / 32,768-game MAP-Elites run (one permitted refinement
+  included) filled 219 of 256 cells with six honest watchdog rejections.
+- Final 100-pair gates shipped two of four curated styles: Mason (76.75%
+  overall against Balanced, verticality effect 1.264) and Surveyor (51.75%,
+  edge-reach effect 3.008). Raider was omitted because its held-out engagement
+  moved in the wrong direction; Weaver was omitted below the strength floor.
+  Profiles are described as different, not stronger; the catalog records
+  `strength_claim: false`, availability reasons, and every stage hash. Compact
+  evidence lives in `research/results/v3-final-evidence-summary.json` and
+  `research/results/v3-final-benchmark.json`; the raw archive is retained
+  outside the repository by sha256.
+- A final browser pass on the frozen catalog verified human and spectator play
+  with Mason and Surveyor, human and AI pie takeover with complete seat
+  exchange, paused spectator loads, playback controls, capture-wave animation,
+  save/load with legacy Advanced migration, trained/untrained Personal
+  displays, and zero console errors.
