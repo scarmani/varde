@@ -59,12 +59,17 @@ six per board size) and Balanced-mirror games:
 
 Caveats: the Toy board (19 cells) produced a mirror draw and is too
 coarse to score — treat n=4 as the minimum real board. A second duel
-round with a fence-aware defender (its objective now values the
-fenced-cell differential, and it visibly completes loops) still lost
-12-0 with unchanged margins: at one-ply depth, killing decisively
-outraces fencing — a ten-line fence loses the tempo war against a
-hunter. Whether deeper search or human play rebalances this is the
-ruleset's central open question. In over-the-board play against the Attacker
+round with a fence-aware greedy defender still lost 12-0: at one-ply
+depth, killing outraces fencing.
+
+**The depth experiment settled the balance question.** With the
+Standard evaluator taught to value the fenced-cell differential from
+move one, the two-ply fencer beat the greedy attacker **8-0 across
+both colors and both board sizes**, by tight margins (1-13 of 37
+cells; 6-7 of 61), and fence-aware mirrors were similarly close (5-8
+cells). The apparent attack dominance was an artifact of engine
+shallowness, not of the rules: one extra ply plus an aligned
+objective flips the sweep. Gjerde's balance is healthy. In over-the-board play against the Attacker
 profile, a single heavy group was netted and annihilated despite the
 four-liberty geometry: liberties are shared resources, and a swarm of
 cheap contact stones starves one big group faster than it can capture
