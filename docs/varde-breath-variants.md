@@ -90,3 +90,38 @@ A caveat and a recurring observation: the duelists are one-ply
 caricatures, and in every ruleset the rim's phantom neighbors remain
 the dominant trap — rim stones have two liberties, not three. Any UI
 for these variants should render phantom edges explicitly.
+
+## Extension-rule variants (second research cycle)
+
+Six formulations of the free-extension idea, all engine-flagged:
+
+| Ruleset | Extension rule |
+|---|---|
+| breath-extend | one group, once, then a normal move |
+| breath-extend-multi | any number of distinct atari'd groups, once each, then a move |
+| breath-extend-run | one group, chained while it stays at one liberty, then a move |
+| breath-rescue | as multi, but the extensions replace the move |
+| breath-run | as chain, but the run replaces the move |
+| breath-cap | one extension on any space adjacent to the group, stacking allowed, then a move |
+
+Attack/defense duels (8 per variant) and Balanced mirrors:
+
+| Variant | Duels A–D | Duel margins | Verdict |
+|---|---|---|---|
+| breath (baseline) | 2–6 | 2–40 | near-equilibrium baseline |
+| breath-extend | 0–8 | 2–84 | defense-favored |
+| breath-extend-multi | 0–8 | 2–84 | indistinguishable from breath-extend; redundant |
+| breath-extend-run | 0–8 | wipes | free corridor runs make defense degenerate |
+| breath-rescue | **8–0** | 40–71 | balance fully inverts: every forced rescue costs a tempo |
+| breath-run | **4–4** | 6–114 | the equilibrium point of the family |
+| breath-cap | 0–8 | wipes | **broken: mutual cap-rescues never terminate** (heights unbounded without terrain; one mirror hit the move cap with ~2,900 extensions) |
+
+The family forms a tunable dial: free extensions (defense) → no
+extension (mild defense) → chain-as-turn (even) → rescue-as-turn
+(attack). breath-run and breath-rescue are the interesting poles to
+explore by hand; multi and the chain-with-move variant add nothing,
+and breath-cap needs a height bound (i.e. the terrain rule back) to
+even terminate, which defeats its simplicity.
+
+Attacker and Defender are playable in the browser as computer
+profiles under every ruleset.

@@ -937,10 +937,84 @@ class TestBreathExtend(unittest.TestCase):
         g.play_extension(lib)
         restored = Game.from_dict(g.to_dict())
         self.assertTrue(restored.extension_used)
+        self.assertEqual(restored.extension_points, [lib])
         self.assertEqual(restored.rules, "breath-extend")
         legacy = g.to_dict()
         del legacy["extension_used"]
+        del legacy["extension_points"]
         self.assertFalse(Game.from_dict(legacy).extension_used)
+
+
+class TestExtensionVariants(unittest.TestCase):
+    def two_ataris(self, rules):
+        """Two separate White stones, each with exactly one liberty."""
+        g = breath_game(WHITE, rules=rules)
+        spots = sorted(g.board.deep)
+        first = spots[0]
+        far = max(
+            spots,
+            key=lambda q: abs(q[0] - first[0]) + abs(q[1] - first[1]),
+        )
+        libs = []
+        for p in (first, far):
+            a, b, c = g.board.neighbors[p]
+            put(g, p, WHITE)
+            put(g, a, BLACK)
+            put(g, b, BLACK)
+            libs.append(c)
+        g.history = {signature(g.board, g.state, WHITE)}
+        return g, libs
+
+    def test_multi_extends_each_group_once_then_moves(self):
+        g, libs = self.two_ataris("breath-extend-multi")
+        self.assertEqual(g.extension_candidates(), sorted(libs))
+        g.play_extension(libs[0])
+        self.assertEqual(g.extension_candidates(), [libs[1]])
+        g.play_extension(libs[1])
+        self.assertEqual(g.extension_candidates(), [])
+        g.play(g.legal_placements()[0])
+        self.assertEqual(g.to_move, BLACK)
+
+    def test_chain_stays_with_one_group(self):
+        g, libs = self.two_ataris("breath-extend-run")
+        g.play_extension(libs[0])
+        remaining = g.extension_candidates()
+        self.assertNotIn(libs[1], remaining)  # other group is locked out
+        g.play(g.legal_placements()[0])
+        self.assertEqual(g.to_move, BLACK)
+
+    def test_rescue_extensions_are_the_whole_turn(self):
+        g, libs = self.two_ataris("breath-rescue")
+        g.play_extension(libs[0])
+        with self.assertRaisesRegex(Illegal, "finish the extension"):
+            g.play(g.legal_placements()[0])
+        with self.assertRaisesRegex(Illegal, "finish the extension"):
+            g.play_pass()
+        g.play_extension(libs[1])
+        moves_before = g.moves_played
+        g.finish_extensions()
+        self.assertEqual(g.to_move, BLACK)
+        self.assertEqual(g.moves_played, moves_before + 1)
+        self.assertFalse(g.extension_used)
+        with self.assertRaisesRegex(Illegal, "no extension turn"):
+            g.finish_extensions()
+
+    def test_cap_rescue_may_land_on_an_enemy_stone(self):
+        g = breath_game(WHITE, rules="breath-cap")
+        p = deep_point(g.board)
+        a, b, c = g.board.neighbors[p]
+        put(g, p, WHITE)
+        put(g, a, BLACK)
+        put(g, b, BLACK)
+        g.history = {signature(g.board, g.state, WHITE)}
+        candidates = g.extension_candidates()
+        self.assertIn(a, candidates)      # capping the attacker is offered
+        self.assertIn(c, candidates)      # so is the plain liberty
+        g.play_extension(a)
+        self.assertEqual(g.state[a], (BLACK, WHITE))
+        self.assertEqual(g.to_move, WHITE)  # normal move still to come
+        with self.assertRaisesRegex(Illegal, "already used"):
+            g.play_extension(c)
 
 
 if __name__ == "__main__":

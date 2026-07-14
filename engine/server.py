@@ -8,9 +8,12 @@ from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import urlparse
 
-from varde import BLACK, RULESETS, WHITE, Game, Illegal, has_sky, other
+from varde import (
+    BLACK, EXTENSION_RULES, RULESETS, WHITE, Game, Illegal, groups_of,
+    has_sky, other,
+)
 from learning import LearningModel, TRAINING_BATCHES, TrainingService
-from opponent import choose_decision
+from opponent import BotDecision, choose_decision, greedy_decision
 from profiles import (
     get_profile,
     normalize_computer_settings,
@@ -433,6 +436,7 @@ def public_view(game, match=None, last_decision=None):
         "consecutive_passes": game.consecutive_passes,
         "finished": game.finished,
         "no_progress_end": game.no_progress_end,
+        "extension_only_turn": game.extension_only_turn,
         "resumption_available": game.resumption_available,
         "resumption_used": game.resumption_used,
         "swap_available": game.swap_available,
@@ -470,6 +474,37 @@ def assert_human_action(game, match):
         raise Illegal("wait for the computer's move")
 
 
+def computer_take_extensions(game):
+    """Take free extensions per the ruleset's economics.
+
+    When a normal move still follows, extensions are pure gain: take
+    them all. When extensions replace the move, rescue only if at
+    least two stones are imperiled — a lone stone is cheaper to lose
+    than a tempo.
+    """
+    spec = EXTENSION_RULES.get(game.rules)
+    if spec is None:
+        return
+    if not spec["after_move"]:
+        imperiled = 0
+        for comp in groups_of(game.board, game.state, game.to_move):
+            libs = {
+                nb
+                for q in comp
+                for nb in game.board.neighbors[q]
+                if not game.state[nb]
+            }
+            if len(libs) == 1:
+                imperiled += len(comp)
+        if imperiled < 2:
+            return
+    while True:
+        candidates = game.extension_candidates()
+        if not candidates:
+            return
+        game.play_extension(candidates[0])
+
+
 def apply_computer_action(game, match, model=None):
     if not match.computer_can_act(game):
         raise Illegal("it is not the computer's turn")
@@ -482,17 +517,28 @@ def apply_computer_action(game, match, model=None):
     selected_profile = get_profile(seat.profile)
     active_model = MODEL if model is None else model
     if not game.finished:
-        candidates = game.extension_candidates()
-        if candidates:
-            game.play_extension(candidates[0])
-    decision = choose_decision(
-        game,
-        color,
-        difficulty=seat.difficulty,
-        seed=seat.seed,
-        model=active_model if seat.profile == "personal" else None,
-        weights=selected_profile.weights,
-    )
+        computer_take_extensions(game)
+    if game.extension_only_turn:
+        game.finish_extensions()
+        return BotDecision(
+            action="extend",
+            reason_code="extend",
+            reason_text="Rescued imperiled groups with free extensions.",
+            profile=seat.profile,
+        )
+    if seat.profile in ("attacker", "defender") and not game.finished:
+        decision = greedy_decision(
+            game, color, seat.profile, seed=seat.seed
+        )
+    else:
+        decision = choose_decision(
+            game,
+            color,
+            difficulty=seat.difficulty,
+            seed=seat.seed,
+            model=active_model if seat.profile == "personal" else None,
+            weights=selected_profile.weights,
+        )
     decision = replace(decision, profile=seat.profile)
     if decision.action == "play":
         game.play(decision.point)
@@ -607,6 +653,10 @@ class VardeHandler(SimpleHTTPRequestHandler):
                     if point not in GAME.state:
                         raise ValueError("point is off board")
                     GAME.play_extension(point)
+                    MATCH.clear_end_acceptances()
+                elif route == "/api/finish-extensions":
+                    assert_human_action(GAME, MATCH)
+                    GAME.finish_extensions()
                     MATCH.clear_end_acceptances()
                 elif route == "/api/pass":
                     assert_human_action(GAME, MATCH)

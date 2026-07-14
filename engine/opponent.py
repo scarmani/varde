@@ -1004,3 +1004,89 @@ def choose_decision(
     return replace(
         decision, elapsed_ms=(time.perf_counter() - started) * 1000
     )
+
+
+# ---------------------------------------------------------------------------
+# Greedy duel styles: attacker and defender (research probes, playable)
+# ---------------------------------------------------------------------------
+def _duel_tiebreak(point, seed):
+    digest = hashlib.sha256(f"{seed}:{point}".encode()).hexdigest()
+    return int(digest[:8], 16)
+
+
+def _duel_liberties(game, state, color):
+    """Total horizontal liberties and one-liberty stone count."""
+    board = game.board
+    total = 0
+    imperiled = 0
+    for comp in groups_of(board, state, color):
+        libs = {
+            nb
+            for q in comp
+            for nb in board.neighbors[q]
+            if not state[nb]
+        }
+        total += len(libs)
+        if len(libs) == 1:
+            imperiled += len(comp)
+    return total, imperiled
+
+
+def greedy_decision(game, computer_color, style, seed=1):
+    """One-ply attack- or defense-maximizing move for the duel profiles."""
+    started = time.perf_counter()
+    if game.finished:
+        return choose_decision(game, computer_color, "casual", seed=seed)
+    enemy = other(computer_color)
+    best = None
+    nodes = 0
+    for point in game.legal_placements():
+        state, captured = game.try_play(point)
+        nodes += 1
+        if style == "attacker":
+            enemy_libs, enemy_imperiled = _duel_liberties(game, state, enemy)
+            _own, own_imperiled = _duel_liberties(game, state, computer_color)
+            score = (
+                1000.0 * captured
+                - 10.0 * enemy_libs
+                + 25.0 * enemy_imperiled
+                - 15.0 * own_imperiled
+            )
+        else:
+            own_libs, own_imperiled = _duel_liberties(game, state, computer_color)
+            controlled = sum(
+                1 for q in game.board.points
+                if state[q] and state[q][-1] == computer_color
+            )
+            score = (
+                10.0 * own_libs
+                - 50.0 * own_imperiled
+                + 20.0 * captured
+                + 1.0 * controlled
+            )
+        key = (score, -_duel_tiebreak(point, seed))
+        if best is None or key > best[0]:
+            best = (key, point, captured)
+    if best is None:
+        return BotDecision(
+            action="pass",
+            reason_code="pass",
+            reason_text="Passed with no legal placement.",
+            nodes=nodes,
+            elapsed_ms=(time.perf_counter() - started) * 1000,
+        )
+    _key, point, captured = best
+    text = (
+        "Pressed the attack." if style == "attacker" else "Shored up defenses."
+    )
+    if captured:
+        text = f"Captured {captured} stone{'s' if captured > 1 else ''}."
+    return BotDecision(
+        action="play",
+        point=point,
+        reason_code=style,
+        reason_text=text,
+        score=float(best[0][0]),
+        nodes=nodes,
+        elapsed_ms=(time.perf_counter() - started) * 1000,
+    )

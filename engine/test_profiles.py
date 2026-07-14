@@ -21,7 +21,10 @@ class TestProfileCatalog(unittest.TestCase):
         self.assertEqual(tuple(FEATURE_SCHEMA), tuple(BALANCED_WEIGHTS))
         self.assertEqual(
             tuple(PROFILES),
-            ("balanced", "raider", "mason", "surveyor", "weaver", "personal"),
+            (
+                "balanced", "raider", "mason", "surveyor", "weaver",
+                "personal", "attacker", "defender",
+            ),
         )
         self.assertEqual(len(CATALOG_HASH), 64)
         self.assertIs(PROFILES["balanced"].weights, BALANCED_WEIGHTS)

@@ -216,27 +216,35 @@ def _enemy_column_is_sky_bound(board, state, p, color):
     return True
 
 
-def resolve(board, state, p, color, history, trace=None, rules="classic"):
+def resolve(
+    board, state, p, color, history, trace=None, rules="classic",
+    allow_stack=False,
+):
     """Attempt the placement.  Returns (new_state, captured_count).
 
     Raises Illegal(reason) if any step fails.  `state` is not mutated.
-    `history` is a set of signatures already recorded.
+    `history` is a set of signatures already recorded.  `allow_stack`
+    is used only by breath-cap rescue extensions, which may land on an
+    occupied point.
     """
     # 0. rosette stacking gate: occupied columns accept a stone only when
     #    they belong to an enemy group breathing through skies alone.
-    #    Breath rulesets are flat games: no stacking at all.
+    #    Breath rulesets are flat games: no stacking except cap rescues.
     if state[p]:
-        if rules in BREATH_RULESETS:
+        if rules in BREATH_RULESETS and not allow_stack:
             raise Illegal("stack")
         if rules == "rosette" and not _enemy_column_is_sky_bound(
             board, state, p, color
         ):
             raise Illegal("stack")
 
-    # 1. terrain
-    if not terrain_ok(board, state, p):
-        raise Illegal("terrain")
-    summit = is_summit(board, state, p)
+    # 1. terrain and summits govern the stacked rulesets only; breath
+    #    games are flat (a cap rescue lands unconditionally)
+    summit = False
+    if rules not in BREATH_RULESETS:
+        if not terrain_ok(board, state, p):
+            raise Illegal("terrain")
+        summit = is_summit(board, state, p)
 
     # 2. provisional placement; the new stone controls its column at once
     st = dict(state)
@@ -299,14 +307,33 @@ def resolve(board, state, p, color, history, trace=None, rules="classic"):
 # ---------------------------------------------------------------------------
 # Game controller: turns, passes, resumption, scoring
 # ---------------------------------------------------------------------------
-RULESETS = ("classic", "rosette", "breath", "breath-extend")
-BREATH_RULESETS = ("breath", "breath-extend")
+# Extension-rule variants over the breath base. `scope` controls which
+# groups may take the free extension and how often within one turn:
+#   single   — one extension, one group
+#   multi    — any number of distinct one-liberty groups, once each
+#   chain    — one group, repeatedly, while it still has one liberty
+#   adjacent — one extension on ANY space adjacent to a one-liberty
+#              group, empty or occupied (a rescue may cap a stone)
+# `after_move` False makes the extensions the entire turn (no normal
+# move follows); the turn then ends with finish_extensions().
+EXTENSION_RULES = {
+    "breath-extend": {"scope": "single", "after_move": True},
+    "breath-extend-multi": {"scope": "multi", "after_move": True},
+    "breath-extend-run": {"scope": "chain", "after_move": True},
+    "breath-rescue": {"scope": "multi", "after_move": False},
+    "breath-run": {"scope": "chain", "after_move": False},
+    "breath-cap": {"scope": "adjacent", "after_move": True},
+}
+BREATH_RULESETS = ("breath",) + tuple(EXTENSION_RULES)
+RULESETS = ("classic", "rosette") + BREATH_RULESETS
 
 
 class Game:
     def __init__(self, n=3, rules="classic"):
         if rules not in RULESETS:
-            raise ValueError("rules must be classic or rosette")
+            raise ValueError(
+                "rules must be one of: " + ", ".join(RULESETS)
+            )
         self.rules = rules
         self.board = Board(n)
         self.state = empty_state(self.board)
@@ -320,6 +347,7 @@ class Game:
         self.no_progress_end = False
         self.resumption_used = False
         self.extension_used = False
+        self.extension_points = []
         self.players = {BLACK: "Player 1", WHITE: "Player 2"}
         self.swap_decided = False
         self.last_capture_waves = []
@@ -360,19 +388,17 @@ class Game:
             rules=self.rules,
         )
 
-    def extension_candidates(self):
-        """Sole liberties of the mover's one-liberty groups (breath-extend).
-
-        Returns the points where the mover could legally place the
-        optional pre-move extension this turn.
-        """
-        if (
-            self.rules != "breath-extend"
-            or self.finished
-            or self.extension_used
-        ):
+    def _eligible_extension_groups(self):
+        """Mover's one-liberty groups still eligible this turn, with
+        their sole liberties, respecting the ruleset's scope."""
+        spec = EXTENSION_RULES.get(self.rules)
+        if spec is None or self.finished:
             return []
-        out = set()
+        scope = spec["scope"]
+        if scope in ("single", "adjacent") and self.extension_used:
+            return []
+        marked = set(self.extension_points)
+        out = []
         for comp in groups_of(self.board, self.state, self.to_move):
             libs = {
                 nb
@@ -380,58 +406,113 @@ class Game:
                 for nb in self.board.neighbors[q]
                 if not self.state[nb]
             }
-            if len(libs) == 1:
-                out.update(libs)
-        legal = []
-        for p in sorted(out):
-            try:
-                resolve(
-                    self.board, self.state, p, self.to_move, self.history,
-                    rules=self.rules,
-                )
-                legal.append(p)
-            except Illegal:
-                pass
-        return legal
+            if len(libs) != 1:
+                continue
+            touched = bool(marked & set(comp))
+            if scope == "multi" and touched:
+                continue          # each group extends at most once
+            if scope == "chain" and marked and not touched:
+                continue          # the chain stays with one group
+            out.append((comp, next(iter(libs))))
+        return out
+
+    def _legal_extension(self, p, allow_stack=False):
+        try:
+            resolve(
+                self.board, self.state, p, self.to_move, self.history,
+                rules=self.rules, allow_stack=allow_stack,
+            )
+            return True
+        except Illegal:
+            return False
+
+    def extension_candidates(self):
+        """Points where the mover could legally place a free extension."""
+        spec = EXTENSION_RULES.get(self.rules)
+        if spec is None:
+            return []
+        eligible = self._eligible_extension_groups()
+        if spec["scope"] == "adjacent":
+            points = {
+                nb
+                for comp, _lib in eligible
+                for q in comp
+                for nb in self.board.neighbors[q]
+            } - {q for comp, _lib in eligible for q in comp}
+            return sorted(
+                p for p in points
+                if self._legal_extension(p, allow_stack=bool(self.state[p]))
+            )
+        return sorted(
+            {lib for _comp, lib in eligible if self._legal_extension(lib)}
+        )
 
     def play_extension(self, p):
-        """Breath-extend: freely extend one atari'd group into its sole
-        liberty. The turn does not pass; a normal move must follow."""
-        if self.rules != "breath-extend":
+        """Freely extend an atari'd group per the ruleset's extension
+        scope. The turn does not pass; in the extend-only rulesets the
+        turn instead ends with finish_extensions()."""
+        spec = EXTENSION_RULES.get(self.rules)
+        if spec is None:
             raise Illegal("no extension in this ruleset")
         if self.finished:
             raise Illegal("game over")
-        if self.extension_used:
+        if spec["scope"] in ("single", "adjacent") and self.extension_used:
             raise Illegal("extension already used this turn")
-        eligible = False
-        for comp in groups_of(self.board, self.state, self.to_move):
-            libs = {
+        eligible = self._eligible_extension_groups()
+        allow_stack = False
+        if spec["scope"] == "adjacent":
+            adjacent = {
                 nb
+                for comp, _lib in eligible
                 for q in comp
                 for nb in self.board.neighbors[q]
-                if not self.state[nb]
-            }
-            if libs == {p}:
-                eligible = True
-                break
-        if not eligible:
-            raise Illegal("extension must fill a group's sole liberty")
+            } - {q for comp, _lib in eligible for q in comp}
+            if p not in adjacent:
+                raise Illegal("extension must touch a one-liberty group")
+            allow_stack = bool(self.state[p])
+        else:
+            if p not in {lib for _comp, lib in eligible}:
+                raise Illegal("extension must fill a group's sole liberty")
         waves = []
         st, captured = resolve(
             self.board, self.state, p, self.to_move, self.history,
-            trace=waves, rules=self.rules,
+            trace=waves, rules=self.rules, allow_stack=allow_stack,
         )
         self.state = st
         self.history.add(signature(self.board, self.state, self.to_move))
         self.extension_used = True
+        self.extension_points = self.extension_points + [p]
         self.consecutive_passes = 0
         self.quiet_moves = 0
         self.last_capture_waves = waves
         return captured
 
+    @property
+    def extension_only_turn(self):
+        """True when extensions were taken in an extend-only ruleset,
+        so the turn must end with finish_extensions()."""
+        spec = EXTENSION_RULES.get(self.rules)
+        return bool(
+            spec and not spec["after_move"] and self.extension_used
+        )
+
+    def finish_extensions(self):
+        """End an extend-only turn after at least one extension."""
+        if not self.extension_only_turn:
+            raise Illegal("no extension turn to finish")
+        self.to_move = other(self.to_move)
+        self.history.add(signature(self.board, self.state, self.to_move))
+        self.moves_played += 1
+        self.consecutive_passes = 0
+        self.extension_used = False
+        self.extension_points = []
+        self.last_capture_waves = []
+
     def play(self, p):
         if self.finished:
             raise Illegal("game over")
+        if self.extension_only_turn:
+            raise Illegal("finish the extension turn instead")
         mover = self.to_move
         prior_control = control(self.state, p)
         waves = []
@@ -453,6 +534,7 @@ class Game:
             self.swap_decided = True
         self.last_capture_waves = waves
         self.extension_used = False
+        self.extension_points = []
         if self.quiet_moves >= NO_PROGRESS_LIMIT:
             self.finished = True
             self.no_progress_end = True
@@ -461,6 +543,8 @@ class Game:
     def play_pass(self):
         if self.finished:
             raise Illegal("game over")
+        if self.extension_only_turn:
+            raise Illegal("finish the extension turn instead")
         if self.moves_played == 0:
             raise Illegal("first move must be a placement")
         if self.moves_played == 1:
@@ -476,6 +560,7 @@ class Game:
             self.finished = True
             self.no_progress_end = True
         self.extension_used = False
+        self.extension_points = []
         self.last_capture_waves = []
 
     @property
@@ -572,6 +657,7 @@ class Game:
             "no_progress_end": self.no_progress_end,
             "resumption_used": self.resumption_used,
             "extension_used": self.extension_used,
+            "extension_points": [list(q) for q in self.extension_points],
             "players": dict(self.players),
             "swap_decided": self.swap_decided,
         }
@@ -621,6 +707,9 @@ class Game:
         game.no_progress_end = bool(payload.get("no_progress_end", False))
         game.resumption_used = bool(payload.get("resumption_used", False))
         game.extension_used = bool(payload.get("extension_used", False))
+        game.extension_points = [
+            tuple(q) for q in payload.get("extension_points", [])
+        ]
         players = payload.get("players", {})
         if set(players) != {BLACK, WHITE} or not all(
             isinstance(name, str) and name for name in players.values()

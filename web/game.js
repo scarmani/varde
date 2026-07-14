@@ -5,6 +5,7 @@ const message = document.querySelector("#message");
 const passButton = document.querySelector("#pass-btn");
 const swapButton = document.querySelector("#swap-btn");
 const resumeButton = document.querySelector("#resume-btn");
+const finishExtButton = document.querySelector("#finish-ext-btn");
 const sizeSelect = document.querySelector("#board-size");
 const rulesSelect = document.querySelector("#ruleset");
 const modeSelect = document.querySelector("#game-mode");
@@ -213,13 +214,17 @@ function updateControls() {
       `${controlText} · move ${game.moves_played + 1}`,
     );
   }
+  const extendOnly = ["breath-rescue", "breath-run"].includes(game.rules);
   if (
     !thinking && !game.finished && !game.match?.computer_turn
     && game.points?.some((p) => p.extension)
   ) {
-    message.textContent =
-      "Free extension available — the amber point rescues your group without costing your move.";
+    message.textContent = extendOnly
+      ? "Amber points are free rescues — but taking any replaces your move this turn."
+      : "Free extension available — the amber point rescues your group without costing your move.";
   }
+  finishExtButton.hidden = !game.extension_only_turn;
+  finishExtButton.disabled = thinking || Boolean(game.match?.computer_turn);
   const computerTurn = game.match?.computer_turn || thinking;
   passButton.disabled = game.finished || game.moves_played === 0 || computerTurn;
   swapButton.hidden = !game.swap_available || computerTurn;
@@ -475,6 +480,8 @@ canvas.addEventListener("click", async (event) => {
     await humanAction("/api/extend", {point: point.coord});
     return;
   }
+  // Mid extension-only turn, ordinary placements wait for End turn.
+  if (game.extension_only_turn) return;
   await humanAction("/api/play", {point: point.coord});
 });
 
@@ -502,6 +509,8 @@ document.querySelector("#new-btn").addEventListener("click", async () => {
 passButton.addEventListener("click", async () => humanAction("/api/pass"));
 swapButton.addEventListener("click", async () => humanAction("/api/swap"));
 resumeButton.addEventListener("click", async () => humanAction("/api/resume"));
+finishExtButton.addEventListener("click", async () =>
+  humanAction("/api/finish-extensions"));
 modeSelect.addEventListener("change", updateSetupVisibility);
 profileSelect.addEventListener("change", updateProfileNote);
 blackProfileSelect.addEventListener("change", updateProfileNote);

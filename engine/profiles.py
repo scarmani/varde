@@ -13,7 +13,7 @@ CATALOG_FORMAT = "varde-evaluator-profiles"
 CATALOG_VERSION = 3
 FEATURE_SCHEMA = tuple(BALANCED_WEIGHTS)
 CURATED_PROFILE_IDS = ("balanced", "raider", "mason", "surveyor", "weaver")
-PROFILE_IDS = CURATED_PROFILE_IDS + ("personal",)
+PROFILE_IDS = CURATED_PROFILE_IDS + ("personal", "attacker", "defender")
 
 
 _RAW_CATALOG = {
@@ -177,6 +177,30 @@ _RAW_CATALOG = {
             "id": "personal",
             "label": "Personal",
             "description": "Balanced play plus your persistent local learned correction.",
+            "available": True,
+            "experimental": True,
+            "dynamic": True,
+            "weights": dict(BALANCED_WEIGHTS),
+            "model_hash": None,
+            "measurements": None,
+            "availability_reason": None,
+        },
+        {
+            "id": "attacker",
+            "label": "Attacker",
+            "description": "Greedy aggression: hunts captures and starves enemy liberties.",
+            "available": True,
+            "experimental": True,
+            "dynamic": True,
+            "weights": dict(BALANCED_WEIGHTS),
+            "model_hash": None,
+            "measurements": None,
+            "availability_reason": None,
+        },
+        {
+            "id": "defender",
+            "label": "Defender",
+            "description": "Greedy safety: maximizes its own liberties and shelters weak groups.",
             "available": True,
             "experimental": True,
             "dynamic": True,
