@@ -314,6 +314,12 @@ function makeProjection() {
     x: offsetX + (p.x - minX) * scale,
     y: offsetY + (p.y - minY) * scale,
   }]));
+  // Gjerde: points are lines of the hex grid; their endpoints live at
+  // twice the vertex coordinates, in the same space as the sums.
+  visual.projectRaw = (x, y) => ({
+    x: offsetX + (x - minX) * scale,
+    y: offsetY + (-y * Math.sqrt(3) - minY) * scale,
+  });
 }
 
 function roundedRect(x, y, w, h, r) {
@@ -331,15 +337,43 @@ function draw() {
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   ctx.lineCap = "round";
-  ctx.strokeStyle = "rgba(83,71,50,.48)";
-  ctx.lineWidth = visual.lineWidth;
-  for (const [a, b] of game.edges) {
-    const pa = projected.get(keyOf(a));
-    const pb = projected.get(keyOf(b));
-    ctx.beginPath();
-    ctx.moveTo(pa.x, pa.y);
-    ctx.lineTo(pb.x, pb.y);
-    ctx.stroke();
+  const lineMode = game.points[0]?.segment != null;
+  if (lineMode) {
+    // Gjerde: draw the hex grid's lines themselves. Unclaimed lines
+    // are faint; claimed lines are thick strokes in the stone colors.
+    for (const point of game.points) {
+      const [va, vb] = point.segment;
+      const pa = visual.projectRaw(va[0] * 2, va[1] * 2);
+      const pb = visual.projectRaw(vb[0] * 2, vb[1] * 2);
+      const top = point.stack.at(-1);
+      ctx.beginPath();
+      ctx.moveTo(pa.x, pa.y);
+      ctx.lineTo(pb.x, pb.y);
+      if (!top) {
+        ctx.strokeStyle = "rgba(83,71,50,.30)";
+        ctx.lineWidth = Math.max(1, visual.lineWidth * 0.6);
+      } else {
+        ctx.strokeStyle = top === "B" ? "#252923" : "#f7f3e8";
+        ctx.lineWidth = Math.max(4, visual.stoneRadius * 0.85);
+      }
+      ctx.stroke();
+      if (top === "W") {
+        ctx.strokeStyle = "#777369";
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      }
+    }
+  } else {
+    ctx.strokeStyle = "rgba(83,71,50,.48)";
+    ctx.lineWidth = visual.lineWidth;
+    for (const [a, b] of game.edges) {
+      const pa = projected.get(keyOf(a));
+      const pb = projected.get(keyOf(b));
+      ctx.beginPath();
+      ctx.moveTo(pa.x, pa.y);
+      ctx.lineTo(pb.x, pb.y);
+      ctx.stroke();
+    }
   }
 
   // Phantom edges: every rim point is missing a neighbor, and forgetting
@@ -399,42 +433,46 @@ function draw() {
       ctx.stroke();
     }
     if (!top) {
-      ctx.beginPath();
-      ctx.arc(
-        pos.x,
-        pos.y,
-        visual.stoneRadius * (point.rim ? 0.22 : 0.27),
-        0,
-        Math.PI * 2,
-      );
-      ctx.fillStyle = point.deep ? "#725f3f" : "#8b7958";
-      ctx.fill();
+      if (!lineMode) {
+        ctx.beginPath();
+        ctx.arc(
+          pos.x,
+          pos.y,
+          visual.stoneRadius * (point.rim ? 0.22 : 0.27),
+          0,
+          Math.PI * 2,
+        );
+        ctx.fillStyle = point.deep ? "#725f3f" : "#8b7958";
+        ctx.fill();
+      }
     } else {
       const radius = visual.stoneRadius;
-      ctx.beginPath();
-      ctx.arc(pos.x, pos.y, radius, 0, Math.PI * 2);
-      ctx.fillStyle = top === "B" ? "#252923" : "#f7f3e8";
-      ctx.fill();
-      ctx.strokeStyle = top === "B" ? "#050605" : "#777369";
-      ctx.lineWidth = Math.max(1.5, visual.lineWidth * 0.75);
-      ctx.stroke();
+      if (!lineMode) {
+        ctx.beginPath();
+        ctx.arc(pos.x, pos.y, radius, 0, Math.PI * 2);
+        ctx.fillStyle = top === "B" ? "#252923" : "#f7f3e8";
+        ctx.fill();
+        ctx.strokeStyle = top === "B" ? "#050605" : "#777369";
+        ctx.lineWidth = Math.max(1.5, visual.lineWidth * 0.75);
+        ctx.stroke();
 
-      const shown = point.stack.slice(-5);
-      shown.forEach((color, index) => {
-        ctx.fillStyle = color === "B" ? "#292d27" : "#f7f3e8";
-        ctx.fillRect(
-          pos.x + radius * 1.13,
-          pos.y + radius * 0.53 - index * radius * 0.33,
-          radius * 0.6,
-          Math.max(2, radius * 0.27),
-        );
-      });
-      if (point.stack.length > 1) {
-        ctx.fillStyle = top === "B" ? "#fff" : "#222";
-        ctx.font = `700 ${Math.max(8, radius * 0.67)}px system-ui`;
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-        ctx.fillText(String(point.stack.length), pos.x, pos.y + 1);
+        const shown = point.stack.slice(-5);
+        shown.forEach((color, index) => {
+          ctx.fillStyle = color === "B" ? "#292d27" : "#f7f3e8";
+          ctx.fillRect(
+            pos.x + radius * 1.13,
+            pos.y + radius * 0.53 - index * radius * 0.33,
+            radius * 0.6,
+            Math.max(2, radius * 0.27),
+          );
+        });
+        if (point.stack.length > 1) {
+          ctx.fillStyle = top === "B" ? "#fff" : "#222";
+          ctx.font = `700 ${Math.max(8, radius * 0.67)}px system-ui`;
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+          ctx.fillText(String(point.stack.length), pos.x, pos.y + 1);
+        }
       }
       // Liberty warnings (flat rulesets): red ring at one liberty,
       // amber at two — the bookkeeping the lattice punishes hardest.
