@@ -128,6 +128,20 @@ def has_sky(board, state, p, placed):
     return height(state, p) < min(nb_heights(board, state, p))
 
 
+def group_has_ring(board, comp):
+    """True when the group's columns contain a closed ring.
+
+    A connected component has a cycle exactly when it has at least as
+    many internal adjacencies as members (a tree has one fewer). The
+    honeycomb lattice has girth six, so any ring encircles a cell.
+    """
+    members = set(comp)
+    edges = sum(
+        1 for p in comp for nb in board.neighbors[p] if nb in members
+    ) // 2
+    return edges >= len(comp)
+
+
 def groups_of(board, state, color):
     """Connected components of columns controlled by `color`."""
     seen = set()
@@ -149,12 +163,23 @@ def groups_of(board, state, color):
     return out
 
 
-def group_alive(board, state, comp, placed):
-    """A group has a liberty at an adjacent empty point or a member sky."""
+def group_alive(board, state, comp, placed, rules="classic"):
+    """A group has a liberty at an adjacent empty point or through skies.
+
+    Classic rules: a sky above any member column strictly lower than all
+    its neighbors (top stone not placed this turn).
+
+    Rosette rules: a suffocated group breathes through skies only if its
+    columns contain a closed ring — life is enclosure. (Every ring has
+    at least six columns, so some member's top predates this turn.)
+    """
     for p in comp:
         for nb in board.neighbors[p]:
             if not state[nb]:
                 return True
+    if rules == "rosette":
+        return group_has_ring(board, comp)
+    for p in comp:
         if has_sky(board, state, p, placed):
             return True
     return False
@@ -171,12 +196,36 @@ class Illegal(Exception):
     pass
 
 
-def resolve(board, state, p, color, history, trace=None):
+def _enemy_column_is_sky_bound(board, state, p, color):
+    """Rosette stacking gate: `p` must belong to an enemy group whose
+    only liberties are skies (no adjacent empty point anywhere)."""
+    if control(state, p) != other(color):
+        return False
+    seen = {p}
+    dq = deque([p])
+    while dq:
+        q = dq.popleft()
+        for nb in board.neighbors[q]:
+            if not state[nb]:
+                return False
+            if nb not in seen and control(state, nb) == control(state, p):
+                seen.add(nb)
+                dq.append(nb)
+    return True
+
+
+def resolve(board, state, p, color, history, trace=None, rules="classic"):
     """Attempt the placement.  Returns (new_state, captured_count).
 
     Raises Illegal(reason) if any step fails.  `state` is not mutated.
     `history` is a set of signatures already recorded.
     """
+    # 0. rosette stacking gate: occupied columns accept a stone only when
+    #    they belong to an enemy group breathing through skies alone
+    if rules == "rosette" and state[p]:
+        if not _enemy_column_is_sky_bound(board, state, p, color):
+            raise Illegal("stack")
+
     # 1. terrain
     if not terrain_ok(board, state, p):
         raise Illegal("terrain")
@@ -196,7 +245,7 @@ def resolve(board, state, p, color, history, trace=None):
         ) >= 2
         if not majority:
             captures_now = any(
-                not group_alive(board, st, g, placed)
+                not group_alive(board, st, g, placed, rules)
                 for g in groups_of(board, st, enemy)
             )
             if not captures_now:
@@ -208,7 +257,7 @@ def resolve(board, state, p, color, history, trace=None):
         dead = [
             g
             for g in groups_of(board, st, enemy)
-            if not group_alive(board, st, g, placed)
+            if not group_alive(board, st, g, placed, rules)
         ]
         if not dead:
             break
@@ -221,7 +270,7 @@ def resolve(board, state, p, color, history, trace=None):
 
     # 5. suicide: any group of the mover's without a liberty
     for g in groups_of(board, st, color):
-        if not group_alive(board, st, g, placed):
+        if not group_alive(board, st, g, placed, rules):
             raise Illegal("suicide")
 
     # 6. repetition: resulting position with the opponent to move
@@ -234,8 +283,14 @@ def resolve(board, state, p, color, history, trace=None):
 # ---------------------------------------------------------------------------
 # Game controller: turns, passes, resumption, scoring
 # ---------------------------------------------------------------------------
+RULESETS = ("classic", "rosette")
+
+
 class Game:
-    def __init__(self, n=3):
+    def __init__(self, n=3, rules="classic"):
+        if rules not in RULESETS:
+            raise ValueError("rules must be classic or rosette")
+        self.rules = rules
         self.board = Board(n)
         self.state = empty_state(self.board)
         self.to_move = BLACK
@@ -282,7 +337,10 @@ class Game:
         """Resolve without committing.  Returns (state, captured) or raises."""
         if self.finished:
             raise Illegal("game over")
-        return resolve(self.board, self.state, p, self.to_move, self.history)
+        return resolve(
+            self.board, self.state, p, self.to_move, self.history,
+            rules=self.rules,
+        )
 
     def play(self, p):
         if self.finished:
@@ -291,7 +349,8 @@ class Game:
         prior_control = control(self.state, p)
         waves = []
         st, captured = resolve(
-            self.board, self.state, p, self.to_move, self.history, trace=waves
+            self.board, self.state, p, self.to_move, self.history,
+            trace=waves, rules=self.rules,
         )
         was_swap_reply = self.moves_played == 1
         self.state = st
@@ -358,7 +417,10 @@ class Game:
         out = []
         for p in self.board.points:
             try:
-                resolve(self.board, self.state, p, self.to_move, self.history)
+                resolve(
+                    self.board, self.state, p, self.to_move, self.history,
+                    rules=self.rules,
+                )
                 out.append(p)
             except Illegal:
                 pass
@@ -410,6 +472,7 @@ class Game:
             "format": "cairn-game",
             "version": 1,
             "n": self.board.n,
+            "rules": self.rules,
             "stacks": [list(self.state[p]) for p in self.board.points],
             "to_move": self.to_move,
             "history": history,
@@ -431,7 +494,10 @@ class Game:
         n = payload.get("n")
         if not isinstance(n, int) or n < 1:
             raise ValueError("invalid board size")
-        game = cls(n)
+        rules = payload.get("rules", "classic")
+        if rules not in RULESETS:
+            raise ValueError("invalid ruleset")
+        game = cls(n, rules=rules)
 
         def parse_stacks(raw):
             if not isinstance(raw, list) or len(raw) != len(game.board.points):

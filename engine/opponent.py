@@ -634,6 +634,7 @@ def _balanced_standard_scores(game, candidates, perspective, model):
                     point,
                     reply_color,
                     history,
+                    rules=game.rules,
                 )
             except Illegal:
                 continue
@@ -708,6 +709,7 @@ def _standard_scores(
                     point,
                     reply_color,
                     history,
+                    rules=game.rules,
                 )
             except Illegal:
                 continue

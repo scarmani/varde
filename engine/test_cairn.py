@@ -623,5 +623,171 @@ class TestScoring(unittest.TestCase):
         self.assertEqual(s[WHITE], 0)
 
 
+# ---------------------------------------------------------------------- rosette
+def ring_of_cell(q, r):
+    """The six lattice points around one hexagonal cell."""
+    cx, cy = 3 * q, 2 * r + q
+    from cairn import CORNERS
+    return [(cx + dx, cy + dy) for dx, dy in CORNERS]
+
+
+def seal(g, comp, color, keep=()):
+    """Occupy every outside neighbor of `comp` except `keep`."""
+    members = set(comp)
+    for p in comp:
+        for nb in g.board.neighbors[p]:
+            if nb not in members and nb not in keep and not g.state[nb]:
+                put(g, nb, color)
+
+
+def rosette_game(to_move):
+    g = Game(3, rules="rosette")
+    g.to_move = to_move
+    g.moves_played = 6
+    g.history = {signature(g.board, g.state, to_move)}
+    return g
+
+
+class TestRosetteRules(unittest.TestCase):
+    def test_rules_serialize_and_default_classic(self):
+        self.assertEqual(Game(3).to_dict()["rules"], "classic")
+        legacy = Game(3).to_dict()
+        del legacy["rules"]
+        self.assertEqual(Game.from_dict(legacy).rules, "classic")
+        g = Game(3, rules="rosette")
+        self.assertEqual(Game.from_dict(g.to_dict()).rules, "rosette")
+        with self.assertRaises(ValueError):
+            Game(3, rules="towers")
+
+    def test_stacking_blocked_on_healthy_columns(self):
+        g = rosette_game(BLACK)
+        p = deep_point(g.board)
+        put(g, p, WHITE)          # lone White stone with three liberties
+        g.history = {signature(g.board, g.state, BLACK)}
+        self.assertEqual(attempt(g, p), ("illegal", "stack"))
+        q = g.board.neighbors[p][0]
+        put(g, q, BLACK)          # own column: never stackable
+        g.history = {signature(g.board, g.state, BLACK)}
+        self.assertEqual(attempt(g, q), ("illegal", "stack"))
+
+    def test_flower_false_eye_dies(self):
+        g = rosette_game(BLACK)
+        p = deep_point(g.board)
+        petals = g.board.neighbors[p]
+        for petal in petals:
+            put(g, petal, WHITE)
+        seal(g, list(petals) + [p], BLACK, keep=(p,))
+        g.history = {signature(g.board, g.state, BLACK)}
+        status, captured = attempt(g, p)
+        self.assertEqual((status, captured), ("legal", 3))
+
+    def test_lone_ring_breathes_when_sealed(self):
+        g = rosette_game(BLACK)
+        ring = ring_of_cell(0, 0)
+        for p in ring:
+            put(g, p, WHITE)
+        outside = sorted(
+            {nb for p in ring for nb in g.board.neighbors[p]} - set(ring)
+        )
+        for p in outside[:-1]:
+            put(g, p, BLACK)
+        g.history = {signature(g.board, g.state, BLACK)}
+        g.play(outside[-1])       # seal the last outside liberty
+        self.assertEqual(g.last_capture_waves, [])
+        self.assertTrue(all(g.state[p] == (WHITE,) for p in ring))
+
+    def test_one_cap_unzips_a_lone_ring(self):
+        g = rosette_game(BLACK)
+        ring = ring_of_cell(0, 0)
+        for p in ring:
+            put(g, p, WHITE)
+        seal(g, ring, BLACK)
+        g.history = {signature(g.board, g.state, BLACK)}
+        target = ring[0]
+        captured = g.play(target)
+        self.assertEqual(captured, 5)
+        self.assertEqual(g.state[target], (WHITE, BLACK))
+        for p in ring[1:]:
+            self.assertEqual(g.state[p], ())
+
+    def test_theta_dies_only_at_its_junctions(self):
+        g = rosette_game(BLACK)
+        theta = sorted(set(ring_of_cell(0, 0)) | set(ring_of_cell(1, 0)))
+        members = set(theta)
+        for p in theta:
+            put(g, p, WHITE)
+        seal(g, theta, BLACK)
+        junctions = [
+            p for p in theta
+            if all(nb in members for nb in g.board.neighbors[p])
+        ]
+        self.assertEqual(len(junctions), 2)
+        for p in theta:
+            g.history = {signature(g.board, g.state, g.to_move)}
+            status, detail = attempt(g, p)
+            if p in junctions:
+                self.assertEqual((status, detail), ("legal", 9))
+            else:
+                self.assertEqual((status, detail), ("illegal", "summit"))
+
+    def test_triforce_is_unconditional_life(self):
+        # Three mutually adjacent cells: removing any one column leaves
+        # every remnant cyclic, so no cap ever captures and none is legal.
+        g = rosette_game(BLACK)
+        comp = sorted(
+            set(ring_of_cell(0, 0))
+            | set(ring_of_cell(1, 0))
+            | set(ring_of_cell(0, 1))
+        )
+        for p in comp:
+            put(g, p, WHITE)
+        seal(g, comp, BLACK)
+        g.history = {signature(g.board, g.state, BLACK)}
+        for p in comp:
+            status, detail = attempt(g, p)
+            self.assertEqual(
+                (status, detail), ("illegal", "summit"), msg=f"cap at {p}"
+            )
+
+    def test_bridged_double_ring_dies_at_its_attachment(self):
+        # Two vertex-disjoint rings joined by a bridge look safe, but the
+        # cap at the attachment column splits off an acyclic remnant,
+        # which suffocates: the capture branch legalizes the cap.
+        g = rosette_game(BLACK)
+        comp = sorted(
+            set(ring_of_cell(0, 0)) | set(ring_of_cell(2, 0)) | {(2, 2)}
+        )
+        for p in comp:
+            put(g, p, WHITE)
+        seal(g, comp, BLACK)
+        g.history = {signature(g.board, g.state, BLACK)}
+        self.assertEqual(attempt(g, (1, 1)), ("legal", 5))
+
+    def test_enclosed_point_is_unconditional_life(self):
+        g = rosette_game(BLACK)
+        eye = (2, 0)
+        comp = sorted(
+            (set(ring_of_cell(0, 0)) | set(ring_of_cell(1, 0))
+             | set(ring_of_cell(1, -1))) - {eye}
+        )
+        for p in comp:
+            put(g, p, WHITE)
+        seal(g, comp, BLACK, keep=(eye,))
+        g.history = {signature(g.board, g.state, BLACK)}
+        self.assertEqual(attempt(g, eye), ("illegal", "suicide"))
+        for p in comp:
+            self.assertEqual(
+                attempt(g, p), ("illegal", "stack"), msg=f"stack at {p}"
+            )
+
+    def test_sky_bomb_throw_in_stays_suicide(self):
+        g = rosette_game(WHITE)
+        p = deep_point(g.board)
+        for nb in g.board.neighbors[p]:
+            put(g, nb, BLACK)
+        g.history = {signature(g.board, g.state, WHITE)}
+        self.assertEqual(attempt(g, p), ("illegal", "suicide"))
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)
