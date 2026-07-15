@@ -9,8 +9,10 @@ if str(HARNESS_ROOT) not in sys.path:
     sys.path.insert(0, str(HARNESS_ROOT))
 
 from feasibility_gate import (  # noqa: E402
+    POLICIES,
     REVISED_LADDER,
     RULESETS,
+    _aggregate_gate,
     build_midgame_state,
     maximum_budget,
     passes_feasibility_gate,
@@ -53,6 +55,30 @@ class TestFeasibilityArithmetic(unittest.TestCase):
                 per_decision_p95=29.0,
             )
         )
+
+    def test_aggregate_tests_the_declared_ladder_not_the_common_maximum(self):
+        policy_projection = {
+            "conservative_simulation_seconds": 0.5,
+            "conservative_simulation_p95_seconds": 0.6,
+            "decision_gates": {"30": {"maximum_budget": 60}},
+        }
+        measurement = {
+            "random_game_length": {"mean_moves": 10.0},
+            "native_standard": {"opening": {"mean_seconds": 0.1}},
+            "projections": {
+                policy: dict(policy_projection) for policy in POLICIES
+            },
+        }
+        aggregate = _aggregate_gate({"classic": measurement}, 30)
+        self.assertEqual(aggregate["maximum_common_budget"], 60)
+        self.assertEqual(
+            aggregate["revised_ladder_high_budget"], REVISED_LADDER[-1]
+        )
+        self.assertLess(
+            aggregate["revised_ladder_projected_stage_wall_hours"],
+            aggregate["projected_stage_at_common_maximum_hours"],
+        )
+        self.assertTrue(aggregate["passes_feasibility_gate"])
         self.assertFalse(
             passes_feasibility_gate(
                 maximum_common_budget=REVISED_LADDER[-1],

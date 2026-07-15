@@ -319,24 +319,22 @@ def _measure_ruleset(rules, seed, repetitions, deadline):
 def _aggregate_gate(measurements, gate_seconds):
     gate_key = str(gate_seconds)
     budgets = []
-    stage_seconds = 0.0
-    decision_p95 = 0.0
+    maximum_simulation_p95 = 0.0
     for measurement in measurements.values():
-        moves = measurement["random_game_length"]["mean_moves"]
-        native_seconds = max(
-            item["mean_seconds"]
-            for item in measurement["native_standard"].values()
-        )
         for policy in POLICIES:
             projection = measurement["projections"][policy]
             budget = projection["decision_gates"][gate_key]["maximum_budget"]
             budgets.append(budget)
-            decision_p95 = max(
-                decision_p95,
-                budget * projection["conservative_simulation_p95_seconds"],
+            maximum_simulation_p95 = max(
+                maximum_simulation_p95,
+                projection["conservative_simulation_p95_seconds"],
             )
     common_budget = min(budgets)
-    if common_budget >= 1:
+
+    def stage_hours_at_budget(budget):
+        if budget < 1:
+            return None
+        stage_seconds = 0.0
         for measurement in measurements.values():
             moves = measurement["random_game_length"]["mean_moves"]
             native_seconds = max(
@@ -349,25 +347,42 @@ def _aggregate_gate(measurements, gate_seconds):
                 ]
                 stage_seconds += (
                     projected_game_seconds(
-                        common_budget,
+                        budget,
                         simulation_seconds,
                         native_seconds,
                         moves,
                     )
                     * STAGE_GAMES_PER_RULESET_POLICY
                 )
-        stage_hours = stage_seconds / STAGE_WORKERS / 3600.0
-    else:
-        stage_hours = None
+        return stage_seconds / STAGE_WORKERS / 3600.0
+
+    common_stage_hours = stage_hours_at_budget(common_budget)
+    common_p95 = common_budget * maximum_simulation_p95
+    ladder_available = common_budget >= REVISED_LADDER[-1]
+    ladder_stage_hours = (
+        stage_hours_at_budget(REVISED_LADDER[-1])
+        if ladder_available
+        else None
+    )
+    ladder_p95 = (
+        REVISED_LADDER[-1] * maximum_simulation_p95
+        if ladder_available
+        else None
+    )
     return {
         "maximum_common_budget": common_budget,
-        "projected_stage_wall_hours": stage_hours,
-        "projected_per_decision_p95_seconds": decision_p95,
-        "supports_predeclared_16_32_ladder": common_budget >= REVISED_LADDER[-1],
+        "projected_stage_at_common_maximum_hours": common_stage_hours,
+        "projected_per_decision_p95_at_common_maximum_seconds": common_p95,
+        "supports_predeclared_16_32_ladder": ladder_available,
+        "revised_ladder_high_budget": REVISED_LADDER[-1],
+        "revised_ladder_projected_stage_wall_hours": ladder_stage_hours,
+        "revised_ladder_projected_per_decision_p95_seconds": ladder_p95,
         "passes_feasibility_gate": passes_feasibility_gate(
             maximum_common_budget=common_budget,
-            projected_hours=stage_hours,
-            per_decision_p95=decision_p95,
+            projected_hours=ladder_stage_hours,
+            per_decision_p95=(
+                ladder_p95 if ladder_p95 is not None else math.inf
+            ),
         ),
     }
 
@@ -476,7 +491,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
     parser.add_argument("--seed", type=int, default=20260715)
-    parser.add_argument("--repetitions", type=int, default=2)
+    parser.add_argument("--repetitions", type=int, default=10)
     parser.add_argument("--max-wall-seconds", type=float, default=1800.0)
     args = parser.parse_args()
     if args.repetitions < 1 or args.max_wall_seconds <= 0:

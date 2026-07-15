@@ -63,3 +63,31 @@ Five focused tests cover percentile/budget arithmetic, full-game and Stage-A
 projection, gate pass/fail, deterministic prefixes across all six candidates,
 and rejection of forbidden measurement fields. Ruff, `py_compile`, and diff
 checks pass.
+
+The source-pinned harness was committed as `9d701b5` before measurement.
+
+## Batch 2 — Outcome-blind measurements
+
+### Contract
+
+**Behaviors:** run the committed harness across all six candidates, retain only
+timings and random-game move counts, and atomically write the generated JSON.
+
+**Acceptance criteria:**
+
+- [ ] All configured timing and length cells complete within 30 minutes.
+- [ ] Artifact pins commit and code hashes and validates its payload hash.
+- [ ] `evidence_eligible`, `outcomes_inspected`, and `decisions_inspected` are
+  all false.
+- [ ] Per-ruleset budgets and aggregate Stage-A projections are finite.
+
+**Blast radius:** one generated research result; no game-evidence output.
+
+### Pre-measurement correction
+
+An initial two-repetition dry run produced no outcomes and was discarded before
+commit. Review found that the aggregate gate projected at the maximum common
+budget rather than at the declared ladder's high rung. A focused regression
+test reproduced the error; the caller now separately reports common-maximum
+cost and evaluates the 16/32 ladder at exactly 32 simulations. Repetitions were
+raised from two to ten so the reported p95 is not based on only two samples.
