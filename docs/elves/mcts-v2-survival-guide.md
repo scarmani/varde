@@ -30,15 +30,15 @@ use heuristic leaf values, truncate rollouts, or relabel v1 evidence as v2.
 
 ## Current Phase
 
-Status: in progress
+Status: complete
 
-Active batch: Batch 4 — review and evidence handoff
+Active batch: none — finite run complete
 
-Just completed: full diff review, 207-test validation, scoped lint/compile/diff
-checks, and evidence comments on PRs #14 and #13.
+Just completed: review-ready closure head `c9d8230`; exact-head CI run
+`29454623416` passed after full local validation and evidence handoff.
 
-Single next action: commit and push the documentation-only closure candidate,
-then require green CI at that exact head before marking the finite run complete.
+Single next action: none. User review of PR #14 is required before merge. Do not
+launch calibration from this branch.
 
 ## Active Compute
 
@@ -46,9 +46,9 @@ None.
 
 ## Stop Gate
 
-- Planned batches remaining: 1
-- Stop allowed right now: no
-- Next required action: finish review, evidence handoff, and cleanup
+- Planned batches remaining: 0
+- Stop allowed right now: yes
+- Next required action: none; await user review
 
 ## Validation Gates
 

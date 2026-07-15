@@ -210,7 +210,7 @@ reproducible v1/v2 timing artifact.
 - [x] Diff review finds no rule, terminal-value, RNG or rollout-policy change.
 - [x] PR #14 and evidence PR #13 received the exact negative result and next
   bounded recommendation.
-- [ ] Exact-head CI passes and all local processes/worktrees are reconciled.
+- [x] Exact-head CI passed and all local processes/worktrees were reconciled.
 
 **Blast radius:** documentation, PR comments, validation and cleanup only.
 
@@ -236,3 +236,10 @@ Evidence handoff comments:
 No evaluation, profiling or timing process remains. The detached frozen-source
 worktree and both active PR worktrees are preserved intentionally for review;
 none is mistaken for an active compute job.
+
+### Closure
+
+GitHub Actions run `29454623416` passed at reviewed closure head `c9d8230`.
+The branch is review-ready on PR #14. Calibration remains blocked and was not
+launched. This finite performance run is complete; merging remains a user
+decision.
