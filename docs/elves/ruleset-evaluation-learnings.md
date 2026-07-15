@@ -42,3 +42,16 @@
   vocabulary. Independent rediscovery by at least two pairs remains the gate.
 - Batch 5 validation reaches 200 tests plus opened screenshots and browser
   chains for export, save/load, watch disabling, and first-ending resumption.
+
+## Final evidence discipline
+
+- Operational smokes should retain ugly telemetry but omit seductive matchup
+  framing when an opponent is intentionally trivial. The committed smoke keeps
+  wipe and stagnation observations while stating that one pair and one MCTS
+  simulation cannot rank a game.
+- A final evidence matrix should say both “not run” and “no claim” beside every
+  expensive or human gate. Infrastructure readiness is not experimental proof.
+- Local record import needs the same fail-closed schema boundaries as export;
+  imported records are read-only and never become server payloads.
+- Batch 6 reaches 201 tests plus final browser import, Gjerde rendering, and
+  semantic state checks. No flagship decision is currently warranted.

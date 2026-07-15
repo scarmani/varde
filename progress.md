@@ -201,3 +201,10 @@ Original prompt: yes to all in best order proceed and execute according to your 
   action and resolution JSON locally without a collection endpoint. Browser
   save/load, watch disabling, two-pass ending, resumption, screenshots, and
   console state pass. Batch 5 validation reaches 200 tests.
+- Committed a source/hash-pinned 12-game cross-family operational smoke for all
+  frozen candidates. Every game completed legally, while extreme wipe and one
+  stagnation observation remain explicitly non-claim; promotion is blocked.
+- Published the exact evidence matrix and next compute commands. All declared
+  overnight, depth, exploit, human, retention, outside-play, and final promotion
+  gates remain visibly unrun. Local read-only record import rejects identity
+  fields. Batch 6 validation reaches 201 tests and final readiness review.

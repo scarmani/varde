@@ -31,14 +31,14 @@ probes for evidence of beauty or human strategic depth.
 - **Checkpoint expectation:** a reviewable PR with honest local evidence and explicit deferred human gates
 - **Time budget:** approximately 8 hours, finite scope rather than a hard deadline
 - **Average batch time so far:** not yet measured
-- **Batches remaining:** 1 of 6 product batches
+- **Batches remaining:** 0 of 6 product batches
 
 ## Stop Gate
 
-- **Planned batches remaining:** 1
+- **Planned batches remaining:** 0
 - **Stop allowed right now:** no
-- **Why:** bounded generated evidence, final gates, and review handoff remain
-- **Next required action:** complete Batch 6 evidence matrix and final verification
+- **Why:** mandatory final readiness review, Elves report, and cleanup remain
+- **Next required action:** finish remote CI/review, generate report, then remove operational artifacts
 
 ## Non-Negotiables
 
@@ -66,11 +66,11 @@ probes for evidence of beauty or human strategic depth.
 
 **Status:** In progress
 
-**Active batch:** Batch 6 — bounded evidence and final handoff
+**Active batch:** Final readiness review
 
-**What was just finished:** Batch 5 added the local human-study workflow; 200 tests and inspected browser export/resumption chains pass.
+**What was just finished:** Batch 6 published non-claim smoke evidence and the exact unrun-gates matrix; 201 tests and final browser checks pass.
 
-**Single next action:** generate one explicit non-claim cross-family smoke summary from the committed code head.
+**Single next action:** poll PR #12 checks and perform the mandatory clean-tip review.
 
 ## Active Compute
 
@@ -78,24 +78,23 @@ No active paid or long-running compute.
 
 ## Next Exact Batch
 
-**Batch:** 6 — Bounded evidence and final handoff
+**Batch:** Final completion
 
 **Scope:**
-- Generate compact, source-pinned operational smoke evidence without promoting
-  any ruleset or substituting it for the declared overnight screens.
-- Publish the exact implemented, verified, provisional, and unrun evidence
-  matrix plus commands and honest promotion blockers.
-- Run all unit, syntax, research, browser, PR, and dirty-tree gates.
+- Poll every PR check, comment, and review at the exact head.
+- Re-read the full diff, plan, execution log, session state, and evidence matrix.
+- Generate the Elves report, remove operational session artifacts, push, and
+  poll the cleanup head before final handoff.
 
 **Acceptance criteria:**
-- [ ] Compact evidence is generated from committed source and explicitly non-claim.
-- [ ] Every deferred overnight and human gate is visible, not implied complete.
-- [ ] Full tests, syntax, whitespace, browser, PR checks, and review pass.
-- [ ] Stop Gate permits a final handoff without merging.
+- [x] Compact evidence is generated from committed source and explicitly non-claim.
+- [x] Every deferred overnight and human gate is visible, not implied complete.
+- [x] Full local tests, syntax, whitespace, browser, and review pass.
+- [ ] Exact-head PR checks pass and operational cleanup is pushed.
 
-**Risk:** a successful operational smoke can be mistaken for game-design evidence; every artifact and summary must keep the declared sample, agent, size, and claim limits adjacent.
+**Risk:** cleanup can hide a stale CI or review state; do it only after the report is regenerated and the exact head is green.
 
-**Rollback tag:** `elves/ruleset-evaluation-pre-batch-6`
+**Rollback tag:** `elves/ruleset-evaluation-pre-final-cleanup`
 
 ## Recovery Order
 

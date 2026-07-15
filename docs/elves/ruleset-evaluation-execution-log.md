@@ -418,3 +418,60 @@ ceiling or hidden collection was introduced. Confidence HIGH.
 unrun computational/human promotion gates, and PR handoff.
 
 **Commit:** `fe58b9e`
+
+## Batch 6 Contract: 2026-07-15 14:40 CDT
+
+**Behaviors:**
+- Generate a committed operational smoke from a fixed source/configuration.
+- Keep every game-design and promotion conclusion blocked at inadequate sample.
+- Publish one exact matrix separating implemented, verified, provisional, and
+  unrun work with reproduction commands and next authorization.
+- Complete cumulative code, test, browser, PR, and workspace review.
+
+**Acceptance criteria:**
+- [x] Compact evidence is source-pinned and explicitly non-claim.
+- [x] Deferred overnight and human gates are visible and not implied complete.
+- [x] Full tests, syntax, whitespace, and browser checks pass locally.
+- [ ] Final PR checks and readiness review pass before cleanup/handoff.
+
+**Blast radius:** documentation, compact evidence, record import, and its
+validation test; no rules, live AI, scoring, or collection endpoint changes.
+
+## 2026-07-15 14:51 CDT
+
+**Batch:** 6 — Bounded evidence and final handoff
+
+**Contract status:** product criteria met; final readiness review in progress
+
+**Generated evidence:** source `064d93d` ran all six candidates at n=3 with one
+paired seed, Casual native search, and one-simulation uniform MCTS. All 12 games
+completed with zero illegal actions, crashes, or incompletes. The compact record
+stores raw artifact hashes, 50–100% wipe rates, a Classic stagnation leg, one
+pair per stratum, `headline_eligible=false`, and `promotion_blocked=true`. It
+does not publish the meaningless 1–0 native-versus-one-simulation score as a
+candidate result.
+
+**Decision truth:** `docs/ruleset-evaluation-status.md` states that no flagship
+is selected. The 20-pair calibration, 50-pair screen, 100-pair confirmation,
+250/1000/4000 ladder, rollout stability, exploit policies, ruleset-native
+MAP-Elites, n=5 confirmation, human panel, retention, outside games, and final
+promotion gate are all explicitly unrun.
+
+**Import completion:** local JSON import now validates the version, candidate
+revision, pseudonymous id, hashes, complete action fields, timing, score shape,
+and forbidden identity keys. Imported records are read-only and remain outside
+the server. A valid record reopened with two actions; an `email` field was
+rejected with zero console errors.
+
+**Validation:** 201 tests, targeted ruff, Python compilation, JavaScript syntax,
+JSON validation, whitespace, final official web-game client Gjerde action,
+semantic record state, local import/rejection, and opened full-page Gjerde UI
+screenshot pass. Cumulative diff review found no live cutoff, external
+collection, old-save break, Classic seeded drift, or claim escalation.
+
+**Regression attestation:** the only generated match evidence is labeled
+non-claim at file, summary, and documentation surfaces. Archived/broken loading,
+public candidate filtering, Classic parity, Personal isolation, and live-game
+uncapped behavior remain covered. Confidence HIGH pending remote CI.
+
+**Commit:** `21ebff3`
