@@ -47,6 +47,7 @@ None.
 
 ## Recovery Order
 
-Read this guide, `.elves-session.json`, the run plan, execution log,
+Read this guide, `docs/elves/sessions/evidence-method-feasibility-session.json`,
+the run plan, execution log,
 `docs/plans/ruleset-promise-evaluation.md`, and the frozen manifest on PR #13.
 Reconcile any timing process before relaunching.
