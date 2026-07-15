@@ -31,7 +31,7 @@ probes for evidence of beauty or human strategic depth.
 - **Checkpoint expectation:** a reviewable PR with honest local evidence and explicit deferred human gates
 - **Time budget:** approximately 8 hours, finite scope rather than a hard deadline
 - **Average batch time so far:** not yet measured
-- **Batches remaining:** 6 of 6
+- **Batches remaining:** 6 of 6 product batches; setup complete
 
 ## Stop Gate
 
@@ -57,7 +57,7 @@ probes for evidence of beauty or human strategic depth.
 - [x] Survival guide, learnings, execution log, and structured session initialized
 - [x] Owned branch created from clean `origin/main`
 - [x] Workspace ownership and collision tripwire confirmed
-- [ ] PR opened after Batch 0 commit
+- [x] PR #12 opened after Batch 0 commit
 - [x] Baseline gates pass: 156 tests, Python compile, JavaScript syntax
 - [x] Run controls and non-negotiables recorded
 - [x] Stop Gate initialized to no
@@ -66,11 +66,11 @@ probes for evidence of beauty or human strategic depth.
 
 **Status:** In progress
 
-**Active batch:** Batch 0 — session setup and PR surface
+**Active batch:** Batch 1 — correctness, ruleset registry, and browser/API truth
 
-**What was just finished:** Baseline and goal-cycle review passed; the owned branch exists.
+**What was just finished:** Batch 0 is pushed and PR #12 is the active review surface.
 
-**Single next action:** Commit setup, push, open the PR, then start Batch 1.
+**Single next action:** Repair Gjerde open-boundary scoring with failing edge-category tests.
 
 ## Active Compute
 
