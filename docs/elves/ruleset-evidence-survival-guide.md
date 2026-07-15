@@ -38,13 +38,13 @@ Status: in progress — feasibility remediation
 
 Active batch: Batch 2 — calibration stage A at 250 simulations
 
-Just completed: A-uniform-250 feasibility attempt was stopped after more than
-40 minutes at eight-core saturation with zero completed records. A separate
-budget-1 decision measured 1.05s and 343 terminal rollout actions.
+Just completed: PR #14 proved exact v1/v2 search equivalence but improved
+uniform@250 by only 0.58%; PR #15 measured all six candidates outcome-blind and
+predeclared a native-first, shallow 12/24 diagnostic redesign.
 
-Single next action: implement MCTS v2 as a separately versioned,
-behavior-preserving performance pass with golden equivalence fixtures and
-measured timing gates before any new manifest or calibration launch.
+Single next action: await user review of PRs #14 and #15. After the selected
+MCTS hash is settled, regenerate its feasibility artifact and freeze a new
+12/24 diagnostic manifest. Do not resume the frozen 250-budget job.
 
 ## Active Compute
 
@@ -55,9 +55,9 @@ margin or partial outcome was generated or inspected.
 ## Stop Gate
 
 - Planned batches remaining: 4
-- Stop allowed right now: no
-- Next required action: clear the agent-performance blocker, then create a new
-  MCTS version and calibration manifest; never pool with v1
+- Stop allowed right now: yes — source/agent selection requires user review
+- Next required action: after review, regenerate the gate and create a new
+  diagnostic manifest; never pool with the frozen v1 round
 
 ## Validation Gates
 
@@ -70,7 +70,7 @@ margin or partial outcome was generated or inspected.
 
 ## Recovery Order
 
-Read this guide, `.elves-session.json`,
+Read this guide, `docs/elves/sessions/ruleset-evidence-session.json`,
 `docs/elves/ruleset-evaluation-learnings.md`,
 `docs/plans/ruleset-computer-evaluation-run.md`, and
 `docs/elves/ruleset-evidence-execution-log.md`. Reconcile active processes and

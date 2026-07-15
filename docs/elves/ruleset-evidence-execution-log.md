@@ -184,3 +184,16 @@ correctness, balance, depth or ruleset verdict.
 
 The next measurement round requires a distinct MCTS agent hash and fresh
 manifest. MCTS v1 and v2 evidence will never be pooled.
+
+### Remediation handoff
+
+PR #14 reproduced all 96 v1 decision/tree-stat fixtures exactly under MCTS v2,
+but its matching outcome-blind uniform@250 timing improved only 0.58% and still
+missed the two-second gate by 57.4x. PR #15 then measured every candidate and
+predeclared a native-first 12/24 diagnostic method. The diagnostic is
+operationally feasible but explicitly cannot support strategic-depth or
+flagship claims.
+
+This evidence run now waits at a user-review boundary. After PR ordering settles
+the selected MCTS hash, the feasibility artifact must be regenerated and a new
+manifest frozen. The original 250-budget job remains invalid to resume.
