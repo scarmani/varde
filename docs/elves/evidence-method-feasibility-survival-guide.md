@@ -27,10 +27,12 @@ six frozen Varde candidates. Do not launch calibration or inspect outcomes.
 
 Status: in progress
 
-Active batch: Batch 0 — isolated feasibility run setup
+Active batch: Batch 1 — harness and arithmetic
 
-Single next action: commit setup, then implement the pure arithmetic and
-outcome-blind harness with tests before measuring.
+Just completed: setup commit `2bad7de` and PR #15.
+
+Single next action: implement the pure arithmetic and outcome-blind harness
+with tests before measuring.
 
 ## Active Compute
 
