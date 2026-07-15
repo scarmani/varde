@@ -1,17 +1,24 @@
+import copy
+import hashlib
 import json
 from pathlib import Path
 from tempfile import TemporaryDirectory
 import unittest
 
+from research.harness.audit_calibration import audit_stage_a, expected_config
 from research.harness.evaluate_rulesets import (
     AgentSpec,
     _depth_ladder,
     build_schedule,
+    code_hash,
     evaluate_task,
     parse_agents,
     run_evaluation,
+    stable_hash,
 )
-from varde import BLACK, WHITE
+from mcts import MCTS_AGENT_HASH
+from native_evaluators import NATIVE_EVALUATOR_HASH
+from varde import BLACK, WHITE, rulesets_public
 
 
 def _config(*, agents=None, pairs=2, telemetry=False):
@@ -139,6 +146,128 @@ class TestRulesetEvaluationSchedule(unittest.TestCase):
 
 
 class TestRulesetEvaluationRun(unittest.TestCase):
+    def test_calibration_feasibility_artifact_contains_no_game_claim(self):
+        path = (
+            Path(__file__).resolve().parents[1]
+            / "research/results/ruleset-calibration-feasibility-20260715.json"
+        )
+        payload = json.loads(path.read_text())
+        self.assertEqual(payload["status"], "blocked-before-results")
+        self.assertEqual(payload["stage_a_attempt"]["records_completed"], 0)
+        self.assertFalse(payload["stage_a_attempt"]["outcomes_inspected"])
+        self.assertFalse(payload["finding"]["ruleset_conclusion_permitted"])
+        self.assertTrue(payload["promotion_blocked"])
+
+    def test_stage_a_audit_applies_frozen_operational_gate(self):
+        manifest_path = (
+            Path(__file__).resolve().parents[1]
+            / "research/manifests/ruleset-calibration-20260715.json"
+        )
+        manifest = json.loads(manifest_path.read_text())
+        runtime_manifest = copy.deepcopy(manifest)
+        runtime_manifest["source"].update({
+            "code_hash": code_hash(),
+            "ruleset_registry_hash": stable_hash(rulesets_public()),
+            "native_evaluator_hash": NATIVE_EVALUATOR_HASH,
+            "mcts_agent_hash": MCTS_AGENT_HASH,
+        })
+        with TemporaryDirectory() as directory:
+            root = Path(directory)
+            for job in runtime_manifest["jobs"][:2]:
+                job["output_dir"] = str(root / job["id"])
+                run_evaluation(
+                    job["output_dir"],
+                    config=expected_config(job),
+                    workers=3,
+                    checkpoint_interval=5,
+                    evaluator=synthetic_game,
+                )
+
+            audit = audit_stage_a(runtime_manifest)
+            candidates = [item["id"] for item in runtime_manifest["candidates"]]
+            self.assertEqual(audit["stage_b_rulesets"], candidates)
+            self.assertTrue(audit["promotion_blocked"])
+            self.assertEqual(
+                audit["claim_status"],
+                "non-claim calibration operational audit",
+            )
+            self.assertTrue(all(
+                item["operational_pass"]
+                for item in audit["candidates"].values()
+            ))
+
+    def test_historical_manifest_fails_closed_under_new_runtime(self):
+        manifest_path = (
+            Path(__file__).resolve().parents[1]
+            / "research/manifests/ruleset-calibration-20260715.json"
+        )
+        historical_manifest = json.loads(manifest_path.read_text())
+        with TemporaryDirectory() as directory:
+            root = Path(directory)
+            for job in historical_manifest["jobs"][:2]:
+                job["output_dir"] = str(root / job["id"])
+                run_evaluation(
+                    job["output_dir"],
+                    config=expected_config(job),
+                    workers=3,
+                    checkpoint_interval=5,
+                    evaluator=synthetic_game,
+                )
+
+            with self.assertRaisesRegex(
+                ValueError, "provenance differs at code_hash"
+            ):
+                audit_stage_a(historical_manifest)
+
+    def test_calibration_manifest_is_frozen_and_matches_agent_specs(self):
+        path = (
+            Path(__file__).resolve().parents[1]
+            / "research/manifests/ruleset-calibration-20260715.json"
+        )
+        payload = json.loads(path.read_text())
+        source = payload["source"]
+        registry = rulesets_public()
+        expected_candidates = {
+            item["id"]: item["evaluation_id"]
+            for item in registry["rulesets"]
+            if item["status"] == "candidate"
+        }
+
+        self.assertEqual(payload["status"], "frozen-before-outcomes")
+        self.assertEqual(
+            {item["id"]: item["evaluation_id"] for item in payload["candidates"]},
+            expected_candidates,
+        )
+        self.assertEqual(
+            hashlib.sha256(path.read_bytes()).hexdigest(),
+            "5ca7a756fc0f9dbde4365010efcfef80e67817fd15883adae0fede4a77bbac85",
+        )
+        self.assertEqual(source["ruleset_registry_hash"], stable_hash(registry))
+        self.assertEqual(source["native_evaluator_hash"], NATIVE_EVALUATOR_HASH)
+        recorded_hashes = [
+            source["code_hash"],
+            source["ruleset_registry_hash"],
+            source["native_evaluator_hash"],
+            source["mcts_agent_hash"],
+            source["harness_sha256"],
+            *source["engine_files"].values(),
+        ]
+        for value in recorded_hashes:
+            self.assertRegex(value, r"^[0-9a-f]{64}$")
+        self.assertTrue(payload["claim_limits"]["flagship_promotion_blocked"])
+        self.assertFalse(
+            payload["timing_feasibility"]["outcomes_inspected"]
+        )
+
+        jobs = payload["jobs"]
+        self.assertEqual(len({job["output_dir"] for job in jobs}), len(jobs))
+        for job in jobs[:2]:
+            argv = job["argv"]
+            workers = int(argv[argv.index("--workers") + 1])
+            checkpoint = int(argv[argv.index("--checkpoint-interval") + 1])
+            self.assertGreaterEqual(checkpoint, workers)
+            self.assertNotIn("--resume", argv)
+
     def test_committed_smoke_is_explicitly_non_claim_and_hash_pinned(self):
         path = (
             Path(__file__).resolve().parents[1]

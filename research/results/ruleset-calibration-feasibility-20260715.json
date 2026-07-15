@@ -1,0 +1,57 @@
+{
+  "format": "varde-calibration-feasibility",
+  "version": 1,
+  "status": "blocked-before-results",
+  "claim_status": "agent-performance evidence only",
+  "manifest": {
+    "path": "research/manifests/ruleset-calibration-20260715.json",
+    "sha256": "5ca7a756fc0f9dbde4365010efcfef80e67817fd15883adae0fede4a77bbac85",
+    "source_commit": "0612369d1d5e9739a57aa8859fb8cb49afd2eeca"
+  },
+  "timing_probe": {
+    "ruleset": "classic",
+    "board_size": 4,
+    "budget": 250,
+    "games_scheduled": 6,
+    "games_completed": 0,
+    "wall_seconds": 667.77,
+    "user_cpu_seconds": 1321.04,
+    "outcomes_inspected": false,
+    "temporary_output_removed": true
+  },
+  "stage_a_attempt": {
+    "job": "A-uniform-250",
+    "workers": 8,
+    "checkpoint_interval": 8,
+    "wall_seconds_observed_lower_bound": 2400,
+    "records_completed": 0,
+    "next_task": 0,
+    "outcomes_inspected": false,
+    "operator_action": "interrupted after throughput infeasibility was established",
+    "preserved_artifact_sha256": {
+      "state.json": "61adab579bb9b218ccb47d48a24646645d73ab40c376caf942931f1de5ecc035",
+      "games.jsonl": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "summary.json": "0b02f56d277288dfff72b4695ae47b3ff1da884caa7d644419e5d26ddc0d9dba"
+    }
+  },
+  "decision_probe": {
+    "kind": "fresh opening decision only; not a game",
+    "ruleset": "classic",
+    "board_size": 4,
+    "rollout_policy": "uniform",
+    "simulations": 1,
+    "seed": 99,
+    "wall_seconds": 1.05,
+    "average_rollout_actions": 343.0,
+    "max_rollout_actions": 343,
+    "nodes": 2,
+    "linear_250_simulation_wall_seconds": 262.5
+  },
+  "finding": {
+    "classification": "MCTS v1 throughput blocker",
+    "ruleset_conclusion_permitted": false,
+    "reason": "No calibration game completed. The result measures agent runtime, not balance, depth, emergence, elegance or beauty.",
+    "required_next_step": "versioned behavior-preserving MCTS performance pass followed by a fresh manifest"
+  },
+  "promotion_blocked": true
+}

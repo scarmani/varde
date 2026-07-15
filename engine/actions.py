@@ -64,11 +64,11 @@ class RulesState:
 
     @classmethod
     def from_game(cls, game):
-        return cls(Game.from_dict(game.to_dict()))
+        return cls(game.clone())
 
     def clone(self):
         return RulesState(
-            Game.from_dict(self.game.to_dict()),
+            self.game.clone(),
             seats=dict(self.seats),
             end_acceptances=set(self.end_acceptances),
             end_decider=self.end_decider,
@@ -129,7 +129,7 @@ def legal_actions(state):
         if game.resumption_available:
             actions.append(RulesAction("resume"))
         actions.append(RulesAction("accept"))
-        return tuple(sorted(actions, key=RulesAction.sort_key))
+        return tuple(actions)
 
     actions = []
     if game.swap_available:
@@ -146,7 +146,7 @@ def legal_actions(state):
         )
         if game.moves_played > 0:
             actions.append(RulesAction("pass"))
-    return tuple(sorted(actions, key=RulesAction.sort_key))
+    return tuple(actions)
 
 
 def _apply_in_place(state, action, *, validate):

@@ -1,0 +1,39 @@
+{
+  "session_id": "elves-2026-07-15-varde-ruleset-evidence",
+  "version": "1.12.0",
+  "status": "in_progress",
+  "branch": "codex/ruleset-evidence-run",
+  "plan_path": "docs/plans/ruleset-computer-evaluation-run.md",
+  "survival_guide_path": "docs/elves/ruleset-evidence-survival-guide.md",
+  "learnings_path": "docs/elves/ruleset-evaluation-learnings.md",
+  "execution_log_path": "docs/elves/ruleset-evidence-execution-log.md",
+  "pr_number": 13,
+  "source_base": "565c08b0b0dae0ba3b9ec5bbdbd3ab8927cced6b",
+  "continuation_guard": {
+    "remaining_batches": 4,
+    "stop_allowed": true,
+    "checkpoint_is_stop": false,
+    "next_required_action": "Await user review of PRs 14 and 15, then regenerate the selected-hash feasibility gate and freeze a separately versioned 12/24 diagnostic manifest"
+  },
+  "test_baseline": {
+    "passed": 201,
+    "total": 201,
+    "skipped": 0,
+    "status": "captured",
+    "reason": null
+  },
+  "current_batch": {
+    "id": 2,
+    "name": "Calibration stage A at 250 simulations",
+    "status": "in_progress"
+  },
+  "batches": [
+    {"id": 0, "name": "Run staging and settlement", "status": "complete", "commit": "7a0aed1"},
+    {"id": 1, "name": "Timing and immutable calibration manifest", "status": "complete", "commit": "0612369"},
+    {"id": 2, "name": "Calibration stage A at 250 simulations", "status": "in_progress", "commit": null},
+    {"id": 3, "name": "Calibration stages B and C", "status": "pending", "commit": null},
+    {"id": 4, "name": "Fresh health depth and adversarial screens", "status": "pending", "commit": null},
+    {"id": 5, "name": "Evidence publication and computer-only decision", "status": "pending", "commit": null}
+  ],
+  "review_comments": []
+}
