@@ -1,0 +1,37 @@
+{
+  "format": "varde-mcts-version-timing",
+  "version": 1,
+  "configuration": {
+    "action_output": "intentionally-omitted",
+    "board_size": 4,
+    "policy": "uniform",
+    "rules": "classic",
+    "seed": 20260715,
+    "simulations": 250
+  },
+  "gates": {
+    "decision_250_max_seconds": 2.0,
+    "decision_250_passed": false,
+    "decision_1000_status": "skipped-after-250-gate-failure",
+    "full_game_status": "skipped-after-250-gate-failure"
+  },
+  "measurements": {
+    "v1": {
+      "agent_hash": "1b50866eae7fbac42e42e38b69e2d70414d064dbbd50ee547f2cf9d64eb2e7ff",
+      "average_rollout_actions": 339.908,
+      "elapsed_seconds": 115.47117462498136,
+      "max_rollout_actions": 800
+    },
+    "v2": {
+      "agent_hash": "63cdec59394646f4bddd8afe33245331b1f55f922d79523030722bbb8d496e97",
+      "average_rollout_actions": 339.908,
+      "elapsed_seconds": 114.80415366601665,
+      "max_rollout_actions": 800
+    }
+  },
+  "result": {
+    "gate_overrun_factor": 57.402076833008325,
+    "speedup_factor": 1.00581007688019,
+    "wall_time_reduction_percent": 0.5776514884610932
+  }
+}

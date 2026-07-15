@@ -141,3 +141,50 @@ that RNG consumption and rollout semantics are unchanged.
 - `git diff --check` passed.
 - Confidence HIGH: the corpus covers all six candidates, both rollout policies,
   two budgets, two seeds, and opening plus deterministic mid-game states.
+
+The equivalence-proven implementation was committed as `e4f6d43`.
+
+## Batch 3 — Equivalence and timing gates
+
+### Contract
+
+**Behaviors:** time v2 on the declared fresh n=4 decision and complete-game
+surfaces while omitting actions, scores, winners and margins from artifacts.
+
+**Build on:** exact v1/v2 fixture equivalence and the profile-directed single
+optimization pass.
+
+**Acceptance criteria:**
+
+- [x] Fresh Classic n=4 uniform@250 decision was measured; it failed the
+  two-second gate at 114.804s.
+- [x] uniform@1,000 was intentionally skipped after the prerequisite failed.
+- [x] The native-standard versus uniform@250 game was intentionally skipped
+  after the prerequisite failed, so neither its outcome nor a misleading
+  completion projection was produced.
+- [x] Failed gates are recorded as negative evidence without further rollout
+  redesign or calibration launch.
+
+**Blast radius:** research-only timing artifacts and run-control documents. No
+ruleset outcome may be inspected or recorded.
+
+### Timing result
+
+The exact same unprofiled Classic n=4 uniform@250 probe took 115.471s under v1
+and 114.804s under v2. Both produced an average 339.908 rollout actions and a
+maximum 800, confirming the workload was identical. The structural-clone and
+ordering cleanup improved wall time by only 0.58% (`1.0058x`) and v2 remains
+`57.4x` over the two-second gate.
+
+The 1,000-simulation and complete-game probes were not launched. Once the
+smallest declared decision gate failed by two orders of magnitude, those jobs
+could not establish viability and would only consume computer time. No action,
+score, winner, margin, or ruleset outcome was emitted by either timing probe.
+
+### Gate decision
+
+MCTS v2 is behaviorally correct but does not clear the evaluation blocker.
+The earlier cProfile attribution stands: legal placement resolution and
+`groups_of` dominate, while serialization-based cloning was negligible. Per
+the run contract, optimization stops after this focused pass; calibration is
+not relaunched and v1/v2 evidence remains unpooled.

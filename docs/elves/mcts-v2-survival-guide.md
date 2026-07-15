@@ -32,13 +32,13 @@ use heuristic leaf values, truncate rollouts, or relabel v1 evidence as v2.
 
 Status: in progress
 
-Active batch: Batch 2 — hot-path implementation
+Active batch: Batch 3 — equivalence and timing gates
 
-Just completed: all 96 v1 fixtures reproduced exactly under v2 and the full
-204-test suite, lint, compilation and diff checks passed.
+Just completed: the unprofiled v1/v2 comparison; v2 is exactly equivalent but
+only 0.58% faster and fails the two-second decision gate at 114.804s.
 
-Single next action: commit the equivalence-proven implementation, then measure
-the fresh-position and complete-game throughput gates without reading outcomes.
+Single next action: commit the negative timing evidence, publish it to PRs #14
+and #13, verify exact-head CI, and close the finite run without calibration.
 
 ## Active Compute
 
@@ -46,9 +46,9 @@ None.
 
 ## Stop Gate
 
-- Planned batches remaining: 3
+- Planned batches remaining: 2
 - Stop allowed right now: no
-- Next required action: complete one behavior-preserving hot-path pass
+- Next required action: complete honest timing gates without outcome inspection
 
 ## Validation Gates
 
