@@ -1,0 +1,49 @@
+Varde MCTS decision profile
+source_commit: 1e928677a7129a75beafb0a201f2976dc51fcade
+mcts_agent_hash: 1b50866eae7fbac42e42e38b69e2d70414d064dbbd50ee547f2cf9d64eb2e7ff
+rules: classic
+board_size: 4
+simulations: 250
+seed: 20260715
+policy: uniform
+elapsed_seconds: 352.685015
+average_rollout_actions: 339.908
+max_rollout_actions: 800
+decision_action: intentionally omitted (performance artifact only)
+
+         2158137276 function calls in 352.685 seconds
+
+   Ordered by: cumulative time
+   List reduced from 102 to 30 due to restriction <30>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.026    0.026  352.685  352.685 mcts.py:188(choose_mcts_state_action)
+      250    0.060    0.000  351.453    1.406 mcts.py:162(_rollout)
+  8215625   13.507    0.000  345.224    0.000 varde.py:338(resolve)
+    85228    0.224    0.000  340.655    0.004 actions.py:122(legal_actions)
+    84977    0.056    0.000  339.876    0.004 mcts.py:156(_rollout_action)
+    84977    0.070    0.000  339.820    0.004 mcts.py:103(_uniform_action)
+    84743    2.994    0.000  338.191    0.004 varde.py:835(legal_placements)
+  6380583  170.788    0.000  271.281    0.000 varde.py:264(groups_of)
+828797657   50.322    0.000   50.322    0.000 varde.py:215(control)
+  2587620   14.473    0.000   25.975    0.000 varde.py:309(signature)
+ 47966382   10.952    0.000   18.556    0.000 varde.py:285(group_alive)
+256069773   15.620    0.000   15.620    0.000 {method 'append' of 'list' objects}
+204375126   14.973    0.000   14.973    0.000 {method 'add' of 'set' objects}
+  8215625    2.595    0.000   13.133    0.000 varde.py:227(terrain_ok)
+ 13418283    6.424    0.000   13.092    0.000 varde.py:220(nb_heights)
+250999140   11.503    0.000   11.503    0.000 varde.py:310(<genexpr>)
+    85227    0.028    0.000   11.496    0.000 actions.py:197(apply_action)
+    85227    0.058    0.000   11.341    0.000 actions.py:152(_apply_in_place)
+    80297    0.159    0.000   11.216    0.000 varde.py:758(play)
+204174104   10.738    0.000   10.738    0.000 {method 'popleft' of 'collections.deque' objects}
+155075646    9.196    0.000    9.196    0.000 {method 'append' of 'collections.deque' objects}
+ 56077068    6.404    0.000    8.737    0.000 varde.py:211(height)
+  5656440    1.677    0.000    7.604    0.000 varde.py:243(has_sky)
+ 13588019    1.204    0.000    2.555    0.000 {method 'extend' of 'list' objects}
+  3110976    0.850    0.000    2.534    0.000 varde.py:232(is_summit)
+ 56215726    2.341    0.000    2.341    0.000 {built-in method builtins.len}
+  2503576    0.459    0.000    1.345    0.000 actions.py:144(<genexpr>)
+ 13418283    1.292    0.000    1.292    0.000 {built-in method builtins.min}
+   361249    0.171    0.000    1.212    0.000 {built-in method builtins.any}
+  1288681    0.354    0.000    1.207    0.000 {built-in method builtins.all}

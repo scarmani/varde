@@ -1,7 +1,12 @@
 import unittest
 
 from actions import RulesAction, RulesState, apply_action, legal_actions
-from mcts import MCTS_AGENT_HASH, choose_mcts_action, choose_mcts_state_action
+from mcts import (
+    MCTS_AGENT_HASH,
+    MCTS_VERSION,
+    choose_mcts_action,
+    choose_mcts_state_action,
+)
 from varde import BLACK, WHITE, Game, Illegal, signature
 
 
@@ -9,6 +14,58 @@ CANDIDATES = ("classic", "rosette", "breath", "breath-run", "gjerde", "gjerde-go
 
 
 class TestRulesActions(unittest.TestCase):
+    def test_structural_clone_is_equal_without_mutable_aliases(self):
+        for rules in CANDIDATES:
+            with self.subTest(rules=rules):
+                game = Game(4, rules=rules)
+                game.play(game.legal_placements()[0])
+                game.last_capture_waves = [((999, 999),)]
+                clone = game.clone()
+
+                self.assertIs(clone.board, game.board)
+                self.assertEqual(clone.to_dict(), game.to_dict())
+                self.assertIsNot(clone.state, game.state)
+                self.assertIsNot(clone.history, game.history)
+                self.assertIsNot(clone.players, game.players)
+                self.assertIsNot(clone.extension_points, game.extension_points)
+                self.assertIsNot(clone.last_capture_waves, game.last_capture_waves)
+                self.assertEqual(clone.last_capture_waves, game.last_capture_waves)
+
+                point = game.board.points[0]
+                clone.state[point] = clone.state[point] + (clone.to_move,)
+                clone.history.clear()
+                clone.players[BLACK] = "Changed"
+                clone.extension_points.append(point)
+                clone.last_capture_waves.append((point,))
+                self.assertNotEqual(clone.state, game.state)
+                self.assertTrue(game.history)
+                self.assertNotEqual(clone.players, game.players)
+                self.assertEqual(game.extension_points, [])
+                self.assertEqual(game.last_capture_waves, [((999, 999),)])
+
+    def test_rules_state_clone_is_equal_without_mutable_aliases(self):
+        state = RulesState.from_game(Game(4, rules="breath-run"))
+        clone = state.clone()
+        self.assertEqual(clone.key(), state.key())
+        self.assertIsNot(clone.game, state.game)
+        self.assertIsNot(clone.seats, state.seats)
+        self.assertIsNot(clone.end_acceptances, state.end_acceptances)
+        clone.seats[BLACK] = "changed-seat"
+        clone.end_acceptances.add("changed-seat")
+        self.assertNotEqual(clone.seats, state.seats)
+        self.assertNotEqual(clone.end_acceptances, state.end_acceptances)
+
+    def test_emitted_action_order_is_the_existing_canonical_order(self):
+        for rules in CANDIDATES:
+            with self.subTest(rules=rules, position="opening"):
+                state = RulesState.from_game(Game(4, rules=rules))
+                actions = legal_actions(state)
+                self.assertEqual(actions, tuple(sorted(actions, key=RulesAction.sort_key)))
+            with self.subTest(rules=rules, position="after-opening"):
+                state = apply_action(state, legal_actions(state)[0])
+                actions = legal_actions(state)
+                self.assertEqual(actions, tuple(sorted(actions, key=RulesAction.sort_key)))
+
     def test_opening_pass_is_absent_then_pie_and_pass_are_present(self):
         state = RulesState.from_game(Game(3))
         actions = legal_actions(state)
@@ -99,6 +156,7 @@ class TestRulesActions(unittest.TestCase):
 
 class TestTerminalMCTS(unittest.TestCase):
     def test_agent_hash_and_request_validation(self):
+        self.assertEqual(MCTS_VERSION, 2)
         self.assertEqual(len(MCTS_AGENT_HASH), 64)
         int(MCTS_AGENT_HASH, 16)
         with self.assertRaises(ValueError):
