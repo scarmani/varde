@@ -9,16 +9,16 @@
   "pr_number": 15,
   "source_base": "565c08b0b0dae0ba3b9ec5bbdbd3ab8927cced6b",
   "continuation_guard": {
-    "remaining_batches": 2,
+    "remaining_batches": 1,
     "stop_allowed": false,
     "checkpoint_is_stop": false,
-    "next_required_action": "Run the source-pinned outcome-blind measurement under 30 minutes"
+    "next_required_action": "Document the redesigned evidence method, validate, and hand off PR 15"
   },
-  "current_batch": {"id": 2, "name": "Outcome-blind measurements", "status": "in_progress"},
+  "current_batch": {"id": 3, "name": "Method redesign and validation", "status": "in_progress"},
   "batches": [
     {"id": 0, "name": "Isolated feasibility run setup", "status": "complete", "commit": "2bad7de"},
     {"id": 1, "name": "Harness and arithmetic", "status": "complete", "commit": "9d701b5"},
-    {"id": 2, "name": "Outcome-blind measurements", "status": "in_progress", "commit": null},
-    {"id": 3, "name": "Method redesign and validation", "status": "pending", "commit": null}
+    {"id": 2, "name": "Outcome-blind measurements", "status": "complete", "commit": "2decf82"},
+    {"id": 3, "name": "Method redesign and validation", "status": "in_progress", "commit": null}
   ]
 }

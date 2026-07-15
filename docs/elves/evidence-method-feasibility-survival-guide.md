@@ -27,12 +27,12 @@ six frozen Varde candidates. Do not launch calibration or inspect outcomes.
 
 Status: in progress
 
-Active batch: Batch 2 — outcome-blind measurements
+Active batch: Batch 3 — method redesign and validation
 
-Just completed: source-pinned harness commit `9d701b5` on PR #15.
+Just completed: official outcome-blind artifact commit `2decf82` on PR #15.
 
-Single next action: run two repetitions across all six rulesets with the
-30-minute wall limit and atomically record the outcome-blind artifact.
+Single next action: document supported/unsupported claims and the next numeric
+gate, run full validation, publish the handoff, and close without calibration.
 
 ## Active Compute
 
@@ -40,9 +40,9 @@ None.
 
 ## Stop Gate
 
-- Planned batches remaining: 2
+- Planned batches remaining: 1
 - Stop allowed right now: no
-- Next required action: complete the source-pinned measurement
+- Next required action: complete redesign, validation, and PR handoff
 
 ## Recovery Order
 

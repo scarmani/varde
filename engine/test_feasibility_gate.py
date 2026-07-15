@@ -14,6 +14,8 @@ from feasibility_gate import (  # noqa: E402
     POLICIES,
     REVISED_LADDER,
     RULESETS,
+    STAGE_GAMES_PER_RULESET_POLICY,
+    STAGE_WORKERS,
     _aggregate_gate,
     build_midgame_state,
     file_hash,
@@ -162,6 +164,34 @@ class TestGeneratedFeasibilityEvidence(unittest.TestCase):
             gates["30"]["revised_ladder_projected_per_decision_p95_seconds"],
             self.payload["configuration"]["decision_gates_seconds"][-1],
         )
+
+    def test_timing_derived_12_24_diagnostic_fits_operational_gates(self):
+        stage_seconds = 0.0
+        high_budget_p95 = 0.0
+        for measurement in self.payload["measurements"].values():
+            moves = measurement["random_game_length"]["mean_moves"]
+            native_seconds = max(
+                item["mean_seconds"]
+                for item in measurement["native_standard"].values()
+            )
+            for policy in POLICIES:
+                projection = measurement["projections"][policy]
+                stage_seconds += (
+                    projected_game_seconds(
+                        24,
+                        projection["conservative_simulation_seconds"],
+                        native_seconds,
+                        moves,
+                    )
+                    * STAGE_GAMES_PER_RULESET_POLICY
+                )
+                high_budget_p95 = max(
+                    high_budget_p95,
+                    24 * projection["conservative_simulation_p95_seconds"],
+                )
+        stage_hours = stage_seconds / STAGE_WORKERS / 3600.0
+        self.assertLessEqual(high_budget_p95, 30.0)
+        self.assertLessEqual(stage_hours, 20.0)
 
 
 if __name__ == "__main__":

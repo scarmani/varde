@@ -53,13 +53,13 @@ native, single-simulation and random-playout-length probes with fixed seeds.
 ### Implementation
 
 The sequential harness measures opening and deterministic 12-action mid-game
-positions without timing contention. It uses two repetitions per timing cell,
+positions without timing contention. It uses ten repetitions per timing cell,
 one real terminal rollout per MCTS simulation, and deterministic random full
 games for length only. The predeclared diagnostic feasibility gate requires a
 common 16/32-simulation ladder, projected Stage A at most 24 hours on eight
 workers, and projected decision p95 at most 30 seconds.
 
-Five focused tests cover percentile/budget arithmetic, full-game and Stage-A
+Ten focused tests cover percentile/budget arithmetic, full-game and Stage-A
 projection, gate pass/fail, deterministic prefixes across all six candidates,
 and rejection of forbidden measurement fields. Ruff, `py_compile`, and diff
 checks pass.
@@ -117,3 +117,24 @@ gate and projects to 21.44h, but fails because p95 is 34.06s. A post-measurement
 timing derivation shows 12/24 would project to 16.18h and 25.54s p95. That is an
 operationally feasible diagnostic ladder, not strategic-depth evidence. A
 480-game native-only workload projects to 0.79h on eight workers.
+
+The measurement artifact was committed as `2decf82`.
+
+## Batch 3 — Method redesign and validation
+
+### Contract
+
+**Behaviors:** distinguish operationally feasible shallow diagnostics from
+unsupported depth claims, declare the numeric relaunch gate, validate the full
+branch, and publish a review-ready PR without launching calibration.
+
+**Acceptance criteria:**
+
+- [x] Redesign records measured values, supported claims and blocked claims.
+- [x] The derived 12/24 diagnostic ladder is explicitly non-depth and never
+  pooled with another manifest or agent revision.
+- [x] Local 210-test suite, changed-file lint, compilation and diff checks pass;
+  exact-head CI remains required after push.
+- [ ] PR #15 receives the result and bounded next recommendation.
+
+**Blast radius:** plan/evidence documentation, validation and PR handoff only.
