@@ -63,13 +63,54 @@ the registry/evaluator/MCTS hash helpers and the external-output convention.
 
 **Acceptance criteria:**
 
-- [ ] CLI exposes every required option and focused harness tests pass.
-- [ ] Timing-only samples finish or produce a documented resource estimate.
-- [ ] Sample outcomes are not inspected and sample outputs are removed.
-- [ ] Manifest validates against the exact command and committed hashes.
+- [x] CLI exposes every required option and focused harness tests pass.
+- [x] Timing-only sample produced a documented resource lower bound.
+- [x] Sample outcomes were not inspected and sample outputs were removed.
+- [x] Manifest validates against exact commands and committed agent/code hashes.
 - [ ] Manifest/status changes committed and exact-head CI passes.
 - [ ] Stage A launches only after the manifest commit exists remotely.
 
 **Blast radius:** research manifest and evidence documentation only unless CLI
 validation exposes a real harness defect. Any harness fix requires a regression
 test and a new source/hash pin before launch.
+
+### Timing feasibility result
+
+The declared n=4 Classic sample scheduled six games at budget 250. Its first
+two games used two full CPU cores for 667.77 wall seconds and 1321.04 user CPU
+seconds without completing a record. The sample was interrupted because this
+already established the feasibility lower bound; no score/outcome existed to
+inspect. The temporary run and profiler output were removed.
+
+The naive three-agent cross-product would schedule 720 games per budget and
+would also let `checkpoint_interval=2` cap active process work at two games.
+The frozen manifest instead declares separate native-vs-uniform and
+native-vs-light jobs, 480 games total per rung, eight workers, and checkpoints
+of eight. The resulting ideal lower bound is 11.01 hours for stage A and 44.03
+hours for stage B. Budget 4,000 is survivor-only; projections are explicitly
+lower bounds, not promises.
+
+### Prelaunch corrections
+
+- A changed budget is a changed checkpoint configuration; each rung uses a
+  separate output directory. `--resume` applies only inside one job.
+- Compute runs from a detached worktree at the manifest commit. Later evidence
+  documentation therefore cannot invalidate checkpoint source provenance.
+- Small-sample health observations do not eliminate candidates between A and B;
+  only correctness, termination, state-corruption, score-contradiction, or
+  unexplained-incomplete failures do.
+
+### Validation
+
+- CLI help exposes rulesets, agents, budgets, pairs, board sizes, seed, workers,
+  output directory, checkpoint interval, resume, cancel file and telemetry.
+- Focused harness suite: 9 passed.
+- Full suite: 202 passed in 14.83s.
+- Python compilation and JavaScript syntax passed.
+
+### Regression attestation
+
+The only executable change is one manifest-contract test. No engine, rule,
+evaluator, MCTS or harness behavior changed. Test count increased from 201 to
+202. Confidence HIGH: hashes are checked against live modules, commands are
+data-only, and all previous tests pass.

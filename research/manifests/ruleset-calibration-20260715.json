@@ -1,0 +1,164 @@
+{
+  "format": "varde-ruleset-evaluation-manifest",
+  "version": 1,
+  "status": "frozen-before-outcomes",
+  "created_date": "2026-07-15",
+  "purpose": "Computer-only falsification; never evidence of human emergence or beauty",
+  "source": {
+    "main_merge_commit": "565c08b0b0dae0ba3b9ec5bbdbd3ab8927cced6b",
+    "harness_sha256": "053a866f2dc048da1226fe956e0b59b4f7752aaefe92b40ba587a735cc1d12f5",
+    "code_hash": "15c7404e7999286d00480842f5334f17a14750dd42ea10a484a4e95e372fb9ec",
+    "ruleset_registry_hash": "e9517bccf1093f43017417d59613fd0af57af8e290e2bccd55f6b38fa227d7ad",
+    "native_evaluator_hash": "6f64d8cb8238b61fd5e719c001c21a695da45122a46c3802c5b9926c5dad2282",
+    "mcts_agent_hash": "1b50866eae7fbac42e42e38b69e2d70414d064dbbd50ee547f2cf9d64eb2e7ff",
+    "engine_files": {
+      "engine/mcts.py": "f00895fef17b3c8743a3261e53e156635d136323a0ddbd52fe7ff997e1843074",
+      "engine/native_evaluators.py": "14c8212aba63828e43f1b57f4d53606a80a972ce81fc81c2f29ca5dd98d090bb",
+      "engine/varde.py": "d5742335392a6cbe0acc319d97a3efae01ec06a3f9bfe58f81649ffed2235082"
+    }
+  },
+  "candidates": [
+    {"id": "classic", "evaluation_id": "classic-1.3"},
+    {"id": "rosette", "evaluation_id": "rosette-0.1"},
+    {"id": "breath", "evaluation_id": "breath-0.1"},
+    {"id": "breath-run", "evaluation_id": "breath-run-0.1"},
+    {"id": "gjerde", "evaluation_id": "gjerde-breath-0.1"},
+    {"id": "gjerde-go", "evaluation_id": "gjerde-go-0.1"}
+  ],
+  "fixed_parameters": {
+    "board_sizes": [4],
+    "calibration_pairs": 20,
+    "calibration_seed": 20260715,
+    "workers": 8,
+    "checkpoint_interval": 8,
+    "telemetry": true,
+    "watchdog_multiplier": 20,
+    "raw_output_root": "/Users/armand/varde-runs/ruleset-calibration-20260715",
+    "detached_source_root": "/tmp/varde-calibration-source-20260715"
+  },
+  "timing_feasibility": {
+    "evidence_eligible": false,
+    "outcomes_inspected": false,
+    "temporary_outputs_removed": true,
+    "sample": {
+      "rulesets": ["classic"],
+      "agents": ["native-standard", "mcts-uniform@250", "mcts-light@250"],
+      "board_size": 4,
+      "pairs": 1,
+      "seed": 99,
+      "workers_configured": 8,
+      "checkpoint_interval": 2,
+      "games_scheduled": 6,
+      "games_completed": 0,
+      "wall_seconds_before_operator_cancel": 667.77,
+      "user_cpu_seconds": 1321.04,
+      "reason": "The first two games did not complete; the lower bound was sufficient to reject the naive cross-product as operationally wasteful."
+    },
+    "lower_bound_projection": {
+      "cpu_seconds_per_game": 660.52,
+      "stage_a_games": 480,
+      "stage_a_ideal_wall_hours_at_8_workers": 11.01,
+      "stage_b_linear_wall_hours_at_8_workers": 44.03,
+      "notes": "Lower bounds only. Budget scaling, game length, policy and scheduling overhead may be nonlinear; 4000-simulation work is survivor-only."
+    }
+  },
+  "stage_order": [
+    "A-uniform-250",
+    "A-light-250",
+    "A-operational-audit",
+    "B-uniform-1000",
+    "B-light-1000",
+    "B-health-audit",
+    "C-survivor-cross-4000",
+    "C-survivor-adjacent-depth",
+    "fresh-50-pair-health",
+    "secondary-n5-smoke",
+    "ruleset-native-adversarial-search"
+  ],
+  "jobs": [
+    {
+      "id": "A-uniform-250",
+      "advancement": "unconditional after manifest validation",
+      "output_dir": "/Users/armand/varde-runs/ruleset-calibration-20260715/A-uniform-250",
+      "cancel_file": "/Users/armand/varde-runs/ruleset-calibration-20260715/control/cancel-A-uniform-250",
+      "argv": ["python3", "research/harness/evaluate_rulesets.py", "--rulesets", "classic,rosette,breath,breath-run,gjerde,gjerde-go", "--agents", "native-standard,mcts-uniform@250", "--budgets", "250", "--pairs", "20", "--board-sizes", "4", "--seed", "20260715", "--workers", "8", "--checkpoint-interval", "8", "--watchdog-multiplier", "20", "--telemetry", "--cancel-file", "/Users/armand/varde-runs/ruleset-calibration-20260715/control/cancel-A-uniform-250", "--output-dir", "/Users/armand/varde-runs/ruleset-calibration-20260715/A-uniform-250"]
+    },
+    {
+      "id": "A-light-250",
+      "advancement": "after A-uniform completes without a harness-wide correctness failure",
+      "output_dir": "/Users/armand/varde-runs/ruleset-calibration-20260715/A-light-250",
+      "cancel_file": "/Users/armand/varde-runs/ruleset-calibration-20260715/control/cancel-A-light-250",
+      "argv": ["python3", "research/harness/evaluate_rulesets.py", "--rulesets", "classic,rosette,breath,breath-run,gjerde,gjerde-go", "--agents", "native-standard,mcts-light@250", "--budgets", "250", "--pairs", "20", "--board-sizes", "4", "--seed", "20260715", "--workers", "8", "--checkpoint-interval", "8", "--watchdog-multiplier", "20", "--telemetry", "--cancel-file", "/Users/armand/varde-runs/ruleset-calibration-20260715/control/cancel-A-light-250", "--output-dir", "/Users/armand/varde-runs/ruleset-calibration-20260715/A-light-250"]
+    },
+    {
+      "id": "B-uniform-1000",
+      "advancement": "after both A jobs and the operational audit; omit only candidates rejected for correctness, termination or reproducible scoring failure",
+      "output_dir": "/Users/armand/varde-runs/ruleset-calibration-20260715/B-uniform-1000",
+      "cancel_file": "/Users/armand/varde-runs/ruleset-calibration-20260715/control/cancel-B-uniform-1000",
+      "argv_template": ["python3", "research/harness/evaluate_rulesets.py", "--rulesets", "{stage_b_rulesets_csv}", "--agents", "native-standard,mcts-uniform@1000", "--budgets", "1000", "--pairs", "20", "--board-sizes", "4", "--seed", "20260715", "--workers", "8", "--checkpoint-interval", "8", "--watchdog-multiplier", "20", "--telemetry", "--cancel-file", "/Users/armand/varde-runs/ruleset-calibration-20260715/control/cancel-B-uniform-1000", "--output-dir", "/Users/armand/varde-runs/ruleset-calibration-20260715/B-uniform-1000"]
+    },
+    {
+      "id": "B-light-1000",
+      "advancement": "same mechanically recorded candidate set as B-uniform-1000",
+      "output_dir": "/Users/armand/varde-runs/ruleset-calibration-20260715/B-light-1000",
+      "cancel_file": "/Users/armand/varde-runs/ruleset-calibration-20260715/control/cancel-B-light-1000",
+      "argv_template": ["python3", "research/harness/evaluate_rulesets.py", "--rulesets", "{stage_b_rulesets_csv}", "--agents", "native-standard,mcts-light@1000", "--budgets", "1000", "--pairs", "20", "--board-sizes", "4", "--seed", "20260715", "--workers", "8", "--checkpoint-interval", "8", "--watchdog-multiplier", "20", "--telemetry", "--cancel-file", "/Users/armand/varde-runs/ruleset-calibration-20260715/control/cancel-B-light-1000", "--output-dir", "/Users/armand/varde-runs/ruleset-calibration-20260715/B-light-1000"]
+    }
+  ],
+  "survivor_templates": {
+    "cross_family_4000": {
+      "seed": 20260715,
+      "pairs": 20,
+      "policies": ["mcts-uniform@4000", "mcts-light@4000"],
+      "rulesets": "mechanical survivors of the B-health-audit"
+    },
+    "adjacent_depth": {
+      "seed": 20260717,
+      "pairs": 20,
+      "matchups": [
+        ["mcts-uniform@250", "mcts-uniform@1000"],
+        ["mcts-uniform@1000", "mcts-uniform@4000"],
+        ["mcts-light@250", "mcts-light@1000"],
+        ["mcts-light@1000", "mcts-light@4000"]
+      ],
+      "rulesets": "mechanical survivors of the B-health-audit"
+    },
+    "fresh_health": {
+      "seed": 20260716,
+      "pairs": 50,
+      "board_size": 4,
+      "budget": 1000,
+      "both_rollout_policies": true
+    },
+    "secondary_smoke": {
+      "seed": 20260718,
+      "pairs": 4,
+      "board_size": 5,
+      "budget": 1000
+    },
+    "adversarial_search": {
+      "seed": 20260719,
+      "rulesets": "fresh-health survivors only",
+      "purpose": "discover degenerate single-purpose policies"
+    }
+  },
+  "mechanical_advancement": {
+    "stage_a_to_b": "Reject only a candidate with any illegal action, crash, corrupted state, unexplained watchdog incomplete, reproducible score contradiction or live termination defect. Other small-sample health signals remain diagnostic.",
+    "stage_b_to_c": "Require zero correctness/termination failures and no necessary health gate failing in both policies at both adjacent budgets. Record every exclusion and never substitute a different evaluator result.",
+    "health_to_adversarial": "Require the standing 50-pair health gates in both colors and both rollout-policy strata. No computer-only survivor is a flagship.",
+    "refinement": "A candidate failing two gates may receive one declared revision and one fresh, separately versioned rerun; results are never pooled across revisions."
+  },
+  "checkpoint_semantics": {
+    "resume": "Use --resume only with the identical argv/configuration inside one job output directory.",
+    "stage_transition": "A new budget is a new output directory and is never treated as a checkpoint resume.",
+    "source_isolation": "Launch all jobs from a detached worktree at the manifest commit so later evidence-document commits cannot invalidate source provenance."
+  },
+  "claim_limits": {
+    "calibration_is_non_claim": true,
+    "no_balance_or_depth_claim_under_100_pairs": true,
+    "agent_family_agreement_required": true,
+    "adjacent_budget_stability_required": true,
+    "human_emergence_and_beauty_unmeasured": true,
+    "flagship_promotion_blocked": true
+  }
+}

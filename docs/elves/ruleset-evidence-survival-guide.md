@@ -38,20 +38,22 @@ Status: in progress
 
 Active batch: Batch 1 — timing and immutable calibration manifest
 
-Just completed: Batch 0 setup committed at `7a0aed1`; evidence PR #13 is open.
+Just completed: CLI and timing feasibility audit; frozen manifest and its
+contract test pass locally with 202 total tests.
 
-Single next action: validate the actual harness CLI and focused tests, then run
-timing-only samples without inspecting outcomes.
+Single next action: commit and push the frozen manifest, wait for exact-head CI,
+then launch A-uniform-250 from a detached worktree at that commit.
 
 ## Active Compute
 
-None. No calibration outcome has been generated or inspected.
+None. The canceled timing-only sample produced no completed record; its outputs
+were removed and no outcome was inspected.
 
 ## Stop Gate
 
 - Planned batches remaining: 5
 - Stop allowed right now: no
-- Next required action: execute Batch 1 timing and freeze the manifest
+- Next required action: commit the manifest and launch Stage A only after CI
 
 ## Validation Gates
 

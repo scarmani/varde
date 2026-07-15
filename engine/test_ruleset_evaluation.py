@@ -7,11 +7,15 @@ from research.harness.evaluate_rulesets import (
     AgentSpec,
     _depth_ladder,
     build_schedule,
+    code_hash,
     evaluate_task,
     parse_agents,
     run_evaluation,
+    stable_hash,
 )
-from varde import BLACK, WHITE
+from mcts import MCTS_AGENT_HASH
+from native_evaluators import NATIVE_EVALUATOR_HASH
+from varde import BLACK, WHITE, rulesets_public
 
 
 def _config(*, agents=None, pairs=2, telemetry=False):
@@ -139,6 +143,43 @@ class TestRulesetEvaluationSchedule(unittest.TestCase):
 
 
 class TestRulesetEvaluationRun(unittest.TestCase):
+    def test_calibration_manifest_is_frozen_and_matches_agent_specs(self):
+        path = (
+            Path(__file__).resolve().parents[1]
+            / "research/manifests/ruleset-calibration-20260715.json"
+        )
+        payload = json.loads(path.read_text())
+        source = payload["source"]
+        registry = rulesets_public()
+        expected_candidates = {
+            item["id"]: item["evaluation_id"]
+            for item in registry["rulesets"]
+            if item["status"] == "candidate"
+        }
+
+        self.assertEqual(payload["status"], "frozen-before-outcomes")
+        self.assertEqual(
+            {item["id"]: item["evaluation_id"] for item in payload["candidates"]},
+            expected_candidates,
+        )
+        self.assertEqual(source["code_hash"], code_hash())
+        self.assertEqual(source["ruleset_registry_hash"], stable_hash(registry))
+        self.assertEqual(source["native_evaluator_hash"], NATIVE_EVALUATOR_HASH)
+        self.assertEqual(source["mcts_agent_hash"], MCTS_AGENT_HASH)
+        self.assertTrue(payload["claim_limits"]["flagship_promotion_blocked"])
+        self.assertFalse(
+            payload["timing_feasibility"]["outcomes_inspected"]
+        )
+
+        jobs = payload["jobs"]
+        self.assertEqual(len({job["output_dir"] for job in jobs}), len(jobs))
+        for job in jobs[:2]:
+            argv = job["argv"]
+            workers = int(argv[argv.index("--workers") + 1])
+            checkpoint = int(argv[argv.index("--checkpoint-interval") + 1])
+            self.assertGreaterEqual(checkpoint, workers)
+            self.assertNotIn("--resume", argv)
+
     def test_committed_smoke_is_explicitly_non_claim_and_hash_pinned(self):
         path = (
             Path(__file__).resolve().parents[1]
