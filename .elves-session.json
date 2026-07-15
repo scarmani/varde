@@ -1,0 +1,24 @@
+{
+  "session_id": "elves-2026-07-15-varde-evidence-feasibility",
+  "version": "1.12.0",
+  "status": "in_progress",
+  "branch": "codex/evidence-method-feasibility",
+  "plan_path": "docs/plans/evidence-method-feasibility-run.md",
+  "survival_guide_path": "docs/elves/evidence-method-feasibility-survival-guide.md",
+  "execution_log_path": "docs/elves/evidence-method-feasibility-execution-log.md",
+  "pr_number": null,
+  "source_base": "565c08b0b0dae0ba3b9ec5bbdbd3ab8927cced6b",
+  "continuation_guard": {
+    "remaining_batches": 4,
+    "stop_allowed": false,
+    "checkpoint_is_stop": false,
+    "next_required_action": "Implement pure feasibility arithmetic and outcome-blind probes"
+  },
+  "current_batch": {"id": 0, "name": "Isolated feasibility run setup", "status": "in_progress"},
+  "batches": [
+    {"id": 0, "name": "Isolated feasibility run setup", "status": "in_progress", "commit": null},
+    {"id": 1, "name": "Harness and arithmetic", "status": "pending", "commit": null},
+    {"id": 2, "name": "Outcome-blind measurements", "status": "pending", "commit": null},
+    {"id": 3, "name": "Method redesign and validation", "status": "pending", "commit": null}
+  ]
+}
