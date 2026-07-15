@@ -25,14 +25,15 @@ six frozen Varde candidates. Do not launch calibration or inspect outcomes.
 
 ## Current Phase
 
-Status: in progress
+Status: complete
 
-Active batch: Batch 3 — method redesign and validation
+Active batch: none — finite run complete
 
-Just completed: official outcome-blind artifact commit `2decf82` on PR #15.
+Just completed: review-ready redesign head `8fc2236`; both exact-head CI runs
+passed and the measured handoff is published on PR #15.
 
-Single next action: document supported/unsupported claims and the next numeric
-gate, run full validation, publish the handoff, and close without calibration.
+Single next action: none. Await user review; do not launch calibration from this
+branch.
 
 ## Active Compute
 
@@ -40,9 +41,9 @@ None.
 
 ## Stop Gate
 
-- Planned batches remaining: 1
-- Stop allowed right now: no
-- Next required action: complete redesign, validation, and PR handoff
+- Planned batches remaining: 0
+- Stop allowed right now: yes
+- Next required action: none; await user review
 
 ## Recovery Order
 

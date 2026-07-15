@@ -1,7 +1,7 @@
 {
   "session_id": "elves-2026-07-15-varde-evidence-feasibility",
   "version": "1.12.0",
-  "status": "in_progress",
+  "status": "complete",
   "branch": "codex/evidence-method-feasibility",
   "plan_path": "docs/plans/evidence-method-feasibility-run.md",
   "survival_guide_path": "docs/elves/evidence-method-feasibility-survival-guide.md",
@@ -9,16 +9,16 @@
   "pr_number": 15,
   "source_base": "565c08b0b0dae0ba3b9ec5bbdbd3ab8927cced6b",
   "continuation_guard": {
-    "remaining_batches": 1,
-    "stop_allowed": false,
+    "remaining_batches": 0,
+    "stop_allowed": true,
     "checkpoint_is_stop": false,
-    "next_required_action": "Document the redesigned evidence method, validate, and hand off PR 15"
+    "next_required_action": null
   },
-  "current_batch": {"id": 3, "name": "Method redesign and validation", "status": "in_progress"},
+  "current_batch": {"id": 3, "name": "Method redesign and validation", "status": "complete"},
   "batches": [
     {"id": 0, "name": "Isolated feasibility run setup", "status": "complete", "commit": "2bad7de"},
     {"id": 1, "name": "Harness and arithmetic", "status": "complete", "commit": "9d701b5"},
     {"id": 2, "name": "Outcome-blind measurements", "status": "complete", "commit": "2decf82"},
-    {"id": 3, "name": "Method redesign and validation", "status": "in_progress", "commit": null}
+    {"id": 3, "name": "Method redesign and validation", "status": "complete", "commit": "8fc2236"}
   ]
 }

@@ -134,7 +134,16 @@ branch, and publish a review-ready PR without launching calibration.
 - [x] The derived 12/24 diagnostic ladder is explicitly non-depth and never
   pooled with another manifest or agent revision.
 - [x] Local 210-test suite, changed-file lint, compilation and diff checks pass;
-  exact-head CI remains required after push.
-- [ ] PR #15 receives the result and bounded next recommendation.
+  exact-head push and pull-request CI runs both passed at `8fc2236`.
+- [x] PR #15 received the result and bounded next recommendation:
+  https://github.com/scarmani/varde/pull/15#issuecomment-4985930518
 
 **Blast radius:** plan/evidence documentation, validation and PR handoff only.
+
+### Closure
+
+PR #15 is mergeable and review-ready. No rule, scoring, MCTS, evaluator, live
+game or calibration state changed. No calibration outcome was generated or
+inspected. User review remains required before merge; if PR #14 changes the
+selected MCTS hash, this outcome-blind gate must be regenerated before a new
+manifest freezes.
