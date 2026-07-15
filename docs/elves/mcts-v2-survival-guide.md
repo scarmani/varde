@@ -30,12 +30,14 @@ use heuristic leaf values, truncate rollouts, or relabel v1 evidence as v2.
 
 ## Current Phase
 
-Status: staging
+Status: in progress
 
-Active batch: Batch 0 — isolated performance run setup
+Active batch: Batch 1 — golden fixtures and baseline profile
 
-Single next action: commit/push run controls, open PR, then generate v1 golden
-fixtures before modifying engine code.
+Just completed: setup commit `ffee5ba`, PR #14, and blocker link from PR #13.
+
+Single next action: generate and commit v1 golden fixtures before modifying any
+engine code, then run the baseline profile.
 
 ## Active Compute
 
@@ -43,9 +45,9 @@ None.
 
 ## Stop Gate
 
-- Planned batches remaining: 5
+- Planned batches remaining: 4
 - Stop allowed right now: no
-- Next required action: finish Batch 0 and begin golden/profile baseline
+- Next required action: finish immutable v1 golden/profile baseline
 
 ## Validation Gates
 

@@ -7,13 +7,13 @@
   "survival_guide_path": "docs/elves/mcts-v2-survival-guide.md",
   "learnings_path": "docs/elves/ruleset-evaluation-learnings.md",
   "execution_log_path": "docs/elves/mcts-v2-execution-log.md",
-  "pr_number": null,
+  "pr_number": 14,
   "source_base": "565c08b0b0dae0ba3b9ec5bbdbd3ab8927cced6b",
   "continuation_guard": {
-    "remaining_batches": 5,
+    "remaining_batches": 4,
     "stop_allowed": false,
     "checkpoint_is_stop": false,
-    "next_required_action": "Commit run controls, open PR, then generate v1 golden fixtures"
+    "next_required_action": "Generate and commit v1 golden fixtures before modifying engine code"
   },
   "test_baseline": {
     "passed": 201,
@@ -22,10 +22,10 @@
     "status": "captured",
     "reason": null
   },
-  "current_batch": {"id": 0, "name": "Isolated performance run setup", "status": "in_progress"},
+  "current_batch": {"id": 1, "name": "Golden fixtures and baseline profile", "status": "in_progress"},
   "batches": [
-    {"id": 0, "name": "Isolated performance run setup", "status": "in_progress", "commit": null},
-    {"id": 1, "name": "Golden fixtures and baseline profile", "status": "pending", "commit": null},
+    {"id": 0, "name": "Isolated performance run setup", "status": "complete", "commit": "ffee5ba"},
+    {"id": 1, "name": "Golden fixtures and baseline profile", "status": "in_progress", "commit": null},
     {"id": 2, "name": "Hot-path implementation", "status": "pending", "commit": null},
     {"id": 3, "name": "Equivalence and timing gates", "status": "pending", "commit": null},
     {"id": 4, "name": "Review and evidence handoff", "status": "pending", "commit": null}
