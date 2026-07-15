@@ -193,3 +193,11 @@ Original prompt: yes to all in best order proceed and execute according to your 
 - Batch 4 validation reaches 193 tests. Worker-count/interruption equivalence is
   byte-proven for every final artifact, actual process-worker native and MCTS
   smokes complete legally, and promotion remains blocked.
+- Added a hash-pinned human-study package generator with 8/10/12-participant
+  crossover schedules, engine-derived comprehension puzzles, separate survey
+  dimensions, emergence coding, and retention prompts. Gjerde puzzle evidence
+  includes the repaired open-boundary case.
+- Added an opt-in hotseat recorder that exports pseudonymous, monotonic-time
+  action and resolution JSON locally without a collection endpoint. Browser
+  save/load, watch disabling, two-pass ending, resumption, screenshots, and
+  console state pass. Batch 5 validation reaches 200 tests.

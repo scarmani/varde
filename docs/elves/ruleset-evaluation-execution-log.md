@@ -357,3 +357,64 @@ only classifies research records. Confidence HIGH.
 verification.
 
 **Commit:** `adeba1c`
+
+## Batch 5 Contract: 2026-07-15 14:22 CDT
+
+**Behaviors:**
+- Generate neutral, versioned study instruments for an 8–12-player panel.
+- Counterbalance fixed opponent pairs, ruleset order, and exact within-pair color.
+- Capture hotseat actions and monotonic thinking intervals in browser memory,
+  then export locally without direct identifiers or network submission.
+- Preserve two-pass/resumption action history and keep game saves separate.
+
+**Acceptance criteria:**
+- [x] Human records are versioned, locally exportable, and reject PII fields.
+- [x] Crossover schedules balance ruleset order, opponent, and color.
+- [x] Briefs and puzzles are neutral and do not seed designer motif names.
+- [x] Screenshots, semantic state, save/load, and console checks pass.
+
+**Blast radius:** browser hotseat instrumentation and offline research package;
+no server collection endpoint, live rule, save format, or computer path changes.
+
+## 2026-07-15 14:40 CDT
+
+**Batch:** 5 — Human-study instruments and product workflow
+
+**Contract status:** all criteria met
+
+**What changed:** `human_study.py` generates fixed-pair Latin rotations for 8,
+10, or 12 pseudonymous participants, six alternating-color games per ruleset,
+two engine-derived call-your-shot puzzles per candidate, nine separate aesthetic
+ratings, emergence prompts, readability checks, and a one-week retention form.
+Gjerde fixtures explicitly cover closing an interior fence and the repaired
+unclaimed outer boundary. Packages pin source, rules revisions, privacy policy,
+browser schema, and a deterministic hash.
+
+The browser adds a hotseat-only local recorder before move one. It records only
+action kind, point, actor color, monotonic elapsed time, move indices, captured
+stone count, ordered capture waves, score, resumption, and ending type. It uses
+a generated pseudonymous UUID, contains no wall-clock time or identity fields,
+and has no server submission. New/load prompts prevent accidental loss; game
+saves remain separate.
+
+**Browser proof:** the required web-game client recorded a live Breath move and
+produced semantic state plus an opened canvas screenshot. A full-page Playwright
+chain recorded play/pass, downloaded JSON, passed the Python validator, saved
+and reloaded the game, cleared the separate record, and produced the inspected
+`/tmp/varde-playtest-full.png`. A second chain recorded play/pass/pass/resume,
+changed complete back to active, preserved `resumption_used`, and had zero
+console errors. Watch mode starts paused and disables recording.
+
+**Validation:** 200 tests, Python/JavaScript syntax, ruff on new Python, package
+hash verification, candidate puzzle replay, 8/10/12 schedule balance, strict
+PII/schema rejection, screenshot inspection, download validation, save/load,
+resumption, watch mode, and zero console errors pass. The post-commit package
+pins source `fe58b9e`.
+
+**Regression attestation:** all data remains local and opt-in. No live action
+ceiling or hidden collection was introduced. Confidence HIGH.
+
+**Next:** bounded generated smoke evidence, full final gates, documentation of
+unrun computational/human promotion gates, and PR handoff.
+
+**Commit:** `fe58b9e`

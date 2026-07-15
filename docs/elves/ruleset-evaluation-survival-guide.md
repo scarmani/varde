@@ -31,14 +31,14 @@ probes for evidence of beauty or human strategic depth.
 - **Checkpoint expectation:** a reviewable PR with honest local evidence and explicit deferred human gates
 - **Time budget:** approximately 8 hours, finite scope rather than a hard deadline
 - **Average batch time so far:** not yet measured
-- **Batches remaining:** 2 of 6 product batches
+- **Batches remaining:** 1 of 6 product batches
 
 ## Stop Gate
 
-- **Planned batches remaining:** 2
+- **Planned batches remaining:** 1
 - **Stop allowed right now:** no
-- **Why:** the human-study workflow and final evidence/handoff remain
-- **Next required action:** complete Batch 5 human-study instruments and browser export
+- **Why:** bounded generated evidence, final gates, and review handoff remain
+- **Next required action:** complete Batch 6 evidence matrix and final verification
 
 ## Non-Negotiables
 
@@ -66,11 +66,11 @@ probes for evidence of beauty or human strategic depth.
 
 **Status:** In progress
 
-**Active batch:** Batch 5 — human-study instruments and product workflow
+**Active batch:** Batch 6 — bounded evidence and final handoff
 
-**What was just finished:** Batch 4 added the paired, byte-stable falsification CLI; 193 tests and real native/MCTS process-worker smokes pass.
+**What was just finished:** Batch 5 added the local human-study workflow; 200 tests and inspected browser export/resumption chains pass.
 
-**Single next action:** specify the local playtest record schema and browser action-capture seam.
+**Single next action:** generate one explicit non-claim cross-family smoke summary from the committed code head.
 
 ## Active Compute
 
@@ -78,24 +78,24 @@ No active paid or long-running compute.
 
 ## Next Exact Batch
 
-**Batch:** 5 — Human-study instruments and product workflow
+**Batch:** 6 — Bounded evidence and final handoff
 
 **Scope:**
-- Add neutral rules briefs, resolution/call-your-shot puzzles, crossover
-  scheduling, game and post-game forms, and the one-week retention instrument.
-- Capture local human actions and time-to-action in the browser, with explicit
-  JSON export and no network submission or personal identifiers.
-- Validate schema, schedule balance, browser export, save/load, and console state.
+- Generate compact, source-pinned operational smoke evidence without promoting
+  any ruleset or substituting it for the declared overnight screens.
+- Publish the exact implemented, verified, provisional, and unrun evidence
+  matrix plus commands and honest promotion blockers.
+- Run all unit, syntax, research, browser, PR, and dirty-tree gates.
 
 **Acceptance criteria:**
-- [ ] Human records are versioned, locally exportable, and contain no PII fields.
-- [ ] Crossover schedules counterbalance ruleset order, opponent, and color.
-- [ ] Briefs and puzzles are neutral and do not teach designer-supplied motifs.
-- [ ] Browser screenshots, semantic state, save/load, and console checks pass.
+- [ ] Compact evidence is generated from committed source and explicitly non-claim.
+- [ ] Every deferred overnight and human gate is visible, not implied complete.
+- [ ] Full tests, syntax, whitespace, browser, PR checks, and review pass.
+- [ ] Stop Gate permits a final handoff without merging.
 
-**Risk:** instrumentation can prime players or turn designer vocabulary into false emergence evidence; prompts must stay neutral and records must separate prediction, understanding, and aesthetics.
+**Risk:** a successful operational smoke can be mistaken for game-design evidence; every artifact and summary must keep the declared sample, agent, size, and claim limits adjacent.
 
-**Rollback tag:** `elves/ruleset-evaluation-pre-batch-5`
+**Rollback tag:** `elves/ruleset-evaluation-pre-batch-6`
 
 ## Recovery Order
 
