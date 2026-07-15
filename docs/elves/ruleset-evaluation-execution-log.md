@@ -290,3 +290,5 @@ existing behavior stays behind its prior tests. Confidence HIGH.
 
 **Next:** paired evaluation CLI, game telemetry, statistics, checkpoints,
 cancellation, worker determinism, and declared gates.
+
+**Commit:** `868ea8a`

@@ -96,7 +96,7 @@ No active paid or long-running compute.
 
 **Risk:** a broad experiment surface can make false claims easy; defaults must remain smoke-sized and every conclusion must carry agent/budget/policy provenance.
 
-**Rollback tag:** create `elves/ruleset-evaluation-pre-batch-4` after the Batch 3 checkpoint.
+**Rollback tag:** `elves/ruleset-evaluation-pre-batch-4`
 
 ## Recovery Order
 
