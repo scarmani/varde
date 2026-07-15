@@ -9,7 +9,7 @@ family. Neither is currently sufficient to establish strategic depth.
 
 This decision is based on the outcome-blind artifact
 `research/results/evidence-feasibility-gate-20260715.json`, payload SHA-256
-`6e6cb3d2e1fe0f00248cdf7ce1792cb7d2fd1b548518e9b181c8043767eef49c`.
+`556b1f76ab8152abb3a7763de9f82d367224eb6f027132df18af2f11c51094d3`.
 The run retained timings and random-game move counts only; it inspected no
 decision, score, winner, margin, or other game outcome.
 
@@ -18,34 +18,34 @@ decision, score, winner, margin, or other game outcome.
 The source-pinned run used n=4, ten repetitions per timing/length cell, six
 frozen candidate revisions, both MCTS rollout policies, opening and deterministic
 12-action mid-game positions, and fixed seed root 20260715. It finished in
-134.71 seconds.
+134.65 seconds.
 
 | Ruleset | Native Standard mean max | Uniform sim mean max | Light sim mean max | Random game mean moves |
 |---|---:|---:|---:|---:|
-| Classic 1.3 | 0.094s | 0.469s | 0.217s | 331.7 |
-| Rosette 0.1 | 0.117s | 0.226s | 0.211s | 184.8 |
-| Breath 0.1 | 0.190s | 0.203s | 0.233s | 145.9 |
-| Breath-run 0.1 | 0.206s | 0.215s | 0.193s | 152.1 |
-| Gjerde-breath 0.1 | 0.340s | 0.620s | 0.625s | 177.9 |
-| Gjerde-Go 0.1 | 0.453s | 0.672s | 0.513s | 246.2 |
+| Classic 1.3 | 0.093s | 0.468s | 0.213s | 331.7 |
+| Rosette 0.1 | 0.115s | 0.218s | 0.208s | 184.8 |
+| Breath 0.1 | 0.187s | 0.203s | 0.233s | 145.9 |
+| Breath-run 0.1 | 0.208s | 0.211s | 0.194s | 152.1 |
+| Gjerde-breath 0.1 | 0.341s | 0.622s | 0.646s | 177.9 |
+| Gjerde-Go 0.1 | 0.450s | 0.683s | 0.514s | 246.2 |
 
 The common budget and full 480-game Stage-A projection at each tested decision
 gate are:
 
 | Mean decision gate | Common maximum budget | Projected p95 at that budget | Projected Stage A |
 |---|---:|---:|---:|
-| 2s | 2 | 2.13s | 1.71h |
-| 10s | 14 | 14.90s | 9.60h |
-| 30s | 44 | 46.83s | 29.34h |
+| 2s | 2 | 2.18s | 1.71h |
+| 10s | 14 | 15.28s | 9.63h |
+| 30s | 43 | 46.93s | 28.76h |
 
 The predeclared 16/32 ladder fits the mean-time and Stage-A limits at its high
-rung (21.44h) but misses the p95 limit at 34.06s. It therefore fails its gate.
+rung (21.50h) but misses the p95 limit at 34.92s. It therefore fails its gate.
 
 A timing-derived 12/24 ladder is the largest simple 2:1 ladder with useful
-headroom on this sample: its high rung projects to 25.54s p95 and 16.18h for a
-480-game stage on eight workers. Its low rung projects to 12.77s p95 and 8.29h.
+headroom on this sample: its high rung projects to 26.19s p95 and 16.23h for a
+480-game stage on eight workers. Its low rung projects to 13.10s p95 and 8.31h.
 These are scheduling estimates, not observed full-game timings. A comparable
-480-game native-only workload projects to 0.79h.
+480-game native-only workload projects to 0.78h.
 
 ## Revised screening sequence
 
@@ -120,10 +120,9 @@ A new, separately versioned manifest may be frozen only after all of these pass:
 6. The new manifest states that 12/24 is diagnostic only and that no result is
    pooled across rules, agent or manifest revisions.
 
-The current v1 source meets the numeric 12/24 projections, but no calibration is
-authorized by this document. PR #14 changes the MCTS agent hash; if it merges,
-the outcome-blind gate must be regenerated before a manifest can freeze even
-though its measured v1/v2 speed difference was only 0.58%.
+The merged v2 source meets the numeric 12/24 projections, but no calibration is
+authorized by this document. The outcome-blind gate has been regenerated on the
+settled MCTS agent hash; a new manifest must still be frozen before any run.
 
 ## Recommended next computer-only cycle
 

@@ -3,8 +3,8 @@
     "10": {
       "maximum_common_budget": 14,
       "passes_feasibility_gate": false,
-      "projected_per_decision_p95_at_common_maximum_seconds": 14.899363825761245,
-      "projected_stage_at_common_maximum_hours": 9.602836044008543,
+      "projected_per_decision_p95_at_common_maximum_seconds": 15.27909952632617,
+      "projected_stage_at_common_maximum_hours": 9.629020760941359,
       "revised_ladder_high_budget": 32,
       "revised_ladder_projected_per_decision_p95_seconds": null,
       "revised_ladder_projected_stage_wall_hours": null,
@@ -13,21 +13,21 @@
     "2": {
       "maximum_common_budget": 2,
       "passes_feasibility_gate": false,
-      "projected_per_decision_p95_at_common_maximum_seconds": 2.128480546537321,
-      "projected_stage_at_common_maximum_hours": 1.709551520095556,
+      "projected_per_decision_p95_at_common_maximum_seconds": 2.1827285037608815,
+      "projected_stage_at_common_maximum_hours": 1.711976553338997,
       "revised_ladder_high_budget": 32,
       "revised_ladder_projected_per_decision_p95_seconds": null,
       "revised_ladder_projected_stage_wall_hours": null,
       "supports_predeclared_16_32_ladder": false
     },
     "30": {
-      "maximum_common_budget": 44,
+      "maximum_common_budget": 43,
       "passes_feasibility_gate": false,
-      "projected_per_decision_p95_at_common_maximum_seconds": 46.82657202382106,
-      "projected_stage_at_common_maximum_hours": 29.33604735379101,
+      "projected_per_decision_p95_at_common_maximum_seconds": 46.928662830858954,
+      "projected_stage_at_common_maximum_hours": 28.761877595980398,
       "revised_ladder_high_budget": 32,
-      "revised_ladder_projected_per_decision_p95_seconds": 34.055688744597134,
-      "revised_ladder_projected_stage_wall_hours": 21.44276282987802,
+      "revised_ladder_projected_per_decision_p95_seconds": 34.9236560601741,
+      "revised_ladder_projected_stage_wall_hours": 21.5045870723449,
       "supports_predeclared_16_32_ladder": true
     }
   },
@@ -69,7 +69,7 @@
   "decisions_inspected": false,
   "evidence_eligible": false,
   "format": "varde-evidence-feasibility-gate",
-  "measurement_wall_seconds": 134.70889383391477,
+  "measurement_wall_seconds": 134.65298962499946,
   "measurements": {
     "breath": {
       "board_size": 4,
@@ -77,64 +77,64 @@
       "midgame_state_hash": "c596b977d89389484a3efc551780c6304207251aa1c3fa4d2dca168c5e20c825",
       "native_standard": {
         "midgame": {
-          "maximum_seconds": 0.19767099991440773,
-          "mean_seconds": 0.18667304180562497,
-          "p95_seconds": 0.192451412579976,
+          "maximum_seconds": 0.18944587500300258,
+          "mean_seconds": 0.18747198350029065,
+          "p95_seconds": 0.18867539982893505,
           "repetitions": 10
         },
         "opening": {
-          "maximum_seconds": 0.20273574988823384,
-          "mean_seconds": 0.18951322087086736,
-          "p95_seconds": 0.1990025688195601,
+          "maximum_seconds": 0.1901322080520913,
+          "mean_seconds": 0.1865116997854784,
+          "p95_seconds": 0.18918117039138452,
           "repetitions": 10
         }
       },
       "projections": {
         "epsilon-greedy": {
-          "conservative_simulation_p95_seconds": 0.2448366746888496,
-          "conservative_simulation_seconds": 0.23255199571140112,
+          "conservative_simulation_p95_seconds": 0.2527967795205768,
+          "conservative_simulation_seconds": 0.23304043748648837,
           "decision_gates": {
             "10": {
-              "maximum_budget": 43,
-              "projected_full_stage_if_uniform_rate_hours": 12.388428620163973,
-              "projected_game_seconds": 743.3057172098383,
-              "projected_ruleset_policy_stage_hours": 1.032369051680331
+              "maximum_budget": 42,
+              "projected_full_stage_if_uniform_rate_hours": 12.128144626853299,
+              "projected_game_seconds": 727.6886776111979,
+              "projected_ruleset_policy_stage_hours": 1.0106787189044415
             },
             "2": {
               "maximum_budget": 8,
-              "projected_full_stage_if_uniform_rate_hours": 2.4923722359950577,
-              "projected_game_seconds": 149.54233415970347,
-              "projected_ruleset_policy_stage_hours": 0.2076976863329215
+              "projected_full_stage_if_uniform_rate_hours": 2.494641341891014,
+              "projected_game_seconds": 149.6784805134608,
+              "projected_ruleset_policy_stage_hours": 0.2078867784909178
             },
             "30": {
-              "maximum_budget": 129,
-              "projected_full_stage_if_uniform_rate_hours": 36.704452878407594,
-              "projected_game_seconds": 2202.267172704456,
-              "projected_ruleset_policy_stage_hours": 3.0587044065339666
+              "maximum_budget": 128,
+              "projected_full_stage_if_uniform_rate_hours": 36.495241171169674,
+              "projected_game_seconds": 2189.7144702701803,
+              "projected_ruleset_policy_stage_hours": 3.0412700975974727
             }
           }
         },
         "uniform": {
-          "conservative_simulation_p95_seconds": 0.22576816673972644,
-          "conservative_simulation_seconds": 0.2028303752071224,
+          "conservative_simulation_p95_seconds": 0.22243491454864853,
+          "conservative_simulation_seconds": 0.20296587909106165,
           "decision_gates": {
             "10": {
               "maximum_budget": 49,
-              "projected_full_stage_if_uniform_rate_hours": 12.314205119319155,
-              "projected_game_seconds": 738.8523071591493,
-              "projected_ruleset_policy_stage_hours": 1.0261837599432628
+              "projected_full_stage_if_uniform_rate_hours": 12.319796071688344,
+              "projected_game_seconds": 739.1877643013007,
+              "projected_ruleset_policy_stage_hours": 1.0266496726406955
             },
             "2": {
               "maximum_budget": 9,
-              "projected_full_stage_if_uniform_rate_hours": 2.4498878717461,
-              "projected_game_seconds": 146.993272304766,
-              "projected_ruleset_policy_stage_hours": 0.20415732264550834
+              "projected_full_stage_if_uniform_rate_hours": 2.4488888185597126,
+              "projected_game_seconds": 146.93332911358274,
+              "projected_ruleset_policy_stage_hours": 0.20407406821330937
             },
             "30": {
               "maximum_budget": 147,
-              "projected_full_stage_if_uniform_rate_hours": 36.48178237587314,
-              "projected_game_seconds": 2188.906942552388,
-              "projected_ruleset_policy_stage_hours": 3.040148531322761
+              "projected_full_stage_if_uniform_rate_hours": 36.50351884185349,
+              "projected_game_seconds": 2190.21113051121,
+              "projected_ruleset_policy_stage_hours": 3.0419599034877915
             }
           }
         }
@@ -149,29 +149,29 @@
       "single_simulation": {
         "epsilon-greedy": {
           "midgame": {
-            "maximum_seconds": 0.22243508300743997,
-            "mean_seconds": 0.21261385419638829,
-            "p95_seconds": 0.22230073953978718,
+            "maximum_seconds": 0.2245584159391001,
+            "mean_seconds": 0.21351106219226496,
+            "p95_seconds": 0.2239158722339198,
             "repetitions": 10
           },
           "opening": {
-            "maximum_seconds": 0.24664312496315688,
-            "mean_seconds": 0.23255199571140112,
-            "p95_seconds": 0.2448366746888496,
+            "maximum_seconds": 0.26040054205805063,
+            "mean_seconds": 0.23304043748648837,
+            "p95_seconds": 0.2527967795205768,
             "repetitions": 10
           }
         },
         "uniform": {
           "midgame": {
-            "maximum_seconds": 0.20632058300543576,
-            "mean_seconds": 0.17742992907296867,
-            "p95_seconds": 0.1975579768826719,
+            "maximum_seconds": 0.20604349998757243,
+            "mean_seconds": 0.17766804579878226,
+            "p95_seconds": 0.19780986843979914,
             "repetitions": 10
           },
           "opening": {
-            "maximum_seconds": 0.22844154201447964,
-            "mean_seconds": 0.2028303752071224,
-            "p95_seconds": 0.22576816673972644,
+            "maximum_seconds": 0.2243753329385072,
+            "mean_seconds": 0.20296587909106165,
+            "p95_seconds": 0.22243491454864853,
             "repetitions": 10
           }
         }
@@ -183,64 +183,64 @@
       "midgame_state_hash": "ba2d6250babf76ad03482c669a43a53a5a22001f5b6dd4161eb36caa888ef77a",
       "native_standard": {
         "midgame": {
-          "maximum_seconds": 0.2081240409752354,
-          "mean_seconds": 0.20595516661414875,
-          "p95_seconds": 0.20731902879779227,
+          "maximum_seconds": 0.20971324993297458,
+          "mean_seconds": 0.20777805828256532,
+          "p95_seconds": 0.20970156844123267,
           "repetitions": 10
         },
         "opening": {
-          "maximum_seconds": 0.2103542919503525,
-          "mean_seconds": 0.20297911671223118,
-          "p95_seconds": 0.21019360421341843,
+          "maximum_seconds": 0.20293087500613183,
+          "mean_seconds": 0.20136039589997382,
+          "p95_seconds": 0.20288038137368858,
           "repetitions": 10
         }
       },
       "projections": {
         "epsilon-greedy": {
-          "conservative_simulation_p95_seconds": 0.21827019216143526,
-          "conservative_simulation_seconds": 0.1932839000946842,
+          "conservative_simulation_p95_seconds": 0.21873221669811754,
+          "conservative_simulation_seconds": 0.19444717918522655,
           "decision_gates": {
             "10": {
               "maximum_budget": 51,
-              "projected_full_stage_if_uniform_rate_hours": 12.755402685554058,
-              "projected_game_seconds": 765.3241611332435,
-              "projected_ruleset_policy_stage_hours": 1.0629502237961714
+              "projected_full_stage_if_uniform_rate_hours": 12.83291046935416,
+              "projected_game_seconds": 769.9746281612496,
+              "projected_ruleset_policy_stage_hours": 1.0694092057795133
             },
             "2": {
               "maximum_budget": 10,
-              "projected_full_stage_if_uniform_rate_hours": 2.7109216073835554,
-              "projected_game_seconds": 162.65529644301333,
-              "projected_ruleset_policy_stage_hours": 0.2259101339486296
+              "projected_full_stage_if_uniform_rate_hours": 2.7279766850458977,
+              "projected_game_seconds": 163.67860110275387,
+              "projected_ruleset_policy_stage_hours": 0.2273313904204915
             },
             "30": {
-              "maximum_budget": 155,
-              "projected_full_stage_if_uniform_rate_hours": 38.23408639603533,
-              "projected_game_seconds": 2294.04518376212,
-              "projected_ruleset_policy_stage_hours": 3.186173866336278
+              "maximum_budget": 154,
+              "projected_full_stage_if_uniform_rate_hours": 38.21847582993344,
+              "projected_game_seconds": 2293.1085497960066,
+              "projected_ruleset_policy_stage_hours": 3.184872985827787
             }
           }
         },
         "uniform": {
-          "conservative_simulation_p95_seconds": 0.2578539937385358,
-          "conservative_simulation_seconds": 0.2145756334066391,
+          "conservative_simulation_p95_seconds": 0.25691019751830024,
+          "conservative_simulation_seconds": 0.21131200401578099,
           "decision_gates": {
             "10": {
-              "maximum_budget": 46,
-              "projected_full_stage_if_uniform_rate_hours": 12.771880479457527,
-              "projected_game_seconds": 766.3128287674516,
-              "projected_ruleset_policy_stage_hours": 1.0643233732881272
+              "maximum_budget": 47,
+              "projected_full_stage_if_uniform_rate_hours": 12.851743048103266,
+              "projected_game_seconds": 771.1045828861959,
+              "projected_ruleset_policy_stage_hours": 1.0709785873419388
             },
             "2": {
               "maximum_budget": 9,
-              "projected_full_stage_if_uniform_rate_hours": 2.708819711769669,
-              "projected_game_seconds": 162.52918270618014,
-              "projected_ruleset_policy_stage_hours": 0.22573497598080575
+              "projected_full_stage_if_uniform_rate_hours": 2.6739003746831727,
+              "projected_game_seconds": 160.43402248099036,
+              "projected_ruleset_policy_stage_hours": 0.22282503122359773
             },
             "30": {
-              "maximum_budget": 139,
-              "projected_full_stage_if_uniform_rate_hours": 38.065519706348624,
-              "projected_game_seconds": 2283.9311823809176,
-              "projected_ruleset_policy_stage_hours": 3.1721266421957193
+              "maximum_budget": 141,
+              "projected_full_stage_if_uniform_rate_hours": 38.02851176656349,
+              "projected_game_seconds": 2281.7107059938094,
+              "projected_ruleset_policy_stage_hours": 3.169042647213624
             }
           }
         }
@@ -255,29 +255,29 @@
       "single_simulation": {
         "epsilon-greedy": {
           "midgame": {
-            "maximum_seconds": 0.18967370805330575,
-            "mean_seconds": 0.15901730000041425,
-            "p95_seconds": 0.1873089769273065,
+            "maximum_seconds": 0.19233874999918044,
+            "mean_seconds": 0.15663444991223513,
+            "p95_seconds": 0.18771670639398508,
             "repetitions": 10
           },
           "opening": {
-            "maximum_seconds": 0.22284616704564542,
-            "mean_seconds": 0.1932839000946842,
-            "p95_seconds": 0.21827019216143526,
+            "maximum_seconds": 0.22287304198835045,
+            "mean_seconds": 0.19444717918522655,
+            "p95_seconds": 0.21873221669811754,
             "repetitions": 10
           }
         },
         "uniform": {
           "midgame": {
-            "maximum_seconds": 0.23872541694436222,
-            "mean_seconds": 0.2145756334066391,
-            "p95_seconds": 0.23355279839015564,
+            "maximum_seconds": 0.2395076670218259,
+            "mean_seconds": 0.20707044580485673,
+            "p95_seconds": 0.23195385455037465,
             "repetitions": 10
           },
           "opening": {
-            "maximum_seconds": 0.2681279999669641,
-            "mean_seconds": 0.21317310808226467,
-            "p95_seconds": 0.2578539937385358,
+            "maximum_seconds": 0.2664945409633219,
+            "mean_seconds": 0.21131200401578099,
+            "p95_seconds": 0.25691019751830024,
             "repetitions": 10
           }
         }
@@ -289,64 +289,64 @@
       "midgame_state_hash": "e59882d3d340bf2fd9b403d1a9c69615c9fb0884e00063143c89ab515c1872c6",
       "native_standard": {
         "midgame": {
-          "maximum_seconds": 0.10161195893306285,
-          "mean_seconds": 0.09365224180510268,
-          "p95_seconds": 0.1003474774362985,
+          "maximum_seconds": 0.09377649996895343,
+          "mean_seconds": 0.09268155009485782,
+          "p95_seconds": 0.09354731903877109,
           "repetitions": 10
         },
         "opening": {
-          "maximum_seconds": 0.08762804104480892,
-          "mean_seconds": 0.08089000410400331,
-          "p95_seconds": 0.08671594727784394,
+          "maximum_seconds": 0.08767908404115587,
+          "mean_seconds": 0.08091471681836993,
+          "p95_seconds": 0.0871211776509881,
           "repetitions": 10
         }
       },
       "projections": {
         "epsilon-greedy": {
-          "conservative_simulation_p95_seconds": 0.22887248556944542,
-          "conservative_simulation_seconds": 0.21685526678338646,
+          "conservative_simulation_p95_seconds": 0.22899548151763155,
+          "conservative_simulation_seconds": 0.2128739999141544,
           "decision_gates": {
             "10": {
               "maximum_budget": 46,
-              "projected_full_stage_if_uniform_rate_hours": 27.832379002008498,
-              "projected_game_seconds": 1669.9427401205098,
-              "projected_ruleset_policy_stage_hours": 2.3193649168340413
+              "projected_full_stage_if_uniform_rate_hours": 27.323471130471788,
+              "projected_game_seconds": 1639.4082678283073,
+              "projected_ruleset_policy_stage_hours": 2.2769559275393156
             },
             "2": {
               "maximum_budget": 9,
-              "projected_full_stage_if_uniform_rate_hours": 5.653687304459968,
-              "projected_game_seconds": 339.2212382675981,
-              "projected_ruleset_policy_stage_hours": 0.4711406087049973
+              "projected_full_stage_if_uniform_rate_hours": 5.551960184251578,
+              "projected_game_seconds": 333.1176110550947,
+              "projected_ruleset_policy_stage_hours": 0.4626633486876315
             },
             "30": {
-              "maximum_budget": 138,
-              "projected_full_stage_if_uniform_rate_hours": 82.97939619591294,
-              "projected_game_seconds": 4978.763771754777,
-              "projected_ruleset_policy_stage_hours": 6.914949682992746
+              "maximum_budget": 140,
+              "projected_full_stage_if_uniform_rate_hours": 82.63487731816639,
+              "projected_game_seconds": 4958.092639089983,
+              "projected_ruleset_policy_stage_hours": 6.886239776513865
             }
           }
         },
         "uniform": {
-          "conservative_simulation_p95_seconds": 0.5756176128226798,
-          "conservative_simulation_seconds": 0.46911904169246554,
+          "conservative_simulation_p95_seconds": 0.5772405750118196,
+          "conservative_simulation_seconds": 0.46765602501109244,
           "decision_gates": {
             "10": {
               "maximum_budget": 21,
-              "projected_full_stage_if_uniform_rate_hours": 27.49005797769966,
-              "projected_game_seconds": 1649.4034786619798,
-              "projected_ruleset_policy_stage_hours": 2.2908381648083056
+              "projected_full_stage_if_uniform_rate_hours": 27.40245036321859,
+              "projected_game_seconds": 1644.1470217931155,
+              "projected_ruleset_policy_stage_hours": 2.2835375302682164
             },
             "2": {
               "maximum_budget": 4,
-              "projected_full_stage_if_uniform_rate_hours": 5.445763276035965,
-              "projected_game_seconds": 326.7457965621579,
-              "projected_ruleset_policy_stage_hours": 0.45381360633633044
+              "projected_full_stage_if_uniform_rate_hours": 5.426904034593182,
+              "projected_game_seconds": 325.6142420755909,
+              "projected_ruleset_policy_stage_hours": 0.4522420028827651
             },
             "30": {
-              "maximum_budget": 63,
-              "projected_full_stage_if_uniform_rate_hours": 81.95243312298645,
-              "projected_game_seconds": 4917.145987379187,
-              "projected_ruleset_policy_stage_hours": 6.829369426915537
+              "maximum_budget": 64,
+              "projected_full_stage_if_uniform_rate_hours": 82.98765578268286,
+              "projected_game_seconds": 4979.259346960972,
+              "projected_ruleset_policy_stage_hours": 6.915637981890239
             }
           }
         }
@@ -361,29 +361,29 @@
       "single_simulation": {
         "epsilon-greedy": {
           "midgame": {
-            "maximum_seconds": 0.21346570807509124,
-            "mean_seconds": 0.1964567584451288,
-            "p95_seconds": 0.21076522069633938,
+            "maximum_seconds": 0.20916729199234396,
+            "mean_seconds": 0.1950984583934769,
+            "p95_seconds": 0.20871759214787744,
             "repetitions": 10
           },
           "opening": {
-            "maximum_seconds": 0.22948866698425263,
-            "mean_seconds": 0.21685526678338646,
-            "p95_seconds": 0.22887248556944542,
+            "maximum_seconds": 0.2331546249333769,
+            "mean_seconds": 0.2128739999141544,
+            "p95_seconds": 0.22899548151763155,
             "repetitions": 10
           }
         },
         "uniform": {
           "midgame": {
-            "maximum_seconds": 0.5629753340035677,
-            "mean_seconds": 0.43946493742987514,
-            "p95_seconds": 0.5432975274859927,
+            "maximum_seconds": 0.5790494579123333,
+            "mean_seconds": 0.44384004549356176,
+            "p95_seconds": 0.5545732829312328,
             "repetitions": 10
           },
           "opening": {
-            "maximum_seconds": 0.6004582500318065,
-            "mean_seconds": 0.46911904169246554,
-            "p95_seconds": 0.5756176128226798,
+            "maximum_seconds": 0.5979570000199601,
+            "mean_seconds": 0.46765602501109244,
+            "p95_seconds": 0.5772405750118196,
             "repetitions": 10
           }
         }
@@ -395,64 +395,64 @@
       "midgame_state_hash": "717c9527eaaac1cd2e4a8065b2369b5691307abf9a486dec9c1ec3c82dd4a666",
       "native_standard": {
         "midgame": {
-          "maximum_seconds": 0.3572339169913903,
-          "mean_seconds": 0.3399004167993553,
-          "p95_seconds": 0.35677109197713436,
+          "maximum_seconds": 0.3527995420154184,
+          "mean_seconds": 0.3413274376071058,
+          "p95_seconds": 0.3521881044958718,
           "repetitions": 10
         },
         "opening": {
-          "maximum_seconds": 0.3610008340328932,
-          "mean_seconds": 0.3388982083881274,
-          "p95_seconds": 0.35416507123154584,
+          "maximum_seconds": 0.34160000004339963,
+          "mean_seconds": 0.335343083308544,
+          "p95_seconds": 0.33966441864031366,
           "repetitions": 10
         }
       },
       "projections": {
         "epsilon-greedy": {
-          "conservative_simulation_p95_seconds": 0.6435192585748155,
-          "conservative_simulation_seconds": 0.6252269500750117,
+          "conservative_simulation_p95_seconds": 0.6680245291383471,
+          "conservative_simulation_seconds": 0.6458788626245223,
           "decision_gates": {
             "10": {
               "maximum_budget": 15,
-              "projected_full_stage_if_uniform_rate_hours": 14.407386670198118,
-              "projected_game_seconds": 864.4432002118871,
-              "projected_ruleset_policy_stage_hours": 1.200615555849843
+              "projected_full_stage_if_uniform_rate_hours": 14.86874913386535,
+              "projected_game_seconds": 892.124948031921,
+              "projected_ruleset_policy_stage_hours": 1.2390624278221125
             },
             "2": {
               "maximum_budget": 3,
-              "projected_full_stage_if_uniform_rate_hours": 3.284599228363659,
-              "projected_game_seconds": 197.07595370181954,
-              "projected_ruleset_policy_stage_hours": 0.27371660236363826
+              "projected_full_stage_if_uniform_rate_hours": 3.3785641677750977,
+              "projected_game_seconds": 202.71385006650587,
+              "projected_ruleset_policy_stage_hours": 0.28154701398125814
             },
             "30": {
-              "maximum_budget": 47,
-              "projected_full_stage_if_uniform_rate_hours": 44.06815318175668,
-              "projected_game_seconds": 2644.0891909054008,
-              "projected_ruleset_policy_stage_hours": 3.672346098479723
+              "maximum_budget": 46,
+              "projected_full_stage_if_uniform_rate_hours": 44.55172696293184,
+              "projected_game_seconds": 2673.10361777591,
+              "projected_ruleset_policy_stage_hours": 3.712643913577653
             }
           }
         },
         "uniform": {
-          "conservative_simulation_p95_seconds": 0.7363106059376149,
-          "conservative_simulation_seconds": 0.6198601582320407,
+          "conservative_simulation_p95_seconds": 0.7322529205644968,
+          "conservative_simulation_seconds": 0.6219141333480366,
           "decision_gates": {
             "10": {
               "maximum_budget": 16,
-              "projected_full_stage_if_uniform_rate_hours": 15.20698532116905,
-              "projected_game_seconds": 912.419119270143,
-              "projected_ruleset_policy_stage_hours": 1.2672487767640874
+              "projected_full_stage_if_uniform_rate_hours": 15.257821169267963,
+              "projected_game_seconds": 915.4692701560778,
+              "projected_ruleset_policy_stage_hours": 1.2714850974389968
             },
             "2": {
               "maximum_budget": 3,
-              "projected_full_stage_if_uniform_rate_hours": 3.2607304216420454,
-              "projected_game_seconds": 195.64382529852273,
-              "projected_ruleset_policy_stage_hours": 0.2717275351368371
+              "projected_full_stage_if_uniform_rate_hours": 3.2719810343179274,
+              "projected_game_seconds": 196.31886205907563,
+              "projected_ruleset_policy_stage_hours": 0.2726650861931606
             },
             "30": {
               "maximum_budget": 48,
-              "projected_full_stage_if_uniform_rate_hours": 44.61315122769707,
-              "projected_game_seconds": 2676.7890736618237,
-              "projected_ruleset_policy_stage_hours": 3.7177626023080887
+              "projected_full_stage_if_uniform_rate_hours": 44.761427655298824,
+              "projected_game_seconds": 2685.685659317929,
+              "projected_ruleset_policy_stage_hours": 3.7301189712749014
             }
           }
         }
@@ -467,29 +467,29 @@
       "single_simulation": {
         "epsilon-greedy": {
           "midgame": {
-            "maximum_seconds": 0.6276434590108693,
-            "mean_seconds": 0.6007592210080475,
-            "p95_seconds": 0.6236906774749513,
+            "maximum_seconds": 0.632520291954279,
+            "mean_seconds": 0.6056992377038114,
+            "p95_seconds": 0.6299817483406513,
             "repetitions": 10
           },
           "opening": {
-            "maximum_seconds": 0.6452432089718059,
-            "mean_seconds": 0.6252269500750117,
-            "p95_seconds": 0.6435192585748155,
+            "maximum_seconds": 0.6682351659983397,
+            "mean_seconds": 0.6458788626245223,
+            "p95_seconds": 0.6680245291383471,
             "repetitions": 10
           }
         },
         "uniform": {
           "midgame": {
-            "maximum_seconds": 0.6769339579623193,
-            "mean_seconds": 0.5647861334029585,
-            "p95_seconds": 0.6567296145367436,
+            "maximum_seconds": 0.6822555830003694,
+            "mean_seconds": 0.5730685832793825,
+            "p95_seconds": 0.6590382083144504,
             "repetitions": 10
           },
           "opening": {
-            "maximum_seconds": 0.8081426249118522,
-            "mean_seconds": 0.6198601582320407,
-            "p95_seconds": 0.7363106059376149,
+            "maximum_seconds": 0.7866947080474347,
+            "mean_seconds": 0.6219141333480366,
+            "p95_seconds": 0.7322529205644968,
             "repetitions": 10
           }
         }
@@ -501,64 +501,64 @@
       "midgame_state_hash": "266732504d4ec3918617df5302fad828f629517899ef1fedcabbe17ead32a36e",
       "native_standard": {
         "midgame": {
-          "maximum_seconds": 0.4771098749479279,
-          "mean_seconds": 0.451623295689933,
-          "p95_seconds": 0.4747917188622523,
+          "maximum_seconds": 0.4448781249811873,
+          "mean_seconds": 0.44278620851691813,
+          "p95_seconds": 0.44447691266541367,
           "repetitions": 10
         },
         "opening": {
-          "maximum_seconds": 0.4723511249758303,
-          "mean_seconds": 0.45287560001015664,
-          "p95_seconds": 0.46677558718365614,
+          "maximum_seconds": 0.45738291705492884,
+          "mean_seconds": 0.45031869182130324,
+          "p95_seconds": 0.45712011657305995,
           "repetitions": 10
         }
       },
       "projections": {
         "epsilon-greedy": {
-          "conservative_simulation_p95_seconds": 0.5318497418134939,
-          "conservative_simulation_seconds": 0.513310662494041,
+          "conservative_simulation_p95_seconds": 0.5381291481084189,
+          "conservative_simulation_seconds": 0.5138220957829617,
           "decision_gates": {
             "10": {
               "maximum_budget": 19,
-              "projected_full_stage_if_uniform_rate_hours": 20.938854914476046,
-              "projected_game_seconds": 1256.3312948685627,
-              "projected_ruleset_policy_stage_hours": 1.744904576206337
+              "projected_full_stage_if_uniform_rate_hours": 20.953545513166194,
+              "projected_game_seconds": 1257.2127307899716,
+              "projected_ruleset_policy_stage_hours": 1.7461287927638496
             },
             "2": {
               "maximum_budget": 3,
-              "projected_full_stage_if_uniform_rate_hours": 4.088576900338326,
-              "projected_game_seconds": 245.3146140202996,
-              "projected_ruleset_policy_stage_hours": 0.34071474169486055
+              "projected_full_stage_if_uniform_rate_hours": 4.0864788489308355,
+              "projected_game_seconds": 245.18873093585015,
+              "projected_ruleset_policy_stage_hours": 0.3405399040775697
             },
             "30": {
               "maximum_budget": 58,
-              "projected_full_stage_if_uniform_rate_hours": 62.01140757393673,
-              "projected_game_seconds": 3720.684454436204,
-              "projected_ruleset_policy_stage_hours": 5.167617297828061
+              "projected_full_stage_if_uniform_rate_hours": 62.06702050723986,
+              "projected_game_seconds": 3724.021230434392,
+              "projected_ruleset_policy_stage_hours": 5.172251708936655
             }
           }
         },
         "uniform": {
-          "conservative_simulation_p95_seconds": 1.0642402732686604,
-          "conservative_simulation_seconds": 0.6722086334251799,
+          "conservative_simulation_p95_seconds": 1.0913642518804407,
+          "conservative_simulation_seconds": 0.6833642582874745,
           "decision_gates": {
             "10": {
               "maximum_budget": 14,
-              "projected_full_stage_if_uniform_rate_hours": 20.237222420103418,
-              "projected_game_seconds": 1214.233345206205,
-              "projected_ruleset_policy_stage_hours": 1.6864352016752848
+              "projected_full_stage_if_uniform_rate_hours": 20.552403228263934,
+              "projected_game_seconds": 1233.144193695836,
+              "projected_ruleset_policy_stage_hours": 1.7127002690219946
             },
             "2": {
               "maximum_budget": 2,
-              "projected_full_stage_if_uniform_rate_hours": 3.687445865175493,
-              "projected_game_seconds": 221.24675191052955,
-              "projected_ruleset_policy_stage_hours": 0.30728715543129104
+              "projected_full_stage_if_uniform_rate_hours": 3.7279751892263104,
+              "projected_game_seconds": 223.67851135357864,
+              "projected_ruleset_policy_stage_hours": 0.3106645991021926
             },
             "30": {
-              "maximum_budget": 44,
-              "projected_full_stage_if_uniform_rate_hours": 61.61166380742324,
-              "projected_game_seconds": 3696.6998284453944,
-              "projected_ruleset_policy_stage_hours": 5.1343053172852695
+              "maximum_budget": 43,
+              "projected_full_stage_if_uniform_rate_hours": 61.211437655938184,
+              "projected_game_seconds": 3672.686259356291,
+              "projected_ruleset_policy_stage_hours": 5.100953137994849
             }
           }
         }
@@ -573,29 +573,29 @@
       "single_simulation": {
         "epsilon-greedy": {
           "midgame": {
-            "maximum_seconds": 0.5320404579397291,
-            "mean_seconds": 0.49098950418410825,
-            "p95_seconds": 0.5194466832617763,
+            "maximum_seconds": 0.5523682920029387,
+            "mean_seconds": 0.4971522373147309,
+            "p95_seconds": 0.5381291481084189,
             "repetitions": 10
           },
           "opening": {
-            "maximum_seconds": 0.5332574169151485,
-            "mean_seconds": 0.513310662494041,
-            "p95_seconds": 0.5318497418134939,
+            "maximum_seconds": 0.5306491249939427,
+            "mean_seconds": 0.5138220957829617,
+            "p95_seconds": 0.5295694624714088,
             "repetitions": 10
           }
         },
         "uniform": {
           "midgame": {
-            "maximum_seconds": 1.1056924170115963,
-            "mean_seconds": 0.6722086334251799,
-            "p95_seconds": 1.0642402732686604,
+            "maximum_seconds": 1.1094263329869136,
+            "mean_seconds": 0.6833642582874745,
+            "p95_seconds": 1.0913642518804407,
             "repetitions": 10
           },
           "opening": {
-            "maximum_seconds": 0.6290681249229237,
-            "mean_seconds": 0.5479882416781038,
-            "p95_seconds": 0.6276710810605437,
+            "maximum_seconds": 0.6379703329876065,
+            "mean_seconds": 0.5508170791203156,
+            "p95_seconds": 0.6320669521926902,
             "repetitions": 10
           }
         }
@@ -607,64 +607,64 @@
       "midgame_state_hash": "1c5c449f20b58e9579b7c95c787b12e0ffb6273f2e1c7357841d3e72cbd66176",
       "native_standard": {
         "midgame": {
-          "maximum_seconds": 0.12807062501087785,
-          "mean_seconds": 0.1172970040817745,
-          "p95_seconds": 0.12670412485604174,
+          "maximum_seconds": 0.11653495801147074,
+          "mean_seconds": 0.1152030583936721,
+          "p95_seconds": 0.11621393971145152,
           "repetitions": 10
         },
         "opening": {
-          "maximum_seconds": 0.09606420807540417,
-          "mean_seconds": 0.09451422513229772,
-          "p95_seconds": 0.09541907724342309,
+          "maximum_seconds": 0.09607999993022531,
+          "mean_seconds": 0.09514682900626212,
+          "p95_seconds": 0.09602808121708221,
           "repetitions": 10
         }
       },
       "projections": {
         "epsilon-greedy": {
-          "conservative_simulation_p95_seconds": 0.2308084087271709,
-          "conservative_simulation_seconds": 0.21111145422328265,
+          "conservative_simulation_p95_seconds": 0.22365482086897828,
+          "conservative_simulation_seconds": 0.2075171416741796,
           "decision_gates": {
             "10": {
-              "maximum_budget": 47,
-              "projected_full_stage_if_uniform_rate_hours": 15.46088444296713,
-              "projected_game_seconds": 927.6530665780278,
-              "projected_ruleset_policy_stage_hours": 1.2884070369139278
+              "maximum_budget": 48,
+              "projected_full_stage_if_uniform_rate_hours": 15.517079822481612,
+              "projected_game_seconds": 931.0247893488967,
+              "projected_ruleset_policy_stage_hours": 1.2930899852068007
             },
             "2": {
               "maximum_budget": 9,
-              "projected_full_stage_if_uniform_rate_hours": 3.1066421418206307,
-              "projected_game_seconds": 186.39852850923782,
-              "projected_ruleset_policy_stage_hours": 0.2588868451517192
+              "projected_full_stage_if_uniform_rate_hours": 3.0536002935303843,
+              "projected_game_seconds": 183.21601761182308,
+              "projected_ruleset_policy_stage_hours": 0.25446669112753206
             },
             "30": {
-              "maximum_budget": 142,
-              "projected_full_stage_if_uniform_rate_hours": 46.34649019583338,
-              "projected_game_seconds": 2780.789411750003,
-              "projected_ruleset_policy_stage_hours": 3.862207516319449
+              "maximum_budget": 144,
+              "projected_full_stage_if_uniform_rate_hours": 46.19641404759233,
+              "projected_game_seconds": 2771.7848428555394,
+              "projected_ruleset_policy_stage_hours": 3.8497011706326933
             }
           }
         },
         "uniform": {
-          "conservative_simulation_p95_seconds": 0.2559297983418219,
-          "conservative_simulation_seconds": 0.22570074578979984,
+          "conservative_simulation_p95_seconds": 0.2501802708022296,
+          "conservative_simulation_seconds": 0.2183299791882746,
           "decision_gates": {
             "10": {
-              "maximum_budget": 44,
-              "projected_full_stage_if_uniform_rate_hours": 15.474119921002771,
-              "projected_game_seconds": 928.4471952601663,
-              "projected_ruleset_policy_stage_hours": 1.2895099934168976
+              "maximum_budget": 45,
+              "projected_full_stage_if_uniform_rate_hours": 15.307680267673685,
+              "projected_game_seconds": 918.460816060421,
+              "projected_ruleset_policy_stage_hours": 1.2756400223061402
             },
             "2": {
-              "maximum_budget": 8,
-              "projected_full_stage_if_uniform_rate_hours": 2.961270574416267,
-              "projected_game_seconds": 177.676234464976,
-              "projected_ruleset_policy_stage_hours": 0.24677254786802222
+              "maximum_budget": 9,
+              "projected_full_stage_if_uniform_rate_hours": 3.2034662214757414,
+              "projected_game_seconds": 192.20797328854448,
+              "projected_ruleset_policy_stage_hours": 0.26695551845631177
             },
             "30": {
-              "maximum_budget": 132,
-              "projected_full_stage_if_uniform_rate_hours": 46.06108499043645,
-              "projected_game_seconds": 2763.6650994261868,
-              "projected_ruleset_policy_stage_hours": 3.8384237492030375
+              "maximum_budget": 137,
+              "projected_full_stage_if_uniform_rate_hours": 46.24067171906843,
+              "projected_game_seconds": 2774.4403031441057,
+              "projected_ruleset_policy_stage_hours": 3.853389309922369
             }
           }
         }
@@ -679,29 +679,29 @@
       "single_simulation": {
         "epsilon-greedy": {
           "midgame": {
-            "maximum_seconds": 0.2290098340017721,
-            "mean_seconds": 0.20956118360627443,
-            "p95_seconds": 0.22544804619392378,
+            "maximum_seconds": 0.22029166703578085,
+            "mean_seconds": 0.2038486417150125,
+            "p95_seconds": 0.21872026701457797,
             "repetitions": 10
           },
           "opening": {
-            "maximum_seconds": 0.23376708407886326,
-            "mean_seconds": 0.21111145422328265,
-            "p95_seconds": 0.2308084087271709,
+            "maximum_seconds": 0.2251415839418769,
+            "mean_seconds": 0.2075171416741796,
+            "p95_seconds": 0.22365482086897828,
             "repetitions": 10
           }
         },
         "uniform": {
           "midgame": {
-            "maximum_seconds": 0.25616200000513345,
-            "mean_seconds": 0.19400614572223276,
-            "p95_seconds": 0.24020188736612905,
+            "maximum_seconds": 0.25066870904993266,
+            "mean_seconds": 0.19088748340727762,
+            "p95_seconds": 0.23330101523897606,
             "repetitions": 10
           },
           "opening": {
-            "maximum_seconds": 0.26139266695827246,
-            "mean_seconds": 0.22570074578979984,
-            "p95_seconds": 0.2559297983418219,
+            "maximum_seconds": 0.25795983301941305,
+            "mean_seconds": 0.2183299791882746,
+            "p95_seconds": 0.2501802708022296,
             "repetitions": 10
           }
         }
@@ -709,20 +709,20 @@
     }
   },
   "outcomes_inspected": false,
-  "payload_hash": "6e6cb3d2e1fe0f00248cdf7ce1792cb7d2fd1b548518e9b181c8043767eef49c",
+  "payload_hash": "556b1f76ab8152abb3a7763de9f82d367224eb6f027132df18af2f11c51094d3",
   "provenance": {
     "engine_sha256": {
-      "actions.py": "a2f5e102d54e10b483501261aafc25951eccbd52e5ce6dbbfad9a2d38ac86ee1",
-      "mcts.py": "f00895fef17b3c8743a3261e53e156635d136323a0ddbd52fe7ff997e1843074",
+      "actions.py": "95742a2f37e93e629b53cb85824fa873ca8db739ad03286eaacb97a58f04c71e",
+      "mcts.py": "db96420d12938dddf0d8f7a0ff433f3cfd0db9d070492c13ed646eb7103dc78c",
       "native_evaluators.py": "14c8212aba63828e43f1b57f4d53606a80a972ce81fc81c2f29ca5dd98d090bb",
       "opponent.py": "19e15089187d7cbfc9a7cbb87519a665a4351e564b0d867835c139e66cbfb431",
-      "varde.py": "d5742335392a6cbe0acc319d97a3efae01ec06a3f9bfe58f81649ffed2235082"
+      "varde.py": "5d7ab246126cad8f6a211f15a44f2b9cfae98813a093d27c5f1c2629dbdf8a01"
     },
     "harness_sha256": "771b166fff81400c58e2ae0711b475b09f5e5d25b6fc4b8cf633a469da89fd48",
-    "mcts_agent_hash": "1b50866eae7fbac42e42e38b69e2d70414d064dbbd50ee547f2cf9d64eb2e7ff",
+    "mcts_agent_hash": "63cdec59394646f4bddd8afe33245331b1f55f922d79523030722bbb8d496e97",
     "native_evaluator_hash": "6f64d8cb8238b61fd5e719c001c21a695da45122a46c3802c5b9926c5dad2282",
     "ruleset_registry_hash": "e9517bccf1093f43017417d59613fd0af57af8e290e2bccd55f6b38fa227d7ad",
-    "source_commit": "663012ebedb1c119229eb36c345224c536ecca7b"
+    "source_commit": "06b7263d9457a67c17b84a6366e06f07cdb5ef36"
   },
   "purpose": "Timing and game-length feasibility only",
   "version": 1

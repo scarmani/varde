@@ -75,9 +75,9 @@ timings and random-game move counts, and atomically write the generated JSON.
 
 **Acceptance criteria:**
 
-- [x] All configured timing and length cells completed in 134.71 seconds.
+- [x] All configured timing and length cells completed in 134.65 seconds.
 - [x] Artifact pins commit and code hashes and validates payload hash
-  `6e6cb3d2e1fe0f00248cdf7ce1792cb7d2fd1b548518e9b181c8043767eef49c`.
+  `556b1f76ab8152abb3a7763de9f82d367224eb6f027132df18af2f11c51094d3`.
 - [x] `evidence_eligible`, `outcomes_inspected`, and `decisions_inspected` are
   all false.
 - [x] Per-ruleset budgets and aggregate Stage-A projections are finite.
@@ -95,28 +95,28 @@ raised from two to ten so the reported p95 is not based on only two samples.
 
 ### Official measurement
 
-The retained run used source `663012e`, harness SHA-256
+The refreshed retained run used MCTS v2 source `06b7263`, harness SHA-256
 `771b166fff81400c58e2ae0711b475b09f5e5d25b6fc4b8cf633a469da89fd48`,
-ten repetitions per cell, and 134.71 seconds total wall time.
+ten repetitions per cell, and 134.65 seconds total wall time.
 
 | Ruleset | Native mean max | Uniform sim mean max | Light sim mean max | Random moves mean |
 |---|---:|---:|---:|---:|
-| Classic | 0.094s | 0.469s | 0.217s | 331.7 |
-| Rosette | 0.117s | 0.226s | 0.211s | 184.8 |
-| Breath | 0.190s | 0.203s | 0.233s | 145.9 |
-| Breath-run | 0.206s | 0.215s | 0.193s | 152.1 |
-| Gjerde | 0.340s | 0.620s | 0.625s | 177.9 |
-| Gjerde-Go | 0.453s | 0.672s | 0.513s | 246.2 |
+| Classic | 0.093s | 0.468s | 0.213s | 331.7 |
+| Rosette | 0.115s | 0.218s | 0.208s | 184.8 |
+| Breath | 0.187s | 0.203s | 0.233s | 145.9 |
+| Breath-run | 0.208s | 0.211s | 0.194s | 152.1 |
+| Gjerde | 0.341s | 0.622s | 0.646s | 177.9 |
+| Gjerde-Go | 0.450s | 0.683s | 0.514s | 246.2 |
 
 Aggregate common maximum budgets are 2 at the 2-second gate, 14 at the
-10-second gate, and 44 at the 30-second gate. At those maxima, projected Stage
-A is respectively 1.71h, 9.60h and 29.34h; p95 is 2.13s, 14.90s and 46.83s.
+10-second gate, and 43 at the 30-second gate. At those maxima, projected Stage
+A is respectively 1.71h, 9.63h and 28.76h; p95 is 2.18s, 15.28s and 46.93s.
 
 The predeclared 16/32 diagnostic ladder is available at the 30-second mean
-gate and projects to 21.44h, but fails because p95 is 34.06s. A post-measurement
-timing derivation shows 12/24 would project to 16.18h and 25.54s p95. That is an
+gate and projects to 21.50h, but fails because p95 is 34.92s. A post-measurement
+timing derivation shows 12/24 would project to 16.23h and 26.19s p95. That is an
 operationally feasible diagnostic ladder, not strategic-depth evidence. A
-480-game native-only workload projects to 0.79h on eight workers.
+480-game native-only workload projects to 0.78h on eight workers.
 
 The measurement artifact was committed as `2decf82`.
 
@@ -133,8 +133,8 @@ branch, and publish a review-ready PR without launching calibration.
 - [x] Redesign records measured values, supported claims and blocked claims.
 - [x] The derived 12/24 diagnostic ladder is explicitly non-depth and never
   pooled with another manifest or agent revision.
-- [x] Local 210-test suite, changed-file lint, compilation and diff checks pass;
-  exact-head push and pull-request CI runs both passed at `8fc2236`.
+- [x] Refreshed local 221-test suite, compilation and diff checks pass on the
+  merged MCTS v2 baseline; exact-head CI follows the refresh push.
 - [x] PR #15 received the result and bounded next recommendation:
   https://github.com/scarmani/varde/pull/15#issuecomment-4985930518
 
@@ -142,8 +142,6 @@ branch, and publish a review-ready PR without launching calibration.
 
 ### Closure
 
-PR #15 is mergeable and review-ready. No rule, scoring, MCTS, evaluator, live
-game or calibration state changed. No calibration outcome was generated or
-inspected. User review remains required before merge; if PR #14 changes the
-selected MCTS hash, this outcome-blind gate must be regenerated before a new
-manifest freezes.
+PR #15 now carries the regenerated MCTS v2 timing artifact. No rule, scoring,
+MCTS, evaluator, live game or calibration state changed. No calibration outcome
+was generated or inspected. A new manifest must still freeze before any run.
