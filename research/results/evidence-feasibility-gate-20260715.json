@@ -1,0 +1,729 @@
+{
+  "aggregate_decision_gates": {
+    "10": {
+      "maximum_common_budget": 14,
+      "passes_feasibility_gate": false,
+      "projected_per_decision_p95_at_common_maximum_seconds": 14.899363825761245,
+      "projected_stage_at_common_maximum_hours": 9.602836044008543,
+      "revised_ladder_high_budget": 32,
+      "revised_ladder_projected_per_decision_p95_seconds": null,
+      "revised_ladder_projected_stage_wall_hours": null,
+      "supports_predeclared_16_32_ladder": false
+    },
+    "2": {
+      "maximum_common_budget": 2,
+      "passes_feasibility_gate": false,
+      "projected_per_decision_p95_at_common_maximum_seconds": 2.128480546537321,
+      "projected_stage_at_common_maximum_hours": 1.709551520095556,
+      "revised_ladder_high_budget": 32,
+      "revised_ladder_projected_per_decision_p95_seconds": null,
+      "revised_ladder_projected_stage_wall_hours": null,
+      "supports_predeclared_16_32_ladder": false
+    },
+    "30": {
+      "maximum_common_budget": 44,
+      "passes_feasibility_gate": false,
+      "projected_per_decision_p95_at_common_maximum_seconds": 46.82657202382106,
+      "projected_stage_at_common_maximum_hours": 29.33604735379101,
+      "revised_ladder_high_budget": 32,
+      "revised_ladder_projected_per_decision_p95_seconds": 34.055688744597134,
+      "revised_ladder_projected_stage_wall_hours": 21.44276282987802,
+      "supports_predeclared_16_32_ladder": true
+    }
+  },
+  "claim_limits": {
+    "balance_claim_blocked": true,
+    "calibration_relaunch_blocked": true,
+    "old_and_redesigned_results_must_not_be_pooled": true,
+    "strategic_depth_claim_blocked": true
+  },
+  "configuration": {
+    "board_size": 4,
+    "decision_gates_seconds": [
+      2,
+      10,
+      30
+    ],
+    "maximum_measurement_wall_seconds": 1800.0,
+    "maximum_stage_hours": 24.0,
+    "midgame_prefix_moves": 12,
+    "repetitions_per_cell": 10,
+    "revised_diagnostic_ladder": [
+      16,
+      32
+    ],
+    "rulesets": [
+      "classic",
+      "rosette",
+      "breath",
+      "breath-run",
+      "gjerde",
+      "gjerde-go"
+    ],
+    "seed": 20260715,
+    "stage_games_per_ruleset_policy": 40,
+    "stage_total_games": 480,
+    "stage_workers": 8
+  },
+  "created_date": "2026-07-15",
+  "decisions_inspected": false,
+  "evidence_eligible": false,
+  "format": "varde-evidence-feasibility-gate",
+  "measurement_wall_seconds": 134.70889383391477,
+  "measurements": {
+    "breath": {
+      "board_size": 4,
+      "midgame_prefix_moves": 12,
+      "midgame_state_hash": "c596b977d89389484a3efc551780c6304207251aa1c3fa4d2dca168c5e20c825",
+      "native_standard": {
+        "midgame": {
+          "maximum_seconds": 0.19767099991440773,
+          "mean_seconds": 0.18667304180562497,
+          "p95_seconds": 0.192451412579976,
+          "repetitions": 10
+        },
+        "opening": {
+          "maximum_seconds": 0.20273574988823384,
+          "mean_seconds": 0.18951322087086736,
+          "p95_seconds": 0.1990025688195601,
+          "repetitions": 10
+        }
+      },
+      "projections": {
+        "epsilon-greedy": {
+          "conservative_simulation_p95_seconds": 0.2448366746888496,
+          "conservative_simulation_seconds": 0.23255199571140112,
+          "decision_gates": {
+            "10": {
+              "maximum_budget": 43,
+              "projected_full_stage_if_uniform_rate_hours": 12.388428620163973,
+              "projected_game_seconds": 743.3057172098383,
+              "projected_ruleset_policy_stage_hours": 1.032369051680331
+            },
+            "2": {
+              "maximum_budget": 8,
+              "projected_full_stage_if_uniform_rate_hours": 2.4923722359950577,
+              "projected_game_seconds": 149.54233415970347,
+              "projected_ruleset_policy_stage_hours": 0.2076976863329215
+            },
+            "30": {
+              "maximum_budget": 129,
+              "projected_full_stage_if_uniform_rate_hours": 36.704452878407594,
+              "projected_game_seconds": 2202.267172704456,
+              "projected_ruleset_policy_stage_hours": 3.0587044065339666
+            }
+          }
+        },
+        "uniform": {
+          "conservative_simulation_p95_seconds": 0.22576816673972644,
+          "conservative_simulation_seconds": 0.2028303752071224,
+          "decision_gates": {
+            "10": {
+              "maximum_budget": 49,
+              "projected_full_stage_if_uniform_rate_hours": 12.314205119319155,
+              "projected_game_seconds": 738.8523071591493,
+              "projected_ruleset_policy_stage_hours": 1.0261837599432628
+            },
+            "2": {
+              "maximum_budget": 9,
+              "projected_full_stage_if_uniform_rate_hours": 2.4498878717461,
+              "projected_game_seconds": 146.993272304766,
+              "projected_ruleset_policy_stage_hours": 0.20415732264550834
+            },
+            "30": {
+              "maximum_budget": 147,
+              "projected_full_stage_if_uniform_rate_hours": 36.48178237587314,
+              "projected_game_seconds": 2188.906942552388,
+              "projected_ruleset_policy_stage_hours": 3.040148531322761
+            }
+          }
+        }
+      },
+      "random_game_length": {
+        "maximum_moves": 180,
+        "mean_moves": 145.9,
+        "minimum_moves": 110,
+        "repetitions": 10
+      },
+      "rules_revision": "breath-0.1",
+      "single_simulation": {
+        "epsilon-greedy": {
+          "midgame": {
+            "maximum_seconds": 0.22243508300743997,
+            "mean_seconds": 0.21261385419638829,
+            "p95_seconds": 0.22230073953978718,
+            "repetitions": 10
+          },
+          "opening": {
+            "maximum_seconds": 0.24664312496315688,
+            "mean_seconds": 0.23255199571140112,
+            "p95_seconds": 0.2448366746888496,
+            "repetitions": 10
+          }
+        },
+        "uniform": {
+          "midgame": {
+            "maximum_seconds": 0.20632058300543576,
+            "mean_seconds": 0.17742992907296867,
+            "p95_seconds": 0.1975579768826719,
+            "repetitions": 10
+          },
+          "opening": {
+            "maximum_seconds": 0.22844154201447964,
+            "mean_seconds": 0.2028303752071224,
+            "p95_seconds": 0.22576816673972644,
+            "repetitions": 10
+          }
+        }
+      }
+    },
+    "breath-run": {
+      "board_size": 4,
+      "midgame_prefix_moves": 12,
+      "midgame_state_hash": "ba2d6250babf76ad03482c669a43a53a5a22001f5b6dd4161eb36caa888ef77a",
+      "native_standard": {
+        "midgame": {
+          "maximum_seconds": 0.2081240409752354,
+          "mean_seconds": 0.20595516661414875,
+          "p95_seconds": 0.20731902879779227,
+          "repetitions": 10
+        },
+        "opening": {
+          "maximum_seconds": 0.2103542919503525,
+          "mean_seconds": 0.20297911671223118,
+          "p95_seconds": 0.21019360421341843,
+          "repetitions": 10
+        }
+      },
+      "projections": {
+        "epsilon-greedy": {
+          "conservative_simulation_p95_seconds": 0.21827019216143526,
+          "conservative_simulation_seconds": 0.1932839000946842,
+          "decision_gates": {
+            "10": {
+              "maximum_budget": 51,
+              "projected_full_stage_if_uniform_rate_hours": 12.755402685554058,
+              "projected_game_seconds": 765.3241611332435,
+              "projected_ruleset_policy_stage_hours": 1.0629502237961714
+            },
+            "2": {
+              "maximum_budget": 10,
+              "projected_full_stage_if_uniform_rate_hours": 2.7109216073835554,
+              "projected_game_seconds": 162.65529644301333,
+              "projected_ruleset_policy_stage_hours": 0.2259101339486296
+            },
+            "30": {
+              "maximum_budget": 155,
+              "projected_full_stage_if_uniform_rate_hours": 38.23408639603533,
+              "projected_game_seconds": 2294.04518376212,
+              "projected_ruleset_policy_stage_hours": 3.186173866336278
+            }
+          }
+        },
+        "uniform": {
+          "conservative_simulation_p95_seconds": 0.2578539937385358,
+          "conservative_simulation_seconds": 0.2145756334066391,
+          "decision_gates": {
+            "10": {
+              "maximum_budget": 46,
+              "projected_full_stage_if_uniform_rate_hours": 12.771880479457527,
+              "projected_game_seconds": 766.3128287674516,
+              "projected_ruleset_policy_stage_hours": 1.0643233732881272
+            },
+            "2": {
+              "maximum_budget": 9,
+              "projected_full_stage_if_uniform_rate_hours": 2.708819711769669,
+              "projected_game_seconds": 162.52918270618014,
+              "projected_ruleset_policy_stage_hours": 0.22573497598080575
+            },
+            "30": {
+              "maximum_budget": 139,
+              "projected_full_stage_if_uniform_rate_hours": 38.065519706348624,
+              "projected_game_seconds": 2283.9311823809176,
+              "projected_ruleset_policy_stage_hours": 3.1721266421957193
+            }
+          }
+        }
+      },
+      "random_game_length": {
+        "maximum_moves": 205,
+        "mean_moves": 152.1,
+        "minimum_moves": 124,
+        "repetitions": 10
+      },
+      "rules_revision": "breath-run-0.1",
+      "single_simulation": {
+        "epsilon-greedy": {
+          "midgame": {
+            "maximum_seconds": 0.18967370805330575,
+            "mean_seconds": 0.15901730000041425,
+            "p95_seconds": 0.1873089769273065,
+            "repetitions": 10
+          },
+          "opening": {
+            "maximum_seconds": 0.22284616704564542,
+            "mean_seconds": 0.1932839000946842,
+            "p95_seconds": 0.21827019216143526,
+            "repetitions": 10
+          }
+        },
+        "uniform": {
+          "midgame": {
+            "maximum_seconds": 0.23872541694436222,
+            "mean_seconds": 0.2145756334066391,
+            "p95_seconds": 0.23355279839015564,
+            "repetitions": 10
+          },
+          "opening": {
+            "maximum_seconds": 0.2681279999669641,
+            "mean_seconds": 0.21317310808226467,
+            "p95_seconds": 0.2578539937385358,
+            "repetitions": 10
+          }
+        }
+      }
+    },
+    "classic": {
+      "board_size": 4,
+      "midgame_prefix_moves": 12,
+      "midgame_state_hash": "e59882d3d340bf2fd9b403d1a9c69615c9fb0884e00063143c89ab515c1872c6",
+      "native_standard": {
+        "midgame": {
+          "maximum_seconds": 0.10161195893306285,
+          "mean_seconds": 0.09365224180510268,
+          "p95_seconds": 0.1003474774362985,
+          "repetitions": 10
+        },
+        "opening": {
+          "maximum_seconds": 0.08762804104480892,
+          "mean_seconds": 0.08089000410400331,
+          "p95_seconds": 0.08671594727784394,
+          "repetitions": 10
+        }
+      },
+      "projections": {
+        "epsilon-greedy": {
+          "conservative_simulation_p95_seconds": 0.22887248556944542,
+          "conservative_simulation_seconds": 0.21685526678338646,
+          "decision_gates": {
+            "10": {
+              "maximum_budget": 46,
+              "projected_full_stage_if_uniform_rate_hours": 27.832379002008498,
+              "projected_game_seconds": 1669.9427401205098,
+              "projected_ruleset_policy_stage_hours": 2.3193649168340413
+            },
+            "2": {
+              "maximum_budget": 9,
+              "projected_full_stage_if_uniform_rate_hours": 5.653687304459968,
+              "projected_game_seconds": 339.2212382675981,
+              "projected_ruleset_policy_stage_hours": 0.4711406087049973
+            },
+            "30": {
+              "maximum_budget": 138,
+              "projected_full_stage_if_uniform_rate_hours": 82.97939619591294,
+              "projected_game_seconds": 4978.763771754777,
+              "projected_ruleset_policy_stage_hours": 6.914949682992746
+            }
+          }
+        },
+        "uniform": {
+          "conservative_simulation_p95_seconds": 0.5756176128226798,
+          "conservative_simulation_seconds": 0.46911904169246554,
+          "decision_gates": {
+            "10": {
+              "maximum_budget": 21,
+              "projected_full_stage_if_uniform_rate_hours": 27.49005797769966,
+              "projected_game_seconds": 1649.4034786619798,
+              "projected_ruleset_policy_stage_hours": 2.2908381648083056
+            },
+            "2": {
+              "maximum_budget": 4,
+              "projected_full_stage_if_uniform_rate_hours": 5.445763276035965,
+              "projected_game_seconds": 326.7457965621579,
+              "projected_ruleset_policy_stage_hours": 0.45381360633633044
+            },
+            "30": {
+              "maximum_budget": 63,
+              "projected_full_stage_if_uniform_rate_hours": 81.95243312298645,
+              "projected_game_seconds": 4917.145987379187,
+              "projected_ruleset_policy_stage_hours": 6.829369426915537
+            }
+          }
+        }
+      },
+      "random_game_length": {
+        "maximum_moves": 473,
+        "mean_moves": 331.7,
+        "minimum_moves": 233,
+        "repetitions": 10
+      },
+      "rules_revision": "classic-1.3",
+      "single_simulation": {
+        "epsilon-greedy": {
+          "midgame": {
+            "maximum_seconds": 0.21346570807509124,
+            "mean_seconds": 0.1964567584451288,
+            "p95_seconds": 0.21076522069633938,
+            "repetitions": 10
+          },
+          "opening": {
+            "maximum_seconds": 0.22948866698425263,
+            "mean_seconds": 0.21685526678338646,
+            "p95_seconds": 0.22887248556944542,
+            "repetitions": 10
+          }
+        },
+        "uniform": {
+          "midgame": {
+            "maximum_seconds": 0.5629753340035677,
+            "mean_seconds": 0.43946493742987514,
+            "p95_seconds": 0.5432975274859927,
+            "repetitions": 10
+          },
+          "opening": {
+            "maximum_seconds": 0.6004582500318065,
+            "mean_seconds": 0.46911904169246554,
+            "p95_seconds": 0.5756176128226798,
+            "repetitions": 10
+          }
+        }
+      }
+    },
+    "gjerde": {
+      "board_size": 4,
+      "midgame_prefix_moves": 12,
+      "midgame_state_hash": "717c9527eaaac1cd2e4a8065b2369b5691307abf9a486dec9c1ec3c82dd4a666",
+      "native_standard": {
+        "midgame": {
+          "maximum_seconds": 0.3572339169913903,
+          "mean_seconds": 0.3399004167993553,
+          "p95_seconds": 0.35677109197713436,
+          "repetitions": 10
+        },
+        "opening": {
+          "maximum_seconds": 0.3610008340328932,
+          "mean_seconds": 0.3388982083881274,
+          "p95_seconds": 0.35416507123154584,
+          "repetitions": 10
+        }
+      },
+      "projections": {
+        "epsilon-greedy": {
+          "conservative_simulation_p95_seconds": 0.6435192585748155,
+          "conservative_simulation_seconds": 0.6252269500750117,
+          "decision_gates": {
+            "10": {
+              "maximum_budget": 15,
+              "projected_full_stage_if_uniform_rate_hours": 14.407386670198118,
+              "projected_game_seconds": 864.4432002118871,
+              "projected_ruleset_policy_stage_hours": 1.200615555849843
+            },
+            "2": {
+              "maximum_budget": 3,
+              "projected_full_stage_if_uniform_rate_hours": 3.284599228363659,
+              "projected_game_seconds": 197.07595370181954,
+              "projected_ruleset_policy_stage_hours": 0.27371660236363826
+            },
+            "30": {
+              "maximum_budget": 47,
+              "projected_full_stage_if_uniform_rate_hours": 44.06815318175668,
+              "projected_game_seconds": 2644.0891909054008,
+              "projected_ruleset_policy_stage_hours": 3.672346098479723
+            }
+          }
+        },
+        "uniform": {
+          "conservative_simulation_p95_seconds": 0.7363106059376149,
+          "conservative_simulation_seconds": 0.6198601582320407,
+          "decision_gates": {
+            "10": {
+              "maximum_budget": 16,
+              "projected_full_stage_if_uniform_rate_hours": 15.20698532116905,
+              "projected_game_seconds": 912.419119270143,
+              "projected_ruleset_policy_stage_hours": 1.2672487767640874
+            },
+            "2": {
+              "maximum_budget": 3,
+              "projected_full_stage_if_uniform_rate_hours": 3.2607304216420454,
+              "projected_game_seconds": 195.64382529852273,
+              "projected_ruleset_policy_stage_hours": 0.2717275351368371
+            },
+            "30": {
+              "maximum_budget": 48,
+              "projected_full_stage_if_uniform_rate_hours": 44.61315122769707,
+              "projected_game_seconds": 2676.7890736618237,
+              "projected_ruleset_policy_stage_hours": 3.7177626023080887
+            }
+          }
+        }
+      },
+      "random_game_length": {
+        "maximum_moves": 249,
+        "mean_moves": 177.9,
+        "minimum_moves": 160,
+        "repetitions": 10
+      },
+      "rules_revision": "gjerde-breath-0.1",
+      "single_simulation": {
+        "epsilon-greedy": {
+          "midgame": {
+            "maximum_seconds": 0.6276434590108693,
+            "mean_seconds": 0.6007592210080475,
+            "p95_seconds": 0.6236906774749513,
+            "repetitions": 10
+          },
+          "opening": {
+            "maximum_seconds": 0.6452432089718059,
+            "mean_seconds": 0.6252269500750117,
+            "p95_seconds": 0.6435192585748155,
+            "repetitions": 10
+          }
+        },
+        "uniform": {
+          "midgame": {
+            "maximum_seconds": 0.6769339579623193,
+            "mean_seconds": 0.5647861334029585,
+            "p95_seconds": 0.6567296145367436,
+            "repetitions": 10
+          },
+          "opening": {
+            "maximum_seconds": 0.8081426249118522,
+            "mean_seconds": 0.6198601582320407,
+            "p95_seconds": 0.7363106059376149,
+            "repetitions": 10
+          }
+        }
+      }
+    },
+    "gjerde-go": {
+      "board_size": 4,
+      "midgame_prefix_moves": 12,
+      "midgame_state_hash": "266732504d4ec3918617df5302fad828f629517899ef1fedcabbe17ead32a36e",
+      "native_standard": {
+        "midgame": {
+          "maximum_seconds": 0.4771098749479279,
+          "mean_seconds": 0.451623295689933,
+          "p95_seconds": 0.4747917188622523,
+          "repetitions": 10
+        },
+        "opening": {
+          "maximum_seconds": 0.4723511249758303,
+          "mean_seconds": 0.45287560001015664,
+          "p95_seconds": 0.46677558718365614,
+          "repetitions": 10
+        }
+      },
+      "projections": {
+        "epsilon-greedy": {
+          "conservative_simulation_p95_seconds": 0.5318497418134939,
+          "conservative_simulation_seconds": 0.513310662494041,
+          "decision_gates": {
+            "10": {
+              "maximum_budget": 19,
+              "projected_full_stage_if_uniform_rate_hours": 20.938854914476046,
+              "projected_game_seconds": 1256.3312948685627,
+              "projected_ruleset_policy_stage_hours": 1.744904576206337
+            },
+            "2": {
+              "maximum_budget": 3,
+              "projected_full_stage_if_uniform_rate_hours": 4.088576900338326,
+              "projected_game_seconds": 245.3146140202996,
+              "projected_ruleset_policy_stage_hours": 0.34071474169486055
+            },
+            "30": {
+              "maximum_budget": 58,
+              "projected_full_stage_if_uniform_rate_hours": 62.01140757393673,
+              "projected_game_seconds": 3720.684454436204,
+              "projected_ruleset_policy_stage_hours": 5.167617297828061
+            }
+          }
+        },
+        "uniform": {
+          "conservative_simulation_p95_seconds": 1.0642402732686604,
+          "conservative_simulation_seconds": 0.6722086334251799,
+          "decision_gates": {
+            "10": {
+              "maximum_budget": 14,
+              "projected_full_stage_if_uniform_rate_hours": 20.237222420103418,
+              "projected_game_seconds": 1214.233345206205,
+              "projected_ruleset_policy_stage_hours": 1.6864352016752848
+            },
+            "2": {
+              "maximum_budget": 2,
+              "projected_full_stage_if_uniform_rate_hours": 3.687445865175493,
+              "projected_game_seconds": 221.24675191052955,
+              "projected_ruleset_policy_stage_hours": 0.30728715543129104
+            },
+            "30": {
+              "maximum_budget": 44,
+              "projected_full_stage_if_uniform_rate_hours": 61.61166380742324,
+              "projected_game_seconds": 3696.6998284453944,
+              "projected_ruleset_policy_stage_hours": 5.1343053172852695
+            }
+          }
+        }
+      },
+      "random_game_length": {
+        "maximum_moves": 304,
+        "mean_moves": 246.2,
+        "minimum_moves": 190,
+        "repetitions": 10
+      },
+      "rules_revision": "gjerde-go-0.1",
+      "single_simulation": {
+        "epsilon-greedy": {
+          "midgame": {
+            "maximum_seconds": 0.5320404579397291,
+            "mean_seconds": 0.49098950418410825,
+            "p95_seconds": 0.5194466832617763,
+            "repetitions": 10
+          },
+          "opening": {
+            "maximum_seconds": 0.5332574169151485,
+            "mean_seconds": 0.513310662494041,
+            "p95_seconds": 0.5318497418134939,
+            "repetitions": 10
+          }
+        },
+        "uniform": {
+          "midgame": {
+            "maximum_seconds": 1.1056924170115963,
+            "mean_seconds": 0.6722086334251799,
+            "p95_seconds": 1.0642402732686604,
+            "repetitions": 10
+          },
+          "opening": {
+            "maximum_seconds": 0.6290681249229237,
+            "mean_seconds": 0.5479882416781038,
+            "p95_seconds": 0.6276710810605437,
+            "repetitions": 10
+          }
+        }
+      }
+    },
+    "rosette": {
+      "board_size": 4,
+      "midgame_prefix_moves": 12,
+      "midgame_state_hash": "1c5c449f20b58e9579b7c95c787b12e0ffb6273f2e1c7357841d3e72cbd66176",
+      "native_standard": {
+        "midgame": {
+          "maximum_seconds": 0.12807062501087785,
+          "mean_seconds": 0.1172970040817745,
+          "p95_seconds": 0.12670412485604174,
+          "repetitions": 10
+        },
+        "opening": {
+          "maximum_seconds": 0.09606420807540417,
+          "mean_seconds": 0.09451422513229772,
+          "p95_seconds": 0.09541907724342309,
+          "repetitions": 10
+        }
+      },
+      "projections": {
+        "epsilon-greedy": {
+          "conservative_simulation_p95_seconds": 0.2308084087271709,
+          "conservative_simulation_seconds": 0.21111145422328265,
+          "decision_gates": {
+            "10": {
+              "maximum_budget": 47,
+              "projected_full_stage_if_uniform_rate_hours": 15.46088444296713,
+              "projected_game_seconds": 927.6530665780278,
+              "projected_ruleset_policy_stage_hours": 1.2884070369139278
+            },
+            "2": {
+              "maximum_budget": 9,
+              "projected_full_stage_if_uniform_rate_hours": 3.1066421418206307,
+              "projected_game_seconds": 186.39852850923782,
+              "projected_ruleset_policy_stage_hours": 0.2588868451517192
+            },
+            "30": {
+              "maximum_budget": 142,
+              "projected_full_stage_if_uniform_rate_hours": 46.34649019583338,
+              "projected_game_seconds": 2780.789411750003,
+              "projected_ruleset_policy_stage_hours": 3.862207516319449
+            }
+          }
+        },
+        "uniform": {
+          "conservative_simulation_p95_seconds": 0.2559297983418219,
+          "conservative_simulation_seconds": 0.22570074578979984,
+          "decision_gates": {
+            "10": {
+              "maximum_budget": 44,
+              "projected_full_stage_if_uniform_rate_hours": 15.474119921002771,
+              "projected_game_seconds": 928.4471952601663,
+              "projected_ruleset_policy_stage_hours": 1.2895099934168976
+            },
+            "2": {
+              "maximum_budget": 8,
+              "projected_full_stage_if_uniform_rate_hours": 2.961270574416267,
+              "projected_game_seconds": 177.676234464976,
+              "projected_ruleset_policy_stage_hours": 0.24677254786802222
+            },
+            "30": {
+              "maximum_budget": 132,
+              "projected_full_stage_if_uniform_rate_hours": 46.06108499043645,
+              "projected_game_seconds": 2763.6650994261868,
+              "projected_ruleset_policy_stage_hours": 3.8384237492030375
+            }
+          }
+        }
+      },
+      "random_game_length": {
+        "maximum_moves": 231,
+        "mean_moves": 184.8,
+        "minimum_moves": 120,
+        "repetitions": 10
+      },
+      "rules_revision": "rosette-0.1",
+      "single_simulation": {
+        "epsilon-greedy": {
+          "midgame": {
+            "maximum_seconds": 0.2290098340017721,
+            "mean_seconds": 0.20956118360627443,
+            "p95_seconds": 0.22544804619392378,
+            "repetitions": 10
+          },
+          "opening": {
+            "maximum_seconds": 0.23376708407886326,
+            "mean_seconds": 0.21111145422328265,
+            "p95_seconds": 0.2308084087271709,
+            "repetitions": 10
+          }
+        },
+        "uniform": {
+          "midgame": {
+            "maximum_seconds": 0.25616200000513345,
+            "mean_seconds": 0.19400614572223276,
+            "p95_seconds": 0.24020188736612905,
+            "repetitions": 10
+          },
+          "opening": {
+            "maximum_seconds": 0.26139266695827246,
+            "mean_seconds": 0.22570074578979984,
+            "p95_seconds": 0.2559297983418219,
+            "repetitions": 10
+          }
+        }
+      }
+    }
+  },
+  "outcomes_inspected": false,
+  "payload_hash": "6e6cb3d2e1fe0f00248cdf7ce1792cb7d2fd1b548518e9b181c8043767eef49c",
+  "provenance": {
+    "engine_sha256": {
+      "actions.py": "a2f5e102d54e10b483501261aafc25951eccbd52e5ce6dbbfad9a2d38ac86ee1",
+      "mcts.py": "f00895fef17b3c8743a3261e53e156635d136323a0ddbd52fe7ff997e1843074",
+      "native_evaluators.py": "14c8212aba63828e43f1b57f4d53606a80a972ce81fc81c2f29ca5dd98d090bb",
+      "opponent.py": "19e15089187d7cbfc9a7cbb87519a665a4351e564b0d867835c139e66cbfb431",
+      "varde.py": "d5742335392a6cbe0acc319d97a3efae01ec06a3f9bfe58f81649ffed2235082"
+    },
+    "harness_sha256": "771b166fff81400c58e2ae0711b475b09f5e5d25b6fc4b8cf633a469da89fd48",
+    "mcts_agent_hash": "1b50866eae7fbac42e42e38b69e2d70414d064dbbd50ee547f2cf9d64eb2e7ff",
+    "native_evaluator_hash": "6f64d8cb8238b61fd5e719c001c21a695da45122a46c3802c5b9926c5dad2282",
+    "ruleset_registry_hash": "e9517bccf1093f43017417d59613fd0af57af8e290e2bccd55f6b38fa227d7ad",
+    "source_commit": "663012ebedb1c119229eb36c345224c536ecca7b"
+  },
+  "purpose": "Timing and game-length feasibility only",
+  "version": 1
+}

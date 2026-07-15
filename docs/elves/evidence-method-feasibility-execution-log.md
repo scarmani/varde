@@ -75,11 +75,12 @@ timings and random-game move counts, and atomically write the generated JSON.
 
 **Acceptance criteria:**
 
-- [ ] All configured timing and length cells complete within 30 minutes.
-- [ ] Artifact pins commit and code hashes and validates its payload hash.
-- [ ] `evidence_eligible`, `outcomes_inspected`, and `decisions_inspected` are
+- [x] All configured timing and length cells completed in 134.71 seconds.
+- [x] Artifact pins commit and code hashes and validates payload hash
+  `6e6cb3d2e1fe0f00248cdf7ce1792cb7d2fd1b548518e9b181c8043767eef49c`.
+- [x] `evidence_eligible`, `outcomes_inspected`, and `decisions_inspected` are
   all false.
-- [ ] Per-ruleset budgets and aggregate Stage-A projections are finite.
+- [x] Per-ruleset budgets and aggregate Stage-A projections are finite.
 
 **Blast radius:** one generated research result; no game-evidence output.
 
@@ -91,3 +92,28 @@ budget rather than at the declared ladder's high rung. A focused regression
 test reproduced the error; the caller now separately reports common-maximum
 cost and evaluates the 16/32 ladder at exactly 32 simulations. Repetitions were
 raised from two to ten so the reported p95 is not based on only two samples.
+
+### Official measurement
+
+The retained run used source `663012e`, harness SHA-256
+`771b166fff81400c58e2ae0711b475b09f5e5d25b6fc4b8cf633a469da89fd48`,
+ten repetitions per cell, and 134.71 seconds total wall time.
+
+| Ruleset | Native mean max | Uniform sim mean max | Light sim mean max | Random moves mean |
+|---|---:|---:|---:|---:|
+| Classic | 0.094s | 0.469s | 0.217s | 331.7 |
+| Rosette | 0.117s | 0.226s | 0.211s | 184.8 |
+| Breath | 0.190s | 0.203s | 0.233s | 145.9 |
+| Breath-run | 0.206s | 0.215s | 0.193s | 152.1 |
+| Gjerde | 0.340s | 0.620s | 0.625s | 177.9 |
+| Gjerde-Go | 0.453s | 0.672s | 0.513s | 246.2 |
+
+Aggregate common maximum budgets are 2 at the 2-second gate, 14 at the
+10-second gate, and 44 at the 30-second gate. At those maxima, projected Stage
+A is respectively 1.71h, 9.60h and 29.34h; p95 is 2.13s, 14.90s and 46.83s.
+
+The predeclared 16/32 diagnostic ladder is available at the 30-second mean
+gate and projects to 21.44h, but fails because p95 is 34.06s. A post-measurement
+timing derivation shows 12/24 would project to 16.18h and 25.54s p95. That is an
+operationally feasible diagnostic ladder, not strategic-depth evidence. A
+480-game native-only workload projects to 0.79h on eight workers.
