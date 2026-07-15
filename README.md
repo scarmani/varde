@@ -68,7 +68,7 @@ python3 engine/selfplay.py 3 100 greedy
 python3 engine/selfplay.py 3 100 epsilon
 ```
 
-The executable suite currently has 200 tests covering geometry, terrain,
+The executable suite currently has 201 tests covering geometry, terrain,
 summits, flat capture, collar-dependent wells, wall stranding, eight-support
 twin wells, multi-wave peeling, global mover-suicide, full-stack superko,
 opening placement, pie-rule identity, resumption, scoring, serialization,

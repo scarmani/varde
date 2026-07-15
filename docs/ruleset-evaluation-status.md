@@ -26,7 +26,7 @@ balance, depth, emergence, elegance, or beauty.
 | Reproducibility | Final artifacts are byte-identical after interruption and worker-count changes; tampered checkpoints fail closed. |
 | Human study | Counterbalanced 8/10/12-player schedule, neutral briefs, engine-derived puzzles, post-game ratings, motif coding, and retention prompts are implemented. |
 | Browser telemetry | Opt-in hotseat action/timing records export locally; no direct identifiers, wall-clock time, or server collection endpoint exist. |
-| Product regression | 200 tests, Python syntax, JavaScript syntax, browser export/save/load/resumption/watch flows, and opened screenshots pass locally. |
+| Product regression | 201 tests, Python syntax, JavaScript syntax, browser export/save/load/resumption/watch flows, and opened screenshots pass locally. |
 
 ## Generated operational smoke
 
