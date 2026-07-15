@@ -48,7 +48,7 @@ not a useful opponent. They say nothing reliable about the candidates.
 |---|---|---|
 | Constructed tactical admission | Complete for both agent surfaces where applicable | Necessary implementation gate only |
 | Cross-family operational smoke | Complete: one Toy pair per candidate | None |
-| Calibration: 20 paired n=4 seeds | Not run | None until complete |
+| Calibration: 20 paired n=4 seeds | [Manifest v1 frozen](../research/manifests/ruleset-calibration-20260715.json), but [MCTS v1 feasibility failed before any result](../research/results/ruleset-calibration-feasibility-20260715.json); MCTS v2 performance work required before a fresh manifest | None until complete |
 | Health screen: 50 fresh paired seeds | Not run | None until complete |
 | Confirmation: 100 fresh paired seeds | Not run | None until complete |
 | MCTS 250 → 1,000 → 4,000 depth ladder | Not run | No depth claim |

@@ -55,3 +55,18 @@
   imported records are read-only and never become server payloads.
 - Batch 6 reaches 201 tests plus final browser import, Gjerde rendering, and
   semantic state checks. No flagship decision is currently warranted.
+
+## Long-run calibration operations
+
+- In the evaluation harness, `checkpoint_interval` is also the process batch
+  size. Setting it below `workers` silently leaves CPU capacity idle; long runs
+  should use a checkpoint interval at least as large as the worker count.
+- A changed MCTS budget changes the checkpoint configuration. Adjacent budget
+  stages require separate output directories; `--resume` is valid only inside
+  one identical job configuration.
+- Run long evidence jobs from a detached worktree at the frozen manifest commit.
+  Documentation commits on the active PR branch then cannot invalidate the
+  source commit stored in an interrupted job's checkpoint.
+- Write and test the advancement auditor before outcomes exist. Mechanical gate
+  code is stronger protection against post-hoc selection than a prose promise
+  to interpret results consistently.
