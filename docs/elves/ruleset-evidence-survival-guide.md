@@ -34,28 +34,30 @@ claim of human emergence or beauty.
 
 ## Current Phase
 
-Status: in progress
+Status: in progress — feasibility remediation
 
 Active batch: Batch 2 — calibration stage A at 250 simulations
 
-Just completed: manifest commit `0612369` passed exact-head CI; detached source
-and all provenance hashes match it.
+Just completed: A-uniform-250 feasibility attempt was stopped after more than
+40 minutes at eight-core saturation with zero completed records. A separate
+budget-1 decision measured 1.05s and 343 terminal rollout actions.
 
-Single next action: monitor A-uniform-250 through its first eight-game
-checkpoint and then to completion without inspecting partial outcomes.
+Single next action: implement MCTS v2 as a separately versioned,
+behavior-preserving performance pass with golden equivalence fixtures and
+measured timing gates before any new manifest or calibration launch.
 
 ## Active Compute
 
-`A-uniform-250` launched 2026-07-15T15:41:25-05:00 from detached worktree
-`/tmp/varde-calibration-source-20260715` at `0612369`. Managed session `86550`,
-parent PID `48847`, eight active workers. Initial checkpoint is running with
-zero records; provenance matches the manifest. No partial outcome is inspected.
+None. Managed session `86550` was interrupted cleanly; no evaluation process is
+running. The external zero-record checkpoint is preserved. No score, winner,
+margin or partial outcome was generated or inspected.
 
 ## Stop Gate
 
 - Planned batches remaining: 4
 - Stop allowed right now: no
-- Next required action: finish both Stage A policy jobs and audit accounting
+- Next required action: clear the agent-performance blocker, then create a new
+  MCTS version and calibration manifest; never pool with v1
 
 ## Validation Gates
 

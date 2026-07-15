@@ -166,3 +166,21 @@ shape and verifies that zero-failure candidates advance mechanically. Focused
 suite: 10 passed. Full suite: 203 passed in 33.85s under concurrent calibration
 load; Ruff, Python compilation and JavaScript syntax passed. No partial
 calibration outcome was read while implementing or testing the audit.
+
+### Feasibility stop
+
+A-uniform-250 ran eight Classic games concurrently at sustained eight-core load
+for more than 40 minutes without completing a single record. A separate
+budget-1 opening decision took 1.05s and one terminal rollout traversed 343 real
+actions. Linear scaling makes one budget-250 opening decision approximately
+262.5 CPU seconds before the rest of the game.
+
+Managed session `86550` was interrupted with `next_task: 0` and `records: []`.
+The external zero-record state, empty JSONL and non-claim summary are preserved
+and hash-pinned by
+`research/results/ruleset-calibration-feasibility-20260715.json`. No game
+outcome existed to inspect. This is an MCTS v1 throughput failure, not a
+correctness, balance, depth or ruleset verdict.
+
+The next measurement round requires a distinct MCTS agent hash and fresh
+manifest. MCTS v1 and v2 evidence will never be pooled.

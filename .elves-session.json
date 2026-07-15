@@ -13,7 +13,7 @@
     "remaining_batches": 4,
     "stop_allowed": false,
     "checkpoint_is_stop": false,
-    "next_required_action": "Monitor A-uniform-250 through its first eight-game checkpoint and then to completion"
+    "next_required_action": "Implement and verify a versioned behavior-preserving MCTS v2 performance pass before refreezing calibration"
   },
   "test_baseline": {
     "passed": 201,

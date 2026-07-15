@@ -144,6 +144,18 @@ class TestRulesetEvaluationSchedule(unittest.TestCase):
 
 
 class TestRulesetEvaluationRun(unittest.TestCase):
+    def test_calibration_feasibility_artifact_contains_no_game_claim(self):
+        path = (
+            Path(__file__).resolve().parents[1]
+            / "research/results/ruleset-calibration-feasibility-20260715.json"
+        )
+        payload = json.loads(path.read_text())
+        self.assertEqual(payload["status"], "blocked-before-results")
+        self.assertEqual(payload["stage_a_attempt"]["records_completed"], 0)
+        self.assertFalse(payload["stage_a_attempt"]["outcomes_inspected"])
+        self.assertFalse(payload["finding"]["ruleset_conclusion_permitted"])
+        self.assertTrue(payload["promotion_blocked"])
+
     def test_stage_a_audit_applies_frozen_operational_gate(self):
         manifest_path = (
             Path(__file__).resolve().parents[1]
