@@ -17,3 +17,15 @@
   `node --check web/game.js`.
 - Browser changes use the installed develop-web-game Playwright client,
   `window.render_game_to_text`, opened screenshots, and console inspection.
+
+## Computational falsification harness
+
+- Paired seeds belong to candidate, size, matchup, and pair identity; ordered
+  reduction makes process scheduling irrelevant to canonical output. Completed
+  resumed runs remain byte-identical when worker count and checkpoints differ.
+- Configured agents are not evidence. Headline readiness requires completed
+  100-pair native/MCTS strata for both rollout policies, two completed adjacent
+  budget comparisons per policy, and passing health gates.
+- Batch 4 validation reaches 193 tests. Actual native and MCTS process-worker
+  smokes complete legally and keep promotion blocked; research-watchdog
+  incompletes and cancellations remain recorded rather than becoming results.

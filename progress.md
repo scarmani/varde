@@ -185,3 +185,11 @@ Original prompt: yes to all in best order proceed and execute according to your 
   explicitly provisional.
 - Batch 3 validation reaches 185 tests. MCTS is research-only and introduces no
   action ceiling or forced ending into live games.
+- Added a repository-relative paired ruleset evaluator with native/MCTS agent
+  families, explicit budgets and policies, action telemetry, health/depth
+  summaries, atomic checkpoint/resume, cancellation, and research-only
+  incomplete accounting. Results pin source, registry, evaluator, and agent
+  hashes; insufficient or single-family samples cannot unlock a claim.
+- Batch 4 validation reaches 193 tests. Worker-count/interruption equivalence is
+  byte-proven for every final artifact, actual process-worker native and MCTS
+  smokes complete legally, and promotion remains blocked.

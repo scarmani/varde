@@ -292,3 +292,68 @@ existing behavior stays behind its prior tests. Confidence HIGH.
 cancellation, worker determinism, and declared gates.
 
 **Commit:** `868ea8a`
+
+## Batch 4 Contract: 2026-07-15 14:02 CDT
+
+**Behaviors:**
+- Schedule fixed paired seeds with each agent assigned both initial colors.
+- Run native and terminal-score MCTS families with explicit budgets and rollout
+  policies through the complete action controller.
+- Preserve every complete, illegal, crashed, or research-watchdog-incomplete
+  attempt in canonical JSONL plus an atomic hash-pinned checkpoint.
+- Produce byte-identical final state, games, and summary after resume or worker
+  count changes.
+
+**Acceptance criteria:**
+- [x] Paired scheduling and statistics are deterministic and color-correct.
+- [x] JSONL, summary, and checkpoint artifacts are atomic and hash-pinned.
+- [x] Resume and worker scheduling produce byte-equivalent final artifacts.
+- [x] Cancellation and watchdog attempts are preserved, never dropped.
+
+**Blast radius:** research harness plus an MCTS rules-state entry point; the
+plain-game MCTS API and all live server behavior remain compatible.
+
+## 2026-07-15 14:22 CDT
+
+**Batch:** 4 — Computational falsification harness
+
+**Contract status:** all criteria met
+
+**What changed:** `evaluate_rulesets.py` is a repository-relative paired CLI
+covering the six frozen candidates, native Casual/Standard and seeded
+uniform/light MCTS, arbitrary budget ladders, board sizes, workers, explicit
+output, checkpoints, resume, cancellation, optional move telemetry, and a
+research-only watchdog. `choose_mcts_state_action` preserves seat identity and
+first-ending acceptances while the historical plain-game wrapper remains.
+
+**Evidence discipline:** source, registry, native evaluator, MCTS, and harness
+hashes are pinned. Summaries expose paired bootstrap bounds, color/pie/ending
+health gates, wipes, margins, opening convergence warnings, strategic telemetry,
+and direct adjacent-budget comparisons. Headline claims remain blocked until
+both rollout policies have 100-pair cross-family evidence, two 100-pair
+adjacent-budget comparisons, and passing health gates. Unmeasured commitment
+and sacrifice fields remain explicit nulls.
+
+**Determinism proof:** injected orchestration tests compare uninterrupted
+one-worker output with a run paused after five games and resumed with four
+workers; `state.json`, `games.jsonl`, and `summary.json` are byte-identical.
+Cancellation resumes cleanly, checkpoint tampering fails closed, and incomplete
+attempts remain in JSONL and failure accounting.
+
+**Real-agent smoke:** two candidate/native strata completed four games through
+the process pool with telemetry; a separate native/MCTS pair completed both
+colors. Both had zero illegal, crash, or watchdog-incomplete games and retained
+`promotion_blocked=true`. A post-commit smoke pins source `adeba1c` and completes
+both colors with clean accounting.
+
+**Validation:** 193 tests, Python compilation, JavaScript syntax, ruff on the
+new surfaces, whitespace, direct MCTS ending-state preservation, and actual CLI
+process workers pass. No tests were removed or weakened.
+
+**Regression attestation:** no live-game action ceiling exists; the watchdog
+only classifies research records. Confidence HIGH.
+
+**Next:** local human-study instruments, playtest recording/export, and browser
+verification.
+
+**Commit:** `adeba1c`

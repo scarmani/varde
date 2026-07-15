@@ -31,14 +31,14 @@ probes for evidence of beauty or human strategic depth.
 - **Checkpoint expectation:** a reviewable PR with honest local evidence and explicit deferred human gates
 - **Time budget:** approximately 8 hours, finite scope rather than a hard deadline
 - **Average batch time so far:** not yet measured
-- **Batches remaining:** 3 of 6 product batches
+- **Batches remaining:** 2 of 6 product batches
 
 ## Stop Gate
 
-- **Planned batches remaining:** 3
+- **Planned batches remaining:** 2
 - **Stop allowed right now:** no
-- **Why:** the falsification harness, human-study workflow, and final evidence remain
-- **Next required action:** complete Batch 4 reproducible falsification harness
+- **Why:** the human-study workflow and final evidence/handoff remain
+- **Next required action:** complete Batch 5 human-study instruments and browser export
 
 ## Non-Negotiables
 
@@ -66,11 +66,11 @@ probes for evidence of beauty or human strategic depth.
 
 **Status:** In progress
 
-**Active batch:** Batch 4 — computational falsification harness
+**Active batch:** Batch 5 — human-study instruments and product workflow
 
-**What was just finished:** Batch 3 added complete action semantics and terminal-score-only MCTS; 185 tests and all 12 corrected 250-simulation smokes pass.
+**What was just finished:** Batch 4 added the paired, byte-stable falsification CLI; 193 tests and real native/MCTS process-worker smokes pass.
 
-**Single next action:** Survey the existing research harness and specify the byte-stable run/checkpoint record before implementation.
+**Single next action:** specify the local playtest record schema and browser action-capture seam.
 
 ## Active Compute
 
@@ -78,25 +78,24 @@ No active paid or long-running compute.
 
 ## Next Exact Batch
 
-**Batch:** 4 — Computational falsification harness
+**Batch:** 5 — Human-study instruments and product workflow
 
 **Scope:**
-- Add a repository-relative CLI covering paired colors, native/MCTS agents,
-  budgets, rollout policies, board sizes, seeds, workers, output, checkpoints,
-  resume, cancellation, and research-only watchdog accounting.
-- Emit one JSONL record per game, optional move telemetry, compact summaries,
-  source/rules/agent hashes, exact configuration, and declared health/depth gates.
-- Prove worker-count and interruption/resume byte equivalence.
+- Add neutral rules briefs, resolution/call-your-shot puzzles, crossover
+  scheduling, game and post-game forms, and the one-week retention instrument.
+- Capture local human actions and time-to-action in the browser, with explicit
+  JSON export and no network submission or personal identifiers.
+- Validate schema, schedule balance, browser export, save/load, and console state.
 
 **Acceptance criteria:**
-- [ ] Paired scheduling and statistics are deterministic and color-correct.
-- [ ] JSONL/summary/checkpoint artifacts are atomic and hash-pinned.
-- [ ] Resume and worker scheduling produce byte-equivalent final artifacts.
-- [ ] Cancellation and watchdog attempts are preserved, never silently dropped.
+- [ ] Human records are versioned, locally exportable, and contain no PII fields.
+- [ ] Crossover schedules counterbalance ruleset order, opponent, and color.
+- [ ] Briefs and puzzles are neutral and do not teach designer-supplied motifs.
+- [ ] Browser screenshots, semantic state, save/load, and console checks pass.
 
-**Risk:** a broad experiment surface can make false claims easy; defaults must remain smoke-sized and every conclusion must carry agent/budget/policy provenance.
+**Risk:** instrumentation can prime players or turn designer vocabulary into false emergence evidence; prompts must stay neutral and records must separate prediction, understanding, and aesthetics.
 
-**Rollback tag:** `elves/ruleset-evaluation-pre-batch-4`
+**Rollback tag:** `elves/ruleset-evaluation-pre-batch-5`
 
 ## Recovery Order
 
