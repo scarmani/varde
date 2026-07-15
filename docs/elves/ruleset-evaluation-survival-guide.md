@@ -95,7 +95,7 @@ No active paid or long-running compute.
 
 **Risk:** rollout length and special ending decisions can dominate runtime or silently introduce a research-only cutoff into live rules.
 
-**Rollback tag:** create `elves/ruleset-evaluation-pre-batch-3` after the Batch 2 checkpoint.
+**Rollback tag:** `elves/ruleset-evaluation-pre-batch-3`
 
 ## Recovery Order
 

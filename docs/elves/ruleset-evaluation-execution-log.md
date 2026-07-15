@@ -219,3 +219,5 @@ pie, pass, ending/resumption, and superko remain exact. Non-Classic changes are
 the intended firewall repair. Confidence HIGH.
 
 **Next:** deterministic common action layer and terminal-score-only MCTS.
+
+**Commit:** `cc0517c`
