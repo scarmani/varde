@@ -188,3 +188,51 @@ The earlier cProfile attribution stands: legal placement resolution and
 `groups_of` dominate, while serialization-based cloning was negligible. Per
 the run contract, optimization stops after this focused pass; calibration is
 not relaunched and v1/v2 evidence remains unpooled.
+
+The negative timing evidence was committed as `52c56d0`.
+
+## Batch 4 — Review and evidence handoff
+
+### Contract
+
+**Behaviors:** independently inspect the focused diff, run the complete exact
+head validation surface, publish the blocker to both PRs, and leave a clean,
+review-ready branch without launching calibration.
+
+**Build on:** immutable v1 baseline, exact 96-fixture equivalence, and the
+reproducible v1/v2 timing artifact.
+
+**Acceptance criteria:**
+
+- [x] The full 207-test suite and syntax checks pass; changed-file Ruff and
+  diff checks pass. Repository-wide Ruff reports six pre-existing unused
+  imports outside this PR and was not broadened into this performance change.
+- [x] Diff review finds no rule, terminal-value, RNG or rollout-policy change.
+- [x] PR #14 and evidence PR #13 received the exact negative result and next
+  bounded recommendation.
+- [ ] Exact-head CI passes and all local processes/worktrees are reconciled.
+
+**Blast radius:** documentation, PR comments, validation and cleanup only.
+
+### Review result
+
+The product diff is confined to structural clone plumbing, removal of a final
+sort whose canonical order is proven, the MCTS version/hash, tests and research
+artifacts. Terminal reward, UCT selection, random calls, rollout policies,
+rules, scoring, saves and browser code are unchanged. The 96-fixture exact
+tree-stat replay is stronger than selected-move parity and passed under eight
+worker processes.
+
+Local validation passed with 207 tests in 14.83s, changed-file Ruff,
+`py_compile`, JSON parsing and diff checks. The whole-repository Ruff command
+also identified six unrelated pre-existing unused imports; they are recorded
+but intentionally not fixed in this scoped PR.
+
+Evidence handoff comments:
+
+- PR #14: https://github.com/scarmani/varde/pull/14#issuecomment-4985771263
+- PR #13: https://github.com/scarmani/varde/pull/13#issuecomment-4985771340
+
+No evaluation, profiling or timing process remains. The detached frozen-source
+worktree and both active PR worktrees are preserved intentionally for review;
+none is mistaken for an active compute job.

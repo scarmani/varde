@@ -32,13 +32,13 @@ use heuristic leaf values, truncate rollouts, or relabel v1 evidence as v2.
 
 Status: in progress
 
-Active batch: Batch 3 — equivalence and timing gates
+Active batch: Batch 4 — review and evidence handoff
 
-Just completed: the unprofiled v1/v2 comparison; v2 is exactly equivalent but
-only 0.58% faster and fails the two-second decision gate at 114.804s.
+Just completed: full diff review, 207-test validation, scoped lint/compile/diff
+checks, and evidence comments on PRs #14 and #13.
 
-Single next action: commit the negative timing evidence, publish it to PRs #14
-and #13, verify exact-head CI, and close the finite run without calibration.
+Single next action: commit and push the documentation-only closure candidate,
+then require green CI at that exact head before marking the finite run complete.
 
 ## Active Compute
 
@@ -46,9 +46,9 @@ None.
 
 ## Stop Gate
 
-- Planned batches remaining: 2
+- Planned batches remaining: 1
 - Stop allowed right now: no
-- Next required action: complete honest timing gates without outcome inspection
+- Next required action: finish review, evidence handoff, and cleanup
 
 ## Validation Gates
 
