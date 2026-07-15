@@ -150,3 +150,5 @@ tests were added, no skips or weakened assertions. Existing IDs and tuple order
 are exact. Version-1 snapshots remain the persistence surface. Confidence HIGH.
 
 **Next:** native evaluators and distinctive-mechanic tactical admission.
+
+**Commit:** `a3f645e`

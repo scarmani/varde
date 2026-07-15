@@ -94,7 +94,7 @@ No active paid or long-running compute.
 
 **Risk:** evaluator terms can encode desired conclusions or recurse through legal scans; fixtures must prove concepts without pretending to prove game quality.
 
-**Rollback tag:** create `elves/ruleset-evaluation-pre-batch-2` after the Batch 1 checkpoint.
+**Rollback tag:** `elves/ruleset-evaluation-pre-batch-2`
 
 ## Recovery Order
 
