@@ -10,6 +10,12 @@ import hashlib
 import time
 from types import MappingProxyType
 
+from native_evaluators import (
+    native_capture_weight,
+    native_evaluate_state,
+    native_features,
+)
+
 from varde import (
     BLACK,
     Illegal,
@@ -457,9 +463,35 @@ def _rationale(game, point, next_state, captured, mover):
     after_enemy = _features(board, next_state, enemy, game.moves_played + 1)
     if captured:
         return "capture", f"Captured {captured} stone{'s' if captured != 1 else ''}."
+    if game.rules != "classic":
+        before_native = native_features(
+            board, game.state, game.rules, mover
+        )
+        after_native = native_features(
+            board, next_state, game.rules, mover
+        )
+        if game.rules == "rosette" and (
+            after_native.cyclic_groups > before_native.cyclic_groups
+        ):
+            return "ring", "Completed a survivable cyclic group."
+        if game.rules in ("breath", "breath-run") and (
+            after_native.cavities > before_native.cavities
+        ):
+            return "cavity", "Secured a local breathing cavity."
+        if game.rules == "breath-run" and (
+            after_native.pressure > before_native.pressure
+        ):
+            return "chase", "Forced rescue pressure while limiting self-squeeze."
+        if game.rules in ("gjerde", "gjerde-go"):
+            if after_native.territory > before_native.territory:
+                return "fence", "Closed a single-color field."
+            if after_native.near_fences > before_native.near_fences:
+                return "fence", "Advanced a nearly completed fence."
+            if after_native.denial_lines > before_native.denial_lines:
+                return "denial", "Claimed a line that contests an opposing field."
     if after_mine.vulnerable_stones < before_mine.vulnerable_stones:
         return "rescue", "Strengthened a threatened group."
-    if after_mine.skies > before_mine.skies:
+    if game.rules == "classic" and after_mine.skies > before_mine.skies:
         return "sky", "Created a sky liberty."
     if after_enemy.vulnerable_stones > before_enemy.vulnerable_stones:
         return "pressure", "Reduced an opposing group's breathing room."
@@ -525,6 +557,31 @@ def _evaluate_with_weights(
     )
 
 
+def _uses_native_rules(game):
+    return game.rules != "classic"
+
+
+def _evaluate_game_state(
+    game, state, perspective, moves_played, model, weights
+):
+    if _uses_native_rules(game):
+        # Personal and curated profile corrections were trained on Classic.
+        # Native rulesets therefore use only their frozen objective-aligned
+        # static evaluator; transition-style bonuses remain search-local.
+        return native_evaluate_state(
+            game.board, state, perspective, moves_played, game.rules
+        )
+    return _evaluate_with_weights(
+        game.board, state, perspective, moves_played, model, weights
+    )
+
+
+def _game_capture_weight(game, weights):
+    if _uses_native_rules(game):
+        return native_capture_weight(game.rules)
+    return _weights_or_balanced(weights)["captured"]
+
+
 def _balanced_root_candidates(game, perspective, model):
     """Historical root path kept literal for parity and latency."""
     candidates = []
@@ -552,10 +609,9 @@ def _balanced_root_candidates(game, perspective, model):
 
 
 def _root_candidates(game, perspective, model=None, weights=None):
-    if _is_balanced_weights(weights):
+    if _is_balanced_weights(weights) and not _uses_native_rules(game):
         return _balanced_root_candidates(game, perspective, model)
     candidates = []
-    active_weights = _weights_or_balanced(weights)
     if _uses_transition_style(weights):
         transitions = []
         for point in game.legal_placements():
@@ -580,24 +636,10 @@ def _root_candidates(game, perspective, model=None, weights=None):
             maximum_capture,
             weights,
         )
-        if _is_balanced_weights(weights):
-            score = evaluate_state(
-                game.board,
-                state,
-                perspective,
-                game.moves_played + 1,
-                model,
-            )
-        else:
-            score = evaluate_state(
-                game.board,
-                state,
-                perspective,
-                game.moves_played + 1,
-                model,
-                weights,
-            )
-        score += active_weights["captured"] * captured + transition_bonus
+        score = _evaluate_game_state(
+            game, state, perspective, game.moves_played + 1, model, weights
+        )
+        score += _game_capture_weight(game, weights) * captured + transition_bonus
         reason_code, reason_text = _rationale(
             game, point, state, captured, game.to_move
         )
@@ -675,38 +717,28 @@ def _standard_scores(
     game, candidates, perspective, model=None, weights=None
 ):
     """Apply a full opponent-reply scan to the best ten root candidates."""
-    if _is_balanced_weights(weights):
+    if _is_balanced_weights(weights) and not _uses_native_rules(game):
         return _balanced_standard_scores(game, candidates, perspective, model)
     ranked = sorted(candidates, key=lambda item: item.root_score, reverse=True)
     searched = []
     nodes = len(candidates)
     reply_color = other(game.to_move)
-    active_weights = _weights_or_balanced(weights)
     for candidate in ranked[:10]:
         history = set(game.history)
         history.add(signature(game.board, candidate.state, reply_color))
         # Passing is a legal reply.  The board stands pat, but the move count
         # advances, which can switch off the opening-development feature.
-        if _is_balanced_weights(weights):
-            pass_value = evaluate_state(
-                game.board,
-                candidate.state,
-                perspective,
-                game.moves_played + 2,
-                model,
-            )
-        else:
-            pass_value = evaluate_state(
-                game.board,
-                candidate.state,
-                perspective,
-                game.moves_played + 2,
-                model,
-                weights,
-            )
+        pass_value = _evaluate_game_state(
+            game,
+            candidate.state,
+            perspective,
+            game.moves_played + 2,
+            model,
+            weights,
+        )
         replies = [
             pass_value
-            + active_weights["captured"] * candidate.captured
+            + _game_capture_weight(game, weights) * candidate.captured
             + candidate.transition_bonus
         ]
         nodes += 1
@@ -727,27 +759,18 @@ def _standard_scores(
             if reply_transitions is not None:
                 reply_transitions.append((point, state, captured))
                 continue
-            if _is_balanced_weights(weights):
-                reply_value = evaluate_state(
-                    game.board,
-                    state,
-                    perspective,
-                    game.moves_played + 2,
-                    model,
-                )
-            else:
-                reply_value = evaluate_state(
-                    game.board,
-                    state,
-                    perspective,
-                    game.moves_played + 2,
-                    model,
-                    weights,
-                )
+            reply_value = _evaluate_game_state(
+                game,
+                state,
+                perspective,
+                game.moves_played + 2,
+                model,
+                weights,
+            )
             replies.append(
                 reply_value
-                + active_weights["captured"] * candidate.captured
-                - active_weights["captured"] * captured
+                + _game_capture_weight(game, weights) * candidate.captured
+                - _game_capture_weight(game, weights) * captured
             )
         if reply_transitions is not None:
             maximum_reply_capture = max(
@@ -770,40 +793,26 @@ def _standard_scores(
                 weights,
             )
             replies.append(
-                evaluate_state(
-                    game.board,
-                    state,
-                    perspective,
-                    game.moves_played + 2,
-                    model,
-                    weights,
+                _evaluate_game_state(
+                    game, state, perspective, game.moves_played + 2, model, weights
                 )
-                + active_weights["captured"] * candidate.captured
+                + _game_capture_weight(game, weights) * candidate.captured
                 + candidate.transition_bonus
-                - active_weights["captured"] * captured
+                - _game_capture_weight(game, weights) * captured
                 - reply_bonus
             )
         # After Black's opening, White may take over instead of placing or
         # passing.  The original Black seat then evaluates the same board as
         # White; takeover itself does not increment the placement count.
         if game.moves_played == 0 and game.to_move == BLACK:
-            if _is_balanced_weights(weights):
-                takeover_value = evaluate_state(
-                    game.board,
-                    candidate.state,
-                    WHITE,
-                    game.moves_played + 1,
-                    model,
-                )
-            else:
-                takeover_value = evaluate_state(
-                    game.board,
-                    candidate.state,
-                    WHITE,
-                    game.moves_played + 1,
-                    model,
-                    weights,
-                )
+            takeover_value = _evaluate_game_state(
+                game,
+                candidate.state,
+                WHITE,
+                game.moves_played + 1,
+                model,
+                weights,
+            )
             replies.append(takeover_value)
             nodes += 1
         searched.append(replace(candidate, score=min(replies)))
@@ -841,7 +850,7 @@ def _choose_candidate(
 def _swap_value(game, computer_color, model=None, weights=None):
     """Worst value after the human's best White reply following a swap."""
     assert computer_color == BLACK
-    if _is_balanced_weights(weights):
+    if _is_balanced_weights(weights) and not _uses_native_rules(game):
         replies = [
             evaluate_state(
                 game.board,
@@ -867,8 +876,8 @@ def _swap_value(game, computer_color, model=None, weights=None):
     # The new White player may pass after takeover, leaving the board intact
     # and advancing the move count by one.
     replies = [
-        _evaluate_with_weights(
-            game.board,
+        _evaluate_game_state(
+            game,
             game.state,
             computer_color,
             game.moves_played + 1,
@@ -894,15 +903,15 @@ def _swap_value(game, computer_color, model=None, weights=None):
             weights,
         )
         replies.append(
-            _evaluate_with_weights(
-                game.board,
+            _evaluate_game_state(
+                game,
                 state,
                 computer_color,
                 game.moves_played + 1,
                 model,
                 weights,
             )
-            - _weights_or_balanced(weights)["captured"] * captured
+            - _game_capture_weight(game, weights) * captured
             - reply_bonus
         )
     return min(replies)
@@ -957,8 +966,8 @@ def choose_decision(
         stay, nodes, _ = _choose_candidate(
             game, difficulty, seed, WHITE, model, weights
         )
-        stay_value = stay.score if stay else _evaluate_with_weights(
-            game.board, game.state, WHITE, game.moves_played, model, weights
+        stay_value = stay.score if stay else _evaluate_game_state(
+            game, game.state, WHITE, game.moves_played, model, weights
         )
         swap_value = _swap_value(game, BLACK, model, weights)
         if swap_value >= stay_value + SWAP_MARGIN:
@@ -982,8 +991,8 @@ def choose_decision(
             nodes=nodes,
         )
     else:
-        baseline = _evaluate_with_weights(
-            game.board,
+        baseline = _evaluate_game_state(
+            game,
             game.state,
             computer_color,
             game.moves_played,

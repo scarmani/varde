@@ -152,3 +152,70 @@ are exact. Version-1 snapshots remain the persistence surface. Confidence HIGH.
 **Next:** native evaluators and distinctive-mechanic tactical admission.
 
 **Commit:** `a3f645e`
+
+## Batch 2 Contract: 2026-07-15 13:34 CDT
+
+**Behaviors:**
+- Preserve the literal Classic Balanced path and every seeded parity fixture.
+- Route each non-Classic candidate through a frozen evaluator using only terms
+  meaningful under that ruleset's geometry, life, and scoring objective.
+- Keep Personal/curated Classic static corrections outside native ruleset
+  evaluation; allow only already-generated transition-style bonuses in public
+  profile play.
+- Pin evaluator format, revision, schema, and hash for later evidence records.
+
+**Build on:** existing bounded one/two-ply legality and reply scans, V3
+transition reuse, `group_has_ring`, strict sky/collar primitives, corrected
+`score_cells`, and exact profile-parity fixtures.
+
+**Acceptance criteria:**
+- [x] Classic action/score/reason/node parity is unchanged.
+- [x] All native evaluators are deterministic, finite, bounded,
+  color-symmetric, non-mutating, superko-aware, and save-compatible.
+- [x] Constructed admission fixtures distinguish every declared mechanic.
+- [x] Evaluator metadata is hash-pinned without exposing raw weights to the UI.
+- [x] Full tests, compile, JS syntax, and representative performance pass.
+
+**Blast radius:** `engine/opponent.py` search evaluation and rationales;
+non-Classic computer decisions intentionally change. Classic play, rules,
+saves, model files, and live-game termination remain untouched.
+
+## 2026-07-15 13:46 CDT
+
+**Batch:** 2 — Native ruleset evaluators and tactical admission
+
+**Contract status:** all criteria met
+
+**What changed:** added `native_evaluators.py` with six frozen evaluator
+revisions and a deterministic catalog hash. Rosette values cycles, ring mass,
+legal entombment opportunities, captures, and late territory; Breath values
+liberties, local cavities, cuts, captures, and late territory; Breath-run adds
+opponent rescue pressure, chase length, and self-squeeze; Gjerde values repaired
+fenced cells, nearly closed fences, denial, liberties, and vulnerable groups;
+Gjerde-Go adds eye space, capture-first weight, and singleton ko exposure.
+Classic metadata covers control, collars/skies, captures, vulnerability, and
+territory, while actual Classic search remains on the historical literal path.
+
+**Admission proof:** constructed positions detect collar clearance, intact vs
+broken rings, legal entombment caps and the five-stone unzip, local Breath
+cavities and cut points, immediate flat capture, Breath-run chase/self-squeeze,
+five-of-six Gjerde fence completion, mixed-color denial, Gjerde-Go eye space,
+and singleton ko exposure. Native search is repeated across both difficulties,
+all rulesets, superko, serialization, and non-mutation.
+
+**Performance:** fresh Standard medians/p95 in milliseconds: Classic Toy
+27.1/28.1, Classic Full 386.5/387.7, Rosette Full 435.2/444.3, Breath Full
+893.1/894.1, Breath-run Full 949.4/961.0, Gjerde n=4 330.8/332.1, and
+Gjerde-Go n=4 443.1/445.8. These are small local acceptance samples, not
+comparative strength evidence.
+
+**Validation:** 177 engine tests after this batch (176 before the final API
+metadata assertion), Python compilation, JS syntax, whitespace, evaluator
+hash/schema, focused 61-test search/server suite, and the full 176-test product
+gate before metadata wiring all pass. No skips or weakened tests.
+
+**Regression attestation:** seeded Classic fixtures across Toy through Full,
+pie, pass, ending/resumption, and superko remain exact. Non-Classic changes are
+the intended firewall repair. Confidence HIGH.
+
+**Next:** deterministic common action layer and terminal-score-only MCTS.

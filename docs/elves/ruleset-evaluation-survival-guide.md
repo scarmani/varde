@@ -31,14 +31,14 @@ probes for evidence of beauty or human strategic depth.
 - **Checkpoint expectation:** a reviewable PR with honest local evidence and explicit deferred human gates
 - **Time budget:** approximately 8 hours, finite scope rather than a hard deadline
 - **Average batch time so far:** not yet measured
-- **Batches remaining:** 5 of 6 product batches
+- **Batches remaining:** 4 of 6 product batches
 
 ## Stop Gate
 
-- **Planned batches remaining:** 5
+- **Planned batches remaining:** 4
 - **Stop allowed right now:** no
-- **Why:** independent evaluators, MCTS, falsification, and human-study surfaces remain
-- **Next required action:** complete Batch 2 native evaluators and tactical fixtures
+- **Why:** independent MCTS, falsification, and human-study surfaces remain
+- **Next required action:** complete Batch 3 common action layer and neutral MCTS
 
 ## Non-Negotiables
 
@@ -66,11 +66,11 @@ probes for evidence of beauty or human strategic depth.
 
 **Status:** In progress
 
-**Active batch:** Batch 2 — native ruleset evaluators and tactical admission
+**Active batch:** Batch 3 — deterministic ruleset-neutral MCTS
 
-**What was just finished:** Batch 1 repaired the Gjerde scorer and centralized browser/API ruleset truth; its 167-test and browser gates pass.
+**What was just finished:** Batch 2 added hash-pinned native evaluators, tactical admission fixtures, exact Classic parity, and a green 177-test gate.
 
-**Single next action:** Survey current evaluator seams and write the ruleset-native feature contract before implementation.
+**Single next action:** Define one immutable action vocabulary over every Game special phase before implementing tree search.
 
 ## Active Compute
 
@@ -78,23 +78,24 @@ No active paid or long-running compute.
 
 ## Next Exact Batch
 
-**Batch:** 2 — Native ruleset evaluators and tactical admission
+**Batch:** 3 — Deterministic ruleset-neutral MCTS
 
 **Scope:**
-- Add objective-aligned bounded evaluator terms for all six frozen candidates.
-- Keep Classic Balanced seeded behavior exact.
-- Add constructed tactical fixtures for every distinctive mechanic.
-- Expose evaluator revision/hash to later evidence artifacts.
+- Add a common legal-action adapter for play, pass, swap, extension,
+  finish-extension, resumption, and ending acceptance.
+- Add seeded UCT using only terminal score, fixed simulation budgets, and
+  uniform or light epsilon-greedy rollouts.
+- Keep research watchdogs outside live agents.
 
 **Acceptance criteria:**
-- [ ] Each evaluator is finite, deterministic, bounded, legal, and non-mutating.
-- [ ] Classic Balanced decision/score/node parity remains exact.
-- [ ] Tactical admission fixtures solve each declared ruleset mechanic.
-- [ ] Full tests, compile, and fresh-position performance checks pass.
+- [ ] Action enumeration/application is deterministic, legal, and complete.
+- [ ] MCTS is deterministic, legal, non-mutating, superko-aware, and save-compatible.
+- [ ] Pass, takeover, extension, finish, resumption, and acceptance have fixtures.
+- [ ] 250-simulation smoke covers every candidate and both rollout policies.
 
-**Risk:** evaluator terms can encode desired conclusions or recurse through legal scans; fixtures must prove concepts without pretending to prove game quality.
+**Risk:** rollout length and special ending decisions can dominate runtime or silently introduce a research-only cutoff into live rules.
 
-**Rollback tag:** `elves/ruleset-evaluation-pre-batch-2`
+**Rollback tag:** create `elves/ruleset-evaluation-pre-batch-3` after the Batch 2 checkpoint.
 
 ## Recovery Order
 

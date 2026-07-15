@@ -827,6 +827,8 @@ window.render_game_to_text = () => JSON.stringify({
     selected: rulesSelect.value,
     selected_status: rulesetById(rulesSelect.value)?.status,
     selected_revision: rulesetById(rulesSelect.value)?.evaluation_id,
+    selected_native_evaluator: rulesetById(rulesSelect.value)?.native_evaluator_revision,
+    native_evaluator_hash: rulesetCatalog.native_evaluators?.hash,
     description: rulesetNote?.textContent,
   } : null,
   visual: visual ? {

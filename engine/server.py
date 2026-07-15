@@ -14,6 +14,7 @@ from varde import (
     rulesets_public,
 )
 from learning import LearningModel, TRAINING_BATCHES, TrainingService
+from native_evaluators import native_evaluators_public
 from opponent import BotDecision, choose_decision, greedy_decision
 from profiles import (
     get_profile,
@@ -379,6 +380,25 @@ def snapshot_payload(game, match):
     return payload
 
 
+def ruleset_catalog_public():
+    payload = rulesets_public()
+    native = native_evaluators_public()
+    evaluator_revisions = {
+        rules: spec["revision"]
+        for rules, spec in native["evaluators"].items()
+    }
+    for ruleset in payload["rulesets"]:
+        ruleset["native_evaluator_revision"] = evaluator_revisions.get(
+            ruleset["id"]
+        )
+    payload["native_evaluators"] = {
+        "format": native["format"],
+        "version": native["version"],
+        "hash": native["hash"],
+    }
+    return payload
+
+
 def validate_ruleset_size(rules, n, *, public_new_game):
     if rules not in RULESETS:
         raise ValueError("rules must be one of: " + ", ".join(RULESETS))
@@ -633,7 +653,7 @@ class VardeHandler(SimpleHTTPRequestHandler):
             self._json(profiles_public(MODEL.status()))
             return
         if route == "/api/rulesets":
-            self._json(rulesets_public())
+            self._json(ruleset_catalog_public())
             return
         if route == "/api/state":
             with GAME_LOCK:

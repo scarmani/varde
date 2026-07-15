@@ -164,3 +164,13 @@ Original prompt: yes to all in best order proceed and execute according to your 
 - Batch 1 validation: 167 tests, Python/JavaScript syntax, API smoke, semantic
   Playwright state, opened screenshots, archived-save loading, and zero console
   errors all pass.
+- Added six hash-pinned ruleset-native evaluator revisions while preserving the
+  literal Classic Balanced search path. Non-Classic static evaluation no longer
+  rewards Classic-only sky or development artifacts.
+- Tactical admission fixtures cover collars, cyclic Rosette life and
+  entombment, Breath cavities/cuts, Breath-run chase/self-squeeze, Gjerde fence
+  completion/denial, and Gjerde-Go eyes/ko exposure. Native decisions are
+  deterministic, legal, non-mutating, superko-aware, and save-compatible.
+- Batch 2 validation reaches 177 tests; representative Full vertex decisions
+  remain below one second in the local acceptance sample, while primary n=4
+  Gjerde decisions remain below half a second.

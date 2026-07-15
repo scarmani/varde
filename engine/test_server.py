@@ -10,6 +10,7 @@ from server import (
     assert_human_action,
     load_snapshot,
     public_view,
+    ruleset_catalog_public,
     snapshot_payload,
     validate_ruleset_size,
 )
@@ -42,6 +43,19 @@ class TestPublicView(unittest.TestCase):
 
 
 class TestRulesetValidation(unittest.TestCase):
+    def test_public_catalog_pins_native_evaluator_without_raw_weights(self):
+        payload = ruleset_catalog_public()
+        self.assertEqual(len(payload["native_evaluators"]["hash"]), 64)
+        by_id = {item["id"]: item for item in payload["rulesets"]}
+        self.assertEqual(
+            by_id["breath-run"]["native_evaluator_revision"],
+            "breath-run-native-1",
+        )
+        self.assertIsNone(
+            by_id["breath-cap"]["native_evaluator_revision"]
+        )
+        self.assertNotIn("weights", payload["native_evaluators"])
+
     def test_public_candidates_use_registry_board_limits(self):
         self.assertEqual(validate_ruleset_size("classic", 6, public_new_game=True).id, "classic")
         self.assertEqual(validate_ruleset_size("gjerde", 8, public_new_game=True).id, "gjerde")
