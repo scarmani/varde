@@ -61,7 +61,7 @@ None.
 
 ## Recovery Order
 
-Read this guide, `.elves-session.json`,
+Read this guide, `docs/elves/sessions/mcts-v2-performance-session.json`,
 `docs/elves/ruleset-evaluation-learnings.md`,
 `docs/plans/mcts-v2-performance.md`, and
 `docs/elves/mcts-v2-execution-log.md`. Reconcile any profiling/timing process
