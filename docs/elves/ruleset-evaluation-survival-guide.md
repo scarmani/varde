@@ -31,14 +31,14 @@ probes for evidence of beauty or human strategic depth.
 - **Checkpoint expectation:** a reviewable PR with honest local evidence and explicit deferred human gates
 - **Time budget:** approximately 8 hours, finite scope rather than a hard deadline
 - **Average batch time so far:** not yet measured
-- **Batches remaining:** 4 of 6 product batches
+- **Batches remaining:** 3 of 6 product batches
 
 ## Stop Gate
 
-- **Planned batches remaining:** 4
+- **Planned batches remaining:** 3
 - **Stop allowed right now:** no
-- **Why:** independent MCTS, falsification, and human-study surfaces remain
-- **Next required action:** complete Batch 3 common action layer and neutral MCTS
+- **Why:** the falsification harness, human-study workflow, and final evidence remain
+- **Next required action:** complete Batch 4 reproducible falsification harness
 
 ## Non-Negotiables
 
@@ -66,11 +66,11 @@ probes for evidence of beauty or human strategic depth.
 
 **Status:** In progress
 
-**Active batch:** Batch 3 — deterministic ruleset-neutral MCTS
+**Active batch:** Batch 4 — computational falsification harness
 
-**What was just finished:** Batch 2 added hash-pinned native evaluators, tactical admission fixtures, exact Classic parity, and a green 177-test gate.
+**What was just finished:** Batch 3 added complete action semantics and terminal-score-only MCTS; 185 tests and all 12 corrected 250-simulation smokes pass.
 
-**Single next action:** Define one immutable action vocabulary over every Game special phase before implementing tree search.
+**Single next action:** Survey the existing research harness and specify the byte-stable run/checkpoint record before implementation.
 
 ## Active Compute
 
@@ -78,24 +78,25 @@ No active paid or long-running compute.
 
 ## Next Exact Batch
 
-**Batch:** 3 — Deterministic ruleset-neutral MCTS
+**Batch:** 4 — Computational falsification harness
 
 **Scope:**
-- Add a common legal-action adapter for play, pass, swap, extension,
-  finish-extension, resumption, and ending acceptance.
-- Add seeded UCT using only terminal score, fixed simulation budgets, and
-  uniform or light epsilon-greedy rollouts.
-- Keep research watchdogs outside live agents.
+- Add a repository-relative CLI covering paired colors, native/MCTS agents,
+  budgets, rollout policies, board sizes, seeds, workers, output, checkpoints,
+  resume, cancellation, and research-only watchdog accounting.
+- Emit one JSONL record per game, optional move telemetry, compact summaries,
+  source/rules/agent hashes, exact configuration, and declared health/depth gates.
+- Prove worker-count and interruption/resume byte equivalence.
 
 **Acceptance criteria:**
-- [ ] Action enumeration/application is deterministic, legal, and complete.
-- [ ] MCTS is deterministic, legal, non-mutating, superko-aware, and save-compatible.
-- [ ] Pass, takeover, extension, finish, resumption, and acceptance have fixtures.
-- [ ] 250-simulation smoke covers every candidate and both rollout policies.
+- [ ] Paired scheduling and statistics are deterministic and color-correct.
+- [ ] JSONL/summary/checkpoint artifacts are atomic and hash-pinned.
+- [ ] Resume and worker scheduling produce byte-equivalent final artifacts.
+- [ ] Cancellation and watchdog attempts are preserved, never silently dropped.
 
-**Risk:** rollout length and special ending decisions can dominate runtime or silently introduce a research-only cutoff into live rules.
+**Risk:** a broad experiment surface can make false claims easy; defaults must remain smoke-sized and every conclusion must carry agent/budget/policy provenance.
 
-**Rollback tag:** `elves/ruleset-evaluation-pre-batch-3`
+**Rollback tag:** create `elves/ruleset-evaluation-pre-batch-4` after the Batch 3 checkpoint.
 
 ## Recovery Order
 

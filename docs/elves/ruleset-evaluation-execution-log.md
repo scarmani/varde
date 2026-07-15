@@ -221,3 +221,72 @@ the intended firewall repair. Confidence HIGH.
 **Next:** deterministic common action layer and terminal-score-only MCTS.
 
 **Commit:** `cc0517c`
+
+## Batch 3 Contract: 2026-07-15 13:48 CDT
+
+**Behaviors:**
+- Represent every legal rules phase through one stable action vocabulary.
+- Carry seat identity through pie takeover and separate first-ending decisions.
+- Run seeded adversarial UCT with terminal win/draw/loss from the actual game
+  score as the only backed-up value.
+- Offer action-uniform and light epsilon-greedy rollout policies without a
+  live move/rollout cutoff; report rollout length explicitly.
+
+**Build on:** `Game` legality, version-1 cloning, fixed superko history,
+extension APIs, corrected server ending semantics, and candidate registry.
+
+**Acceptance criteria:**
+- [x] Play, pass, swap, extend, finish-extension, resume, and accept enumerate
+  and apply legally without mutating the source state.
+- [x] MCTS is deterministic, legal, non-mutating, superko-aware,
+  save-compatible, and terminal-score-only.
+- [x] Both first-ending decisions and the once-only resumption have fixtures.
+- [x] 250-simulation smoke completes for six candidates and both rollout
+  policies with no illegal, crash, or incomplete simulation.
+
+**Blast radius:** new research modules only; no server difficulty, rules,
+snapshot, profile, or live action path changes.
+
+## 2026-07-15 14:02 CDT
+
+**Batch:** 3 — Deterministic ruleset-neutral MCTS
+
+**Contract status:** all criteria met
+
+**What changed:** `actions.py` provides stable immutable actions plus a cloned
+rules state carrying color-to-seat identity, end acceptances, and next ending
+decider. `mcts.py` provides seeded UCT, position-derived RNG seeds, adversarial
+selection across seat takeover, robust-child choice, action-uniform and light
+epsilon-greedy rollouts, and terminal score reward only. Every result pins the
+agent hash and reports simulations, nodes, mean value, average rollout length,
+and maximum rollout length.
+
+**Ending proof:** after two passes, the first seat may accept and the other may
+still resume; either may resume first; two acceptances end the first ending;
+resumption clears acceptances; after resumption, one acceptance finalizes.
+Takeover swaps complete seat identity while White remains to act.
+
+**Rollout correction:** the first light policy always sought contact and a
+Gjerde-Go smoke rollout ground for several minutes. It was canceled and not
+reported as completed evidence. The corrected light policy treats a late
+opponent pass as an invitation to score and samples a legal pass at 35% after
+one board-point count of actions. This is agent policy, not a forced ending:
+every backed-up simulation still reaches the engine's actual terminal score.
+
+**250-simulation smoke:** all 12 corrected-hash conditions completed with
+`ok=true`, 251 tree nodes, legal placements, source-state equality, zero crash,
+and zero incomplete rollout. Single-process-equivalent elapsed times under four
+concurrent subprocesses ranged 12.2-48.2 seconds. Average rollout lengths ranged
+62.096-188.58 actions; maximums ranged 74-521. Policy-dependent opening choices
+already occur and will be treated as provisional evidence by the harness.
+
+**Validation:** 185/185 tests, Python compilation, JS syntax, and whitespace
+pass. Unit fixtures cover all actions, superko, snapshot equivalence, fixed
+seed/policy determinism, every candidate, both rollout policies, and ending
+actions. No old tests were removed or weakened.
+
+**Regression attestation:** modules are not wired into live server play; all
+existing behavior stays behind its prior tests. Confidence HIGH.
+
+**Next:** paired evaluation CLI, game telemetry, statistics, checkpoints,
+cancellation, worker determinism, and declared gates.

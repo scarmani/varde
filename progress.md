@@ -174,3 +174,14 @@ Original prompt: yes to all in best order proceed and execute according to your 
 - Batch 2 validation reaches 177 tests; representative Full vertex decisions
   remain below one second in the local acceptance sample, while primary n=4
   Gjerde decisions remain below half a second.
+- Added a deterministic common action layer for placement, pass, pie takeover,
+  free extension, extension completion, resumption, and separate ending
+  acceptance. Seat identities remain correct through takeover and both AIs get
+  their first-ending decision.
+- Added seeded, terminal-score-only UCT with action-uniform and light
+  epsilon-greedy rollouts. A corrected 250-simulation smoke covered all six
+  candidates and both policies with legal actions, no source mutation, no
+  crashes, and no incomplete rollout; policy-sensitive results remain
+  explicitly provisional.
+- Batch 3 validation reaches 185 tests. MCTS is research-only and introduces no
+  action ceiling or forced ending into live games.
