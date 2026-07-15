@@ -25,8 +25,8 @@ harness, status matrix and durable learnings from PR #12.
 - [x] Merge commit `565c08b` passed exact-main CI.
 - [x] Feature head passed 201 tests plus Python/JavaScript syntax.
 - [x] Operational smoke remains promotion-blocked and headline-ineligible.
-- [ ] Run-control artifacts committed and pushed.
-- [ ] Evidence PR open.
+- [x] Run-control artifacts committed and pushed at `7a0aed1`.
+- [x] Evidence PR #13 open.
 
 **Blast radius:** documentation and temporary session metadata only; no rules,
 engine, evaluator, harness or runtime behavior changes.
@@ -49,3 +49,27 @@ engine, evaluator, harness or runtime behavior changes.
 
 No product code changed in Batch 0. Confidence HIGH: source equals the reviewed
 merge head and the only new files are run-control documentation.
+
+## Batch 1 — Timing and immutable calibration manifest
+
+### Contract
+
+**Behaviors:** validate every required harness option; run non-evidence timing
+samples without reading outcomes; freeze source, hashes, candidates, matchups,
+budgets, seeds, worker count, stages, paths and gates before calibration launch.
+
+**Build on:** `research/harness/evaluate_rulesets.py`, its deterministic tests,
+the registry/evaluator/MCTS hash helpers and the external-output convention.
+
+**Acceptance criteria:**
+
+- [ ] CLI exposes every required option and focused harness tests pass.
+- [ ] Timing-only samples finish or produce a documented resource estimate.
+- [ ] Sample outcomes are not inspected and sample outputs are removed.
+- [ ] Manifest validates against the exact command and committed hashes.
+- [ ] Manifest/status changes committed and exact-head CI passes.
+- [ ] Stage A launches only after the manifest commit exists remotely.
+
+**Blast radius:** research manifest and evidence documentation only unless CLI
+validation exposes a real harness defect. Any harness fix requires a regression
+test and a new source/hash pin before launch.

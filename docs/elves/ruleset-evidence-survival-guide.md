@@ -34,14 +34,14 @@ claim of human emergence or beauty.
 
 ## Current Phase
 
-Status: staging
+Status: in progress
 
-Active batch: Batch 0 — run staging and settlement
+Active batch: Batch 1 — timing and immutable calibration manifest
 
-Just completed: PR #12 merged at `565c08b`; exact-main workflow passed.
+Just completed: Batch 0 setup committed at `7a0aed1`; evidence PR #13 is open.
 
-Single next action: commit and push run-control artifacts, open the evidence PR,
-then validate the CLI and run timing-only samples.
+Single next action: validate the actual harness CLI and focused tests, then run
+timing-only samples without inspecting outcomes.
 
 ## Active Compute
 
@@ -49,9 +49,9 @@ None. No calibration outcome has been generated or inspected.
 
 ## Stop Gate
 
-- Planned batches remaining: 6
+- Planned batches remaining: 5
 - Stop allowed right now: no
-- Next required action: finish Batch 0 staging and begin Batch 1 timing/manifest
+- Next required action: execute Batch 1 timing and freeze the manifest
 
 ## Validation Gates
 

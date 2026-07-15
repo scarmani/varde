@@ -7,13 +7,13 @@
   "survival_guide_path": "docs/elves/ruleset-evidence-survival-guide.md",
   "learnings_path": "docs/elves/ruleset-evaluation-learnings.md",
   "execution_log_path": "docs/elves/ruleset-evidence-execution-log.md",
-  "pr_number": null,
+  "pr_number": 13,
   "source_base": "565c08b0b0dae0ba3b9ec5bbdbd3ab8927cced6b",
   "continuation_guard": {
-    "remaining_batches": 6,
+    "remaining_batches": 5,
     "stop_allowed": false,
     "checkpoint_is_stop": false,
-    "next_required_action": "Finish Batch 0 staging and begin Batch 1 timing and manifest"
+    "next_required_action": "Validate the harness CLI and run timing-only samples for Batch 1"
   },
   "test_baseline": {
     "passed": 201,
@@ -23,13 +23,13 @@
     "reason": null
   },
   "current_batch": {
-    "id": 0,
-    "name": "Run staging and settlement",
+    "id": 1,
+    "name": "Timing and immutable calibration manifest",
     "status": "in_progress"
   },
   "batches": [
-    {"id": 0, "name": "Run staging and settlement", "status": "in_progress", "commit": null},
-    {"id": 1, "name": "Timing and immutable calibration manifest", "status": "pending", "commit": null},
+    {"id": 0, "name": "Run staging and settlement", "status": "complete", "commit": "7a0aed1"},
+    {"id": 1, "name": "Timing and immutable calibration manifest", "status": "in_progress", "commit": null},
     {"id": 2, "name": "Calibration stage A at 250 simulations", "status": "pending", "commit": null},
     {"id": 3, "name": "Calibration stages B and C", "status": "pending", "commit": null},
     {"id": 4, "name": "Fresh health depth and adversarial screens", "status": "pending", "commit": null},
