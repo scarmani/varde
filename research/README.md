@@ -220,3 +220,10 @@ MCTS comparisons. It blocks headline claims until both rollout policies have a
 comparisons, and the declared health gates pass. Empty strategic fields are
 explicit measurement gaps rather than inferred evidence. The watchdog
 classifies research attempts only and is never applied to a live game.
+
+The committed `results/ruleset-promise-operational-smoke.json` is a deliberately
+non-claim integration check: one paired Toy seed per frozen candidate, Casual
+native search, and uniform MCTS with one simulation per action. All 12 games
+completed legally, but every stratum is headline-ineligible and promotion stays
+blocked. The exact implemented/unrun evidence matrix and next commands are in
+`docs/ruleset-evaluation-status.md`.

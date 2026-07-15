@@ -32,6 +32,8 @@ const trainingStatus = document.querySelector("#training-status");
 const newButton = document.querySelector("#new-btn");
 const rulesetNote = document.querySelector("#ruleset-note");
 const startRecordButton = document.querySelector("#start-record-btn");
+const importRecordButton = document.querySelector("#import-record-btn");
+const importRecordFile = document.querySelector("#import-record-file");
 const exportRecordButton = document.querySelector("#export-record-btn");
 const clearRecordButton = document.querySelector("#clear-record-btn");
 const playtestStatus = document.querySelector("#playtest-status");
@@ -51,6 +53,7 @@ let trainingPoll = null;
 let profileCatalog = null;
 let rulesetCatalog = null;
 let playtestRecord = null;
+let playtestImported = false;
 let playtestLastActionAt = performance.now();
 
 const savedSpeed = Number(
@@ -113,7 +116,9 @@ function updatePlaytestControls() {
     }
     return;
   }
-  const label = playtestRecord.status === "complete" ? "Complete" : "Recording";
+  const label = playtestImported
+    ? `Imported ${playtestRecord.status}`
+    : playtestRecord.status === "complete" ? "Complete" : "Recording";
   playtestStatus.textContent = `${label} · ${playtestRecord.actions.length} action${playtestRecord.actions.length === 1 ? "" : "s"} · export stays on this device`;
 }
 
@@ -142,12 +147,14 @@ function startPlaytestRecord() {
     resumption_used: false,
     ended_by_stagnation: false,
   };
+  playtestImported = false;
   playtestLastActionAt = performance.now();
   updatePlaytestControls();
 }
 
 function clearPlaytestRecord() {
   playtestRecord = null;
+  playtestImported = false;
   playtestLastActionAt = performance.now();
   updatePlaytestControls();
 }
@@ -165,7 +172,7 @@ function actionKind(path) {
 
 function capturePlaytestAction(path, body, before, next, actionAt) {
   const kind = actionKind(path);
-  if (!playtestRecord || !kind) return;
+  if (!playtestRecord || playtestImported || !kind) return;
   if (playtestRecord.status === "complete" && kind !== "resume") return;
   if (kind === "resume") playtestRecord.status = "active";
   const waves = next.capture_waves || [];
@@ -212,6 +219,101 @@ function exportPlaytestRecord() {
   link.download = `varde-playtest-${playtestRecord.session_id}.json`;
   link.click();
   URL.revokeObjectURL(link.href);
+}
+
+function assertImportedPlaytestRecord(record) {
+  const pii = new Set([
+    "name", "email", "phone", "address", "birthday", "birthdate", "age",
+    "gender", "race", "ethnicity", "employer", "location", "ip", "user_agent",
+  ]);
+  const inspect = (value) => {
+    if (Array.isArray(value)) {
+      value.forEach(inspect);
+    } else if (value && typeof value === "object") {
+      Object.entries(value).forEach(([key, item]) => {
+        if (pii.has(key.toLowerCase())) throw new Error(`Forbidden identity field: ${key}`);
+        inspect(item);
+      });
+    }
+  };
+  inspect(record);
+  const allowed = new Set([
+    "format", "version", "session_id", "source", "rules", "board_size",
+    "catalog_version", "native_evaluator_hash", "status", "actions",
+    "final_score", "resumption_used", "ended_by_stagnation",
+  ]);
+  if (
+    !record
+    || typeof record !== "object"
+    || Object.keys(record).length !== allowed.size
+    || Object.keys(record).some((key) => !allowed.has(key))
+    || record.format !== "varde-human-playtest"
+    || record.version !== 1
+    || record.source !== "browser-local-hotseat"
+    || !/^(?:[0-9a-f]{32}|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$/.test(record.session_id)
+    || !Number.isInteger(record.board_size)
+    || !Number.isInteger(record.catalog_version)
+    || !/^[0-9a-f]{64}$/.test(record.native_evaluator_hash)
+    || !Array.isArray(record.actions)
+    || !["active", "complete"].includes(record.status)
+    || typeof record.resumption_used !== "boolean"
+    || typeof record.ended_by_stagnation !== "boolean"
+  ) throw new Error("Invalid Varde playtest record");
+  const rules = rulesetById(record.rules?.id);
+  if (
+    !record.rules
+    || Object.keys(record.rules).length !== 2
+    || !Object.hasOwn(record.rules, "id")
+    || !Object.hasOwn(record.rules, "revision")
+    || !rules
+    || rules.status !== "candidate"
+    || record.rules.revision !== rules.evaluation_id
+  ) throw new Error("Unknown or mismatched rules revision");
+  const actionFields = new Set([
+    "index", "kind", "point", "actor_color", "elapsed_ms", "move_before",
+    "move_after", "captured", "capture_waves", "score_after",
+  ]);
+  const actionKinds = new Set([
+    "play", "pass", "swap", "extend", "finish-extension", "resume",
+  ]);
+  const validScore = (score) => (
+    score
+    && typeof score === "object"
+    && Object.keys(score).length === 2
+    && Number.isInteger(score.B)
+    && Number.isInteger(score.W)
+  );
+  if (
+    (record.status === "complete" && !validScore(record.final_score))
+    || (record.status === "active" && record.final_score !== null)
+  ) throw new Error("Invalid final score");
+  record.actions.forEach((action, index) => {
+    const pointRequired = action?.kind === "play" || action?.kind === "extend";
+    const validPoint = Array.isArray(action?.point)
+      && action.point.length === 2
+      && action.point.every(Number.isInteger);
+    if (
+      !action
+      || typeof action !== "object"
+      || Object.keys(action).length !== actionFields.size
+      || Object.keys(action).some((key) => !actionFields.has(key))
+      || action.index !== index
+      || !actionKinds.has(action.kind)
+      || !["B", "W"].includes(action.actor_color)
+      || !Number.isInteger(action.elapsed_ms)
+      || action.elapsed_ms < 0
+      || !Number.isInteger(action.move_before)
+      || action.move_before < 0
+      || !Number.isInteger(action.move_after)
+      || action.move_after < 0
+      || !Number.isInteger(action.captured)
+      || action.captured < 0
+      || !Array.isArray(action.capture_waves)
+      || !validScore(action.score_after)
+      || (pointRequired ? !validPoint : action.point !== null)
+    ) throw new Error(`Invalid action ${index}`);
+  });
+  return record;
 }
 
 function populateRulesetSelect(catalog) {
@@ -803,6 +905,28 @@ profileSelect.addEventListener("change", updateProfileNote);
 blackProfileSelect.addEventListener("change", updateProfileNote);
 whiteProfileSelect.addEventListener("change", updateProfileNote);
 startRecordButton.addEventListener("click", startPlaytestRecord);
+importRecordButton.addEventListener("click", () => {
+  if (
+    playtestRecord
+    && !confirm("Replace the current local playtest record? Export it first if you need it.")
+  ) return;
+  importRecordFile.click();
+});
+importRecordFile.addEventListener("change", async (event) => {
+  const file = event.target.files[0];
+  if (!file) return;
+  try {
+    playtestRecord = assertImportedPlaytestRecord(
+      JSON.parse(await file.text()),
+    );
+    playtestImported = true;
+    message.textContent = "";
+    updatePlaytestControls();
+  } catch (error) {
+    message.textContent = error.message;
+  }
+  event.target.value = "";
+});
 exportRecordButton.addEventListener("click", exportPlaytestRecord);
 clearRecordButton.addEventListener("click", () => {
   if (confirm("Clear the local playtest record?")) clearPlaytestRecord();

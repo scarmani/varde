@@ -68,13 +68,15 @@ python3 engine/selfplay.py 3 100 greedy
 python3 engine/selfplay.py 3 100 epsilon
 ```
 
-The executable suite currently has 167 tests covering geometry, terrain,
+The executable suite currently has 200 tests covering geometry, terrain,
 summits, flat capture, collar-dependent wells, wall stranding, eight-support
 twin wells, multi-wave peeling, global mover-suicide, full-stack superko,
 opening placement, pie-rule identity, resumption, scoring, serialization,
 ruleset metadata, and the browser-facing public state, two computer seats,
-legacy saves, deterministic Personal evaluation, model persistence, and
-training cancellation.
+legacy saves, deterministic Personal evaluation, model persistence, training
+cancellation, frozen ruleset scoring, registry-driven exposure, native tactical
+admission, terminal-score MCTS, byte-stable research resume, and the local
+human-study record schema.
 
 The `8N` limit used by diagnostic self-play is a watchdog for comparing
 policies, not a game rule or playable-program ceiling. Full-superko Varde is
@@ -162,6 +164,7 @@ variant is promoted until those generated gates and the human study pass.
 For a scored human hotseat game, **Start local record** before move one and
 **Export JSON** afterward. The recorder captures action timing and resolution
 telemetry only in browser memory; it collects no names or device identifiers
-and sends nothing to the server. The counterbalanced panel schedule and
+and sends nothing to the server. **Import JSON** validates a record locally for
+read-only inspection or re-export. The counterbalanced panel schedule and
 engine-derived comprehension puzzles are generated with
 `research/harness/human_study.py` as documented in the playtest protocol.

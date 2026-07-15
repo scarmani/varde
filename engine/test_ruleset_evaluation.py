@@ -139,6 +139,24 @@ class TestRulesetEvaluationSchedule(unittest.TestCase):
 
 
 class TestRulesetEvaluationRun(unittest.TestCase):
+    def test_committed_smoke_is_explicitly_non_claim_and_hash_pinned(self):
+        path = (
+            Path(__file__).resolve().parents[1]
+            / "research/results/ruleset-promise-operational-smoke.json"
+        )
+        payload = json.loads(path.read_text())
+        self.assertEqual(payload["claim_status"], "non-claim operational smoke")
+        self.assertTrue(payload["accounting"]["promotion_blocked"])
+        self.assertEqual(payload["accounting"]["games_complete"], 12)
+        self.assertEqual(payload["accounting"]["illegal"], 0)
+        self.assertTrue(all(
+            not item["headline_eligible"]
+            for item in payload["strata"].values()
+        ))
+        for value in payload["raw_artifact_hashes"].values():
+            self.assertEqual(len(value), 64)
+            int(value, 16)
+
     def test_resume_and_worker_count_are_byte_equivalent(self):
         with TemporaryDirectory() as directory:
             root = Path(directory)

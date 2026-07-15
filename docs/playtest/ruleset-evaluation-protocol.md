@@ -102,7 +102,9 @@ The recorder stores action kind, actor color, point, thinking interval since the
 last completed action, move numbers, capture waves, score after each action,
 resumption, and ending type. It stores no absolute clock time and submits
 nothing over the network. Game saves and playtest records are intentionally
-separate artifacts.
+separate artifacts. **Import JSON** locally validates and reopens a prior
+playtest record for inspection or re-export; imported records are read-only and
+are never attached to the currently displayed game.
 
 The facilitator separately records rules questions, whether a misunderstanding
 materially affected the game, and whether the players correctly understood the
