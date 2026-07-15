@@ -185,15 +185,15 @@ def _select_child(node, root_seat):
     return max(node.children, key=score)
 
 
-def choose_mcts_action(
-    game,
+def choose_mcts_state_action(
+    rules_state,
     computer_color,
     *,
     simulations=250,
     seed=1,
     rollout_policy="uniform",
 ):
-    """Choose one legal action without mutating ``game``.
+    """Choose one legal action without mutating ``rules_state``.
 
     No heuristic value is backed up: every simulation runs to an accepted game
     score.  Research harnesses may watchdog whole games, but this live search
@@ -208,10 +208,10 @@ def choose_mcts_action(
     if computer_color not in (BLACK, WHITE):
         raise ValueError("computer color must be B or W")
 
-    root_state = RulesState.from_game(game)
+    root_state = rules_state.clone()
     if root_state.actor_color != computer_color:
         raise ValueError("it is not the computer's action")
-    before = game.to_dict()
+    before = rules_state.key()
     root_seat = root_state.actor_seat
     rng = random.Random(_seed_for_position(seed, root_state))
     root = _Node(root_state)
@@ -239,8 +239,8 @@ def choose_mcts_action(
             node.value_sum += reward
             node = node.parent
 
-    if game.to_dict() != before:
-        raise AssertionError("MCTS mutated the analyzed game")
+    if rules_state.key() != before:
+        raise AssertionError("MCTS mutated the analyzed rules state")
     if not root.children:
         raise ValueError("no legal MCTS action")
     selected = max(
@@ -261,6 +261,24 @@ def choose_mcts_action(
         seed=seed,
         average_rollout_actions=total_rollout_actions / simulations,
         max_rollout_actions=max_rollout_actions,
+    )
+
+
+def choose_mcts_action(
+    game,
+    computer_color,
+    *,
+    simulations=250,
+    seed=1,
+    rollout_policy="uniform",
+):
+    """Compatibility wrapper for analyzing a plain engine game."""
+    return choose_mcts_state_action(
+        RulesState.from_game(game),
+        computer_color,
+        simulations=simulations,
+        seed=seed,
+        rollout_policy=rollout_policy,
     )
 
 

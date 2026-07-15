@@ -1,7 +1,7 @@
 import unittest
 
 from actions import RulesAction, RulesState, apply_action, legal_actions
-from mcts import MCTS_AGENT_HASH, choose_mcts_action
+from mcts import MCTS_AGENT_HASH, choose_mcts_action, choose_mcts_state_action
 from varde import BLACK, WHITE, Game, Illegal, signature
 
 
@@ -156,6 +156,23 @@ class TestTerminalMCTS(unittest.TestCase):
             rollout_policy="epsilon-greedy",
         )
         self.assertIn(end_decision.action.kind, {"accept", "resume"})
+
+    def test_mcts_preserves_rules_state_between_first_end_acceptances(self):
+        game = Game(3)
+        game.play(game.legal_placements()[0])
+        game.play_pass()
+        game.play_pass()
+        state = apply_action(RulesState.from_game(game), RulesAction("accept"))
+        before = state.key()
+        decision = choose_mcts_state_action(
+            state,
+            state.actor_color,
+            simulations=1,
+            seed=811,
+            rollout_policy="uniform",
+        )
+        self.assertIn(decision.action, legal_actions(state))
+        self.assertEqual(state.key(), before)
 
 
 if __name__ == "__main__":
