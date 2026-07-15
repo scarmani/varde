@@ -34,10 +34,11 @@ Status: in progress
 
 Active batch: Batch 1 — golden fixtures and baseline profile
 
-Just completed: setup commit `ffee5ba`, PR #14, and blocker link from PR #13.
+Just completed: deterministic 96-fixture v1 golden matrix and 250-simulation
+baseline profile, both against untouched engine code.
 
-Single next action: generate and commit v1 golden fixtures before modifying any
-engine code, then run the baseline profile.
+Single next action: validate and commit all baseline artifacts before modifying
+any engine hot path.
 
 ## Active Compute
 
