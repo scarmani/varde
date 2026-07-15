@@ -599,6 +599,32 @@ class Game:
         self.swap_decided = False
         self.last_capture_waves = []
 
+    def clone(self):
+        """Return an independent game snapshot without serializing it.
+
+        Board geometry and stack tuples are immutable after construction, so a
+        clone may safely share the board and stack values.  Every mutable
+        container owned by the game is copied.
+        """
+        game = object.__new__(Game)
+        game.rules = self.rules
+        game.board = self.board
+        game.state = dict(self.state)
+        game.to_move = self.to_move
+        game.history = set(self.history)
+        game.consecutive_passes = self.consecutive_passes
+        game.quiet_moves = self.quiet_moves
+        game.moves_played = self.moves_played
+        game.finished = self.finished
+        game.no_progress_end = self.no_progress_end
+        game.resumption_used = self.resumption_used
+        game.extension_used = self.extension_used
+        game.extension_points = list(self.extension_points)
+        game.players = dict(self.players)
+        game.swap_decided = self.swap_decided
+        game.last_capture_waves = list(self.last_capture_waves)
+        return game
+
     @property
     def current_player(self):
         return self.players[self.to_move]

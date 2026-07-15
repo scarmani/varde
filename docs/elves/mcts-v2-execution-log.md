@@ -59,7 +59,7 @@ stable legal-action ordering and fixed seeded action application.
   captured from unmodified v1.
 - [x] Fixture regeneration is deterministic and schema-validated.
 - [x] Baseline profile names the actual cumulative-time hot paths.
-- [ ] Baseline artifacts committed before any engine hot-path edit.
+- [x] Baseline artifacts committed before any engine hot-path edit.
 
 **Blast radius:** research-only generator, fixtures and profile artifacts. No
 engine changes are permitted in this batch.
@@ -97,3 +97,47 @@ No engine or MCTS file changed. The generator captures the existing internal
 root by a temporary behavior-neutral subclass and restores `_Node` after each
 call. The profiler intentionally omits the chosen action. Confidence HIGH: two
 independent full generations matched and all artifacts identify the v1 hash.
+The immutable baseline was committed as `5b876d6` before any engine edit.
+
+## Batch 2 — Hot-path implementation
+
+### Contract
+
+**Behaviors:** add direct structural cloning, remove only demonstrably redundant
+final action sorting, and identify the result as MCTS v2 while reproducing the
+entire frozen v1 decision/tree-stat corpus exactly.
+
+**Build on:** committed golden corpus `5b876d6`, profile evidence that legal
+placement resolution dominates, and the existing stable rules-action order.
+
+**Acceptance criteria:**
+
+- [x] Structural clones are equal but do not alias mutable game/action state.
+- [x] Legal-action order exactly matches the v1 sorted order on all fixtures.
+- [x] All 96 golden decisions and root statistics reproduce, excluding only the
+  intentionally changed agent hash.
+- [x] MCTS version/hash changes; terminal backup and rollout semantics do not.
+
+**Blast radius:** `Game.clone`, `RulesState.clone`, redundant final ordering in
+the action adapter, MCTS version metadata, and focused equivalence tests only.
+
+### Equivalence result
+
+The process-parallel verifier reconstructed and replayed all 96 frozen v1
+fixtures under v2. Selected decisions, node counts, rollout action statistics,
+root visits/value sums, and every root-child visit/value sum matched exactly.
+Only `agent_hash` was excluded, because v2 must never pool evidence with v1.
+
+`Game.clone()` shares immutable board geometry and tuple stack values while
+copying every mutable container. `RulesState.clone()` now uses it directly.
+The final action sort was removed only after the emitted sequence was proven to
+already follow `ACTION_ORDER`; exact tree-stat equivalence additionally proves
+that RNG consumption and rollout semantics are unchanged.
+
+### Validation
+
+- 204 tests passed in 14.84s.
+- Changed Python passed Ruff and `py_compile`.
+- `git diff --check` passed.
+- Confidence HIGH: the corpus covers all six candidates, both rollout policies,
+  two budgets, two seeds, and opening plus deterministic mid-game states.

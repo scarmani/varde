@@ -10,10 +10,10 @@
   "pr_number": 14,
   "source_base": "565c08b0b0dae0ba3b9ec5bbdbd3ab8927cced6b",
   "continuation_guard": {
-    "remaining_batches": 4,
+    "remaining_batches": 3,
     "stop_allowed": false,
     "checkpoint_is_stop": false,
-    "next_required_action": "Generate and commit v1 golden fixtures before modifying engine code"
+    "next_required_action": "Implement and exactly gate one behavior-preserving hot-path pass"
   },
   "test_baseline": {
     "passed": 201,
@@ -22,11 +22,11 @@
     "status": "captured",
     "reason": null
   },
-  "current_batch": {"id": 1, "name": "Golden fixtures and baseline profile", "status": "in_progress"},
+  "current_batch": {"id": 2, "name": "Hot-path implementation", "status": "in_progress"},
   "batches": [
     {"id": 0, "name": "Isolated performance run setup", "status": "complete", "commit": "ffee5ba"},
-    {"id": 1, "name": "Golden fixtures and baseline profile", "status": "in_progress", "commit": null},
-    {"id": 2, "name": "Hot-path implementation", "status": "pending", "commit": null},
+    {"id": 1, "name": "Golden fixtures and baseline profile", "status": "complete", "commit": "5b876d6"},
+    {"id": 2, "name": "Hot-path implementation", "status": "in_progress", "commit": null},
     {"id": 3, "name": "Equivalence and timing gates", "status": "pending", "commit": null},
     {"id": 4, "name": "Review and evidence handoff", "status": "pending", "commit": null}
   ],

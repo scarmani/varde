@@ -11,7 +11,7 @@ from varde import BLACK, WHITE, control
 
 
 MCTS_FORMAT = "varde-terminal-mcts"
-MCTS_VERSION = 1
+MCTS_VERSION = 2
 ROLLOUT_POLICIES = frozenset(("uniform", "epsilon-greedy"))
 EXPLORATION = math.sqrt(2.0)
 ROLLOUT_EPSILON = 0.15

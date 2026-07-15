@@ -32,13 +32,13 @@ use heuristic leaf values, truncate rollouts, or relabel v1 evidence as v2.
 
 Status: in progress
 
-Active batch: Batch 1 — golden fixtures and baseline profile
+Active batch: Batch 2 — hot-path implementation
 
-Just completed: deterministic 96-fixture v1 golden matrix and 250-simulation
-baseline profile, both against untouched engine code.
+Just completed: all 96 v1 fixtures reproduced exactly under v2 and the full
+204-test suite, lint, compilation and diff checks passed.
 
-Single next action: validate and commit all baseline artifacts before modifying
-any engine hot path.
+Single next action: commit the equivalence-proven implementation, then measure
+the fresh-position and complete-game throughput gates without reading outcomes.
 
 ## Active Compute
 
@@ -46,9 +46,9 @@ None.
 
 ## Stop Gate
 
-- Planned batches remaining: 4
+- Planned batches remaining: 3
 - Stop allowed right now: no
-- Next required action: finish immutable v1 golden/profile baseline
+- Next required action: complete one behavior-preserving hot-path pass
 
 ## Validation Gates
 
