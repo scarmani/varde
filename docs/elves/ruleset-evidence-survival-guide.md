@@ -36,24 +36,26 @@ claim of human emergence or beauty.
 
 Status: in progress
 
-Active batch: Batch 1 — timing and immutable calibration manifest
+Active batch: Batch 2 — calibration stage A at 250 simulations
 
-Just completed: CLI and timing feasibility audit; frozen manifest and its
-contract test pass locally with 202 total tests.
+Just completed: manifest commit `0612369` passed exact-head CI; detached source
+and all provenance hashes match it.
 
-Single next action: commit and push the frozen manifest, wait for exact-head CI,
-then launch A-uniform-250 from a detached worktree at that commit.
+Single next action: monitor A-uniform-250 through its first eight-game
+checkpoint and then to completion without inspecting partial outcomes.
 
 ## Active Compute
 
-None. The canceled timing-only sample produced no completed record; its outputs
-were removed and no outcome was inspected.
+`A-uniform-250` launched 2026-07-15T15:41:25-05:00 from detached worktree
+`/tmp/varde-calibration-source-20260715` at `0612369`. Managed session `86550`,
+parent PID `48847`, eight active workers. Initial checkpoint is running with
+zero records; provenance matches the manifest. No partial outcome is inspected.
 
 ## Stop Gate
 
-- Planned batches remaining: 5
+- Planned batches remaining: 4
 - Stop allowed right now: no
-- Next required action: commit the manifest and launch Stage A only after CI
+- Next required action: finish both Stage A policy jobs and audit accounting
 
 ## Validation Gates
 

@@ -67,8 +67,8 @@ the registry/evaluator/MCTS hash helpers and the external-output convention.
 - [x] Timing-only sample produced a documented resource lower bound.
 - [x] Sample outcomes were not inspected and sample outputs were removed.
 - [x] Manifest validates against exact commands and committed agent/code hashes.
-- [ ] Manifest/status changes committed and exact-head CI passes.
-- [ ] Stage A launches only after the manifest commit exists remotely.
+- [x] Manifest/status changes committed at `0612369`; exact-head CI passes.
+- [x] Stage A launched only after the manifest commit existed remotely.
 
 **Blast radius:** research manifest and evidence documentation only unless CLI
 validation exposes a real harness defect. Any harness fix requires a regression
@@ -114,3 +114,40 @@ The only executable change is one manifest-contract test. No engine, rule,
 evaluator, MCTS or harness behavior changed. Test count increased from 201 to
 202. Confidence HIGH: hashes are checked against live modules, commands are
 data-only, and all previous tests pass.
+
+### Launch evidence
+
+- PR #13 was clean at exact head `0612369`; both CI checks passed and no review
+  feedback was outstanding.
+- Detached source: `/tmp/varde-calibration-source-20260715` at exact commit
+  `0612369d1d5e9739a57aa8859fb8cb49afd2eeca`.
+- A-uniform-250 launched at 2026-07-15T15:41:25-05:00 in managed session
+  `86550`, parent PID `48847`, with eight active worker processes.
+- Initial `state.json` records the exact manifest code, registry, native-agent,
+  MCTS-agent and source hashes; status `running`, next task 0.
+- One attempted detached `nohup` launch was reaped by the shell before Python
+  started. It created no checkpoint or game. The empty log was removed and the
+  managed-session launch replaced it.
+
+## Batch 2 — Calibration stage A at 250 simulations
+
+### Contract
+
+**Behaviors:** complete A-uniform-250 and A-light-250 from the frozen detached
+source; preserve every record and failure; inspect outcomes only after each job
+is complete; perform the predeclared operational advancement audit.
+
+**Build on:** immutable manifest commit `0612369`, external atomic checkpoints,
+ordered process reduction and cancel/resume support.
+
+**Acceptance criteria:**
+
+- [ ] First eight-game checkpoint appears with exact provenance.
+- [ ] A-uniform-250 completes or records an explicit reproducible blocker.
+- [ ] A-light-250 completes or records an explicit reproducible blocker.
+- [ ] Zero hidden/cancelled attempts; accounting reconciles to schedule.
+- [ ] Operational audit applies only predeclared advancement rules.
+- [ ] Compact non-claim summary committed; raw artifacts remain external.
+
+**Blast radius:** no repository behavior changes. Long-running external compute
+uses eight workers and writes only under `/Users/armand/varde-runs/`.

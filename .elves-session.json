@@ -10,10 +10,10 @@
   "pr_number": 13,
   "source_base": "565c08b0b0dae0ba3b9ec5bbdbd3ab8927cced6b",
   "continuation_guard": {
-    "remaining_batches": 5,
+    "remaining_batches": 4,
     "stop_allowed": false,
     "checkpoint_is_stop": false,
-    "next_required_action": "Commit and push the frozen manifest, then launch A-uniform-250 after exact-head CI"
+    "next_required_action": "Monitor A-uniform-250 through its first eight-game checkpoint and then to completion"
   },
   "test_baseline": {
     "passed": 201,
@@ -23,14 +23,14 @@
     "reason": null
   },
   "current_batch": {
-    "id": 1,
-    "name": "Timing and immutable calibration manifest",
+    "id": 2,
+    "name": "Calibration stage A at 250 simulations",
     "status": "in_progress"
   },
   "batches": [
     {"id": 0, "name": "Run staging and settlement", "status": "complete", "commit": "7a0aed1"},
-    {"id": 1, "name": "Timing and immutable calibration manifest", "status": "in_progress", "commit": null},
-    {"id": 2, "name": "Calibration stage A at 250 simulations", "status": "pending", "commit": null},
+    {"id": 1, "name": "Timing and immutable calibration manifest", "status": "complete", "commit": "0612369"},
+    {"id": 2, "name": "Calibration stage A at 250 simulations", "status": "in_progress", "commit": null},
     {"id": 3, "name": "Calibration stages B and C", "status": "pending", "commit": null},
     {"id": 4, "name": "Fresh health depth and adversarial screens", "status": "pending", "commit": null},
     {"id": 5, "name": "Evidence publication and computer-only decision", "status": "pending", "commit": null}
