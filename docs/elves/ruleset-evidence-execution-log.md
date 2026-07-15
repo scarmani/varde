@@ -151,3 +151,18 @@ ordered process reduction and cancel/resume support.
 
 **Blast radius:** no repository behavior changes. Long-running external compute
 uses eight workers and writes only under `/Users/armand/varde-runs/`.
+
+### Predeclared operational audit
+
+Before the first eight-game checkpoint existed, added
+`research/harness/audit_calibration.py`. It refuses partial jobs, reconstructs
+each exact manifest config, verifies checkpoint and provenance hashes, hashes
+all raw artifacts, applies only the frozen correctness/termination advancement
+gate, and always emits `promotion_blocked: true`. Diagnostic health gates are
+retained without becoming small-sample elimination or promotion claims.
+
+The synthetic two-policy audit fixture schedules the full frozen 480-record
+shape and verifies that zero-failure candidates advance mechanically. Focused
+suite: 10 passed. Full suite: 203 passed in 33.85s under concurrent calibration
+load; Ruff, Python compilation and JavaScript syntax passed. No partial
+calibration outcome was read while implementing or testing the audit.

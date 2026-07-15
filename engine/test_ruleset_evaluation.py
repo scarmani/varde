@@ -3,6 +3,7 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 import unittest
 
+from research.harness.audit_calibration import audit_stage_a, expected_config
 from research.harness.evaluate_rulesets import (
     AgentSpec,
     _depth_ladder,
@@ -143,6 +144,37 @@ class TestRulesetEvaluationSchedule(unittest.TestCase):
 
 
 class TestRulesetEvaluationRun(unittest.TestCase):
+    def test_stage_a_audit_applies_frozen_operational_gate(self):
+        manifest_path = (
+            Path(__file__).resolve().parents[1]
+            / "research/manifests/ruleset-calibration-20260715.json"
+        )
+        manifest = json.loads(manifest_path.read_text())
+        with TemporaryDirectory() as directory:
+            root = Path(directory)
+            for job in manifest["jobs"][:2]:
+                job["output_dir"] = str(root / job["id"])
+                run_evaluation(
+                    job["output_dir"],
+                    config=expected_config(job),
+                    workers=3,
+                    checkpoint_interval=5,
+                    evaluator=synthetic_game,
+                )
+
+            audit = audit_stage_a(manifest)
+            candidates = [item["id"] for item in manifest["candidates"]]
+            self.assertEqual(audit["stage_b_rulesets"], candidates)
+            self.assertTrue(audit["promotion_blocked"])
+            self.assertEqual(
+                audit["claim_status"],
+                "non-claim calibration operational audit",
+            )
+            self.assertTrue(all(
+                item["operational_pass"]
+                for item in audit["candidates"].values()
+            ))
+
     def test_calibration_manifest_is_frozen_and_matches_agent_specs(self):
         path = (
             Path(__file__).resolve().parents[1]
