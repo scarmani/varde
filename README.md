@@ -146,6 +146,7 @@ Evidence summaries live in `research/results/`.
 - `engine/selfplay.py` — random, greedy, and epsilon-greedy telemetry
 - `engine/server.py` — local JSON API and static-file server
 - `research/` — reproducible V2 training, paired evaluation, and checkpoints
+- `docs/playtest/` — neutral human-study protocol, briefs, forms, and gates
 - `web/` — responsive canvas hotseat client
 - `progress.md` — implementation and handoff log
 
@@ -157,3 +158,10 @@ the summit-rule variant, saturation avoidance, board size, and swap balance.
 The ruleset-promise program now uses independent native search and MCTS as a
 computational falsification stage before structured human evaluation. No
 variant is promoted until those generated gates and the human study pass.
+
+For a scored human hotseat game, **Start local record** before move one and
+**Export JSON** afterward. The recorder captures action timing and resolution
+telemetry only in browser memory; it collects no names or device identifiers
+and sends nothing to the server. The counterbalanced panel schedule and
+engine-derived comprehension puzzles are generated with
+`research/harness/human_study.py` as documented in the playtest protocol.

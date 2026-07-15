@@ -37,6 +37,8 @@ canvas { display: block; width: 100%; height: auto; aspect-ratio: 24 / 17; touch
 .training-controls { background: rgba(73,106,82,.055); }
 .profile-controls { background: rgba(183,101,69,.045); }
 .profile-controls span { max-width: 76ch; }
+.playtest-controls { background: rgba(71,92,118,.055); }
+.playtest-controls span { max-width: 76ch; }
 button, select { border: 1px solid #bcb19c; border-radius: 999px; padding: 9px 15px; color: var(--ink); background: #fffdf8; font: 650 .85rem inherit; cursor: pointer; }
 button:hover { border-color: var(--moss); transform: translateY(-1px); }
 button:disabled { cursor: not-allowed; opacity: .45; transform: none; }

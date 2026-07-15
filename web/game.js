@@ -31,6 +31,10 @@ const resetTrainingButton = document.querySelector("#reset-training-btn");
 const trainingStatus = document.querySelector("#training-status");
 const newButton = document.querySelector("#new-btn");
 const rulesetNote = document.querySelector("#ruleset-note");
+const startRecordButton = document.querySelector("#start-record-btn");
+const exportRecordButton = document.querySelector("#export-record-btn");
+const clearRecordButton = document.querySelector("#clear-record-btn");
+const playtestStatus = document.querySelector("#playtest-status");
 
 let game = null;
 let projected = new Map();
@@ -46,6 +50,8 @@ let training = null;
 let trainingPoll = null;
 let profileCatalog = null;
 let rulesetCatalog = null;
+let playtestRecord = null;
+let playtestLastActionAt = performance.now();
 
 const savedSpeed = Number(
   localStorage.getItem("varde-playback-speed")
@@ -77,6 +83,135 @@ function profileById(profileId) {
 
 function rulesetById(rulesetId) {
   return rulesetCatalog?.rulesets?.find((ruleset) => ruleset.id === rulesetId);
+}
+
+function localSessionId() {
+  if (crypto.randomUUID) return crypto.randomUUID();
+  const values = new Uint32Array(4);
+  crypto.getRandomValues(values);
+  return Array.from(values, (value) => value.toString(16).padStart(8, "0")).join("");
+}
+
+function updatePlaytestControls() {
+  const canStart = Boolean(
+    game
+    && game.match?.mode === "hotseat"
+    && game.moves_played === 0
+    && rulesetById(game.rules)?.status === "candidate"
+    && !playtestRecord,
+  );
+  startRecordButton.disabled = !canStart;
+  exportRecordButton.disabled = !playtestRecord;
+  clearRecordButton.disabled = !playtestRecord;
+  if (!playtestRecord) {
+    if (game?.match?.mode !== "hotseat") {
+      playtestStatus.textContent = "Recording is available only for two-player hotseat games";
+    } else if (game.moves_played) {
+      playtestStatus.textContent = "Start requires a fresh game before move one";
+    } else {
+      playtestStatus.textContent = "Ready before move one · local export · no names or network submission";
+    }
+    return;
+  }
+  const label = playtestRecord.status === "complete" ? "Complete" : "Recording";
+  playtestStatus.textContent = `${label} · ${playtestRecord.actions.length} action${playtestRecord.actions.length === 1 ? "" : "s"} · export stays on this device`;
+}
+
+function startPlaytestRecord() {
+  if (
+    !game
+    || game.match?.mode !== "hotseat"
+    || game.moves_played !== 0
+    || rulesetById(game.rules)?.status !== "candidate"
+  ) return;
+  playtestRecord = {
+    format: "varde-human-playtest",
+    version: 1,
+    session_id: localSessionId(),
+    source: "browser-local-hotseat",
+    rules: {
+      id: game.rules,
+      revision: rulesetById(game.rules).evaluation_id,
+    },
+    board_size: game.n,
+    catalog_version: rulesetCatalog.version,
+    native_evaluator_hash: rulesetCatalog.native_evaluators?.hash || null,
+    status: "active",
+    actions: [],
+    final_score: null,
+    resumption_used: false,
+    ended_by_stagnation: false,
+  };
+  playtestLastActionAt = performance.now();
+  updatePlaytestControls();
+}
+
+function clearPlaytestRecord() {
+  playtestRecord = null;
+  playtestLastActionAt = performance.now();
+  updatePlaytestControls();
+}
+
+function actionKind(path) {
+  return ({
+    "/api/play": "play",
+    "/api/pass": "pass",
+    "/api/swap": "swap",
+    "/api/extend": "extend",
+    "/api/finish-extensions": "finish-extension",
+    "/api/resume": "resume",
+  })[path];
+}
+
+function capturePlaytestAction(path, body, before, next, actionAt) {
+  const kind = actionKind(path);
+  if (!playtestRecord || !kind) return;
+  if (playtestRecord.status === "complete" && kind !== "resume") return;
+  if (kind === "resume") playtestRecord.status = "active";
+  const waves = next.capture_waves || [];
+  const stonesBefore = before.points.reduce(
+    (count, point) => count + point.stack.length, 0,
+  );
+  const stonesAfter = next.points.reduce(
+    (count, point) => count + point.stack.length, 0,
+  );
+  const placed = kind === "play" || kind === "extend" ? 1 : 0;
+  playtestRecord.actions.push({
+    index: playtestRecord.actions.length,
+    kind,
+    point: body.point ? [...body.point] : null,
+    actor_color: before.to_move,
+    elapsed_ms: Math.max(0, Math.round(actionAt - playtestLastActionAt)),
+    move_before: before.moves_played,
+    move_after: next.moves_played,
+    captured: Math.max(0, stonesBefore + placed - stonesAfter),
+    capture_waves: waves.map((wave) => wave.map((point) => [...point])),
+    score_after: {...next.score},
+  });
+  playtestLastActionAt = performance.now();
+  playtestRecord.resumption_used = Boolean(next.resumption_used);
+  playtestRecord.ended_by_stagnation = Boolean(next.no_progress_end);
+  if (next.finished) {
+    playtestRecord.status = "complete";
+    playtestRecord.final_score = {...next.score};
+  } else {
+    playtestRecord.status = "active";
+    playtestRecord.final_score = null;
+  }
+  updatePlaytestControls();
+}
+
+function exportPlaytestRecord() {
+  if (!playtestRecord) return;
+  const blob = new Blob(
+    [JSON.stringify(playtestRecord, null, 2)],
+    {type: "application/json"},
+  );
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = `varde-playtest-${playtestRecord.session_id}.json`;
+  link.click();
+  URL.revokeObjectURL(link.href);
 }
 
 function populateRulesetSelect(catalog) {
@@ -269,7 +404,7 @@ function updateControls() {
   }
   finishExtButton.hidden = !game.extension_only_turn;
   finishExtButton.disabled = thinking || Boolean(game.match?.computer_turn);
-  const computerTurn = game.match?.computer_turn || thinking;
+  const computerTurn = game.match?.computer_turn || thinking || actionInFlight;
   passButton.disabled = game.finished || game.moves_played === 0 || computerTurn;
   swapButton.hidden = !game.swap_available || computerTurn;
   resumeButton.hidden = !game.resumption_available;
@@ -282,6 +417,7 @@ function updateControls() {
   if (watch && !game.match?.computer_can_act && watchPlaying) {
     stopPlayback({cancelWait: false});
   }
+  updatePlaytestControls();
 }
 
 async function scheduleComputerMove(forceOne = false) {
@@ -319,11 +455,20 @@ async function scheduleComputerMove(forceOne = false) {
 }
 
 async function humanAction(path, body = {}) {
-  if (thinking || game?.match?.computer_turn) return;
+  if (thinking || actionInFlight || game?.match?.computer_turn) return;
+  const before = game;
+  const actionAt = performance.now();
   try {
-    setGame(await request(path, body));
+    actionInFlight = true;
+    updateControls();
+    const next = await request(path, body);
+    actionInFlight = false;
+    capturePlaytestAction(path, body, before, next, actionAt);
+    setGame(next);
   } catch (error) {
+    actionInFlight = false;
     message.textContent = error.message;
+    updateControls();
   }
 }
 
@@ -622,10 +767,13 @@ canvas.addEventListener("click", async (event) => {
 });
 
 newButton.addEventListener("click", async () => {
-  if (game.moves_played && !confirm("Start a new game?")) return;
+  const warning = playtestRecord
+    ? "Start a new game and clear the current local playtest record? Export it first if you need it."
+    : "Start a new game?";
+  if ((game.moves_played || playtestRecord) && !confirm(warning)) return;
   stopPlayback();
   try {
-    setGame(await request("/api/new", {
+    const next = await request("/api/new", {
       n: Number(sizeSelect.value),
       rules: rulesSelect.value,
       mode: modeSelect.value,
@@ -637,7 +785,9 @@ newButton.addEventListener("click", async () => {
       white_difficulty: whiteDifficultySelect.value,
       white_profile: whiteProfileSelect.value,
       explain: explainCheckbox.checked,
-    }));
+    });
+    clearPlaytestRecord();
+    setGame(next);
   } catch (error) {
     message.textContent = error.message;
   }
@@ -652,6 +802,11 @@ rulesSelect.addEventListener("change", () => updateRulesetSetup({coerceSize: tru
 profileSelect.addEventListener("change", updateProfileNote);
 blackProfileSelect.addEventListener("change", updateProfileNote);
 whiteProfileSelect.addEventListener("change", updateProfileNote);
+startRecordButton.addEventListener("click", startPlaytestRecord);
+exportRecordButton.addEventListener("click", exportPlaytestRecord);
+clearRecordButton.addEventListener("click", () => {
+  if (confirm("Clear the local playtest record?")) clearPlaytestRecord();
+});
 
 playButton.addEventListener("click", () => {
   if (watchPlaying) {
@@ -684,13 +839,20 @@ document.querySelector("#save-btn").addEventListener("click", async () => {
   link.click();
   URL.revokeObjectURL(link.href);
 });
-document.querySelector("#load-btn").addEventListener("click", () => document.querySelector("#load-file").click());
+document.querySelector("#load-btn").addEventListener("click", () => {
+  if (
+    playtestRecord
+    && !confirm("Load a game and clear the current local playtest record? Export it first if you need it.")
+  ) return;
+  document.querySelector("#load-file").click();
+});
 document.querySelector("#load-file").addEventListener("change", async (event) => {
   const file = event.target.files[0];
   if (!file) return;
   stopPlayback();
   try {
     const loaded = await request("/api/load", JSON.parse(await file.text()));
+    clearPlaytestRecord();
     setGame(loaded, loaded.match.mode !== "watch");
   }
   catch (error) { message.textContent = error.message; }
@@ -781,6 +943,10 @@ function advanceTime(ms) {
   draw();
 }
 window.advanceTime = advanceTime;
+window.get_playtest_record = () => (
+  playtestRecord ? JSON.parse(JSON.stringify(playtestRecord)) : null
+);
+window.export_playtest_record = exportPlaytestRecord;
 
 function frame(now) {
   const delta = Math.min(100, now - lastFrame);
@@ -810,6 +976,12 @@ window.render_game_to_text = () => JSON.stringify({
     action_in_flight: actionInFlight,
   },
   training,
+  playtest: playtestRecord ? {
+    status: playtestRecord.status,
+    actions: playtestRecord.actions.length,
+    rules_revision: playtestRecord.rules.revision,
+    local_only: true,
+  } : null,
   profiles: profileCatalog ? {
     version: profileCatalog.version,
     catalog_hash: profileCatalog.catalog_hash,
