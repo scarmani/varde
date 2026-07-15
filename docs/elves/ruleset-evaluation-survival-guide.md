@@ -31,14 +31,14 @@ probes for evidence of beauty or human strategic depth.
 - **Checkpoint expectation:** a reviewable PR with honest local evidence and explicit deferred human gates
 - **Time budget:** approximately 8 hours, finite scope rather than a hard deadline
 - **Average batch time so far:** not yet measured
-- **Batches remaining:** 6 of 6 product batches; setup complete
+- **Batches remaining:** 5 of 6 product batches
 
 ## Stop Gate
 
-- **Planned batches remaining:** 6
+- **Planned batches remaining:** 5
 - **Stop allowed right now:** no
-- **Why:** the scoring repair and evaluation program are not implemented
-- **Next required action:** complete Batch 1 scoring/registry/API/browser correctness
+- **Why:** independent evaluators, MCTS, falsification, and human-study surfaces remain
+- **Next required action:** complete Batch 2 native evaluators and tactical fixtures
 
 ## Non-Negotiables
 
@@ -66,11 +66,11 @@ probes for evidence of beauty or human strategic depth.
 
 **Status:** In progress
 
-**Active batch:** Batch 1 — correctness, ruleset registry, and browser/API truth
+**Active batch:** Batch 2 — native ruleset evaluators and tactical admission
 
-**What was just finished:** Batch 0 is pushed and PR #12 is the active review surface.
+**What was just finished:** Batch 1 repaired the Gjerde scorer and centralized browser/API ruleset truth; its 167-test and browser gates pass.
 
-**Single next action:** Repair Gjerde open-boundary scoring with failing edge-category tests.
+**Single next action:** Survey current evaluator seams and write the ruleset-native feature contract before implementation.
 
 ## Active Compute
 
@@ -78,23 +78,23 @@ No active paid or long-running compute.
 
 ## Next Exact Batch
 
-**Batch:** 1 — Correctness, ruleset registry, and browser/API truth
+**Batch:** 2 — Native ruleset evaluators and tactical admission
 
 **Scope:**
-- Fix Gjerde open-boundary scoring and add category-level edge tests.
-- Centralize versioned ruleset metadata and derive compatibility tuples/limits.
-- Add `/api/rulesets`, dynamic selector behavior, and archived/broken new-game rejection.
-- Correct affected public documentation and invalidate old Gjerde conclusions.
+- Add objective-aligned bounded evaluator terms for all six frozen candidates.
+- Keep Classic Balanced seeded behavior exact.
+- Add constructed tactical fixtures for every distinctive mechanic.
+- Expose evaluator revision/hash to later evidence artifacts.
 
 **Acceptance criteria:**
-- [ ] One outer Gjerde claim scores zero; complete fences score correctly in both resolutions.
-- [ ] Current ruleset IDs and legacy saves remain compatible.
-- [ ] Browser receives registry metadata and cannot start archived/broken rulesets.
-- [ ] Full tests, syntax, API smoke, Playwright state/screenshots, and console review pass.
+- [ ] Each evaluator is finite, deterministic, bounded, legal, and non-mutating.
+- [ ] Classic Balanced decision/score/node parity remains exact.
+- [ ] Tactical admission fixtures solve each declared ruleset mechanic.
+- [ ] Full tests, compile, and fresh-position performance checks pass.
 
-**Risk:** shared ruleset constants and scoring feed engine, server, AI, saves, research, and UI; regression proof must trace every consumer.
+**Risk:** evaluator terms can encode desired conclusions or recurse through legal scans; fixtures must prove concepts without pretending to prove game quality.
 
-**Rollback tag:** `elves/ruleset-evaluation-pre-batch-1`
+**Rollback tag:** create `elves/ruleset-evaluation-pre-batch-2` after the Batch 1 checkpoint.
 
 ## Recovery Order
 

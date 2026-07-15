@@ -12,6 +12,8 @@ Points are integer (x, y) pairs on an exact scaled lattice.
 """
 
 from collections import deque
+from dataclasses import asdict, dataclass
+from types import MappingProxyType
 
 BLACK, WHITE = "B", "W"
 
@@ -168,7 +170,8 @@ class KagomeBoard:
 def score_cells(board, state):
     """Gjerde: fenced fields. A connected region of cells (adjacent
     through unclaimed lines) belongs to whoever claimed every line on
-    its boundary; lines themselves score nothing."""
+    its boundary. An unclaimed outer line leaves the region open, so it
+    cannot score; lines themselves score nothing."""
     pts = {BLACK: 0, WHITE: 0}
     seen = set()
     for start in board.cells:
@@ -176,6 +179,7 @@ def score_cells(board, state):
             continue
         region = []
         border = set()
+        open_to_outside = False
         dq = deque([start])
         seen.add(start)
         while dq:
@@ -186,11 +190,13 @@ def score_cells(board, state):
                 if stack:
                     border.add(stack[-1])
                 else:
+                    if len(board.edge_cells[line]) == 1:
+                        open_to_outside = True
                     for nb in board.edge_cells[line]:
                         if nb != cell and nb not in seen:
                             seen.add(nb)
                             dq.append(nb)
-        if len(border) == 1:
+        if not open_to_outside and len(border) == 1:
             pts[border.pop()] += len(region)
     return pts
 
@@ -437,14 +443,136 @@ EXTENSION_RULES = {
     "breath-run": {"scope": "chain", "after_move": False},
     "breath-cap": {"scope": "adjacent", "after_move": True},
 }
+
+
+@dataclass(frozen=True)
+class RulesetSpec:
+    """Immutable product and research metadata for a compatible ruleset ID."""
+
+    id: str
+    revision: str
+    evaluation_id: str
+    label: str
+    status: str
+    family: str
+    geometry: str
+    scoring: str
+    min_size: int
+    max_size: int
+    public_new_game: bool
+    description: str
+    archival_reason: str | None = None
+
+    def public_dict(self):
+        return asdict(self)
+
+
+RULESET_CATALOG_VERSION = 1
+
+# IDs and ordering are save/API compatibility surfaces. Evaluation revisions
+# freeze a rules definition for an evidence round without rewriting old saves.
+RULESET_SPECS = (
+    RulesetSpec(
+        "classic", "1.3", "classic-1.3", "Classic", "candidate",
+        "classic", "honeycomb-vertices", "controlled-points", 3, 6, True,
+        "Stack, surround, build skies, and control the vertex board.",
+    ),
+    RulesetSpec(
+        "rosette", "0.1", "rosette-0.1", "Rosette", "candidate",
+        "rosette", "honeycomb-vertices", "controlled-points", 3, 6, True,
+        "Flat cyclic groups survive; sealed groups are entombed by caps.",
+    ),
+    RulesetSpec(
+        "breath", "0.1", "breath-0.1", "Breath", "candidate",
+        "breath", "honeycomb-vertices", "controlled-points", 3, 6, True,
+        "Flat play where a move needs breath before captures resolve.",
+    ),
+    RulesetSpec(
+        "breath-extend", "0.1", "breath-extend-0.1",
+        "Breath + one free extension", "archived", "breath",
+        "honeycomb-vertices", "controlled-points", 3, 6, False,
+        "Breath with one free rescue before the normal move.",
+        "Defense-heavy extension control archived after exploratory probes.",
+    ),
+    RulesetSpec(
+        "breath-extend-multi", "0.1", "breath-extend-multi-0.1",
+        "Breath + multi-group extensions", "archived", "breath",
+        "honeycomb-vertices", "controlled-points", 3, 6, False,
+        "Breath with one free rescue for each threatened group.",
+        "Redundant defense-heavy extension control.",
+    ),
+    RulesetSpec(
+        "breath-extend-run", "0.1", "breath-extend-run-0.1",
+        "Breath + chain extension", "archived", "breath",
+        "honeycomb-vertices", "controlled-points", 3, 6, False,
+        "Breath with a repeated rescue chain before the normal move.",
+        "Defense-heavy chain control archived after exploratory probes.",
+    ),
+    RulesetSpec(
+        "breath-rescue", "0.1", "breath-rescue-0.1", "Breath rescue",
+        "control", "breath", "honeycomb-vertices", "controlled-points",
+        3, 6, False,
+        "A rescue action replaces the player's normal move.",
+        "Attack-favored research control; not a flagship candidate.",
+    ),
+    RulesetSpec(
+        "breath-run", "0.1", "breath-run-0.1", "Breath run",
+        "candidate", "breath", "honeycomb-vertices", "controlled-points",
+        3, 6, True,
+        "A rescue chain replaces the normal move, creating chase tempo.",
+    ),
+    RulesetSpec(
+        "breath-cap", "0.1", "breath-cap-0.1", "Breath cap",
+        "broken", "breath", "honeycomb-vertices", "controlled-points",
+        3, 6, False,
+        "Adjacent rescues may cover occupied columns before a normal move.",
+        "Cap rescues permit unbounded stacking, so live play need not terminate.",
+    ),
+    RulesetSpec(
+        "gjerde", "0.1", "gjerde-breath-0.1", "Gjerde",
+        "candidate", "gjerde-breath", "kagome-lines", "fenced-cells",
+        3, 8, True,
+        "Claim connected lines; only completely closed, single-color fields score.",
+    ),
+    RulesetSpec(
+        "gjerde-go", "0.1", "gjerde-go-0.1", "Gjerde-Go",
+        "candidate", "gjerde-go", "kagome-lines", "fenced-cells",
+        3, 8, True,
+        "Gjerde fencing with capture-first Go-style resolution.",
+    ),
+)
+RULESET_REGISTRY = MappingProxyType({spec.id: spec for spec in RULESET_SPECS})
+
+
+def get_ruleset_spec(rules):
+    try:
+        return RULESET_REGISTRY[rules]
+    except KeyError as exc:
+        raise ValueError("invalid ruleset") from exc
+
+
+def rulesets_public():
+    return {
+        "version": RULESET_CATALOG_VERSION,
+        "rulesets": [spec.public_dict() for spec in RULESET_SPECS],
+    }
+
+
 # Flat rulesets play without stacking, skies, terrain, or summits.
-# The breath subset additionally checks the mover's liberty BEFORE
-# captures; gjerde-go keeps ordinary Go resolution (captures first),
-# so eye-fills can capture and classic life-and-death returns.
-BREATH_RULESETS = ("breath",) + tuple(EXTENSION_RULES) + ("gjerde",)
-FLAT_RULESETS = BREATH_RULESETS + ("gjerde-go",)
-GJERDE_RULESETS = ("gjerde", "gjerde-go")
-RULESETS = ("classic", "rosette") + FLAT_RULESETS
+# The breath subset additionally checks the mover's liberty BEFORE captures;
+# gjerde-go keeps ordinary Go resolution (captures first).
+RULESETS = tuple(spec.id for spec in RULESET_SPECS)
+BREATH_RULESETS = tuple(
+    spec.id for spec in RULESET_SPECS
+    if spec.family in ("breath", "gjerde-breath")
+)
+FLAT_RULESETS = tuple(
+    spec.id for spec in RULESET_SPECS
+    if spec.family in ("breath", "gjerde-breath", "gjerde-go")
+)
+GJERDE_RULESETS = tuple(
+    spec.id for spec in RULESET_SPECS if spec.geometry == "kagome-lines"
+)
 
 
 class Game:

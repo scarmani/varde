@@ -9,8 +9,9 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 from varde import (
-    BLACK, BREATH_RULESETS, EXTENSION_RULES, GJERDE_RULESETS, RULESETS,
-    WHITE, Game, Illegal, groups_of, has_sky, other,
+    BLACK, BREATH_RULESETS, EXTENSION_RULES, RULESETS,
+    WHITE, Game, Illegal, get_ruleset_spec, groups_of, has_sky, other,
+    rulesets_public,
 )
 from learning import LearningModel, TRAINING_BATCHES, TrainingService
 from opponent import BotDecision, choose_decision, greedy_decision
@@ -378,7 +379,32 @@ def snapshot_payload(game, match):
     return payload
 
 
+def validate_ruleset_size(rules, n, *, public_new_game):
+    if rules not in RULESETS:
+        raise ValueError("rules must be one of: " + ", ".join(RULESETS))
+    spec = get_ruleset_spec(rules)
+    if public_new_game and not spec.public_new_game:
+        reason = f": {spec.archival_reason}" if spec.archival_reason else ""
+        raise ValueError(
+            f"{spec.label} is {spec.status} and cannot start a new public game{reason}"
+        )
+    if isinstance(n, bool) or not isinstance(n, int):
+        raise ValueError("board size must be an integer")
+    if not spec.min_size <= n <= spec.max_size:
+        raise ValueError(
+            f"board size must be {spec.min_size}-{spec.max_size} for {rules}"
+        )
+    return spec
+
+
 def load_snapshot(payload):
+    if not isinstance(payload, dict):
+        raise ValueError("invalid Varde snapshot")
+    validate_ruleset_size(
+        payload.get("rules", "classic"),
+        payload.get("n"),
+        public_new_game=False,
+    )
     game = Game.from_dict(payload)
     match = MatchConfig.from_snapshot(payload)
     if "match" not in payload and "computer" not in payload:
@@ -606,6 +632,9 @@ class VardeHandler(SimpleHTTPRequestHandler):
         if route == "/api/profiles":
             self._json(profiles_public(MODEL.status()))
             return
+        if route == "/api/rulesets":
+            self._json(rulesets_public())
+            return
         if route == "/api/state":
             with GAME_LOCK:
                 self._json(public_view(GAME, MATCH, LAST_DECISION))
@@ -643,17 +672,12 @@ class VardeHandler(SimpleHTTPRequestHandler):
                 return
             with GAME_LOCK:
                 if route == "/api/new":
-                    n = int(body.get("n", 3))
+                    raw_n = body.get("n", 3)
+                    if isinstance(raw_n, bool):
+                        raise ValueError("board size must be an integer")
+                    n = int(raw_n)
                     rules = body.get("rules", "classic")
-                    if rules not in RULESETS:
-                        raise ValueError(
-                            "rules must be one of: " + ", ".join(RULESETS)
-                        )
-                    largest = 8 if rules in GJERDE_RULESETS else 6
-                    if not 3 <= n <= largest:
-                        raise ValueError(
-                            f"board size must be 3-{largest} for {rules}"
-                        )
+                    validate_ruleset_size(rules, n, public_new_game=True)
                     game = Game(n, rules=rules)
                     MATCH = MatchConfig.from_new_game(game, body)
                     GAME = game
@@ -697,8 +721,6 @@ class VardeHandler(SimpleHTTPRequestHandler):
                     LAST_DECISION = apply_computer_action(GAME, MATCH)
                 elif route == "/api/load":
                     loaded_game, loaded_match = load_snapshot(body)
-                    if loaded_game.board.n not in (3, 4, 5, 6):
-                        raise ValueError("board size must be 3, 4, 5, or 6")
                     GAME, MATCH = loaded_game, loaded_match
                     LAST_DECISION = None
                 else:

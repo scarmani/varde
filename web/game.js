@@ -29,6 +29,8 @@ const trainButton = document.querySelector("#train-btn");
 const cancelTrainingButton = document.querySelector("#cancel-training-btn");
 const resetTrainingButton = document.querySelector("#reset-training-btn");
 const trainingStatus = document.querySelector("#training-status");
+const newButton = document.querySelector("#new-btn");
+const rulesetNote = document.querySelector("#ruleset-note");
 
 let game = null;
 let projected = new Map();
@@ -43,6 +45,7 @@ let watchPlaying = false;
 let training = null;
 let trainingPoll = null;
 let profileCatalog = null;
+let rulesetCatalog = null;
 
 const savedSpeed = Number(
   localStorage.getItem("varde-playback-speed")
@@ -70,6 +73,46 @@ async function request(path, body = null) {
 
 function profileById(profileId) {
   return profileCatalog?.profiles?.find((profile) => profile.id === profileId);
+}
+
+function rulesetById(rulesetId) {
+  return rulesetCatalog?.rulesets?.find((ruleset) => ruleset.id === rulesetId);
+}
+
+function populateRulesetSelect(catalog) {
+  const selected = rulesSelect.value || "classic";
+  rulesSelect.replaceChildren(...catalog.rulesets.map((ruleset) => {
+    const option = document.createElement("option");
+    option.value = ruleset.id;
+    option.disabled = !ruleset.public_new_game;
+    const suffix = ruleset.public_new_game ? "" : ` — ${ruleset.status}`;
+    option.textContent = `${ruleset.label}${suffix}`;
+    return option;
+  }));
+  rulesSelect.value = rulesetById(selected) ? selected : "classic";
+}
+
+function updateRulesetSetup({coerceSize = false} = {}) {
+  const ruleset = rulesetById(rulesSelect.value);
+  if (!ruleset) return;
+  for (const option of sizeSelect.options) {
+    const size = Number(option.value);
+    option.disabled = size < ruleset.min_size || size > ruleset.max_size;
+  }
+  const selectedSize = Number(sizeSelect.value);
+  if (coerceSize && (selectedSize < ruleset.min_size || selectedSize > ruleset.max_size)) {
+    sizeSelect.value = String(Math.min(4, ruleset.max_size));
+  }
+  const status = ruleset.status === "candidate" ? "evaluation candidate" : ruleset.status;
+  const reason = ruleset.archival_reason ? ` ${ruleset.archival_reason}` : "";
+  rulesetNote.textContent = `${ruleset.label} ${ruleset.evaluation_id} · ${status}. ${ruleset.description}${reason}`;
+  newButton.disabled = !ruleset.public_new_game;
+}
+
+function installRulesetCatalog(catalog) {
+  rulesetCatalog = catalog;
+  populateRulesetSelect(catalog);
+  updateRulesetSetup();
 }
 
 function populateProfileSelect(select, prefix) {
@@ -118,6 +161,7 @@ function updateProfileNote() {
 function syncSetupControls() {
   if (!game?.match) return;
   if (game.rules) rulesSelect.value = game.rules;
+  updateRulesetSetup();
   modeSelect.value = game.match.mode;
   if (game.match.human_color) colorSelect.value = game.match.human_color;
   difficultySelect.value = game.match.difficulty;
@@ -577,7 +621,7 @@ canvas.addEventListener("click", async (event) => {
   await humanAction("/api/play", {point: point.coord});
 });
 
-document.querySelector("#new-btn").addEventListener("click", async () => {
+newButton.addEventListener("click", async () => {
   if (game.moves_played && !confirm("Start a new game?")) return;
   stopPlayback();
   try {
@@ -604,6 +648,7 @@ resumeButton.addEventListener("click", async () => humanAction("/api/resume"));
 finishExtButton.addEventListener("click", async () =>
   humanAction("/api/finish-extensions"));
 modeSelect.addEventListener("change", updateSetupVisibility);
+rulesSelect.addEventListener("change", () => updateRulesetSetup({coerceSize: true}));
 profileSelect.addEventListener("change", updateProfileNote);
 blackProfileSelect.addEventListener("change", updateProfileNote);
 whiteProfileSelect.addEventListener("change", updateProfileNote);
@@ -747,6 +792,7 @@ function frame(now) {
 window.render_game_to_text = () => JSON.stringify({
   coordinate_system: "engine integer coordinates; canvas origin is visual only",
   board_size: game?.n,
+  rules: game?.rules,
   to_move: game?.to_move,
   current_player: game?.current_player,
   move: game ? game.moves_played + 1 : null,
@@ -775,6 +821,14 @@ window.render_game_to_text = () => JSON.stringify({
     },
     description: profileNote?.textContent,
   } : null,
+  rulesets: rulesetCatalog ? {
+    version: rulesetCatalog.version,
+    available: rulesetCatalog.rulesets.filter((ruleset) => ruleset.public_new_game).map((ruleset) => ruleset.id),
+    selected: rulesSelect.value,
+    selected_status: rulesetById(rulesSelect.value)?.status,
+    selected_revision: rulesetById(rulesSelect.value)?.evaluation_id,
+    description: rulesetNote?.textContent,
+  } : null,
   visual: visual ? {
     board_scale: BOARD_SCALE,
     spacing: visual.spacing,
@@ -786,8 +840,13 @@ window.render_game_to_text = () => JSON.stringify({
   capture_animation_wave: animation?.index ?? null,
 });
 
-Promise.all([request("/api/profiles"), request("/api/state")]).then(([catalog, initial]) => {
-  installProfileCatalog(catalog);
+Promise.all([
+  request("/api/profiles"),
+  request("/api/rulesets"),
+  request("/api/state"),
+]).then(([profiles, rulesets, initial]) => {
+  installProfileCatalog(profiles);
+  installRulesetCatalog(rulesets);
   if (initial.match.mode === "watch") stopPlayback();
   setGame(initial, initial.match.mode !== "watch");
 }).catch((error) => { message.textContent = error.message; });

@@ -43,7 +43,10 @@ tempo; killing reduces to herding a group into a dead end where the
 extension is breath-illegal; a doomed group poses a real
 abandon-or-crawl decision.
 
-## Playtest evidence
+## Exploratory probes
+
+Every condition in this section contains only six games. It is preserved to
+generate hypotheses, not to establish balance, strategic depth, or quality.
 
 Instrumented games, identical seeds across all four rulesets
 (classic-tuned AIs; `a` = actions, `e` = free extensions B/W):
@@ -60,10 +63,10 @@ Instrumented games, identical seeds across all four rulesets
 | **mean length** | 554 | 293 | 222 | **214** |
 | **mean stones captured** | 219 | 99 | 18 | 44 |
 
-Breath games run at Go-like density (~1 action per point) with the
-closest margins measured in any ruleset. The extension mechanic roughly
-doubles fighting relative to plain breath — the safety net encourages
-contact play — while tightening margins further.
+In this small probe, Breath games ran at Go-like density (~1 action per point)
+and produced the closest margins measured in that sample. The extension
+mechanic appeared to increase captures. Both observations require independent
+agents and at least 100 games before becoming claims.
 
 ## Attack/defense balance probe
 
@@ -79,12 +82,9 @@ maximizes its own liberties and safety. Eight games per ruleset
 | breath | 2 | 6 | **2–40 points** |
 | breath-extend | 0 | 8 | 2–84 points |
 
-Reading: classic is coin-flip annihilation; rosette punishes pure
-aggression but still ends in wipes; **breath is the closest to a real
-attack/defense equilibrium** — tight margins, and the attacker role
-wins both large-board games; breath-extend systematically favors
-defense (pure aggression never wins), confirming that stacking two
-attacker-dampeners on the same lattice overshoots.
+Exploratory reading only: this one-ply sample suggests Breath may be less
+extreme than the alternatives and breath-extend may favor defense. The sample
+is too small and too evaluator-dependent to establish an equilibrium.
 
 A caveat and a recurring observation: the duelists are one-ply
 caricatures, and in every ruleset the rim's phantom neighbors remain
@@ -104,7 +104,8 @@ Six formulations of the free-extension idea, all engine-flagged:
 | breath-run | as chain, but the run replaces the move |
 | breath-cap | one extension on any space adjacent to the group, stacking allowed, then a move |
 
-Attack/defense duels (8 per variant) and Balanced mirrors:
+Attack/defense duels (eight per variant) and Balanced mirrors. These are
+exploratory probes, not balance evidence:
 
 | Variant | Duels A–D | Duel margins | Verdict |
 |---|---|---|---|
@@ -116,15 +117,15 @@ Attack/defense duels (8 per variant) and Balanced mirrors:
 | breath-run | **4–4** | 6–114 | the equilibrium point of the family |
 | breath-cap | 0–8 | wipes | **broken: mutual cap-rescues never terminate** (heights unbounded without terrain; one mirror hit the move cap with ~2,900 extensions) |
 
-The family forms a tunable dial: free extensions (defense) → no
+The probe suggests a possible tunable dial: free extensions (defense) → no
 extension (mild defense) → chain-as-turn (even) → rescue-as-turn
 (attack). breath-run and breath-rescue are the interesting poles to
 explore by hand; multi and the chain-with-move variant add nothing,
 and breath-cap needs a height bound (i.e. the terrain rule back) to
 even terminate, which defeats its simplicity.
 
-Attacker and Defender are playable in the browser as computer
-profiles under every ruleset.
+The archived and broken controls remain loadable from old saves and available
+to research code, but they cannot start new public browser games.
 
 ## Discoveries from human play (breath-run vs Attacker)
 

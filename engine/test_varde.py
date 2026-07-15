@@ -809,6 +809,38 @@ class TestGjerde(unittest.TestCase):
         for cell in b.cells:
             self.assertEqual(len(b.cell_edges[cell]), 6)
 
+    def test_open_exterior_never_scores_a_cell_region(self):
+        for rules in ("gjerde", "gjerde-go"):
+            with self.subTest(rules=rules):
+                g = Game(4, rules=rules)
+                self.assertEqual(g.score(), {BLACK: 0, WHITE: 0})
+                exterior = next(
+                    line
+                    for line, cells in g.board.edge_cells.items()
+                    if len(cells) == 1
+                )
+                put(g, exterior, BLACK)
+                self.assertEqual(g.score(), {BLACK: 0, WHITE: 0})
+
+    def test_partial_edge_fence_scores_nothing_but_closed_fence_scores(self):
+        for rules in ("gjerde", "gjerde-go"):
+            with self.subTest(rules=rules):
+                g = Game(4, rules=rules)
+                edge_cell = next(
+                    cell
+                    for cell in g.board.cells
+                    if any(
+                        len(g.board.edge_cells[line]) == 1
+                        for line in g.board.cell_edges[cell]
+                    )
+                )
+                fence = g.board.cell_edges[edge_cell]
+                for line in fence[:-1]:
+                    put(g, line, WHITE)
+                self.assertEqual(g.score(), {BLACK: 0, WHITE: 0})
+                put(g, fence[-1], WHITE)
+                self.assertEqual(g.score(), {BLACK: 0, WHITE: 1})
+
     def test_one_cell_fence_is_a_trap(self):
         g = gjerde_game(BLACK)
         fence = g.board.cell_edges[(0, 0)]

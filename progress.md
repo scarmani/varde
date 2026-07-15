@@ -144,3 +144,23 @@ Original prompt: yes to all in best order proceed and execute according to your 
   exchange, paused spectator loads, playback controls, capture-wave animation,
   save/load with legacy Advanced migration, trained/untrained Personal
   displays, and zero console errors.
+
+## Ruleset promise evaluation program
+
+- Repaired Gjerde fenced-cell scoring: unclaimed exterior lines now leave a
+  field open. The prior one-line 37-0 n=4 result is regression-tested away for
+  both Gjerde resolution orders, and all pre-repair quantitative conclusions
+  are explicitly invalidated.
+- Added a versioned ruleset registry covering stable IDs/revisions, candidate,
+  control, archived, and broken status, geometry/scoring, board limits,
+  descriptions, and archival reasons. Existing save IDs and tuple order remain
+  unchanged.
+- Added `GET /api/rulesets`; public new games reject research-only or broken
+  variants while version-1 saves for those variants still load. Gjerde n=7/n=8
+  saves now load through the same registry limits used by new games.
+- The browser derives its rules choices and board limits from the registry,
+  visibly disables unavailable variants, explains why, and preserves disabled
+  selections when an old save is loaded.
+- Batch 1 validation: 167 tests, Python/JavaScript syntax, API smoke, semantic
+  Playwright state, opened screenshots, archived-save loading, and zero console
+  errors all pass.
