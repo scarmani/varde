@@ -8,5 +8,6 @@ htmlcov/
 playwright-artifacts/
 .playwright-mcp/
 docs/audit/
+.aragora/
 .DS_Store
 _to_delete/

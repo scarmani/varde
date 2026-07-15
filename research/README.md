@@ -189,3 +189,41 @@ threshold. It reports a profile missing when no eligible elite exists. The gate
 uses separate Balanced reference games on the same seeds and requires the
 strength floors, descriptor shifts in both colors and strata, effect size, and
 pairwise diversity before a curated profile can be exposed by the application.
+
+## Frozen-ruleset falsification harness
+
+`evaluate_rulesets.py` compares the six frozen candidate revisions with paired
+colors. It supports ruleset-native bounded search and terminal-score-only MCTS
+with uniform or light epsilon-greedy rollouts. Generated output stays outside
+the repository by default. A small explicit run is:
+
+```bash
+python3 research/harness/evaluate_rulesets.py \
+  --rulesets classic,breath \
+  --agents native-standard,mcts-uniform,mcts-light \
+  --budgets 250,1000 --pairs 20 --board-sizes 4 \
+  --workers 8 --checkpoint-interval 4 \
+  --output-dir /path/to/varde-screening
+```
+
+Pass `--telemetry` when per-move actions and score changes are needed. Create
+the path supplied to `--cancel-file` to stop safely, then remove it and repeat
+the same command with `--resume`. Candidate and paired-game ids own every seed;
+worker count and checkpoint interval do not affect the canonical result. A
+completed resumed run is byte-identical to one uninterrupted run in
+`state.json`, `games.jsonl`, and `summary.json`.
+
+The summary reports failures, research-watchdog incompletes, paired confidence,
+color/swap/ending health gates, behavior telemetry, and direct adjacent-budget
+MCTS comparisons. It blocks headline claims until both rollout policies have a
+100-pair cross-family stratum and two complete 100-pair adjacent-budget
+comparisons, and the declared health gates pass. Empty strategic fields are
+explicit measurement gaps rather than inferred evidence. The watchdog
+classifies research attempts only and is never applied to a live game.
+
+The committed `results/ruleset-promise-operational-smoke.json` is a deliberately
+non-claim integration check: one paired Toy seed per frozen candidate, Casual
+native search, and uniform MCTS with one simulation per action. All 12 games
+completed legally, but every stratum is headline-ineligible and promotion stays
+blocked. The exact implemented/unrun evidence matrix and next commands are in
+`docs/ruleset-evaluation-status.md`.

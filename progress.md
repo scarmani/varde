@@ -144,3 +144,67 @@ Original prompt: yes to all in best order proceed and execute according to your 
   exchange, paused spectator loads, playback controls, capture-wave animation,
   save/load with legacy Advanced migration, trained/untrained Personal
   displays, and zero console errors.
+
+## Ruleset promise evaluation program
+
+- Repaired Gjerde fenced-cell scoring: unclaimed exterior lines now leave a
+  field open. The prior one-line 37-0 n=4 result is regression-tested away for
+  both Gjerde resolution orders, and all pre-repair quantitative conclusions
+  are explicitly invalidated.
+- Added a versioned ruleset registry covering stable IDs/revisions, candidate,
+  control, archived, and broken status, geometry/scoring, board limits,
+  descriptions, and archival reasons. Existing save IDs and tuple order remain
+  unchanged.
+- Added `GET /api/rulesets`; public new games reject research-only or broken
+  variants while version-1 saves for those variants still load. Gjerde n=7/n=8
+  saves now load through the same registry limits used by new games.
+- The browser derives its rules choices and board limits from the registry,
+  visibly disables unavailable variants, explains why, and preserves disabled
+  selections when an old save is loaded.
+- Batch 1 validation: 167 tests, Python/JavaScript syntax, API smoke, semantic
+  Playwright state, opened screenshots, archived-save loading, and zero console
+  errors all pass.
+- Added six hash-pinned ruleset-native evaluator revisions while preserving the
+  literal Classic Balanced search path. Non-Classic static evaluation no longer
+  rewards Classic-only sky or development artifacts.
+- Tactical admission fixtures cover collars, cyclic Rosette life and
+  entombment, Breath cavities/cuts, Breath-run chase/self-squeeze, Gjerde fence
+  completion/denial, and Gjerde-Go eyes/ko exposure. Native decisions are
+  deterministic, legal, non-mutating, superko-aware, and save-compatible.
+- Batch 2 validation reaches 177 tests; representative Full vertex decisions
+  remain below one second in the local acceptance sample, while primary n=4
+  Gjerde decisions remain below half a second.
+- Added a deterministic common action layer for placement, pass, pie takeover,
+  free extension, extension completion, resumption, and separate ending
+  acceptance. Seat identities remain correct through takeover and both AIs get
+  their first-ending decision.
+- Added seeded, terminal-score-only UCT with action-uniform and light
+  epsilon-greedy rollouts. A corrected 250-simulation smoke covered all six
+  candidates and both policies with legal actions, no source mutation, no
+  crashes, and no incomplete rollout; policy-sensitive results remain
+  explicitly provisional.
+- Batch 3 validation reaches 185 tests. MCTS is research-only and introduces no
+  action ceiling or forced ending into live games.
+- Added a repository-relative paired ruleset evaluator with native/MCTS agent
+  families, explicit budgets and policies, action telemetry, health/depth
+  summaries, atomic checkpoint/resume, cancellation, and research-only
+  incomplete accounting. Results pin source, registry, evaluator, and agent
+  hashes; insufficient or single-family samples cannot unlock a claim.
+- Batch 4 validation reaches 193 tests. Worker-count/interruption equivalence is
+  byte-proven for every final artifact, actual process-worker native and MCTS
+  smokes complete legally, and promotion remains blocked.
+- Added a hash-pinned human-study package generator with 8/10/12-participant
+  crossover schedules, engine-derived comprehension puzzles, separate survey
+  dimensions, emergence coding, and retention prompts. Gjerde puzzle evidence
+  includes the repaired open-boundary case.
+- Added an opt-in hotseat recorder that exports pseudonymous, monotonic-time
+  action and resolution JSON locally without a collection endpoint. Browser
+  save/load, watch disabling, two-pass ending, resumption, screenshots, and
+  console state pass. Batch 5 validation reaches 200 tests.
+- Committed a source/hash-pinned 12-game cross-family operational smoke for all
+  frozen candidates. Every game completed legally, while extreme wipe and one
+  stagnation observation remain explicitly non-claim; promotion is blocked.
+- Published the exact evidence matrix and next compute commands. All declared
+  overnight, depth, exploit, human, retention, outside-play, and final promotion
+  gates remain visibly unrun. Local read-only record import rejects identity
+  fields. Batch 6 validation reaches 201 tests and final readiness review.

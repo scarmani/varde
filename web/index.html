@@ -33,17 +33,17 @@
           <option value="8">Grand (169 cells · Gjerde only)</option>
         </select>
         <select id="ruleset" aria-label="Ruleset">
-          <option value="classic">Classic rules</option>
-          <option value="rosette">Rosette rules (experimental)</option>
-          <option value="breath">Breath rules (experimental)</option>
-          <option value="breath-extend">Breath + one free extension (experimental)</option>
-          <option value="breath-extend-multi">Breath + multi-group extensions (experimental)</option>
-          <option value="breath-extend-run">Breath + chain extension (experimental)</option>
-          <option value="breath-rescue">Breath, extensions replace the move (experimental)</option>
-          <option value="breath-run">Breath, chain replaces the move (experimental)</option>
-          <option value="breath-cap">Breath + cap rescue (experimental)</option>
-          <option value="gjerde">Gjerde — claim the lines (experimental)</option>
-          <option value="gjerde-go">Gjerde with classic Go capture (experimental)</option>
+          <option value="classic">Classic</option>
+          <option value="rosette">Rosette</option>
+          <option value="breath">Breath</option>
+          <option value="breath-extend" disabled>Breath + one free extension — archived</option>
+          <option value="breath-extend-multi" disabled>Breath + multi-group extensions — archived</option>
+          <option value="breath-extend-run" disabled>Breath + chain extension — archived</option>
+          <option value="breath-rescue" disabled>Breath rescue — research control</option>
+          <option value="breath-run">Breath run</option>
+          <option value="breath-cap" disabled>Breath cap — broken</option>
+          <option value="gjerde">Gjerde</option>
+          <option value="gjerde-go">Gjerde-Go</option>
         </select>
         <select id="human-color" class="versus-setting" aria-label="Your color">
           <option value="B">Play Black</option>
@@ -83,6 +83,10 @@
         <button id="load-btn">Load</button>
         <input id="load-file" type="file" accept="application/json" hidden>
       </div>
+      <div id="ruleset-controls" class="subcontrols ruleset-controls" aria-label="Ruleset description">
+        <strong>Rules</strong>
+        <span id="ruleset-note">Classic — loading ruleset revision…</span>
+      </div>
       <div id="profile-controls" class="subcontrols profile-controls any-computer-setting" hidden aria-label="Computer profile description">
         <strong>Style</strong>
         <span id="profile-note">Balanced uses the original evaluator.</span>
@@ -97,6 +101,15 @@
           <option value="100">Fast</option>
         </select>
         <span id="playback-note">Paused</span>
+      </div>
+      <div id="playtest-controls" class="subcontrols playtest-controls" aria-label="Local human playtest recording">
+        <strong>Playtest</strong>
+        <button id="start-record-btn">Start local record</button>
+        <button id="import-record-btn">Import JSON</button>
+        <button id="export-record-btn" disabled>Export JSON</button>
+        <button id="clear-record-btn" disabled>Clear</button>
+        <input id="import-record-file" type="file" accept="application/json" hidden>
+        <span id="playtest-status" aria-live="polite">Hotseat only · local export · no names or network submission</span>
       </div>
       <div class="subcontrols training-controls" aria-label="Personal computer learning controls">
         <strong>Personal learning</strong>

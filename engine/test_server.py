@@ -10,7 +10,9 @@ from server import (
     assert_human_action,
     load_snapshot,
     public_view,
+    ruleset_catalog_public,
     snapshot_payload,
+    validate_ruleset_size,
 )
 
 
@@ -39,6 +41,57 @@ class TestPublicView(unittest.TestCase):
         self.assertEqual(view["current_player"], "Player 1")
         self.assertEqual(view["players"], {BLACK: "Player 2", WHITE: "Player 1"})
 
+
+class TestRulesetValidation(unittest.TestCase):
+    def test_public_catalog_pins_native_evaluator_without_raw_weights(self):
+        payload = ruleset_catalog_public()
+        self.assertEqual(len(payload["native_evaluators"]["hash"]), 64)
+        by_id = {item["id"]: item for item in payload["rulesets"]}
+        self.assertEqual(
+            by_id["breath-run"]["native_evaluator_revision"],
+            "breath-run-native-1",
+        )
+        self.assertIsNone(
+            by_id["breath-cap"]["native_evaluator_revision"]
+        )
+        self.assertNotIn("weights", payload["native_evaluators"])
+
+    def test_public_candidates_use_registry_board_limits(self):
+        self.assertEqual(validate_ruleset_size("classic", 6, public_new_game=True).id, "classic")
+        self.assertEqual(validate_ruleset_size("gjerde", 8, public_new_game=True).id, "gjerde")
+        with self.assertRaisesRegex(ValueError, "3-6"):
+            validate_ruleset_size("classic", 7, public_new_game=True)
+        with self.assertRaisesRegex(ValueError, "3-8"):
+            validate_ruleset_size("gjerde", 9, public_new_game=True)
+
+    def test_nonpublic_variants_are_rejected_only_for_new_games(self):
+        for rules in (
+            "breath-extend",
+            "breath-extend-multi",
+            "breath-extend-run",
+            "breath-rescue",
+            "breath-cap",
+        ):
+            with self.subTest(rules=rules):
+                with self.assertRaisesRegex(ValueError, "cannot start"):
+                    validate_ruleset_size(rules, 3, public_new_game=True)
+                self.assertEqual(
+                    validate_ruleset_size(rules, 3, public_new_game=False).id,
+                    rules,
+                )
+
+    def test_archived_and_broken_snapshots_still_load(self):
+        for rules in ("breath-extend", "breath-cap"):
+            with self.subTest(rules=rules):
+                game, _ = load_snapshot(Game(3, rules=rules).to_dict())
+                self.assertEqual(game.rules, rules)
+
+    def test_gjerde_large_snapshot_loads_but_vertex_large_does_not(self):
+        game, _ = load_snapshot(Game(8, rules="gjerde").to_dict())
+        self.assertEqual(game.board.n, 8)
+        payload = Game(7, rules="classic").to_dict()
+        with self.assertRaisesRegex(ValueError, "3-6"):
+            load_snapshot(payload)
 
 class TestComputerMatch(unittest.TestCase):
     def test_computer_opens_when_human_is_white(self):

@@ -1,0 +1,97 @@
+{
+  "format": "varde-ruleset-operational-smoke",
+  "version": 1,
+  "claim_status": "non-claim operational smoke",
+  "interpretation": "This proves only that both agent families completed both colors on every frozen ruleset through the real harness. One Toy pair and one-simulation MCTS cannot support balance, depth, beauty, comparative, or promotion claims.",
+  "source": {
+    "commit": "064d93d5a2a8322f17f140c6593c1e1d921d94a3",
+    "code_hash": "15c7404e7999286d00480842f5334f17a14750dd42ea10a484a4e95e372fb9ec",
+    "ruleset_registry_hash": "e9517bccf1093f43017417d59613fd0af57af8e290e2bccd55f6b38fa227d7ad",
+    "native_evaluator_hash": "6f64d8cb8238b61fd5e719c001c21a695da45122a46c3802c5b9926c5dad2282",
+    "mcts_agent_hash": "1b50866eae7fbac42e42e38b69e2d70414d064dbbd50ee547f2cf9d64eb2e7ff"
+  },
+  "configuration": {
+    "rulesets": [
+      "classic",
+      "rosette",
+      "breath",
+      "breath-run",
+      "gjerde",
+      "gjerde-go"
+    ],
+    "board_sizes": [3],
+    "pairs_per_stratum": 1,
+    "seed": 20260715,
+    "agents": [
+      {
+        "id": "native-casual",
+        "family": "native",
+        "difficulty": "casual"
+      },
+      {
+        "id": "mcts-uniform@1",
+        "family": "mcts",
+        "simulations_per_action": 1,
+        "rollout_policy": "uniform"
+      }
+    ],
+    "watchdog": "research-only 20N attempt classification"
+  },
+  "accounting": {
+    "games_attempted": 12,
+    "games_complete": 12,
+    "illegal": 0,
+    "crash": 0,
+    "watchdog_incomplete": 0,
+    "promotion_blocked": true
+  },
+  "strata": {
+    "classic": {
+      "paired_samples": 1,
+      "median_actions": 130.0,
+      "stagnation_rate": 0.5,
+      "wipe_rate": 1.0,
+      "headline_eligible": false
+    },
+    "rosette": {
+      "paired_samples": 1,
+      "median_actions": 111.5,
+      "stagnation_rate": 0.0,
+      "wipe_rate": 1.0,
+      "headline_eligible": false
+    },
+    "breath": {
+      "paired_samples": 1,
+      "median_actions": 66.5,
+      "stagnation_rate": 0.0,
+      "wipe_rate": 0.5,
+      "headline_eligible": false
+    },
+    "breath-run": {
+      "paired_samples": 1,
+      "median_actions": 78.0,
+      "stagnation_rate": 0.0,
+      "wipe_rate": 0.5,
+      "headline_eligible": false
+    },
+    "gjerde": {
+      "paired_samples": 1,
+      "median_actions": 97.5,
+      "stagnation_rate": 0.0,
+      "wipe_rate": 1.0,
+      "headline_eligible": false
+    },
+    "gjerde-go": {
+      "paired_samples": 1,
+      "median_actions": 113.5,
+      "stagnation_rate": 0.0,
+      "wipe_rate": 1.0,
+      "headline_eligible": false
+    }
+  },
+  "raw_artifact_hashes": {
+    "summary.json": "60da0c4afc06eb59a4d51edd6050676da34b0ce74069962b01f441c35b993c98",
+    "games.jsonl": "c9a8b744fd891044667fd03346b3dafe86ea8ca160e09f021e11e86ba2861887",
+    "state.json": "79c852cab4515af29dc1291a65f4562788f32487b0e52b20631f4f3bf47a04ec"
+  }
+}

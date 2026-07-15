@@ -24,7 +24,7 @@ two-eye-capable geometry may not need the repair. Which variant plays
 better is an open, empirical question — both are implemented, and
 boards up to n=8 (169 cells) are available for either.
 
-First probes of the split (same seeds, fence-aware Standard): under
+Historical exploratory probes of the split (same seeds, fence-aware Standard): under
 `gjerde-go` the Standard still beat the greedy Attacker 8-0, but every
 game was a **total wipe** — the greedy never builds two eyes, and
 classic resolution kills everything eyeless, where breath had kept
@@ -32,7 +32,10 @@ margins to 1-13 cells. Standard mirrors came out sane in both
 variants (gjerde-go 6 and 20 of 37; gjerde 5-8). Reading: breath acts
 as Gjerde's wipe-dampener and forgiveness mechanism; classic
 resolution restores nakade, ko, and Go's sterner life — sharper and
-less forgiving. A matter of taste that human play should decide.
+less forgiving. These results are **invalid as scoring evidence**: the scorer
+then treated the unclaimed outer edge as closed and could award the entire
+board after one exterior claim. They are retained only as design history and
+must be rerun with the repaired scorer and independent agents.
 
 ## Rules
 
@@ -43,7 +46,8 @@ less forgiving. A matter of taste that human play should decide.
    groups without liberties are removed.
 3. **Score = fenced fields.** A connected region of hexagonal cells
    (cells adjacent through unclaimed lines) belongs to the player who
-   claimed every line on its boundary. Lines themselves score nothing.
+   claimed every line on its boundary. An unclaimed exterior line leaves
+   the region open, so it scores nothing. Lines themselves score nothing.
 4. Pie rule, superko, two-pass ending, and the stagnation rule apply
    unchanged.
 
@@ -71,7 +75,11 @@ Emergent properties, tested:
   region: **denial is far cheaper than enclosure**, so fences must be
   fought for, not just drawn.
 
-## First playtest evidence
+## Historical exploratory probes (invalidated)
+
+These 6-8-game conditions were hypothesis-generating probes, not balance
+evidence. In addition, every score below predates the open-boundary repair and
+is invalid for quantitative conclusions.
 
 Greedy duels (attacker = capture/starve, defender = liberty-maximizer;
 six per board size) and Balanced-mirror games:
@@ -88,15 +96,8 @@ coarse to score — treat n=4 as the minimum real board. A second duel
 round with a fence-aware greedy defender still lost 12-0: at one-ply
 depth, killing outraces fencing.
 
-**The depth experiment settled the balance question.** With the
-Standard evaluator taught to value the fenced-cell differential from
-move one, the two-ply fencer beat the greedy attacker **8-0 across
-both colors and both board sizes**, by tight margins (1-13 of 37
-cells; 6-7 of 61), and fence-aware mirrors were similarly close (5-8
-cells). The apparent attack dominance was an artifact of engine
-shallowness, not of the rules: one extra ply plus an aligned
-objective flips the sweep. Gjerde's balance is healthy. In over-the-board play against the Attacker
-profile, a single heavy group was netted and annihilated despite the
-four-liberty geometry: liberties are shared resources, and a swarm of
-cheap contact stones starves one big group faster than it can capture
-back. Solidity (uncuttable stars) is not life; only enclosure is.
+The old two-ply fencer result was 8-0 across both colors and both board sizes,
+but it consumed the defective score from move one. It therefore establishes
+neither balance nor evaluator strength. No current Gjerde balance conclusion is
+accepted. The qualitative observation that a heavy group can be starved by a
+swarm remains a hypothesis for the repaired evaluation round.

@@ -50,7 +50,7 @@ stagnation ending — is identical to rev 1.3.
 - Heights effectively never exceed 2; captured stones still return, and
   buried stones still resurface through later peels.
 
-## First playtest evidence (uncalibrated classic AIs, same seeds)
+## Exploratory probe (four uncalibrated classic-AI seeds)
 
 | Matchup | classic 1.3 | rosette |
 |---|---|---|
@@ -59,8 +59,8 @@ stagnation ending — is identical to rev 1.3.
 | Balanced mirror, Full, s13 | 766 acts, 139–77 | 386 acts, 121–95 |
 | Mason–Surveyor, Int., s14 | 186 acts, 64–86 | 171 acts, 61–89 |
 
-Margins fall from wipe-scale to 6–12% of the board, mirror wins split
+In this small probe, margins fell from wipe-scale to 6–12% of the board, mirror wins split
 across colors, lengths approach Go's actions-per-point, and no game
 needed the stagnation ending. The evaluator profiles were tuned for
 classic rules; a fresh audit/curation cycle is required before any
-strength or style claim under this variant.
+strength, balance, or style claim under this variant.
