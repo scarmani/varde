@@ -1123,6 +1123,56 @@ class TestExtensionVariants(unittest.TestCase):
         g.play(g.legal_placements()[0])
         self.assertEqual(g.to_move, BLACK)
 
+    def test_breath_run_auto_finishes_when_chain_is_exhausted(self):
+        g, libs = self.two_ataris("breath-run")
+        moves_before = g.moves_played
+        g.play_extension(libs[0])
+        self.assertEqual(g.to_move, BLACK)
+        self.assertEqual(g.moves_played, moves_before + 1)
+        self.assertFalse(g.extension_only_turn)
+        self.assertFalse(g.extension_used)
+        self.assertEqual(g.extension_points, [])
+
+    def test_breath_run_stays_open_while_chain_can_continue(self):
+        g = breath_game(BLACK, rules="breath-run")
+        center = max(g.board.deep)
+        first, second, liberty = g.board.neighbors[center]
+        onward = [q for q in g.board.neighbors[liberty] if q != center]
+        put(g, center, BLACK)
+        put(g, first, WHITE)
+        put(g, second, WHITE)
+        put(g, onward[0], WHITE)
+        g.history = {signature(g.board, g.state, BLACK)}
+
+        g.play_extension(liberty)
+
+        self.assertEqual(g.to_move, BLACK)
+        self.assertTrue(g.extension_only_turn)
+        self.assertEqual(g.extension_candidates(), [onward[1]])
+        g.finish_extensions()
+        self.assertEqual(g.to_move, WHITE)
+
+    def test_breath_run_old_exhausted_save_auto_finishes_on_load(self):
+        g = breath_game(BLACK, rules="breath-rescue")
+        center = max(g.board.deep)
+        first, second, liberty = g.board.neighbors[center]
+        put(g, center, BLACK)
+        put(g, first, WHITE)
+        put(g, second, WHITE)
+        g.history = {signature(g.board, g.state, BLACK)}
+        g.play_extension(liberty)
+        self.assertTrue(g.extension_only_turn)
+        self.assertEqual(g.extension_candidates(), [])
+        moves_before = g.moves_played
+        payload = g.to_dict()
+        payload["rules"] = "breath-run"
+
+        restored = Game.from_dict(payload)
+
+        self.assertEqual(restored.to_move, WHITE)
+        self.assertEqual(restored.moves_played, moves_before + 1)
+        self.assertFalse(restored.extension_only_turn)
+
     def test_rescue_extensions_are_the_whole_turn(self):
         g, libs = self.two_ataris("breath-rescue")
         g.play_extension(libs[0])

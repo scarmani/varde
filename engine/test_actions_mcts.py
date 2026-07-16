@@ -92,9 +92,11 @@ class TestRulesActions(unittest.TestCase):
         game = Game(3, rules="breath-run")
         center = max(game.board.deep)
         first, second, liberty = game.board.neighbors[center]
+        onward = [q for q in game.board.neighbors[liberty] if q != center]
         game.state[center] = (BLACK,)
         game.state[first] = (WHITE,)
         game.state[second] = (WHITE,)
+        game.state[onward[0]] = (WHITE,)
         game.to_move = BLACK
         game.moves_played = 6
         game.history = {signature(game.board, game.state, BLACK)}
@@ -109,6 +111,27 @@ class TestRulesActions(unittest.TestCase):
         finished = apply_action(extended, RulesAction("finish-extension"))
         self.assertEqual(finished.game.to_move, WHITE)
         self.assertFalse(finished.game.extension_only_turn)
+
+    def test_exhausted_breath_run_omits_forced_finish_action(self):
+        game = Game(3, rules="breath-run")
+        center = max(game.board.deep)
+        first, second, liberty = game.board.neighbors[center]
+        game.state[center] = (BLACK,)
+        game.state[first] = (WHITE,)
+        game.state[second] = (WHITE,)
+        game.to_move = BLACK
+        game.moves_played = 6
+        game.history = {signature(game.board, game.state, BLACK)}
+
+        extended = apply_action(
+            RulesState.from_game(game), RulesAction("extend", liberty)
+        )
+
+        self.assertEqual(extended.game.to_move, WHITE)
+        self.assertFalse(extended.game.extension_only_turn)
+        self.assertNotIn(
+            RulesAction("finish-extension"), legal_actions(extended)
+        )
 
     def test_both_first_end_decisions_and_one_resumption_are_represented(self):
         game = Game(3)

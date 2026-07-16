@@ -101,7 +101,7 @@ Six formulations of the free-extension idea, all engine-flagged:
 | breath-extend-multi | any number of distinct atari'd groups, once each, then a move |
 | breath-extend-run | one group, chained while it stays at one liberty, then a move |
 | breath-rescue | as multi, but the extensions replace the move |
-| breath-run | as chain, but the run replaces the move |
+| breath-run | as chain, but the run replaces the move; an exhausted run ends automatically |
 | breath-cap | one extension on any space adjacent to the group, stacking allowed, then a move |
 
 Attack/defense duels (eight per variant) and Balanced mirrors. These are

@@ -2,7 +2,7 @@ import unittest
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
-from varde import BLACK, WHITE, Game, Illegal
+from varde import BLACK, WHITE, Game, Illegal, signature
 from learning import LearningModel
 from server import (
     MatchConfig,
@@ -111,6 +111,27 @@ class TestComputerMatch(unittest.TestCase):
         self.assertEqual(game.moves_played, 1)
         self.assertEqual(game.to_move, WHITE)
         self.assertFalse(match.computer_can_act(game))
+
+    def test_computer_breath_run_stops_after_automatic_finish(self):
+        game = Game(3, rules="breath-run")
+        first, second = (-4, 0), (-5, -1)
+        liberty = (-7, -1)
+        blockers = ((-5, 1), (-4, -2), (-2, 0))
+        game.state[first] = (BLACK,)
+        game.state[second] = (BLACK,)
+        for point in blockers:
+            game.state[point] = (WHITE,)
+        game.moves_played = 6
+        game.history = {signature(game.board, game.state, BLACK)}
+        match = MatchConfig.from_new_game(game, {"mode": "watch"})
+
+        decision = apply_computer_action(game, match)
+
+        self.assertEqual(decision.action, "extend")
+        self.assertEqual(game.state[liberty], (BLACK,))
+        self.assertEqual(game.to_move, WHITE)
+        self.assertEqual(game.moves_played, 7)
+        self.assertFalse(game.extension_only_turn)
 
     def test_human_actions_are_blocked_on_computer_turn(self):
         game = Game(3)

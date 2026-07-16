@@ -208,3 +208,24 @@ Original prompt: yes to all in best order proceed and execute according to your 
   overnight, depth, exploit, human, retention, outside-play, and final promotion
   gates remain visibly unrun. Local read-only record import rejects identity
   fields. Batch 6 validation reaches 201 tests and final readiness review.
+
+## Breath-run browser startup repair
+
+- Reproduced the reported half-loaded page against the live port-8000 process.
+  The process predated `GET /api/rulesets` while serving the current JavaScript
+  from disk, so the endpoint returned an HTML 404 and Safari surfaced an opaque
+  “The string did not match the expected pattern” JSON error.
+- Preserved the live 131-move Gjerde-Go snapshot, restarted the server from
+  current main, and restored the snapshot before testing a new game.
+- Verified an isolated Beginner Breath-run game versus Standard/Balanced as
+  White: the computer opened, the pie choice remained human-owned, a canvas
+  placement succeeded, and the computer replied with no console errors.
+- Hardened browser API parsing so file launches, unreachable servers, stale API
+  processes, and invalid responses produce actionable startup instructions.
+- Breath-run now automatically passes the turn after a rescue when that chain
+  has no further legal extension. A player can still stop manually while a
+  continuation exists; the forced finish is compressed across live play,
+  computer play, and the shared research action layer.
+- Legacy saves captured after the final rescue but before the old manual finish
+  are normalized on load, so restoring a game cannot reintroduce the dead-end
+  button press.
