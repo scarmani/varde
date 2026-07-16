@@ -259,6 +259,18 @@ def _outcome_for_color(score, color):
     return 0.5
 
 
+def is_wipe(score, scoreable_area):
+    """Return whether a decisive result meets the declared wipe threshold.
+
+    A wipe is defined in terms of the *loser's* score.  Tied sparse Gjerde
+    positions have no loser, so they cannot be wipes even when both scores are
+    below ten percent of the fenced-cell area.
+    """
+    if score[BLACK] == score[WHITE]:
+        return False
+    return min(score.values()) < 0.1 * scoreable_area
+
+
 def evaluate_task(task):
     """Play one scheduled leg; all failures become canonical records."""
     record = {
@@ -391,8 +403,6 @@ def evaluate_task(task):
     final_b_color = state.color_for_seat("agent-b")
     a_result = _outcome_for_color(score, final_a_color) if status == "complete" else None
     margin = score[final_a_color] - score[final_b_color]
-    loser_score = min(score.values())
-    winner_score = max(score.values())
     record.update(
         {
             "status": status,
@@ -412,7 +422,7 @@ def evaluate_task(task):
             "agent_a_result": a_result,
             "agent_a_margin": margin,
             "margin_fraction": abs(margin) / max(1, scoreable),
-            "wipe": bool(winner_score and loser_score < 0.1 * scoreable),
+            "wipe": is_wipe(score, scoreable),
             "counters": counters,
             "opening": opening,
             "moves": moves if task["telemetry"] else None,

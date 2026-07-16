@@ -1,0 +1,151 @@
+{
+  "format": "varde-uniform-mcts12-manifest",
+  "version": 1,
+  "status": "frozen-before-outcomes",
+  "created_date": "2026-07-16",
+  "purpose": "First shallow independent-agent diagnostic after the native screening warning fixtures",
+  "source": {
+    "base_main_commit": "36aa06e017f7e8d44d635eeb67ef154a19be3fad",
+    "code_hash": "7dc39279a4024461fc6623d0c904b59ec6a6f411828290bd5fe84cb9f7abfbbb",
+    "ruleset_registry_hash": "e9517bccf1093f43017417d59613fd0af57af8e290e2bccd55f6b38fa227d7ad",
+    "native_evaluator_hash": "6f64d8cb8238b61fd5e719c001c21a695da45122a46c3802c5b9926c5dad2282",
+    "mcts_agent_hash": "63cdec59394646f4bddd8afe33245331b1f55f922d79523030722bbb8d496e97",
+    "evaluation_harness_sha256": "e81936645e32d746e05ecef505e15a28ee27760fa2cbf3da27a4eb063bd2de66",
+    "audit_harness_sha256": "0a906775ae41afb8c724d77c82fa2d2e5686ba47329d3c4266ae42677b39fd59",
+    "fixture_test_sha256": "34e13b9705df36709d9749de7832a26c079a3321a65a2f802a7bc9575c0cbef9",
+    "engine_files": {
+      "engine/actions.py": "95742a2f37e93e629b53cb85824fa873ca8db739ad03286eaacb97a58f04c71e",
+      "engine/mcts.py": "db96420d12938dddf0d8f7a0ff433f3cfd0db9d070492c13ed646eb7103dc78c",
+      "engine/native_evaluators.py": "14c8212aba63828e43f1b57f4d53606a80a972ce81fc81c2f29ca5dd98d090bb",
+      "engine/opponent.py": "19e15089187d7cbfc9a7cbb87519a665a4351e564b0d867835c139e66cbfb431",
+      "engine/varde.py": "dbc2e9127dbda1f3ac8833f91ad35fc102267ab2a4e52a28abaa98191d82843b"
+    }
+  },
+  "candidates": [
+    {"id": "classic", "evaluation_id": "classic-1.3"},
+    {"id": "rosette", "evaluation_id": "rosette-0.1"},
+    {"id": "breath", "evaluation_id": "breath-0.1"},
+    {"id": "breath-run", "evaluation_id": "breath-run-0.1"},
+    {"id": "gjerde", "evaluation_id": "gjerde-breath-0.1"},
+    {"id": "gjerde-go", "evaluation_id": "gjerde-go-0.1"}
+  ],
+  "constructed_fixture_contract": {
+    "test_file": "engine/test_mcts12_diagnostic.py",
+    "classic_stagnation": "The twelfth legal own-column cover ends Classic finally, while a control-changing placement resets the quiet clock.",
+    "gjerde_go_wipes": "A sparse tied 1-1 fenced score is not a wipe; a decisive 1-0 score meets the declared loser-below-ten-percent threshold.",
+    "breath_color_and_pie": "Paired reporting follows complete seat identity through takeover and separately reports board color, original Black player, and post-swap outcome.",
+    "all_fixtures_required_before_launch": true
+  },
+  "fixed_parameters": {
+    "board_sizes": [4],
+    "pairs_per_ruleset_matchup": 20,
+    "master_seed": 20260716012,
+    "pair_seed_count": 120,
+    "games": 240,
+    "workers": 8,
+    "checkpoint_interval": 8,
+    "telemetry": true,
+    "watchdog_multiplier": 20,
+    "watchdog_scope": "research only; never a live-game action ceiling",
+    "raw_output_root": "/Users/armand/varde-runs/uniform-mcts12-diagnostic-20260716"
+  },
+  "seed_scheme": {
+    "derivation": "uint64_be(sha256(canonical_json([master_seed, ruleset, board_size, matchup, pair_index]))[0:8])",
+    "pairing": "both color legs of a pair share one derived seed",
+    "schedule_tuple_sha256": "9e862c8f745f8f49e8e9c4be4552181b3496015fcc6625779f947f4ca42efeb0"
+  },
+  "freeze_gate": {
+    "native_warning_fixtures_passed": true,
+    "outcomes_inspected_before_freeze": false,
+    "one_exact_job": true,
+    "checkpoint_resume_required": true,
+    "uniform_mcts24_blocked_until_this_job_audits_cleanly": true,
+    "light_rollout_blocked_until_this_job_audits_cleanly": true
+  },
+  "jobs": [
+    {
+      "id": "native-standard-vs-uniform-mcts12",
+      "games": 240,
+      "pair_seeds": 120,
+      "config_sha256": "80a63000757a1055b4f4160a0818554398388001979218bb8a674a142b9b2883",
+      "schedule_sha256": "5143adce460f80526511b61c2d1f78824458db72d165df6d3ea103f491dd2d77",
+      "output_dir": "/Users/armand/varde-runs/uniform-mcts12-diagnostic-20260716/native-standard-vs-uniform-mcts12",
+      "cancel_file": "/Users/armand/varde-runs/uniform-mcts12-diagnostic-20260716/control/cancel-native-standard-vs-uniform-mcts12",
+      "config": {
+        "rulesets": ["classic", "rosette", "breath", "breath-run", "gjerde", "gjerde-go"],
+        "board_sizes": [4],
+        "agents": [
+          {
+            "id": "native-standard",
+            "family": "native",
+            "difficulty": "standard",
+            "budget": null,
+            "rollout_policy": null,
+            "hash": "6f64d8cb8238b61fd5e719c001c21a695da45122a46c3802c5b9926c5dad2282"
+          },
+          {
+            "id": "mcts-uniform@12",
+            "family": "mcts",
+            "difficulty": null,
+            "budget": 12,
+            "rollout_policy": "uniform",
+            "hash": "63cdec59394646f4bddd8afe33245331b1f55f922d79523030722bbb8d496e97"
+          }
+        ],
+        "pairs": 20,
+        "seed": 20260716012,
+        "telemetry": true,
+        "include_mirrors": false,
+        "watchdog_multiplier": 20
+      },
+      "argv": [
+        "python3",
+        "research/harness/evaluate_rulesets.py",
+        "--rulesets",
+        "classic,rosette,breath,breath-run,gjerde,gjerde-go",
+        "--agents",
+        "native-standard,mcts-uniform@12",
+        "--pairs",
+        "20",
+        "--board-sizes",
+        "4",
+        "--seed",
+        "20260716012",
+        "--workers",
+        "8",
+        "--checkpoint-interval",
+        "8",
+        "--watchdog-multiplier",
+        "20",
+        "--telemetry",
+        "--cancel-file",
+        "/Users/armand/varde-runs/uniform-mcts12-diagnostic-20260716/control/cancel-native-standard-vs-uniform-mcts12",
+        "--output-dir",
+        "/Users/armand/varde-runs/uniform-mcts12-diagnostic-20260716/native-standard-vs-uniform-mcts12"
+      ]
+    }
+  ],
+  "audit": {
+    "argv": [
+      "python3",
+      "research/harness/audit_uniform_mcts12.py",
+      "--manifest",
+      "research/manifests/uniform-mcts12-20260716.json",
+      "--output",
+      "research/results/uniform-mcts12-20260716.json"
+    ],
+    "publish_compact_artifact_when": "the raw job has hash-valid complete state, its exact frozen config and schedule, matching runtime provenance, and no illegal, crash, watchdog, or pending records"
+  },
+  "claim_limits": {
+    "diagnostic_falsification_only": true,
+    "shallow_independent_agent_family_evidence": true,
+    "strategic_depth_evidence": false,
+    "balance_evidence": false,
+    "adjacent_budget_stability_unmeasured": true,
+    "rollout_policy_stability_unmeasured": true,
+    "human_emergence_and_beauty_unmeasured": true,
+    "flagship_promotion_blocked": true,
+    "pool_with_historical_250_simulation_manifest": false,
+    "pool_with_native_only_screen": false
+  }
+}
