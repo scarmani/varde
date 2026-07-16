@@ -28,10 +28,10 @@ emergence, beauty, or flagship evidence.
 | Gjerde-breath 0.1 | 67.5% | 47.5% | 0.0% | 12.5% | 5.4% |
 | Gjerde-Go 0.1 | 68.8% | 46.3% | 0.0% | 70.0% | 10.8% |
 
-Every Standard-self game invoked takeover because identical native agents make
-the swap policy symmetric. Its 100% swap rate is therefore a mirror-match
-artifact, not a candidate balance result. The mixed matchup had a 50% swap rate
-for every ruleset.
+Every Standard-self game invoked takeover. Because both seats use the same
+native policy in that matchup, its 100% swap rate is a mirror-policy diagnostic,
+not an independent candidate-balance result. The mixed matchup had a 50% swap
+rate for every ruleset.
 
 Opening diversity remained high: five strata had 40 distinct 12-action
 openings in 40 games; mixed Breath-run had 39. No top opening exceeded 5%.
