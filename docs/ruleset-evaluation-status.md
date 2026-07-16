@@ -2,8 +2,9 @@
 
 ## Decision state
 
-No Varde ruleset is promoted as the flagship. The native-only diagnostic screen
-is complete; independent-search, adversarial, and human evidence remain unrun.
+No Varde ruleset is promoted as the flagship. The native-only screen and first
+independent uniform-MCTS@12 diagnostic are complete; the independent agent
+failed strategic admission, and adversarial and human evidence remain unrun.
 This is a deliberate blocked decision, not a negative verdict on the candidates.
 
 The current branch repairs the known Gjerde scoring defect, freezes six
@@ -25,7 +26,7 @@ balance, depth, emergence, elegance, or beauty.
 | Reproducibility | Final artifacts are byte-identical after interruption and worker-count changes; tampered checkpoints fail closed. |
 | Human study | Counterbalanced 8/10/12-player schedule, neutral briefs, engine-derived puzzles, post-game ratings, motif coding, and retention prompts are implemented. |
 | Browser telemetry | Opt-in hotseat action/timing records export locally; no direct identifiers, wall-clock time, or server collection endpoint exist. |
-| Product regression | 228 tests, Python syntax, JavaScript syntax, browser export/save/load/resumption/watch flows, and opened screenshots pass locally. |
+| Product regression | 245 tests, Python syntax, JavaScript syntax, browser export/save/load/resumption/watch flows, and opened screenshots pass locally. |
 
 ## Native screening v2
 
@@ -56,6 +57,22 @@ and one Classic leg ended through the twelve-quiet-move rule. These observations
 say that the harness records adverse telemetry and that one-simulation MCTS is
 not a useful opponent. They say nothing reliable about the candidates.
 
+## Uniform MCTS@12 diagnostic
+
+The separately frozen
+[manifest](../research/manifests/uniform-mcts12-20260716.json) completed 240 n=4
+games: native Standard versus uniform terminal-score MCTS@12 over 20 paired
+seeds per candidate. All games completed with zero illegal actions, crashes,
+watchdog incompletes, or pending records. The compact
+[audit](../research/results/uniform-mcts12-20260716.json) verifies exact config,
+schedule, provenance, ordered records, and raw artifact hashes.
+
+The [diagnostic report](uniform-mcts12-results.md) rejects the agent as a
+strategic comparison surface: native Standard scored 88.75-100% in every
+stratum and 97.7% overall. This does not prove the native evaluator is strong or
+that any candidate is weak. It proves that simply increasing this uniform
+terminal UCT's budget is not yet a justified evidence program.
+
 ## Evidence matrix
 
 | Required stage | Status | Promotion use |
@@ -63,7 +80,7 @@ not a useful opponent. They say nothing reliable about the candidates.
 | Constructed tactical admission | Complete for both agent surfaces where applicable | Necessary implementation gate only |
 | Cross-family operational smoke | Complete: one Toy pair per candidate | None |
 | Native operational screen: 20 paired n=4 seeds | Complete: 480 games across mixed and matched native jobs; zero operational failures; [diagnostic report](native-screening-v2-results.md) | Falsification and evaluator-artifact triage only |
-| Independent shallow calibration | Historical [MCTS v1 manifest](../research/manifests/ruleset-calibration-20260715.json) produced no result; [v2 feasibility](../research/results/evidence-feasibility-gate-20260715.json) supports only a separately frozen 12/24 diagnostic | None until complete |
+| Independent shallow calibration | Uniform MCTS@12 completed 240 games and audited cleanly, but failed strategic admission: native scored 97.7% overall | Operational/action-plumbing evidence only; repair agent before another match batch |
 | Health screen: 50 fresh paired seeds | Not run | None until complete |
 | Confirmation: 100 fresh paired seeds | Not run | None until complete |
 | MCTS 250 → 1,000 → 4,000 depth ladder | Not run | No depth claim |
@@ -101,9 +118,21 @@ python3 research/harness/audit_native_screening.py \
   --output research/results/native-screening-v2-20260715.json
 ```
 
-The 250/1,000/4,000 MCTS ladder is not a reproduction command: it remains
-blocked by the outcome-blind feasibility result. Any 12/24 work requires a new
-manifest, fresh seeds, and a separate raw output root.
+Reproduce or inspect the uniform-MCTS@12 diagnostic through its frozen manifest:
+
+```bash
+jq '.jobs[0] | {argv, config_sha256, schedule_sha256}' \
+  research/manifests/uniform-mcts12-20260716.json
+
+python3 research/harness/audit_uniform_mcts12.py \
+  --manifest research/manifests/uniform-mcts12-20260716.json \
+  --output research/results/uniform-mcts12-20260716.json
+```
+
+The 24/250/1,000/4,000 MCTS ladder is not yet a reproduction command. Although
+the @12 operational audit is clean, the agent failed strategic admission. Any
+later match work requires a new manifest, fresh seeds, a separate raw output
+root, and a search policy that first passes constructed tactical fixtures.
 
 Validate the compact artifact and the rest of the engine with:
 
@@ -122,18 +151,21 @@ python3 research/harness/human_study.py \
 
 ## Best next steps
 
-1. Add constructed regression positions for the Classic stagnation, Gjerde-Go
-   wipe, and mixed Breath color/pie signatures before changing an evaluator.
-2. Freeze a separate uniform-MCTS@12 versus native-Standard diagnostic with
-   fresh paired seeds and the current source hashes. Do not pool its results.
-3. Audit that job before launching light rollouts or the 24-simulation rung.
-4. Review agent disagreement and position telemetry before spending the 50-pair
-   screen. Improve an evaluator only through a new declared revision.
-5. Run the 50-pair health screen and ruleset-native MAP-Elites only for
+1. Add MCTS tactical-admission fixtures for each ruleset's distinctive actions
+   and require action quality to improve over a small budget ladder.
+2. Add decision-level node, rollout-length, and latency telemetry to research
+   games, then localize Classic and line-board costs.
+3. Compare uniform, current light, and one minimal rules-neutral tactical
+   rollout on held-out fixtures and a tiny outcome-blind timing sample.
+4. Freeze another paired job only after a policy passes admission; do not launch
+   the current uniform @24 or light match batch merely because @12 audited.
+5. Review agent disagreement before spending the 50-pair screen. Improve a
+   native evaluator only through a new declared revision.
+6. Run the 50-pair health screen and ruleset-native MAP-Elites only for
    computational survivors.
-6. Take only the best two or three computational survivors to the human protocol.
-7. Promote one flagship only after the final high-budget, outside-play,
+7. Take only the best two or three computational survivors to the human protocol.
+8. Promote one flagship only after the final high-budget, outside-play,
    forced-win, and complete negative-evidence publication gates pass.
 
-The next operator decision is the exact fresh-seed uniform-MCTS@12 diagnostic
-manifest and compute window; it is not a choice of flagship.
+The next operator decision is the exact MCTS tactical-admission and telemetry
+contract; it is not a choice of flagship or a larger simulation budget.
