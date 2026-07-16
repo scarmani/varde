@@ -2,10 +2,9 @@
 
 ## Decision state
 
-No Varde ruleset is promoted as the flagship. The implementation and evidence
-pipeline are ready; the declared computational screens and human panel have not
-been run. This is a deliberate blocked decision, not a negative verdict on the
-candidates.
+No Varde ruleset is promoted as the flagship. The native-only diagnostic screen
+is complete; independent-search, adversarial, and human evidence remain unrun.
+This is a deliberate blocked decision, not a negative verdict on the candidates.
 
 The current branch repairs the known Gjerde scoring defect, freezes six
 candidate revisions, separates each native evaluator from other rulesets'
@@ -26,7 +25,22 @@ balance, depth, emergence, elegance, or beauty.
 | Reproducibility | Final artifacts are byte-identical after interruption and worker-count changes; tampered checkpoints fail closed. |
 | Human study | Counterbalanced 8/10/12-player schedule, neutral briefs, engine-derived puzzles, post-game ratings, motif coding, and retention prompts are implemented. |
 | Browser telemetry | Opt-in hotseat action/timing records export locally; no direct identifiers, wall-clock time, or server collection endpoint exist. |
-| Product regression | 201 tests, Python syntax, JavaScript syntax, browser export/save/load/resumption/watch flows, and opened screenshots pass locally. |
+| Product regression | 228 tests, Python syntax, JavaScript syntax, browser export/save/load/resumption/watch flows, and opened screenshots pass locally. |
+
+## Native screening v2
+
+The frozen [native manifest](../research/manifests/native-screening-v2-20260715.json)
+completed 480 n=4 games: 20 paired seeds per candidate for Casual-versus-Standard
+and matched Standard self-play. All games completed with zero illegal actions,
+crashes, watchdog incompletes, or pending records. The compact
+[audit](../research/results/native-screening-v2-20260715.json) is hash-linked to
+raw artifacts outside the repository and keeps flagship promotion blocked.
+
+The [diagnostic report](native-screening-v2-results.md) identifies Breath and
+Gjerde as the cleanest matched-agent strata, severe Classic stagnation,
+Breath-run and Gjerde-Go wipe concerns, and strong Casual/Standard asymmetry.
+These are one-family, 20-pair findings. They do not establish balance, depth, or
+candidate elimination.
 
 ## Generated operational smoke
 
@@ -48,7 +62,8 @@ not a useful opponent. They say nothing reliable about the candidates.
 |---|---|---|
 | Constructed tactical admission | Complete for both agent surfaces where applicable | Necessary implementation gate only |
 | Cross-family operational smoke | Complete: one Toy pair per candidate | None |
-| Calibration: 20 paired n=4 seeds | [Manifest v1 frozen](../research/manifests/ruleset-calibration-20260715.json), but [MCTS v1 feasibility failed before any result](../research/results/ruleset-calibration-feasibility-20260715.json); MCTS v2 performance work required before a fresh manifest | None until complete |
+| Native operational screen: 20 paired n=4 seeds | Complete: 480 games across mixed and matched native jobs; zero operational failures; [diagnostic report](native-screening-v2-results.md) | Falsification and evaluator-artifact triage only |
+| Independent shallow calibration | Historical [MCTS v1 manifest](../research/manifests/ruleset-calibration-20260715.json) produced no result; [v2 feasibility](../research/results/evidence-feasibility-gate-20260715.json) supports only a separately frozen 12/24 diagnostic | None until complete |
 | Health screen: 50 fresh paired seeds | Not run | None until complete |
 | Confirmation: 100 fresh paired seeds | Not run | None until complete |
 | MCTS 250 → 1,000 → 4,000 depth ladder | Not run | No depth claim |
@@ -108,21 +123,18 @@ python3 research/harness/human_study.py \
 
 ## Best next steps
 
-1. Freeze a predeclared calibration manifest with exact candidates, pair seeds,
-   agent matchups, budgets, output path, and compute estimate.
-2. Run 20-pair n=4 calibration first. Treat crashes, illegality, score
-   contradictions, and incompletes as immediate failures; use other signals only
-   to decide which measurements need scrutiny.
-3. Review agent disagreement and position telemetry before spending the 50-pair
-   screen. Improve an evaluator only through a new declared revision; never edit
-   a candidate inside a measurement round.
-4. Run the 50-pair health screen for survivors, then the adjacent-budget ladder.
-   Archive variants that fail termination, wipe, opening, or ruleset-specific
-   gates according to the one-refinement rule.
-5. Use ruleset-native MAP-Elites adversarially on the remaining candidates.
+1. Add constructed regression positions for the Classic stagnation, Gjerde-Go
+   wipe, and mixed Breath color/pie signatures before changing an evaluator.
+2. Freeze a separate uniform-MCTS@12 versus native-Standard diagnostic with
+   fresh paired seeds and the current source hashes. Do not pool its results.
+3. Audit that job before launching light rollouts or the 24-simulation rung.
+4. Review agent disagreement and position telemetry before spending the 50-pair
+   screen. Improve an evaluator only through a new declared revision.
+5. Run the 50-pair health screen and ruleset-native MAP-Elites only for
+   computational survivors.
 6. Take only the best two or three computational survivors to the human protocol.
-7. Promote one flagship only after the final high-budget, outside-play, forced-win,
-   and complete negative-evidence publication gates pass.
+7. Promote one flagship only after the final high-budget, outside-play,
+   forced-win, and complete negative-evidence publication gates pass.
 
-The first operator decision is therefore not “which game wins?” It is “which
-exact calibration manifest and compute window do we authorize?”
+The next operator decision is the exact fresh-seed uniform-MCTS@12 diagnostic
+manifest and compute window; it is not a choice of flagship.

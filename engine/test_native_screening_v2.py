@@ -23,6 +23,7 @@ ROOT = Path(__file__).resolve().parents[1]
 MANIFEST_PATH = (
     ROOT / "research" / "manifests" / "native-screening-v2-20260715.json"
 )
+RESULT_PATH = ROOT / "research" / "results" / "native-screening-v2-20260715.json"
 
 
 def _file_hash(path):
@@ -169,6 +170,48 @@ class TestNativeScreeningOrchestration(unittest.TestCase):
             self.assertEqual(audit["accounting"]["attempted"], 4)
             self.assertTrue(audit["correctness_gate_passed"])
             self.assertTrue(audit["promotion_blocked"])
+
+
+class TestGeneratedNativeScreeningAudit(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.manifest = json.loads(MANIFEST_PATH.read_text())
+        cls.result = json.loads(RESULT_PATH.read_text())
+
+    def test_compact_artifact_is_hash_valid_and_operationally_complete(self):
+        payload = dict(self.result)
+        recorded_hash = payload.pop("payload_hash")
+        self.assertEqual(recorded_hash, stable_hash(payload))
+        self.assertEqual(
+            self.result["manifest_payload_hash"], stable_hash(self.manifest)
+        )
+        self.assertEqual(
+            self.result["accounting"],
+            {
+                "attempted": 480,
+                "complete": 480,
+                "illegal": 0,
+                "crash": 0,
+                "watchdog_incomplete": 0,
+                "pending": 0,
+            },
+        )
+        self.assertTrue(self.result["correctness_gate_passed"])
+
+    def test_result_remains_native_only_diagnostic_evidence(self):
+        self.assertTrue(self.result["promotion_blocked"])
+        self.assertEqual(len(self.result["jobs"]), 2)
+        for job in self.result["jobs"]:
+            self.assertEqual(
+                job["run_source_commit"],
+                "c31a6986001c5a09e97d023162229d8ffbee838e",
+            )
+            self.assertEqual(len(job["strata"]), 6)
+            for stratum in job["strata"].values():
+                self.assertEqual(stratum["paired_samples"], 20)
+                self.assertFalse(stratum["headline_eligible"])
+            for value in job["raw_artifact_sha256"].values():
+                self.assertRegex(value, r"^[0-9a-f]{64}$")
 
 
 if __name__ == "__main__":

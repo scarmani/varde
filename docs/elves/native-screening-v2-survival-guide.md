@@ -26,12 +26,13 @@ outcomes before the freeze commit or making balance, depth, or flagship claims.
 
 ## Current phase
 
-Status: in progress.
+Status: audit complete; PR packaging in progress.
 
-Active batch: freeze commit and native job launch.
+Active batch: final review, PR, report, and operational cleanup.
 
-Next action: make the freeze commit, record its SHA, then launch the two frozen
-jobs without changing their configs or inspecting partial outcomes.
+Next action: commit and push compact evidence, open the PR, complete final
+readiness review, generate the HTML report, then remove this guide and the
+execution log from the final diff.
 
 ## Recovery order
 
