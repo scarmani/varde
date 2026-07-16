@@ -82,34 +82,33 @@ invalid.
 
 ## Reproduction commands
 
-Run the primary n=4 calibration outside the repository. The following expands
-the two MCTS policies over all declared budgets and schedules every pair of
-agents; choose an output path with adequate space:
+The exact completed native commands are frozen in
+`research/manifests/native-screening-v2-20260715.json`. Inspect their argv,
+schedule hashes, and external output paths before reproducing them:
 
 ```bash
-python3 research/harness/evaluate_rulesets.py \
-  --rulesets classic,rosette,breath,breath-run,gjerde,gjerde-go \
-  --agents native-standard,mcts-uniform,mcts-light \
-  --budgets 250,1000,4000 --pairs 20 --board-sizes 4 \
-  --seed 20260715 --workers 8 --checkpoint-interval 2 \
-  --output-dir /path/to/varde-calibration
+jq '.jobs[] | {id, argv, config_sha256, schedule_sha256}' \
+  research/manifests/native-screening-v2-20260715.json
 ```
 
-This full cross-product is expensive. A staged operator may first run separate
-native-versus-MCTS policy jobs at 250 and only launch the adjacent budget ladder
-for candidates that pass basic correctness and health. Do not combine staged
-jobs after inspecting outcomes unless the complete seed/configuration plan was
-fixed before launch.
-
-Resume the exact same job after interruption:
+Run each recorded argv only from a clean output root. If interrupted, append
+`--resume` to that same job without changing any other argument. Audit both
+complete jobs with the frozen command:
 
 ```bash
-python3 research/harness/evaluate_rulesets.py \
-  --rulesets classic,rosette,breath,breath-run,gjerde,gjerde-go \
-  --agents native-standard,mcts-uniform,mcts-light \
-  --budgets 250,1000,4000 --pairs 20 --board-sizes 4 \
-  --seed 20260715 --workers 8 --checkpoint-interval 2 \
-  --output-dir /path/to/varde-calibration --resume
+python3 research/harness/audit_native_screening.py \
+  --manifest research/manifests/native-screening-v2-20260715.json \
+  --output research/results/native-screening-v2-20260715.json
+```
+
+The 250/1,000/4,000 MCTS ladder is not a reproduction command: it remains
+blocked by the outcome-blind feasibility result. Any 12/24 work requires a new
+manifest, fresh seeds, and a separate raw output root.
+
+Validate the compact artifact and the rest of the engine with:
+
+```bash
+python3 -m unittest discover -s engine -v
 ```
 
 Generate the panel package only for the best two or three computational
