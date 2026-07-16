@@ -18,6 +18,7 @@ ROOT = Path(__file__).resolve().parents[1]
 MANIFEST_PATH = (
     ROOT / "research" / "manifests" / "uniform-mcts12-20260716.json"
 )
+RESULT_PATH = ROOT / "research" / "results" / "uniform-mcts12-20260716.json"
 
 
 class TestFrozenUniformMcts12Manifest(unittest.TestCase):
@@ -122,6 +123,57 @@ class TestUniformMcts12Audit(unittest.TestCase):
             manifest["jobs"][0]["config"]["agents"][1]["budget"] = 24
             with self.assertRaisesRegex(ValueError, "MCTS agent differs"):
                 audit_manifest(manifest)
+
+
+class TestGeneratedUniformMcts12Audit(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.manifest = json.loads(MANIFEST_PATH.read_text())
+        cls.result = json.loads(RESULT_PATH.read_text())
+
+    def test_compact_artifact_is_hash_valid_and_operationally_complete(self):
+        payload = dict(self.result)
+        recorded_hash = payload.pop("payload_hash")
+        self.assertEqual(recorded_hash, stable_hash(payload))
+        self.assertEqual(
+            self.result["manifest_payload_hash"], stable_hash(self.manifest)
+        )
+        self.assertEqual(
+            self.result["accounting"],
+            {
+                "attempted": 240,
+                "complete": 240,
+                "illegal": 0,
+                "crash": 0,
+                "watchdog_incomplete": 0,
+                "pending": 0,
+            },
+        )
+        self.assertTrue(
+            self.result["correctness_and_provenance_audit_clean"]
+        )
+        self.assertTrue(self.result["promotion_blocked"])
+        self.assertFalse(
+            self.result["next_stage_gate"]["later_stages_launched_by_this_unit"]
+        )
+
+    def test_result_records_agent_admission_failure_without_a_game_claim(self):
+        self.assertEqual(
+            self.result["job"]["run_source_commit"],
+            "22b2176731d2ca4b98def08c8321a8f88870453e",
+        )
+        strata = self.result["job"]["strata"]
+        self.assertEqual(len(strata), 6)
+        for value in strata.values():
+            self.assertEqual(value["games_complete"], 40)
+            self.assertEqual(value["paired_samples"], 20)
+            self.assertFalse(value["headline_eligible"])
+            self.assertGreaterEqual(value["agent_a_score_rate"], 0.8875)
+        self.assertFalse(
+            self.result["claim_limits"]["strategic_depth_evidence"]
+        )
+        for value in self.result["job"]["raw_artifact_sha256"].values():
+            self.assertRegex(value, r"^[0-9a-f]{64}$")
 
 
 if __name__ == "__main__":

@@ -64,12 +64,13 @@ agents, but not under strong play.
 
 ## What follows
 
-Do not archive or promote a ruleset from this one-family sample. The next
-computer-only unit should first add constructed regression positions for the
-Classic stagnation, Gjerde-Go wipe, and mixed Breath color/pie signatures. Then
-freeze a separate 12-simulation uniform-MCTS diagnostic against native Standard
-using paired colors and fresh seeds. Run the light rollout and 24-simulation
-rung only after the preceding job passes correctness and provenance audit.
+Do not archive or promote a ruleset from this one-family sample. The declared
+follow-up has now completed: the constructed warning fixtures pass and the
+fresh paired [uniform-MCTS@12 diagnostic](uniform-mcts12-results.md) audited
+cleanly. That independent agent was strategically non-competitive, with native
+Standard scoring 88.75-100% in every candidate stratum. The next unit is an
+MCTS tactical-admission and telemetry repair, not an immediate 24-simulation or
+light-rollout match batch.
 
 No result from this screen may be pooled with the historical 250-simulation
-attempt or a future 12/24 manifest.
+attempt or the completed 12-simulation manifest.
