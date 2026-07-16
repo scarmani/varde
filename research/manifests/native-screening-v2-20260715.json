@@ -1,0 +1,119 @@
+{
+  "format": "varde-native-screening-manifest",
+  "version": 2,
+  "status": "frozen-before-outcomes",
+  "created_date": "2026-07-15",
+  "purpose": "Native-only operational falsification before shallow independent search",
+  "source": {
+    "main_merge_commit": "78fae9d30e03f603496af7b1af7e423b58facfc4",
+    "feasibility_payload_hash": "556b1f76ab8152abb3a7763de9f82d367224eb6f027132df18af2f11c51094d3",
+    "evaluation_harness_sha256": "053a866f2dc048da1226fe956e0b59b4f7752aaefe92b40ba587a735cc1d12f5",
+    "audit_harness_sha256": "d85902c1dbd8d00795a8ab30c44b2a9f634b48dfeae070d7ee1738e01dbf363c",
+    "code_hash": "4d38b6defa92ee6747619c781ab33824d7d51115a31f8a1a6d27f7f9587078d5",
+    "ruleset_registry_hash": "e9517bccf1093f43017417d59613fd0af57af8e290e2bccd55f6b38fa227d7ad",
+    "native_evaluator_hash": "6f64d8cb8238b61fd5e719c001c21a695da45122a46c3802c5b9926c5dad2282",
+    "mcts_agent_hash": "63cdec59394646f4bddd8afe33245331b1f55f922d79523030722bbb8d496e97",
+    "engine_files": {
+      "engine/actions.py": "95742a2f37e93e629b53cb85824fa873ca8db739ad03286eaacb97a58f04c71e",
+      "engine/mcts.py": "db96420d12938dddf0d8f7a0ff433f3cfd0db9d070492c13ed646eb7103dc78c",
+      "engine/native_evaluators.py": "14c8212aba63828e43f1b57f4d53606a80a972ce81fc81c2f29ca5dd98d090bb",
+      "engine/opponent.py": "19e15089187d7cbfc9a7cbb87519a665a4351e564b0d867835c139e66cbfb431",
+      "engine/varde.py": "5d7ab246126cad8f6a211f15a44f2b9cfae98813a093d27c5f1c2629dbdf8a01"
+    }
+  },
+  "candidates": [
+    {"id": "classic", "evaluation_id": "classic-1.3"},
+    {"id": "rosette", "evaluation_id": "rosette-0.1"},
+    {"id": "breath", "evaluation_id": "breath-0.1"},
+    {"id": "breath-run", "evaluation_id": "breath-run-0.1"},
+    {"id": "gjerde", "evaluation_id": "gjerde-breath-0.1"},
+    {"id": "gjerde-go", "evaluation_id": "gjerde-go-0.1"}
+  ],
+  "fixed_parameters": {
+    "board_sizes": [4],
+    "pairs_per_ruleset_matchup": 20,
+    "master_seed": 20260715000,
+    "pair_seed_count": 240,
+    "games": 480,
+    "workers": 8,
+    "checkpoint_interval": 8,
+    "telemetry": true,
+    "watchdog_multiplier": 20,
+    "watchdog_scope": "research only; never a live-game action ceiling",
+    "raw_output_root": "/private/tmp/varde-native-screening-v2-results-20260715"
+  },
+  "seed_scheme": {
+    "derivation": "uint64_be(sha256(canonical_json([master_seed, ruleset, board_size, matchup, pair_index]))[0:8])",
+    "pairing": "both color legs of a pair share one derived seed",
+    "schedule_tuple_sha256": "aecd29d6a36d7225a22b9503cef3e7a1746806e0f6c1cf41ea14df95058c5dd8"
+  },
+  "feasibility_gate": {
+    "measurement_only": true,
+    "outcomes_inspected_before_freeze": false,
+    "projected_native_480_game_wall_hours_at_8_workers": 0.7849383708105403,
+    "maximum_launch_wall_hours": 1.0,
+    "checkpoint_resume_required": true
+  },
+  "jobs": [
+    {
+      "id": "native-casual-vs-standard",
+      "games": 240,
+      "pair_seeds": 120,
+      "config_sha256": "e63bc0fc104c68cd70eee43e8429bb38e260eb615786dac85b8416a7978a19a9",
+      "schedule_sha256": "5c90d73ce84e9e20656887b00b8864b8441998dd4fd34f3ebfa744bcd75b9864",
+      "output_dir": "/private/tmp/varde-native-screening-v2-results-20260715/native-casual-vs-standard",
+      "cancel_file": "/private/tmp/varde-native-screening-v2-results-20260715/control/cancel-native-casual-vs-standard",
+      "config": {
+        "rulesets": ["classic", "rosette", "breath", "breath-run", "gjerde", "gjerde-go"],
+        "board_sizes": [4],
+        "agents": [
+          {"id": "native-casual", "family": "native", "difficulty": "casual", "budget": null, "rollout_policy": null, "hash": "6f64d8cb8238b61fd5e719c001c21a695da45122a46c3802c5b9926c5dad2282"},
+          {"id": "native-standard", "family": "native", "difficulty": "standard", "budget": null, "rollout_policy": null, "hash": "6f64d8cb8238b61fd5e719c001c21a695da45122a46c3802c5b9926c5dad2282"}
+        ],
+        "pairs": 20,
+        "seed": 20260715000,
+        "telemetry": true,
+        "include_mirrors": false,
+        "watchdog_multiplier": 20
+      },
+      "argv": ["python3", "research/harness/evaluate_rulesets.py", "--rulesets", "classic,rosette,breath,breath-run,gjerde,gjerde-go", "--agents", "native-casual,native-standard", "--pairs", "20", "--board-sizes", "4", "--seed", "20260715000", "--workers", "8", "--checkpoint-interval", "8", "--watchdog-multiplier", "20", "--telemetry", "--cancel-file", "/private/tmp/varde-native-screening-v2-results-20260715/control/cancel-native-casual-vs-standard", "--output-dir", "/private/tmp/varde-native-screening-v2-results-20260715/native-casual-vs-standard"]
+    },
+    {
+      "id": "native-standard-self",
+      "games": 240,
+      "pair_seeds": 120,
+      "config_sha256": "7d185ce97baad7d4a52cb38060162093aa60ac59c7e17838c3537ea5e0e081af",
+      "schedule_sha256": "bf7ce9e3a4575a50881aaee81e3a0e4a33d8028e271268abd8d468122cfcacbe",
+      "output_dir": "/private/tmp/varde-native-screening-v2-results-20260715/native-standard-self",
+      "cancel_file": "/private/tmp/varde-native-screening-v2-results-20260715/control/cancel-native-standard-self",
+      "config": {
+        "rulesets": ["classic", "rosette", "breath", "breath-run", "gjerde", "gjerde-go"],
+        "board_sizes": [4],
+        "agents": [
+          {"id": "native-standard", "family": "native", "difficulty": "standard", "budget": null, "rollout_policy": null, "hash": "6f64d8cb8238b61fd5e719c001c21a695da45122a46c3802c5b9926c5dad2282"}
+        ],
+        "pairs": 20,
+        "seed": 20260715000,
+        "telemetry": true,
+        "include_mirrors": true,
+        "watchdog_multiplier": 20
+      },
+      "argv": ["python3", "research/harness/evaluate_rulesets.py", "--rulesets", "classic,rosette,breath,breath-run,gjerde,gjerde-go", "--agents", "native-standard", "--pairs", "20", "--board-sizes", "4", "--seed", "20260715000", "--workers", "8", "--checkpoint-interval", "8", "--watchdog-multiplier", "20", "--telemetry", "--include-mirrors", "--cancel-file", "/private/tmp/varde-native-screening-v2-results-20260715/control/cancel-native-standard-self", "--output-dir", "/private/tmp/varde-native-screening-v2-results-20260715/native-standard-self"]
+    }
+  ],
+  "audit": {
+    "argv": ["python3", "research/harness/audit_native_screening.py", "--manifest", "research/manifests/native-screening-v2-20260715.json", "--output", "research/results/native-screening-v2-20260715.json"],
+    "publish_compact_artifact_when": "both raw jobs have hash-valid complete state, exact configs and schedules, and matching runtime provenance",
+    "record_even_when_negative": ["illegal", "crash", "watchdog incomplete", "stagnation", "wipe", "swap", "margin", "opening convergence", "ruleset telemetry"]
+  },
+  "claim_limits": {
+    "diagnostic_falsification_only": true,
+    "independent_agent_family_evidence": false,
+    "strategic_depth_evidence": false,
+    "balance_evidence": false,
+    "human_emergence_and_beauty_unmeasured": true,
+    "flagship_promotion_blocked": true,
+    "pool_with_historical_250_simulation_manifest": false,
+    "pool_with_future_12_24_mcts_manifest": false
+  }
+}
