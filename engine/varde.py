@@ -723,7 +723,8 @@ class Game:
     def play_extension(self, p):
         """Freely extend an atari'd group per the ruleset's extension
         scope. The turn does not pass; in the extend-only rulesets the
-        turn instead ends with finish_extensions()."""
+        turn instead ends with finish_extensions(). Breath-run closes
+        that turn automatically when the chain has no legal continuation."""
         spec = EXTENSION_RULES.get(self.rules)
         if spec is None:
             raise Illegal("no extension in this ruleset")
@@ -758,6 +759,12 @@ class Game:
         self.consecutive_passes = 0
         self.quiet_moves = 0
         self.last_capture_waves = waves
+        if self.rules == "breath-run" and not self.extension_candidates():
+            # No choice remains in the rescue chain. Compress the forced
+            # finish action while preserving the final capture animation.
+            final_waves = self.last_capture_waves
+            self.finish_extensions()
+            self.last_capture_waves = final_waves
         return captured
 
     @property
@@ -996,4 +1003,12 @@ class Game:
         game.players = dict(players)
         game.swap_decided = bool(payload.get("swap_decided", False))
         game.last_capture_waves = []
+        if (
+            game.rules == "breath-run"
+            and game.extension_only_turn
+            and not game.extension_candidates()
+        ):
+            # Normalize older saves captured between the last rescue and the
+            # formerly explicit forced finish action.
+            game.finish_extensions()
         return game

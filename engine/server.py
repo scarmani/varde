@@ -565,11 +565,14 @@ def computer_take_extensions(game):
                 imperiled += len(comp)
         if imperiled < 2:
             return
+    mover = game.to_move
     while True:
         candidates = game.extension_candidates()
         if not candidates:
-            return
+            return False
         game.play_extension(candidates[0])
+        if game.to_move != mover:
+            return True
 
 
 def apply_computer_action(game, match, model=None):
@@ -583,8 +586,16 @@ def apply_computer_action(game, match, model=None):
         raise Illegal("it is not the computer's turn")
     selected_profile = get_profile(seat.profile)
     active_model = MODEL if model is None else model
+    extension_finished = False
     if not game.finished:
-        computer_take_extensions(game)
+        extension_finished = computer_take_extensions(game)
+    if extension_finished:
+        return BotDecision(
+            action="extend",
+            reason_code="extend",
+            reason_text="Rescued an imperiled group until its run ended.",
+            profile=seat.profile,
+        )
     if game.extension_only_turn:
         game.finish_extensions()
         return BotDecision(

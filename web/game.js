@@ -74,8 +74,36 @@ async function request(path, body = null) {
     headers: {"Content-Type": "application/json"},
     body: JSON.stringify(body),
   };
-  const response = await fetch(path, options);
-  const payload = await response.json();
+  let response;
+  try {
+    response = await fetch(path, options);
+  } catch (error) {
+    if (window.location.protocol === "file:") {
+      throw new Error(
+        "Open Varde through its local server: run `python3 engine/server.py`, then visit http://127.0.0.1:8000.",
+      );
+    }
+    throw new Error(
+      "Cannot reach the Varde server. Run `python3 engine/server.py`, then reload http://127.0.0.1:8000.",
+    );
+  }
+  const contentType = response.headers.get("Content-Type") || "";
+  let payload = null;
+  if (contentType.includes("application/json")) {
+    try {
+      payload = await response.json();
+    } catch (error) {
+      // Fall through to the actionable protocol error below.
+    }
+  }
+  if (payload === null) {
+    if (response.status === 404 && path.startsWith("/api/")) {
+      throw new Error(
+        "The running Varde server is out of date. Stop it, run `python3 engine/server.py` again, then reload this page.",
+      );
+    }
+    throw new Error(`The Varde server returned an invalid response for ${path}.`);
+  }
   if (!response.ok) throw new Error(payload.error || "Request failed");
   return payload;
 }
@@ -1091,6 +1119,7 @@ window.render_game_to_text = () => JSON.stringify({
   swap_available: game?.swap_available,
   resumption_available: game?.resumption_available,
   resumption_used: game?.resumption_used,
+  extension_only_turn: game?.extension_only_turn,
   score: game?.score,
   match: game?.match,
   computer_decision: game?.computer_decision,
@@ -1134,6 +1163,7 @@ window.render_game_to_text = () => JSON.stringify({
     diameter_ratio: 2 * visual.stoneRadius / visual.spacing,
   } : null,
   legal_points: game?.points.filter((p) => p.legal).map((p) => p.coord),
+  legal_extensions: game?.points.filter((p) => p.extension).map((p) => p.coord),
   occupied: game?.points.filter((p) => p.stack.length).map((p) => ({coord: p.coord, stack: p.stack, sky: p.sky})),
   capture_animation_wave: animation?.index ?? null,
 });
