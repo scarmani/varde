@@ -124,7 +124,7 @@ Status: completed at `e828a1d`.
 
 ## Batch 2 — Correct root-only proof guidance
 
-Status: in progress.
+Status: completed at `f572f40`.
 
 ### Contract
 
@@ -144,3 +144,43 @@ Status: in progress.
 
 - V5 research solver/search variants and their tests only; V4 recipes retain
   exact behavior and hashes.
+
+### Outcome
+
+- Added an oracle-independent set-valued solver and two immutable V5 recipe
+  IDs for unchanged control and guidance-only search.
+- Solver statuses match the independent oracle action-for-action on all 24
+  development positions; all declared decoys have zero proven actions.
+- Integration reuses one generated root transition set, invokes exactly one
+  root scan, applies `+1/0/-1 ÷ (1 + visits)` only to expansion/UCT selection,
+  retains every action, and records only accepted-terminal backups.
+- Unknown-only guidance reproduces the control action, value, visits, and root
+  trace exactly. Existing V4 control agent hash remains
+  `b1349822959ab4968503208d1fc48d3dfb1c6a900914b95519a5e73693ff49cf`.
+- Observed scan p95: approximately 19 ms Toy and 101 ms Beginner. Full suite:
+  323 tests passed in 111.137 seconds; changed-file Ruff, compilation, and diff
+  checks passed. Initial full run exposed only a stale expected-variant count;
+  that regression assertion was updated and the complete suite reran green.
+
+## Batch 3 — Obligation-reserved progressive unpruning
+
+Status: in progress.
+
+### Contract
+
+**Behavior**
+
+- Reserve visible capacity for administrative actions and each detected urgent
+  obligation; guided arms additionally expose every proven action.
+- Fill the remaining square-root exposure budget with unchanged V4 rule-fact
+  ordering and semantic ties; overflow may exceed but never shrink the base.
+
+**Acceptance criteria**
+
+- Exact schedule/overflow, mandatory visibility, eventual expansion,
+  determinism, neutrality, median visit allocation, and V4 parity tests.
+
+**Blast radius**
+
+- V5 unpruning module/integration/tests only; historical V4 order and recipes
+  remain byte-behavior compatible.

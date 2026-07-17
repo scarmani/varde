@@ -32,3 +32,14 @@ not invitations to tune a frozen gate.
 - The immediate Gjerde-Go completion fixtures are directly proven but fail the
   one-reply durability predicate, confirming the fence-label distinction with
   real legal transitions.
+
+## Batch 2
+
+- The independent oracle and new solver agree on every root action across all
+  24 development positions. This includes actor-changing closure, existential
+  actor-preserving closure, equivalent proof sets, and immediate/durable fences.
+- Root-only scanning removed V4's repeated-tree cost: observed development p95
+  was about 19 ms on Toy and 101 ms on Beginner, versus the 100/400 ms gates.
+- A tied takeover decoy produces all-unknown statuses; control and guided runs
+  then have identical actions, values, visits, and terminal traces. The proof
+  scan consumes no RNG and never backs up or forces a result.

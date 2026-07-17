@@ -63,21 +63,22 @@ development factorial, and continue only through predeclared gates.
 ## Current Phase
 
 - **Status:** in progress.
-- **Active batch:** Batch 2 of 6.
-- **What was just finished:** Batch 1 froze two exact 24-position manifests at
-  `e828a1d`; 313 product tests and 15 focused tests passed, with disjoint hashes
-  and complete independent-oracle certificates.
-- **Single next action:** implement set-valued root-only proof guidance with
-  corrected rescue/fence semantics, decaying bias, and exactly one root scan.
+- **Active batch:** Batch 3 of 6.
+- **What was just finished:** Batch 2 committed at `f572f40`; all 24 oracle
+  comparisons, one-scan/decay/parity checks, p95 ceilings, and 323 product tests
+  passed without changing any V4 recipe hash.
+- **Single next action:** implement obligation-reserved progressive unpruning
+  with administrative/proven-set overflow and exact exposure telemetry.
 
 ## Stop Gate
 
-- **Planned batches remaining:** 5.
+- **Planned batches remaining:** 4.
 - **Stop allowed right now:** no.
 - **Why:** the user authorized the full finite V5 run and no mandatory gate or
   other actual stop condition has fired.
-- **Next required action:** execute Batch 2's root-guidance contract and prove
-  oracle agreement, one-scan telemetry, decay, and unknown-trace parity.
+- **Next required action:** execute Batch 3's reserved-unpruning contract and
+  prove mandatory exposure, schedule counts, neutrality, eventual expansion,
+  and exact V4 behavior/hash preservation.
 
 ## Effort Standard
 
@@ -116,18 +117,16 @@ development factorial, and continue only through predeclared gates.
 
 ## Next Exact Batch
 
-- **Batch:** Batch 2 — corrected root-only proof guidance.
-- **Scope:** implement complete set-valued proven/unknown/disproven solver
-  results, corrected rescue closure, distinct immediate/durable fencing, root
-  transition reuse, and decaying selection bias. Invoke the solver only once at
-  the root and never alter backed-up terminal values.
-- **Acceptance criteria:** 100% development oracle/solver agreement; zero false
-  positive decoy guidance; one scan per decision; equivalent proven sets
-  retained; unknown-only control/guidance traces identical; Toy p95 below
-  100 ms and Beginner p95 below 400 ms; legality and non-mutation clean.
-- **Risk:** importing oracle/corpus certification logic into the solver would
-  invalidate independence; forced exclusion or value backup would violate the
-  registered mechanism.
+- **Batch:** Batch 3 — obligation-reserved progressive unpruning.
+- **Scope:** retain `ceil(2 × sqrt(visits))`, expose every administrative action,
+  reserve one slot per urgent obligation, expose the full proven set in guided
+  arms, and fill remaining slots by existing fact order and semantic hash.
+- **Acceptance criteria:** exact schedules and overflow; administrative and
+  urgent actions never hidden; eventual full expansion; deterministic neutral
+  ties; at 64 visits, wide roots expose mandatory actions with median at least
+  three visits; V4 decisions/hashes unchanged.
+- **Risk:** unordered set iteration or post-hoc quota changes would break
+  determinism; mandatory overflow must not become forced action exclusion.
 
 ## Post-Checkpoint Control Loop
 
