@@ -20,6 +20,7 @@ for root in (ENGINE_ROOT, HARNESS_ROOT):
         sys.path.insert(0, str(root))
 
 from mcts_tactical_admission import (  # noqa: E402
+    DEFAULT_SEARCH_VARIANT,
     DEFAULT_BUDGETS,
     DEFAULT_POLICIES,
     DEFAULT_REPLICATES,
@@ -36,7 +37,7 @@ from mcts_tactical_fixtures import (  # noqa: E402
     fixture_catalog,
     tactical_positions,
 )
-from mcts import MCTS_VERSION  # noqa: E402
+from mcts import MCTS_VERSION, SEARCH_VARIANTS  # noqa: E402
 
 
 FORMAT = "varde-mcts-tactical-admission-manifest"
@@ -67,11 +68,31 @@ def build_manifest(
     admissions = admission_positions()
     diagnostics = diagnostic_positions()
     tasks = build_schedule(config)
-    run_provenance = provenance()
+    run_provenance = provenance(
+        search_variant=config.get("search_variant", DEFAULT_SEARCH_VARIANT)
+    )
     run_provenance["manifest_builder_sha256"] = hashlib.sha256(
         Path(__file__).read_bytes()
     ).hexdigest()
     created_date = created_date or date.today().isoformat()
+    execution_argv = [
+        "python3",
+        "research/harness/mcts_tactical_admission.py",
+        "--budgets", ",".join(map(str, config["budgets"])),
+        "--policies", ",".join(config["policies"]),
+        "--replicates", str(config["replicates"]),
+        "--seed", str(config["seed"]),
+    ]
+    if "search_variant" in config:
+        execution_argv.extend([
+            "--search-variant",
+            config["search_variant"],
+        ])
+    execution_argv.extend([
+        "--workers", str(workers),
+        "--checkpoint-interval", str(checkpoint_interval),
+        "--output-dir", str(Path(output_dir).expanduser().resolve()),
+    ])
     return {
         "format": FORMAT,
         "version": VERSION,
@@ -111,17 +132,7 @@ def build_manifest(
             "workers": workers,
             "checkpoint_interval": checkpoint_interval,
             "output_dir": str(Path(output_dir).expanduser().resolve()),
-            "argv": [
-                "python3",
-                "research/harness/mcts_tactical_admission.py",
-                "--budgets", ",".join(map(str, config["budgets"])),
-                "--policies", ",".join(config["policies"]),
-                "--replicates", str(config["replicates"]),
-                "--seed", str(config["seed"]),
-                "--workers", str(workers),
-                "--checkpoint-interval", str(checkpoint_interval),
-                "--output-dir", str(Path(output_dir).expanduser().resolve()),
-            ],
+            "argv": execution_argv,
             "audit_argv": [
                 "python3",
                 "research/harness/audit_mcts_tactical_admission.py",
@@ -157,6 +168,11 @@ def main():
     parser.add_argument("--policies", default=",".join(DEFAULT_POLICIES))
     parser.add_argument("--replicates", type=int, default=DEFAULT_REPLICATES)
     parser.add_argument("--seed", type=int, default=DEFAULT_SEED)
+    parser.add_argument(
+        "--search-variant",
+        choices=sorted(SEARCH_VARIANTS),
+        default=DEFAULT_SEARCH_VARIANT,
+    )
     parser.add_argument("--workers", type=int, default=1)
     parser.add_argument("--checkpoint-interval", type=int, default=8)
     parser.add_argument("--created-date")
@@ -168,6 +184,7 @@ def main():
         "policies": [value for value in args.policies.split(",") if value],
         "replicates": args.replicates,
         "seed": args.seed,
+        "search_variant": args.search_variant,
     }
     if not repository_is_clean():
         parser.error("tracked repository changes must be committed before freeze")

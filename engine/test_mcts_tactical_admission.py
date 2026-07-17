@@ -14,7 +14,7 @@ if str(ENGINE) not in sys.path:
 if str(HARNESS) not in sys.path:
     sys.path.insert(0, str(HARNESS))
 
-from actions import apply_action, legal_actions  # noqa: E402
+from actions import apply_action, legal_actions, legal_transitions  # noqa: E402
 from evaluate_rulesets import _agent_action  # noqa: E402
 from mcts_tactical_admission import (  # noqa: E402
     DEFAULT_BUDGETS,
@@ -38,6 +38,7 @@ from mcts_tactical_fixtures import (  # noqa: E402
     validate_transition_proof,
 )
 from mcts_telemetry import action_key, annotate_choice, tactical_context  # noqa: E402
+from mcts import _tactical_priorities, mcts_agent_hash  # noqa: E402
 
 
 def synthetic_admission(task):
@@ -99,6 +100,21 @@ def synthetic_admission(task):
 
 
 class TestTacticalFixtureCatalog(unittest.TestCase):
+    def test_tactical_transition_priorities_solve_all_admission_proofs(self):
+        for position in admission_positions():
+            with self.subTest(position=position.id):
+                before = position.state.key()
+                transitions = legal_transitions(position.state)
+                priorities = _tactical_priorities(position.state, transitions)
+                best = max(priorities.values())
+                selected = tuple(
+                    action
+                    for action, _advanced in transitions
+                    if priorities[action] == best
+                )
+                self.assertEqual(selected, position.acceptable_actions)
+                self.assertEqual(position.state.key(), before)
+
     def test_catalog_covers_all_candidates_and_declared_decision_types(self):
         positions = tactical_positions()
         catalog = fixture_catalog()
@@ -388,6 +404,24 @@ class TestTacticalAdmissionHarness(unittest.TestCase):
         self.assertIn("nodes", telemetry)
         self.assertIn("average_rollout_actions", telemetry)
         self.assertIn("elapsed_ms", telemetry)
+
+    def test_tactical_variants_are_separately_hashed_and_recorded(self):
+        for variant in ("tactical-only", "combined"):
+            config = self._config(budgets=[2])
+            config["search_variant"] = variant
+            task = next(
+                item for item in build_schedule(config)
+                if item["position_id"] == "admission-pie-small-takeover"
+            )
+            record = evaluate_task(task)
+            self.assertEqual(record["status"], "complete")
+            self.assertEqual(record["search_variant"], variant)
+            self.assertEqual(record["decision"]["search_variant"], variant)
+            self.assertEqual(
+                record["decision"]["agent_hash"],
+                mcts_agent_hash(variant),
+            )
+            self.assertEqual(record["action"], "swap")
 
     def test_checkpoint_resume_is_ordered_and_tamper_evident(self):
         config = self._config()

@@ -23,7 +23,12 @@ for root in (ENGINE_ROOT, HARNESS_ROOT):
         sys.path.insert(0, str(root))
 
 from actions import apply_action, legal_actions  # noqa: E402
-from mcts import MCTS_AGENT_HASH, choose_mcts_state_action  # noqa: E402
+from mcts import (  # noqa: E402
+    DEFAULT_SEARCH_VARIANT,
+    SEARCH_VARIANTS,
+    choose_mcts_state_action,
+    mcts_agent_hash,
+)
 from mcts_tactical_fixtures import (  # noqa: E402
     FIXTURE_VERSION,
     fixture_catalog,
@@ -97,12 +102,17 @@ def code_hash():
     return digest.hexdigest()
 
 
-def provenance(*, schema_version=FIXTURE_VERSION, positions=None):
+def provenance(
+    *,
+    schema_version=FIXTURE_VERSION,
+    positions=None,
+    search_variant=DEFAULT_SEARCH_VARIANT,
+):
     positions = tactical_positions() if positions is None else tuple(positions)
     return {
         "source_commit": source_commit(),
         "code_hash": code_hash(),
-        "mcts_agent_hash": MCTS_AGENT_HASH,
+        "mcts_agent_hash": mcts_agent_hash(search_variant),
         "fixture_catalog_hash": stable_hash(fixture_catalog(
             schema_version=schema_version,
             positions=positions,
@@ -126,6 +136,7 @@ def validate_config(config):
     policies = config.get("policies")
     replicates = config.get("replicates")
     seed = config.get("seed")
+    search_variant = config.get("search_variant", DEFAULT_SEARCH_VARIANT)
     if (
         not isinstance(budgets, list)
         or not budgets
@@ -142,6 +153,8 @@ def validate_config(config):
         raise ValueError("replicates must be a positive integer")
     if isinstance(seed, bool) or not isinstance(seed, int):
         raise ValueError("seed must be an integer")
+    if search_variant not in SEARCH_VARIANTS:
+        raise ValueError("unknown MCTS search variant")
 
 
 def build_schedule(config, *, positions=None, schema_version=VERSION):
@@ -178,6 +191,8 @@ def build_schedule(config, *, positions=None, schema_version=VERSION):
                                 else None
                             ),
                         })
+                        if "search_variant" in config:
+                            task["search_variant"] = config["search_variant"]
                     tasks.append(task)
     return tasks
 
@@ -191,6 +206,8 @@ def _base_record(task):
     for key in ("evidence_class", "proof_sha256"):
         if key in task:
             record[key] = task[key]
+    if "search_variant" in task:
+        record["search_variant"] = task["search_variant"]
     return record
 
 
@@ -244,6 +261,10 @@ def evaluate_task(task):
             simulations=task["budget"],
             seed=task["seed"],
             rollout_policy=task["policy"],
+            search_variant=task.get(
+                "search_variant",
+                DEFAULT_SEARCH_VARIANT,
+            ),
             include_root_telemetry=True,
         )
         elapsed_ms = (time.perf_counter() - started) * 1000
@@ -273,6 +294,8 @@ def evaluate_task(task):
                 ),
                 "max_rollout_actions": decision.max_rollout_actions,
                 "selection_reason": decision.selection_reason,
+                "search_variant": decision.search_variant,
+                "agent_hash": decision.agent_hash,
                 "root_action_telemetry": [
                     dict(item) for item in decision.root_actions
                 ],
@@ -583,7 +606,9 @@ def run_admission(
     output_dir = Path(output_dir)
     state_path = output_dir / "state.json"
     tasks = build_schedule(config)
-    current_provenance = provenance()
+    current_provenance = provenance(
+        search_variant=config.get("search_variant", DEFAULT_SEARCH_VARIANT)
+    )
     if resume:
         if not state_path.exists():
             raise ValueError("no admission checkpoint to resume")
@@ -645,6 +670,11 @@ def main():
     parser.add_argument("--policies", default=",".join(DEFAULT_POLICIES))
     parser.add_argument("--replicates", type=int, default=DEFAULT_REPLICATES)
     parser.add_argument("--seed", type=int, default=DEFAULT_SEED)
+    parser.add_argument(
+        "--search-variant",
+        choices=sorted(SEARCH_VARIANTS),
+        default=DEFAULT_SEARCH_VARIANT,
+    )
     parser.add_argument("--workers", type=int, default=max(1, os.cpu_count() or 1))
     parser.add_argument("--checkpoint-interval", type=int, default=8)
     parser.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT)
@@ -657,6 +687,7 @@ def main():
         "policies": _csv(args.policies),
         "replicates": args.replicates,
         "seed": args.seed,
+        "search_variant": args.search_variant,
     }
     try:
         run_admission(

@@ -198,3 +198,11 @@ def apply_action(state, action, *, copy=True, validate=True):
     """Apply a legal action, cloning by default so analysis is non-mutating."""
     target = state.clone() if copy else state
     return _apply_in_place(target, action, validate=validate)
+
+
+def legal_transitions(state):
+    """Generate each legal action and its resulting rules state exactly once."""
+    return tuple(
+        (action, apply_action(state, action, validate=False))
+        for action in legal_actions(state)
+    )

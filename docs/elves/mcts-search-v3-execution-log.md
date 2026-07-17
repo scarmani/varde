@@ -373,3 +373,63 @@ and exactly color-symmetric across all six candidates and n=3..6. The full
 also passed. No native evaluator, rule, scoring, save, server, browser, or live
 opponent behavior changed. Confidence HIGH that margin resolves many saturated
 ties; confidence HIGH that it is insufficient for tactical admission alone.
+
+## Batch 4 — Minimal tactical proposal/rollout ablation
+
+Status: in progress.
+
+### Contract
+
+**Behaviors:** add one rules-layer transition-priority recipe for immediate
+capture, sole-liberty defense, Breath-run continuation, fence completion, pie
+takeover, and accept/resume decisions. Generate each legal transition once per
+guided decision point and reuse the selected transition. Use the ranking for
+tree proposal order and rollout choice; back up only real terminal W/D/L and,
+for the combined variant, normalized terminal margin.
+
+**Build on:** seeded-hash ties are the correctness foundation. Freeze and run
+two separately hashed variants on the identical V2 corpus: `tactical-only`
+disables terminal margin, while `combined` retains it. The existing
+`tie-margin` default and MCTS V4 hash stay byte-identical until evidence chooses
+a replacement.
+
+**Acceptance criteria:**
+
+- [ ] The transition-priority recipe exactly selects every acceptable action
+  in all six proof-grade fixtures and leaves the analyzed state unchanged.
+- [ ] Legal transitions cover every legal action exactly once and preserve
+  superko, swap identity, extension, finish, pass, resume, and accept semantics.
+- [ ] Tactical-only, combined, and retained tie-margin agents have distinct
+  immutable hashes; manifests and records name the exact variant.
+- [ ] Two manifests are committed before either outcome set is inspected.
+- [ ] Both 4/16/64 jobs complete legally and non-mutating with exact telemetry;
+  choose the simplest variant meeting the admission gate.
+- [ ] Admission requires at least `80%` pooled high-rung hits, every high-rung
+  position/policy cell at least `75%`, monotonic policy ladders, and zero
+  integrity failure. Diagnostic fixtures cannot veto proof-grade admission.
+- [ ] If neither variant passes, preserve both negatives and block deep-budget
+  calibration rather than raising simulations.
+- [ ] Full tests, Python compile, JavaScript syntax, and diff checks pass.
+
+**Blast radius:** the research action adapter gains a non-mutating legal-
+transition generator; MCTS gains opt-in tactical variants and the admission
+harness records their identifiers/hashes. The existing default remains MCTS V4
+until a passing variant is selected. `engine/varde.py`, native evaluators,
+server, browser, saves, scoring, and live termination remain untouched.
+
+### Pre-implementation survey
+
+- The six proof metrics can all be recovered from one legal-transition set:
+  capture waves, pre-move one-liberty groups, post-takeover seat score,
+  extension action kind, nearly closed cell boundaries, and accepted ending
+  state. No evaluator score or nested legal-move scan is required.
+- Proposal order alone is unlikely to help after all small roots are expanded;
+  the same minimal priority therefore guides terminal rollouts whenever a
+  positive immediate rule fact exists. When no fact exists, the declared
+  uniform or epsilon-greedy policy remains the fallback.
+- Guided expansion shuffles equal-priority actions once, then stores the order.
+  The selected already-generated transition is reused; later untried actions
+  use the stored priority order.
+- Historical and default consumers continue to use `tie-margin`. The tactical
+  variants are explicit opt-ins so no product or old research behavior changes
+  before the admission result exists.

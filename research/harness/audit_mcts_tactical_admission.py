@@ -33,6 +33,7 @@ from mcts_tactical_fixtures import (  # noqa: E402
     fixture_catalog,
     tactical_positions,
 )
+from mcts import DEFAULT_SEARCH_VARIANT  # noqa: E402
 
 
 FORMAT = "varde-mcts-tactical-admission-audit"
@@ -71,7 +72,12 @@ def _validate_manifest(manifest):
 
 
 def _validate_runtime_source(manifest):
-    current = provenance()
+    current = provenance(
+        search_variant=manifest["config"].get(
+            "search_variant",
+            DEFAULT_SEARCH_VARIANT,
+        )
+    )
     for key in ("code_hash", "mcts_agent_hash", "fixture_catalog_hash", "files"):
         if current[key] != manifest["source"].get(key):
             raise ValueError(f"runtime source differs at {key}")
@@ -110,6 +116,12 @@ def _validate_raw(manifest, tasks):
                 raise ValueError(
                     f"raw {key} differs at task {task['task_id']}"
                 )
+        if "search_variant" in task and record.get("search_variant") != task[
+            "search_variant"
+        ]:
+            raise ValueError(
+                f"raw search_variant differs at task {task['task_id']}"
+            )
     recomputed = summarize(
         records, state["config"], state["provenance"], state["status"]
     )

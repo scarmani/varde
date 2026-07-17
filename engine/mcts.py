@@ -6,19 +6,32 @@ import json
 import math
 import random
 
-from actions import RulesAction, RulesState, apply_action, legal_actions
-from varde import BLACK, WHITE, GJERDE_RULESETS, control
+from actions import (
+    RulesAction,
+    RulesState,
+    apply_action,
+    legal_actions,
+    legal_transitions,
+)
+from varde import BLACK, WHITE, GJERDE_RULESETS, control, groups_of
 
 
 MCTS_FORMAT = "varde-terminal-mcts"
 MCTS_VERSION = 4
+TACTICAL_MCTS_VERSION = 5
 ROLLOUT_POLICIES = frozenset(("uniform", "epsilon-greedy"))
+SEARCH_VARIANTS = frozenset(("tie-margin", "tactical-only", "combined"))
+DEFAULT_SEARCH_VARIANT = "tie-margin"
 EXPLORATION = math.sqrt(2.0)
 ROLLOUT_EPSILON = 0.15
 LIGHT_LATE_PASS_RATE = 0.35
-MCTS_AGENT_HASH = hashlib.sha256(
-    json.dumps(
-        {
+
+
+def _agent_spec(search_variant):
+    if search_variant not in SEARCH_VARIANTS:
+        raise ValueError("unknown MCTS search variant")
+    if search_variant == DEFAULT_SEARCH_VARIANT:
+        return {
             "format": MCTS_FORMAT,
             "version": MCTS_VERSION,
             "exploration": EXPLORATION,
@@ -27,11 +40,41 @@ MCTS_AGENT_HASH = hashlib.sha256(
             "terminal": "game-score-win-draw-loss",
             "terminal_margin": "secondary-normalized-by-scoreable-area",
             "ties": "sha256(seed,root-position,node-position,action)",
-        },
-        sort_keys=True,
-        separators=(",", ":"),
-    ).encode()
-).hexdigest()
+        }
+    tactical = search_variant in ("tactical-only", "combined")
+    margin = search_variant in ("tie-margin", "combined")
+    return {
+        "format": MCTS_FORMAT,
+        "version": TACTICAL_MCTS_VERSION if tactical else MCTS_VERSION,
+        "search_variant": search_variant,
+        "exploration": EXPLORATION,
+        "epsilon": ROLLOUT_EPSILON,
+        "late_pass_rate": LIGHT_LATE_PASS_RATE,
+        "terminal": "game-score-win-draw-loss",
+        "terminal_margin": (
+            "secondary-normalized-by-scoreable-area" if margin else "disabled"
+        ),
+        "tactical_guidance": (
+            "single-legal-transition-set-v1" if tactical else "disabled"
+        ),
+        "ties": "sha256(seed,root-position,node-position,action)",
+    }
+
+
+def mcts_agent_hash(search_variant=DEFAULT_SEARCH_VARIANT):
+    return hashlib.sha256(
+        json.dumps(
+            _agent_spec(search_variant),
+            sort_keys=True,
+            separators=(",", ":"),
+        ).encode()
+    ).hexdigest()
+
+
+MCTS_AGENT_HASH = mcts_agent_hash()
+MCTS_AGENT_HASHES = {
+    variant: mcts_agent_hash(variant) for variant in sorted(SEARCH_VARIANTS)
+}
 
 
 @dataclass(frozen=True)
@@ -44,6 +87,8 @@ class MCTSDecision:
     seed: int
     average_rollout_actions: float
     max_rollout_actions: int
+    agent_hash: str = MCTS_AGENT_HASH
+    search_variant: str = DEFAULT_SEARCH_VARIANT
     root_actions: tuple = ()
     selection_reason: str | None = None
 
@@ -57,8 +102,10 @@ class MCTSDecision:
             "seed": self.seed,
             "average_rollout_actions": round(self.average_rollout_actions, 3),
             "max_rollout_actions": self.max_rollout_actions,
-            "agent_hash": MCTS_AGENT_HASH,
+            "agent_hash": self.agent_hash,
         }
+        if self.search_variant != DEFAULT_SEARCH_VARIANT:
+            payload["search_variant"] = self.search_variant
         if self.root_actions:
             payload["root_action_telemetry"] = [
                 dict(item) for item in self.root_actions
@@ -93,6 +140,7 @@ class _Node:
         "normalized_margin_sum",
         "normalized_margin_min",
         "normalized_margin_max",
+        "tactical_prepared",
     )
 
     def __init__(self, state, parent=None, action=None):
@@ -112,6 +160,7 @@ class _Node:
         self.normalized_margin_sum = 0.0
         self.normalized_margin_min = None
         self.normalized_margin_max = None
+        self.tactical_prepared = False
 
     @property
     def mean(self):
@@ -186,13 +235,13 @@ def _terminal_reward(state, root_seat):
     return _terminal_sample(state, root_seat).reward
 
 
-def _uniform_action(state, rng):
-    actions = legal_actions(state)
+def _uniform_action(state, rng, actions=None):
+    actions = legal_actions(state) if actions is None else actions
     return actions[rng.randrange(len(actions))]
 
 
-def _light_action(state, rng):
-    actions = legal_actions(state)
+def _light_action(state, rng, actions=None):
+    actions = legal_actions(state) if actions is None else actions
     if state.game.finished:
         resume = next((action for action in actions if action.kind == "resume"), None)
         if resume is not None:
@@ -236,21 +285,146 @@ def _light_action(state, rng):
         best = max(score for score, _action in placements)
         choices = [action for score, action in placements if score == best]
         return choices[rng.randrange(len(choices))]
-    return _uniform_action(state, rng)
+    return _uniform_action(state, rng, actions)
 
 
-def _rollout_action(state, policy, rng):
+def _rollout_action(state, policy, rng, actions=None):
     if policy == "uniform" or rng.random() < ROLLOUT_EPSILON:
-        return _uniform_action(state, rng)
-    return _light_action(state, rng)
+        return _uniform_action(state, rng, actions)
+    return _light_action(state, rng, actions)
 
 
-def _rollout(state, root_seat, policy, rng):
+def _sole_liberty_points(state):
+    points = set()
+    for component in groups_of(
+        state.game.board,
+        state.game.state,
+        state.actor_color,
+    ):
+        liberties = {
+            neighbor
+            for point in component
+            for neighbor in state.game.board.neighbors[point]
+            if not state.game.state[neighbor]
+        }
+        if len(liberties) == 1:
+            points.update(liberties)
+    return points
+
+
+def _fence_completion_points(state):
+    game = state.game
+    if game.rules not in GJERDE_RULESETS or game.finished:
+        return set()
+    color = state.actor_color
+    completions = set()
+    for cell in game.board.cells:
+        edges = game.board.cell_edges[cell]
+        own = sum(control(game.state, point) == color for point in edges)
+        empty = [point for point in edges if not game.state[point]]
+        if own == len(edges) - 1 and len(empty) == 1:
+            completions.add(empty[0])
+    return completions
+
+
+def _tactical_priorities(state, transitions):
+    """Rank one generated legal-transition set by immediate rule facts."""
+    if not transitions:
+        return {}
+    game = state.game
+    actor_seat = state.actor_seat
+    actions = tuple(action for action, _advanced in transitions)
+    extension_available = any(action.kind == "extend" for action in actions)
+    defense_points = _sole_liberty_points(state) if not game.finished else set()
+    fence_points = _fence_completion_points(state)
+    priorities = {}
+    for action, advanced in transitions:
+        if game.finished:
+            score = game.score()
+            color = state.actor_color
+            behind = score[color] < score[WHITE if color == BLACK else BLACK]
+            utility = int(
+                (action.kind == "resume" and behind)
+                or (action.kind == "accept" and not behind)
+            )
+            priorities[action] = (5, utility, 0, 0, 0)
+            continue
+        if game.swap_available:
+            color = advanced.color_for_seat(actor_seat)
+            score = advanced.game.score()
+            margin = score[color] - score[WHITE if color == BLACK else BLACK]
+            priorities[action] = (4, margin, 0, 0, 0)
+            continue
+        if extension_available or game.extension_only_turn:
+            priorities[action] = (
+                3,
+                int(action.kind == "extend"),
+                int(action.kind == "finish-extension"),
+                0,
+                0,
+            )
+            continue
+        captured = (
+            sum(len(wave) for wave in advanced.game.last_capture_waves)
+            if action.kind in ("play", "extend") else 0
+        )
+        defense = int(
+            action.kind in ("play", "extend")
+            and action.point in defense_points
+        )
+        fence = int(
+            action.kind == "play" and action.point in fence_points
+        )
+        priorities[action] = (
+            int(bool(captured or defense or fence)),
+            captured,
+            defense,
+            fence,
+            0,
+        )
+    return priorities
+
+
+def _guided_transition(state, policy, rng):
+    transitions = legal_transitions(state)
+    actions = tuple(action for action, _advanced in transitions)
+    priorities = _tactical_priorities(state, transitions)
+    best = max(priorities.values())
+    if best[0] > 0:
+        choices = [
+            (action, advanced)
+            for action, advanced in transitions
+            if priorities[action] == best
+        ]
+        return choices[rng.randrange(len(choices))]
+    action = _rollout_action(state, policy, rng, actions)
+    return next(item for item in transitions if item[0] == action)
+
+
+def _prepare_tactical_expansion(node, rng):
+    transitions = legal_transitions(node.state)
+    priorities = _tactical_priorities(node.state, transitions)
+    ordered = [action for action, _advanced in transitions]
+    rng.shuffle(ordered)
+    ordered.sort(key=priorities.__getitem__)
+    node.untried = ordered
+    node.tactical_prepared = True
+    action = node.untried.pop()
+    advanced = next(
+        advanced for candidate, advanced in transitions if candidate == action
+    )
+    return action, advanced
+
+
+def _rollout(state, root_seat, policy, rng, tactical_guidance=False):
     rollout = state.clone()
     actions_played = 0
     while not rollout.terminal:
-        action = _rollout_action(rollout, policy, rng)
-        apply_action(rollout, action, copy=False, validate=False)
+        if tactical_guidance:
+            _action, rollout = _guided_transition(rollout, policy, rng)
+        else:
+            action = _rollout_action(rollout, policy, rng)
+            apply_action(rollout, action, copy=False, validate=False)
         actions_played += 1
     return _terminal_sample(rollout, root_seat), actions_played
 
@@ -266,30 +440,36 @@ def _seeded_tie_value(seed, root_key, node_key, action):
     return int.from_bytes(hashlib.sha256(payload).digest(), "big")
 
 
-def _select_child(node, root_seat, seed, root_key):
+def _select_child(node, root_seat, seed, root_key, use_terminal_margin=True):
     maximizing = node.state.actor_seat == root_seat
     log_parent = math.log(max(1, node.visits))
 
     def score(child):
         exploitation = child.mean if maximizing else 1.0 - child.mean
         exploration = EXPLORATION * math.sqrt(log_parent / child.visits)
-        return (
+        primary = (
             exploitation + exploration,
-            (
+        )
+        if use_terminal_margin:
+            primary += ((
                 child.normalized_margin_mean
                 if maximizing else -child.normalized_margin_mean
-            ),
+            ),)
+        return primary + (
             _seeded_tie_value(seed, root_key, node.state.key(), child.action),
         )
 
     return max(node.children, key=score)
 
 
-def _final_selection_key(child, seed, root_key):
-    return (
+def _final_selection_key(child, seed, root_key, use_terminal_margin=True):
+    primary = (
         child.visits,
         child.mean,
-        child.normalized_margin_mean,
+    )
+    if use_terminal_margin:
+        primary += (child.normalized_margin_mean,)
+    return primary + (
         _seeded_tie_value(seed, root_key, root_key, child.action),
     )
 
@@ -300,7 +480,7 @@ def _action_identity(action):
     return f"{action.kind}:{action.point[0]},{action.point[1]}"
 
 
-def _selection_reason(root, selected):
+def _selection_reason(root, selected, use_terminal_margin=True):
     most_visits = max(child.visits for child in root.children)
     visit_leaders = [
         child for child in root.children if child.visits == most_visits
@@ -313,33 +493,49 @@ def _selection_reason(root, selected):
     ]
     if len(mean_leaders) == 1:
         return "mean-value"
-    best_margin = max(child.normalized_margin_mean for child in mean_leaders)
-    margin_leaders = [
-        child
-        for child in mean_leaders
-        if child.normalized_margin_mean == best_margin
-    ]
-    if len(margin_leaders) == 1:
-        return "terminal-margin"
-    if selected not in margin_leaders:
+    final_leaders = mean_leaders
+    if use_terminal_margin:
+        best_margin = max(child.normalized_margin_mean for child in mean_leaders)
+        final_leaders = [
+            child
+            for child in mean_leaders
+            if child.normalized_margin_mean == best_margin
+        ]
+        if len(final_leaders) == 1:
+            return "terminal-margin"
+    if selected not in final_leaders:
         raise AssertionError("selected root action is outside the final tie")
     return "seeded-hash"
 
 
-def _root_action_telemetry(root, selected, seed, root_key):
+def _root_action_telemetry(
+    root,
+    selected,
+    seed,
+    root_key,
+    use_terminal_margin=True,
+):
     children = {child.action: child for child in root.children}
     actions = [*children, *root.untried]
 
     def rank_key(action):
         child = children.get(action)
         if child is None:
-            return (
+            primary = (
                 0,
                 0.5,
-                0.0,
+            )
+            if use_terminal_margin:
+                primary += (0.0,)
+            return primary + (
                 _seeded_tie_value(seed, root_key, root_key, action),
             )
-        return _final_selection_key(child, seed, root_key)
+        return _final_selection_key(
+            child,
+            seed,
+            root_key,
+            use_terminal_margin,
+        )
 
     ranked = sorted(actions, key=rank_key, reverse=True)
     records = []
@@ -388,6 +584,7 @@ def choose_mcts_state_action(
     simulations=250,
     seed=1,
     rollout_policy="uniform",
+    search_variant=DEFAULT_SEARCH_VARIANT,
     include_root_telemetry=False,
 ):
     """Choose one legal action without mutating ``rules_state``.
@@ -402,6 +599,8 @@ def choose_mcts_state_action(
         raise ValueError("seed must be an integer")
     if rollout_policy not in ROLLOUT_POLICIES:
         raise ValueError("unknown rollout policy")
+    if search_variant not in SEARCH_VARIANTS:
+        raise ValueError("unknown MCTS search variant")
     if not isinstance(include_root_telemetry, bool):
         raise ValueError("include_root_telemetry must be a boolean")
     if computer_color not in (BLACK, WHITE):
@@ -413,6 +612,8 @@ def choose_mcts_state_action(
     before = rules_state.key()
     root_seat = root_state.actor_seat
     root_key = root_state.key()
+    use_terminal_margin = search_variant in ("tie-margin", "combined")
+    tactical_guidance = search_variant in ("tactical-only", "combined")
     rng = random.Random(_seed_for_position(seed, root_state))
     root = _Node(root_state)
     total_rollout_actions = 0
@@ -421,16 +622,32 @@ def choose_mcts_state_action(
     for _simulation in range(simulations):
         node = root
         while not node.state.terminal and not node.untried and node.children:
-            node = _select_child(node, root_seat, seed, root_key)
+            node = _select_child(
+                node,
+                root_seat,
+                seed,
+                root_key,
+                use_terminal_margin,
+            )
         if not node.state.terminal and node.untried:
-            index = rng.randrange(len(node.untried))
-            action = node.untried.pop(index)
-            child_state = apply_action(node.state, action, validate=False)
+            if tactical_guidance and not node.tactical_prepared:
+                action, child_state = _prepare_tactical_expansion(node, rng)
+            elif tactical_guidance:
+                action = node.untried.pop()
+                child_state = apply_action(node.state, action, validate=False)
+            else:
+                index = rng.randrange(len(node.untried))
+                action = node.untried.pop(index)
+                child_state = apply_action(node.state, action, validate=False)
             child = _Node(child_state, parent=node, action=action)
             node.children.append(child)
             node = child
         sample, rollout_actions = _rollout(
-            node.state, root_seat, rollout_policy, rng
+            node.state,
+            root_seat,
+            rollout_policy,
+            rng,
+            tactical_guidance,
         )
         total_rollout_actions += rollout_actions
         max_rollout_actions = max(max_rollout_actions, rollout_actions)
@@ -444,13 +661,25 @@ def choose_mcts_state_action(
         raise ValueError("no legal MCTS action")
     selected = max(
         root.children,
-        key=lambda child: _final_selection_key(child, seed, root_key),
+        key=lambda child: _final_selection_key(
+            child,
+            seed,
+            root_key,
+            use_terminal_margin,
+        ),
     )
     selection_reason = (
-        _selection_reason(root, selected) if include_root_telemetry else None
+        _selection_reason(root, selected, use_terminal_margin)
+        if include_root_telemetry else None
     )
     root_actions = (
-        _root_action_telemetry(root, selected, seed, root_key)
+        _root_action_telemetry(
+            root,
+            selected,
+            seed,
+            root_key,
+            use_terminal_margin,
+        )
         if include_root_telemetry else ()
     )
     return MCTSDecision(
@@ -462,6 +691,8 @@ def choose_mcts_state_action(
         seed=seed,
         average_rollout_actions=total_rollout_actions / simulations,
         max_rollout_actions=max_rollout_actions,
+        agent_hash=mcts_agent_hash(search_variant),
+        search_variant=search_variant,
         root_actions=root_actions,
         selection_reason=selection_reason,
     )
@@ -474,6 +705,7 @@ def choose_mcts_action(
     simulations=250,
     seed=1,
     rollout_policy="uniform",
+    search_variant=DEFAULT_SEARCH_VARIANT,
     include_root_telemetry=False,
 ):
     """Compatibility wrapper for analyzing a plain engine game."""
@@ -483,6 +715,7 @@ def choose_mcts_action(
         simulations=simulations,
         seed=seed,
         rollout_policy=rollout_policy,
+        search_variant=search_variant,
         include_root_telemetry=include_root_telemetry,
     )
 

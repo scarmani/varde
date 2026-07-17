@@ -1,8 +1,15 @@
 import unittest
 
-from actions import RulesAction, RulesState, apply_action, legal_actions
+from actions import (
+    RulesAction,
+    RulesState,
+    apply_action,
+    legal_actions,
+    legal_transitions,
+)
 from mcts import (
     MCTS_AGENT_HASH,
+    MCTS_AGENT_HASHES,
     MCTS_VERSION,
     _Node,
     _TerminalSample,
@@ -13,6 +20,7 @@ from mcts import (
     _terminal_sample,
     choose_mcts_action,
     choose_mcts_state_action,
+    mcts_agent_hash,
 )
 from varde import BLACK, WHITE, Game, Illegal, signature
 
@@ -21,6 +29,28 @@ CANDIDATES = ("classic", "rosette", "breath", "breath-run", "gjerde", "gjerde-go
 
 
 class TestRulesActions(unittest.TestCase):
+    def test_legal_transitions_cover_actions_once_without_mutation(self):
+        for rules in CANDIDATES:
+            with self.subTest(rules=rules):
+                game = Game(3, rules=rules)
+                game.play(game.legal_placements()[0])
+                state = RulesState.from_game(game)
+                before = state.key()
+                transitions = legal_transitions(state)
+                self.assertEqual(
+                    tuple(action for action, _advanced in transitions),
+                    legal_actions(state),
+                )
+                self.assertEqual(
+                    len({action for action, _advanced in transitions}),
+                    len(transitions),
+                )
+                self.assertTrue(all(
+                    advanced.key() != state.key()
+                    for _action, advanced in transitions
+                ))
+                self.assertEqual(state.key(), before)
+
     def test_structural_clone_is_equal_without_mutable_aliases(self):
         for rules in CANDIDATES:
             with self.subTest(rules=rules):
@@ -189,10 +219,18 @@ class TestTerminalMCTS(unittest.TestCase):
         self.assertEqual(MCTS_VERSION, 4)
         self.assertEqual(len(MCTS_AGENT_HASH), 64)
         int(MCTS_AGENT_HASH, 16)
+        self.assertEqual(MCTS_AGENT_HASH, mcts_agent_hash("tie-margin"))
+        self.assertEqual(
+            set(MCTS_AGENT_HASHES),
+            {"tie-margin", "tactical-only", "combined"},
+        )
+        self.assertEqual(len(set(MCTS_AGENT_HASHES.values())), 3)
         with self.assertRaises(ValueError):
             choose_mcts_action(Game(3), BLACK, simulations=0)
         with self.assertRaises(ValueError):
             choose_mcts_action(Game(3), BLACK, rollout_policy="native")
+        with self.assertRaisesRegex(ValueError, "unknown MCTS search variant"):
+            choose_mcts_action(Game(3), BLACK, search_variant="oracle")
 
     def test_seeded_ties_are_deterministic_semantic_and_direction_neutral(self):
         actions = [
