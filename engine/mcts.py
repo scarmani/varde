@@ -14,6 +14,7 @@ from actions import (
     legal_transitions,
 )
 from mcts_tactical_solver import find_tactical_override
+from mcts_v5_solver import scan_root_guidance
 from mcts_settling import run_settling_rollout
 from mcts_unpruning import (
     next_exposure_visit,
@@ -36,6 +37,8 @@ SEARCH_VARIANTS = frozenset((
     "v4-ordered-control",
     "v4-unpruning",
     "v4-settling",
+    "v5-g0-u0-s0",
+    "v5-g1-u0-s0",
 ))
 DEFAULT_SEARCH_VARIANT = "tie-margin"
 EXPLORATION = math.sqrt(2.0)
@@ -57,6 +60,26 @@ def _agent_spec(search_variant):
             "terminal_margin": "secondary-normalized-by-scoreable-area",
             "ties": "sha256(seed,root-position,node-position,action)",
         }
+    if search_variant in ("v5-g0-u0-s0", "v5-g1-u0-s0"):
+        guidance = search_variant == "v5-g1-u0-s0"
+        return {
+            "format": MCTS_FORMAT,
+            "version": MCTS_VERSION,
+            "search_variant": search_variant,
+            "recipe_id": f"mcts-search-{search_variant}-v1",
+            "exploration": EXPLORATION,
+            "epsilon": ROLLOUT_EPSILON,
+            "late_pass_rate": LIGHT_LATE_PASS_RATE,
+            "terminal": "game-score-win-draw-loss",
+            "terminal_margin": "secondary-normalized-by-scoreable-area",
+            "root_proof_guidance": (
+                "set-valued-decay-1-over-1-plus-visits-v1"
+                if guidance else "disabled"
+            ),
+            "progressive_unpruning": "disabled",
+            "true_terminal_settling": "disabled",
+            "ties": "sha256(seed,root-position,node-position,action)",
+        }
     tactical = search_variant in ("tactical-only", "combined")
     margin = search_variant in (
         "tie-margin",
@@ -66,6 +89,8 @@ def _agent_spec(search_variant):
         "v4-ordered-control",
         "v4-unpruning",
         "v4-settling",
+        "v5-g0-u0-s0",
+        "v5-g1-u0-s0",
     )
     solver = search_variant == "v4-solver"
     ordered = search_variant in ("v4-ordered-control", "v4-unpruning")
@@ -227,6 +252,7 @@ class _Node:
         "ordered_tiers",
         "transition_states",
         "progressive_unpruning",
+        "root_proof_scan",
     )
 
     def __init__(
@@ -238,6 +264,7 @@ class _Node:
         solver_enabled=False,
         ordered_expansion=False,
         progressive_unpruning=False,
+        root_guidance_enabled=False,
         expansion_seed=0,
     ):
         self.state = state
@@ -248,6 +275,11 @@ class _Node:
             ordered_rule_transitions(state, expansion_seed)
             if ordered_expansion else ()
         )
+        proof_transitions = (
+            tuple((item.action, item.state) for item in ordered)
+            if root_guidance_enabled and ordered
+            else legal_transitions(state) if root_guidance_enabled else ()
+        )
         self.ordered_actions = tuple(item.action for item in ordered)
         self.ordered_tiers = {
             item.action: item.tier_label for item in ordered
@@ -255,6 +287,8 @@ class _Node:
         self.transition_states = {
             item.action: item.state for item in ordered
         }
+        if proof_transitions:
+            self.transition_states.update(dict(proof_transitions))
         self.untried = list(
             self.ordered_actions if ordered else legal_actions(state)
         )
@@ -273,6 +307,10 @@ class _Node:
         self.tactical_prepared = False
         self.solver_scan = (
             find_tactical_override(state) if solver_enabled else None
+        )
+        self.root_proof_scan = (
+            scan_root_guidance(state, transitions=proof_transitions)
+            if root_guidance_enabled else None
         )
 
     @property
@@ -620,9 +658,11 @@ def _select_child(node, root_seat, seed, root_key, use_terminal_margin=True):
     def score(child):
         exploitation = child.mean if maximizing else 1.0 - child.mean
         exploration = EXPLORATION * math.sqrt(log_parent / child.visits)
-        primary = (
-            exploitation + exploration,
+        guidance = (
+            node.root_proof_scan.bias_for(child.action, child.visits)
+            if node.root_proof_scan is not None else 0.0
         )
+        primary = (exploitation + exploration + guidance,)
         if use_terminal_margin:
             primary += ((
                 child.normalized_margin_mean
@@ -757,6 +797,14 @@ def _root_action_telemetry(
                 root.solver_scan is not None
                 and root.solver_scan.override_action == action
             ),
+            "proof_guidance_status": (
+                root.root_proof_scan.status_for(action)
+                if root.root_proof_scan is not None else None
+            ),
+            "proof_guidance_bias": (
+                root.root_proof_scan.bias_for(action, visits)
+                if root.root_proof_scan is not None else None
+            ),
             "exposed": action in exposed,
             "ordering_tier": root.ordered_tiers.get(action),
         })
@@ -806,6 +854,8 @@ def choose_mcts_state_action(
         "v4-ordered-control",
         "v4-unpruning",
         "v4-settling",
+        "v5-g0-u0-s0",
+        "v5-g1-u0-s0",
     )
     tactical_guidance = search_variant in ("tactical-only", "combined")
     solver_enabled = search_variant == "v4-solver"
@@ -814,12 +864,14 @@ def choose_mcts_state_action(
     )
     progressive_unpruning = search_variant == "v4-unpruning"
     settling_enabled = search_variant == "v4-settling"
+    root_guidance_enabled = search_variant == "v5-g1-u0-s0"
     rng = random.Random(_seed_for_position(seed, root_state))
     root = _Node(
         root_state,
         solver_enabled=solver_enabled,
         ordered_expansion=ordered_expansion,
         progressive_unpruning=progressive_unpruning,
+        root_guidance_enabled=root_guidance_enabled,
         expansion_seed=seed,
     )
     total_rollout_actions = 0
@@ -869,6 +921,29 @@ def choose_mcts_state_action(
                 node.untried.remove(forced)
                 action = forced
                 child_state = apply_action(node.state, action, validate=False)
+            elif (
+                node.root_proof_scan is not None
+                and any(
+                    node.root_proof_scan.status_for(candidate) != "unknown"
+                    for candidate in expansion_candidates
+                )
+            ):
+                ranked = {
+                    "proven": 1,
+                    "unknown": 0,
+                    "disproven": -1,
+                }
+                best = max(
+                    ranked[node.root_proof_scan.status_for(candidate)]
+                    for candidate in expansion_candidates
+                )
+                choices = [
+                    candidate for candidate in expansion_candidates
+                    if ranked[node.root_proof_scan.status_for(candidate)] == best
+                ]
+                action = choices[rng.randrange(len(choices))]
+                node.untried.remove(action)
+                child_state = node.transition_states[action]
             elif tactical_guidance and not node.tactical_prepared:
                 action, child_state = _prepare_tactical_expansion(node, rng)
             elif tactical_guidance:
@@ -891,6 +966,7 @@ def choose_mcts_state_action(
                 solver_enabled=solver_enabled,
                 ordered_expansion=ordered_expansion,
                 progressive_unpruning=progressive_unpruning,
+                root_guidance_enabled=False,
                 expansion_seed=seed,
             )
             node.children.append(child)
@@ -973,12 +1049,29 @@ def choose_mcts_state_action(
         search_variant=search_variant,
         root_actions=root_actions,
         selection_reason=selection_reason,
-        solver_status=(root.solver_scan.status if solver_enabled else None),
-        solver_nodes=sum(scan.nodes for scan in solver_scans),
-        solver_cache_hits=sum(scan.cache_hits for scan in solver_scans),
-        solver_invocations=len(solver_scans),
-        solver_overrides=sum(
-            scan.override_action is not None for scan in solver_scans
+        solver_status=(
+            root.root_proof_scan.status
+            if root_guidance_enabled else (
+                root.solver_scan.status if solver_enabled else None
+            )
+        ),
+        solver_nodes=(
+            root.root_proof_scan.nodes
+            if root_guidance_enabled else sum(scan.nodes for scan in solver_scans)
+        ),
+        solver_cache_hits=(
+            root.root_proof_scan.cache_hits
+            if root_guidance_enabled
+            else sum(scan.cache_hits for scan in solver_scans)
+        ),
+        solver_invocations=(
+            root.root_proof_scan.root_scans
+            if root_guidance_enabled else len(solver_scans)
+        ),
+        solver_overrides=(
+            0 if root_guidance_enabled else sum(
+                scan.override_action is not None for scan in solver_scans
+            )
         ),
         exposed_actions=(
             _node_exposure_count(root) if root.ordered_actions else None
