@@ -83,7 +83,16 @@ def deterministic_records_hash(records):
 class TestMCTSV5Factorial(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.manifest = build_manifest(output_dir="/tmp/varde-v5-test-output")
+        cls.frozen_path = (
+            ROOT / "research" / "manifests"
+            / "mcts-search-v5-development-factorial-20260717.json"
+        )
+        frozen = json.loads(cls.frozen_path.read_text())
+        cls.manifest = build_manifest(
+            output_dir=frozen["execution"]["output_dir"],
+            created_date=frozen["created_date"],
+            source_commit_value=frozen["source"]["source_commit"],
+        )
 
     def test_schedule_is_the_frozen_full_factorial_and_instrument(self):
         tasks = build_schedule()
@@ -110,6 +119,8 @@ class TestMCTSV5Factorial(unittest.TestCase):
         )
 
     def test_manifest_is_hash_valid_and_preflight_agrees(self):
+        frozen = json.loads(self.frozen_path.read_text())
+        self.assertEqual(self.manifest, frozen)
         self.assertTrue(validate_manifest(self.manifest))
         self.assertTrue(
             self.manifest["preflight"]["declared_oracle_solver_agreement"]
