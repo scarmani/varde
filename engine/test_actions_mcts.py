@@ -235,9 +235,13 @@ class TestTerminalMCTS(unittest.TestCase):
                 "v5-g1-u0-s0",
                 "v5-g0-u1-s0",
                 "v5-g1-u1-s0",
+                "v5-g0-u0-s1",
+                "v5-g1-u0-s1",
+                "v5-g0-u1-s1",
+                "v5-g1-u1-s1",
             },
         )
-        self.assertEqual(len(set(MCTS_AGENT_HASHES.values())), 12)
+        self.assertEqual(len(set(MCTS_AGENT_HASHES.values())), 16)
         with self.assertRaises(ValueError):
             choose_mcts_action(Game(3), BLACK, simulations=0)
         with self.assertRaises(ValueError):

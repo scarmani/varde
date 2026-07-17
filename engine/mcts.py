@@ -19,6 +19,7 @@ from mcts_v5_unpruning import (
     build_reserved_exposure_plan,
     next_reserved_exposure_visit,
 )
+from mcts_v5_settling import run_settling_v2_rollout
 from mcts_settling import run_settling_rollout
 from mcts_unpruning import (
     next_exposure_visit,
@@ -45,6 +46,10 @@ SEARCH_VARIANTS = frozenset((
     "v5-g1-u0-s0",
     "v5-g0-u1-s0",
     "v5-g1-u1-s0",
+    "v5-g0-u0-s1",
+    "v5-g1-u0-s1",
+    "v5-g0-u1-s1",
+    "v5-g1-u1-s1",
 ))
 DEFAULT_SEARCH_VARIANT = "tie-margin"
 EXPLORATION = math.sqrt(2.0)
@@ -71,9 +76,14 @@ def _agent_spec(search_variant):
         "v5-g1-u0-s0",
         "v5-g0-u1-s0",
         "v5-g1-u1-s0",
+        "v5-g0-u0-s1",
+        "v5-g1-u0-s1",
+        "v5-g0-u1-s1",
+        "v5-g1-u1-s1",
     ):
-        guidance = search_variant in ("v5-g1-u0-s0", "v5-g1-u1-s0")
-        unpruning = search_variant in ("v5-g0-u1-s0", "v5-g1-u1-s0")
+        guidance = "-g1-" in f"-{search_variant}-"
+        unpruning = "-u1-" in f"-{search_variant}-"
+        settling = search_variant.endswith("s1")
         return {
             "format": MCTS_FORMAT,
             "version": MCTS_VERSION,
@@ -92,7 +102,10 @@ def _agent_spec(search_variant):
                 "obligation-reserved-ceil-2-sqrt-visits-v1"
                 if unpruning else "disabled"
             ),
-            "true_terminal_settling": "disabled",
+            "true_terminal_settling": (
+                "half-p-four-events-resume-once-4p-integrity-v2"
+                if settling else "disabled"
+            ),
             "ties": "sha256(seed,root-position,node-position,action)",
         }
     tactical = search_variant in ("tactical-only", "combined")
@@ -108,6 +121,10 @@ def _agent_spec(search_variant):
         "v5-g1-u0-s0",
         "v5-g0-u1-s0",
         "v5-g1-u1-s0",
+        "v5-g0-u0-s1",
+        "v5-g1-u0-s1",
+        "v5-g0-u1-s1",
+        "v5-g1-u1-s1",
     )
     solver = search_variant == "v4-solver"
     ordered = search_variant in ("v4-ordered-control", "v4-unpruning")
@@ -646,10 +663,14 @@ def _rollout(
     policy,
     rng,
     tactical_guidance=False,
-    settling=False,
+    settling=None,
 ):
     if settling:
-        settled = run_settling_rollout(
+        runner = (
+            run_settling_rollout
+            if settling == "v4" else run_settling_v2_rollout
+        )
+        settled = runner(
             state,
             lambda current, actions: _rollout_action(
                 current,
@@ -908,19 +929,23 @@ def choose_mcts_state_action(
         "v5-g1-u0-s0",
         "v5-g0-u1-s0",
         "v5-g1-u1-s0",
-    )
+    ) or search_variant.startswith("v5-")
     tactical_guidance = search_variant in ("tactical-only", "combined")
     solver_enabled = search_variant == "v4-solver"
     ordered_expansion = search_variant in (
         "v4-ordered-control", "v4-unpruning"
     )
     progressive_unpruning = search_variant == "v4-unpruning"
-    settling_enabled = search_variant == "v4-settling"
-    root_guidance_enabled = search_variant in (
-        "v5-g1-u0-s0", "v5-g1-u1-s0"
+    settling_enabled = (
+        "v4" if search_variant == "v4-settling"
+        else "v5" if search_variant.startswith("v5-")
+        and search_variant.endswith("s1") else None
     )
-    reserved_unpruning = search_variant in (
-        "v5-g0-u1-s0", "v5-g1-u1-s0"
+    root_guidance_enabled = (
+        search_variant.startswith("v5-") and "-g1-" in f"-{search_variant}-"
+    )
+    reserved_unpruning = (
+        search_variant.startswith("v5-") and "-u1-" in f"-{search_variant}-"
     )
     ordered_expansion = ordered_expansion or reserved_unpruning
     rng = random.Random(_seed_for_position(seed, root_state))
