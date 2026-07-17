@@ -228,9 +228,11 @@ class TestTerminalMCTS(unittest.TestCase):
                 "combined",
                 "v4-control",
                 "v4-solver",
+                "v4-ordered-control",
+                "v4-unpruning",
             },
         )
-        self.assertEqual(len(set(MCTS_AGENT_HASHES.values())), 5)
+        self.assertEqual(len(set(MCTS_AGENT_HASHES.values())), 7)
         with self.assertRaises(ValueError):
             choose_mcts_action(Game(3), BLACK, simulations=0)
         with self.assertRaises(ValueError):

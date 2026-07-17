@@ -14,6 +14,11 @@ from actions import (
     legal_transitions,
 )
 from mcts_tactical_solver import find_tactical_override
+from mcts_unpruning import (
+    next_exposure_visit,
+    ordered_rule_transitions,
+    progressive_exposure_count,
+)
 from varde import BLACK, WHITE, GJERDE_RULESETS, control, groups_of
 
 
@@ -27,6 +32,8 @@ SEARCH_VARIANTS = frozenset((
     "combined",
     "v4-control",
     "v4-solver",
+    "v4-ordered-control",
+    "v4-unpruning",
 ))
 DEFAULT_SEARCH_VARIANT = "tie-margin"
 EXPLORATION = math.sqrt(2.0)
@@ -50,9 +57,16 @@ def _agent_spec(search_variant):
         }
     tactical = search_variant in ("tactical-only", "combined")
     margin = search_variant in (
-        "tie-margin", "combined", "v4-control", "v4-solver"
+        "tie-margin",
+        "combined",
+        "v4-control",
+        "v4-solver",
+        "v4-ordered-control",
+        "v4-unpruning",
     )
     solver = search_variant == "v4-solver"
+    ordered = search_variant in ("v4-ordered-control", "v4-unpruning")
+    unpruning = search_variant == "v4-unpruning"
     return {
         "format": MCTS_FORMAT,
         "version": TACTICAL_MCTS_VERSION if tactical else MCTS_VERSION,
@@ -70,6 +84,13 @@ def _agent_spec(search_variant):
         ),
         "certified_local_solver": (
             "three-valued-10000-node-v1" if solver else "disabled"
+        ),
+        "rules_derived_expansion_order": (
+            "administrative-extension-capture-defense-fence-v1"
+            if ordered else "disabled"
+        ),
+        "progressive_unpruning": (
+            "ceil-2-sqrt-visits-v1" if unpruning else "disabled"
         ),
         "ties": "sha256(seed,root-position,node-position,action)",
     }
@@ -110,6 +131,9 @@ class MCTSDecision:
     solver_cache_hits: int = 0
     solver_invocations: int = 0
     solver_overrides: int = 0
+    exposed_actions: int | None = None
+    hidden_actions: int | None = None
+    next_expansion_visit: int | None = None
 
     def to_dict(self):
         payload = {
@@ -140,6 +164,12 @@ class MCTSDecision:
                 "claim_limit": (
                     "bounded local obligation only; not a game-theoretic result"
                 ),
+            }
+        if self.exposed_actions is not None:
+            payload["expansion"] = {
+                "exposed_actions": self.exposed_actions,
+                "hidden_actions": self.hidden_actions,
+                "next_expansion_visit": self.next_expansion_visit,
             }
         return payload
 
@@ -172,14 +202,42 @@ class _Node:
         "normalized_margin_max",
         "tactical_prepared",
         "solver_scan",
+        "ordered_actions",
+        "ordered_tiers",
+        "transition_states",
+        "progressive_unpruning",
     )
 
-    def __init__(self, state, parent=None, action=None, *, solver_enabled=False):
+    def __init__(
+        self,
+        state,
+        parent=None,
+        action=None,
+        *,
+        solver_enabled=False,
+        ordered_expansion=False,
+        progressive_unpruning=False,
+        expansion_seed=0,
+    ):
         self.state = state
         self.parent = parent
         self.action = action
         self.children = []
-        self.untried = list(legal_actions(state))
+        ordered = (
+            ordered_rule_transitions(state, expansion_seed)
+            if ordered_expansion else ()
+        )
+        self.ordered_actions = tuple(item.action for item in ordered)
+        self.ordered_tiers = {
+            item.action: item.tier_label for item in ordered
+        }
+        self.transition_states = {
+            item.action: item.state for item in ordered
+        }
+        self.untried = list(
+            self.ordered_actions if ordered else legal_actions(state)
+        )
+        self.progressive_unpruning = progressive_unpruning
         self.visits = 0
         self.value_sum = 0.0
         self.wins = 0
@@ -235,6 +293,22 @@ class _Node:
             if self.normalized_margin_max is None
             else max(self.normalized_margin_max, sample.normalized_margin)
         )
+
+
+def _node_exposure_count(node):
+    total = len(node.ordered_actions)
+    if not total:
+        return len(node.children) + len(node.untried)
+    if not node.progressive_unpruning:
+        return total
+    return progressive_exposure_count(node.visits, total)
+
+
+def _expansion_candidates(node):
+    if not node.ordered_actions:
+        return tuple(node.untried)
+    exposed = set(node.ordered_actions[:_node_exposure_count(node)])
+    return tuple(action for action in node.untried if action in exposed)
 
 
 def _seed_for_position(seed, state):
@@ -551,6 +625,10 @@ def _root_action_telemetry(
 ):
     children = {child.action: child for child in root.children}
     actions = [*children, *root.untried]
+    exposed = (
+        set(root.ordered_actions[:_node_exposure_count(root)])
+        if root.ordered_actions else set(actions)
+    )
 
     def rank_key(action):
         child = children.get(action)
@@ -614,6 +692,8 @@ def _root_action_telemetry(
                 root.solver_scan is not None
                 and root.solver_scan.override_action == action
             ),
+            "exposed": action in exposed,
+            "ordering_tier": root.ordered_tiers.get(action),
         })
     return tuple(records)
 
@@ -654,18 +734,34 @@ def choose_mcts_state_action(
     root_seat = root_state.actor_seat
     root_key = root_state.key()
     use_terminal_margin = search_variant in (
-        "tie-margin", "combined", "v4-control", "v4-solver"
+        "tie-margin",
+        "combined",
+        "v4-control",
+        "v4-solver",
+        "v4-ordered-control",
+        "v4-unpruning",
     )
     tactical_guidance = search_variant in ("tactical-only", "combined")
     solver_enabled = search_variant == "v4-solver"
+    ordered_expansion = search_variant in (
+        "v4-ordered-control", "v4-unpruning"
+    )
+    progressive_unpruning = search_variant == "v4-unpruning"
     rng = random.Random(_seed_for_position(seed, root_state))
-    root = _Node(root_state, solver_enabled=solver_enabled)
+    root = _Node(
+        root_state,
+        solver_enabled=solver_enabled,
+        ordered_expansion=ordered_expansion,
+        progressive_unpruning=progressive_unpruning,
+        expansion_seed=seed,
+    )
     total_rollout_actions = 0
     max_rollout_actions = 0
 
     for _simulation in range(simulations):
         node = root
         while not node.state.terminal:
+            expansion_candidates = _expansion_candidates(node)
             forced = (
                 node.solver_scan.override_action
                 if node.solver_scan is not None else None
@@ -681,9 +777,9 @@ def choose_mcts_state_action(
                 if forced_child is not None:
                     node = forced_child
                     continue
-                if forced in node.untried:
+                if forced in expansion_candidates:
                     break
-            if node.untried or not node.children:
+            if expansion_candidates or not node.children:
                 break
             node = _select_child(
                 node,
@@ -692,12 +788,13 @@ def choose_mcts_state_action(
                 root_key,
                 use_terminal_margin,
             )
-        if not node.state.terminal and node.untried:
+        expansion_candidates = _expansion_candidates(node)
+        if not node.state.terminal and expansion_candidates:
             forced = (
                 node.solver_scan.override_action
                 if node.solver_scan is not None else None
             )
-            if forced is not None and forced in node.untried:
+            if forced is not None and forced in expansion_candidates:
                 node.untried.remove(forced)
                 action = forced
                 child_state = apply_action(node.state, action, validate=False)
@@ -706,15 +803,24 @@ def choose_mcts_state_action(
             elif tactical_guidance:
                 action = node.untried.pop()
                 child_state = apply_action(node.state, action, validate=False)
+            elif node.ordered_actions:
+                action = expansion_candidates[0]
+                node.untried.remove(action)
+                child_state = node.transition_states[action]
             else:
-                index = rng.randrange(len(node.untried))
-                action = node.untried.pop(index)
+                action = expansion_candidates[
+                    rng.randrange(len(expansion_candidates))
+                ]
+                node.untried.remove(action)
                 child_state = apply_action(node.state, action, validate=False)
             child = _Node(
                 child_state,
                 parent=node,
                 action=action,
                 solver_enabled=solver_enabled,
+                ordered_expansion=ordered_expansion,
+                progressive_unpruning=progressive_unpruning,
+                expansion_seed=seed,
             )
             node.children.append(child)
             node = child
@@ -793,6 +899,17 @@ def choose_mcts_state_action(
         solver_invocations=len(solver_scans),
         solver_overrides=sum(
             scan.override_action is not None for scan in solver_scans
+        ),
+        exposed_actions=(
+            _node_exposure_count(root) if root.ordered_actions else None
+        ),
+        hidden_actions=(
+            len(root.ordered_actions) - _node_exposure_count(root)
+            if root.ordered_actions else None
+        ),
+        next_expansion_visit=(
+            next_exposure_visit(root.visits, len(root.ordered_actions))
+            if root.progressive_unpruning else None
         ),
     )
 
