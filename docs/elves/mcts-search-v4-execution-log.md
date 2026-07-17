@@ -40,11 +40,27 @@ repository-wide findings; documentation-only setup diff; draft/unmerged PR.
 
 ## Batch 1 — Independent holdout
 
-Status: in progress.
+Status: complete at `9dcd4e1`.
+
+### Evidence
+
+- Frozen before candidate implementation: 24 strict positive certificates and
+  12 exact abstention decoys across capture, defense, rescue, fence, takeover,
+  and ending decisions.
+- Each positive category contains two Toy and two Beginner positions; all roots
+  contain 2–12 legal actions.
+- Twenty of 24 positives replay from compact seeded legal transcripts. The four
+  takeover decisions are explicitly constructed decision-isolation states.
+- Certificates enumerate real legal transitions, record their bounded scope,
+  state hash, action statuses, horizons, nodes, and claim limit.
+- Corpus hashes are disjoint from all V3 fixture state hashes. The sealed
+  manifest is `research/manifests/mcts-search-v4-holdout-20260717.json`.
+- Full gate: 273 tests pass in 59.226 s; changed-file Ruff, compilation, and
+  diff checks pass. No search behavior or forbidden product file changed.
 
 ## Batch 2 — Certified tactical subsearch
 
-Status: pending.
+Status: in progress.
 
 ## Batch 3 — Progressive unpruning
 

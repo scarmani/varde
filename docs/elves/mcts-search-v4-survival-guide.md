@@ -27,15 +27,15 @@ negative evidence and never merge.
 
 ## Current Phase
 
-Batch 1 — build, certify, and freeze the independent tactical holdout before
-any search-behavior change. Draft PR #21 is stacked on PR #20.
+Batch 2 — implement Candidate A as a bounded independent local solver. The
+holdout is sealed at `9dcd4e1` and must not be consulted until Batch 5.
 
 ## Stop Gate
 
-- Planned batches remaining: 6.
+- Planned batches remaining: 5.
 - Stop allowed right now: no.
-- Next exact action: implement the independent corpus generator and verifier,
-  freeze all case/corpus hashes, and validate its disjointness from V3.
+- Next exact action: implement the three-valued 10,000-node solver, integrate
+  root/new-node override telemetry, and run only Candidate A feasibility tests.
 
 ## Validation
 

@@ -16,10 +16,10 @@
   "merge_policy": "user-merges",
   "pr_number": 21,
   "continuation_guard": {
-    "remaining_batches": 6,
+    "remaining_batches": 5,
     "stop_allowed": false,
     "checkpoint_is_stop": false,
-    "next_required_action": "Build, certify, and freeze the independent Batch 1 holdout before any search behavior change."
+    "next_required_action": "Implement Candidate A as a bounded independent local solver and run its feasibility gate without consulting holdout outcomes."
   },
   "test_baseline": {
     "passed": 268,
@@ -27,11 +27,11 @@
     "skipped": 0,
     "status": "passed in 47.362s"
   },
-  "current_batch": {"id": 1, "name": "Independent holdout", "status": "in_progress"},
+  "current_batch": {"id": 2, "name": "Certified tactical subsearch", "status": "in_progress"},
   "batches": [
     {"id": 0, "name": "Staged run", "status": "complete", "commit": "dddbaf4c5cbef15962ac069571d95074b0afbbe1", "rollback_tag": "elves/mcts-search-v4-pre-batch-0"},
-    {"id": 1, "name": "Independent holdout", "status": "in_progress", "commit": null, "rollback_tag": "elves/mcts-search-v4-pre-batch-1"},
-    {"id": 2, "name": "Certified tactical subsearch", "status": "pending", "commit": null, "rollback_tag": null},
+    {"id": 1, "name": "Independent holdout", "status": "complete", "commit": "9dcd4e1a50f5b3288b0d3d98cc1f49eb7bba2a76", "rollback_tag": "elves/mcts-search-v4-pre-batch-1"},
+    {"id": 2, "name": "Certified tactical subsearch", "status": "in_progress", "commit": null, "rollback_tag": "elves/mcts-search-v4-pre-batch-2"},
     {"id": 3, "name": "Progressive unpruning", "status": "pending", "commit": null, "rollback_tag": null},
     {"id": 4, "name": "True-terminal settling", "status": "pending", "commit": null, "rollback_tag": null},
     {"id": 5, "name": "Admission, composition, and holdout", "status": "pending", "commit": null, "rollback_tag": null},
@@ -39,6 +39,6 @@
   ],
   "review_comments": [],
   "active_compute": [],
-  "last_completed_action": "Opened draft PR #21 from documentation-only Batch 0 head dddbaf4, stacked on exact PR #20 head.",
-  "updated_at": "2026-07-17T10:44:16-05:00"
+  "last_completed_action": "Froze 24 strict positive and 12 abstention holdout certificates at 9dcd4e1 before candidate implementation; 273 tests pass.",
+  "updated_at": "2026-07-17T11:10:00-05:00"
 }
