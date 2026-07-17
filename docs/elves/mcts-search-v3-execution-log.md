@@ -290,3 +290,53 @@ also passed. Product rules, scoring, saves, server, browser, and live opponent
 remain untouched. Confidence HIGH for directional-bias removal and evidence
 isolation; confidence HIGH that tie randomization alone does not repair tactical
 selection on this corpus.
+
+## Batch 3 — Terminal-margin secondary backup
+
+Status: in progress.
+
+### Contract
+
+**Behaviors:** retain terminal W/D/L and UCT as the primary search value; add
+terminal score margin normalized by the ruleset's scoreable area as the next
+lexicographic comparison before the seeded hash. Record raw and normalized
+terminal-margin aggregates. Do not alter rollout actions, expansion order,
+exploration, legal transitions, or terminal completion.
+
+**Build on:** MCTS V3 seeded-hash ties and Batch 1 telemetry. Version/hash the
+combined tie-plus-margin semantics as a new agent. Preserve V2 and V3 manifests,
+raw artifacts, and results byte-for-byte.
+
+**Acceptance criteria:**
+
+- [ ] Vertex games normalize by board points and Gjerde games by scoreable
+  cells; every sample is finite and in `[-1, 1]`.
+- [ ] Terminal margin is exactly color-symmetric for every candidate and board
+  size and comes only from the accepted game score.
+- [ ] W/D/L remains primary in traversal and final choice; margin resolves only
+  otherwise equal primary comparisons.
+- [ ] Raw and normalized root aggregates reconcile with visits and selected
+  rank/reason remains exact.
+- [ ] A separate tie-plus-margin manifest is committed before outcomes and the
+  identical 4/16/64 schedule is audited against both earlier agents.
+- [ ] Retain margin only if it improves admission or resolves documented
+  saturation without material diagnostic regression.
+- [ ] Full tests, Python compile, JavaScript syntax, and diff checks pass.
+
+**Blast radius:** research MCTS selection and telemetry plus the tactical
+harness's normalized-margin validation. No native evaluator is imported. Rules,
+scoring, live termination, server, browser, save schema, and native opponent are
+out of scope.
+
+### Pre-implementation survey
+
+- `_terminal_sample()` already obtains the authoritative accepted score once;
+  normalization can be calculated there without another rollout or evaluator.
+- Vertex score totals are bounded by `len(board.points)`. Gjerde scores fenced
+  fields, bounded by `len(board.cells)`; normalizing Gjerde by playable lines
+  would understate its margin.
+- Node backup already carries raw terminal margin for Batch 1 telemetry. A
+  parallel normalized aggregate on the same backup walk adds no RNG calls and
+  no game transitions.
+- At opponent nodes, the secondary comparison must minimize the root seat's
+  normalized margin just as primary exploitation uses `1 - mean`.

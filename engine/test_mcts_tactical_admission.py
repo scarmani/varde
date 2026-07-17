@@ -58,6 +58,13 @@ def synthetic_admission(task):
             "terminal_margin_mean": 0.0 if index == 0 else None,
             "terminal_margin_min": 0 if index == 0 else None,
             "terminal_margin_max": 0 if index == 0 else None,
+            "normalized_terminal_margin_count": (
+                task["budget"] if index == 0 else 0
+            ),
+            "normalized_terminal_margin_sum": 0.0,
+            "normalized_terminal_margin_mean": 0.0 if index == 0 else None,
+            "normalized_terminal_margin_min": 0.0 if index == 0 else None,
+            "normalized_terminal_margin_max": 0.0 if index == 0 else None,
         }
         for index in range(task["root_legal_actions"])
     ]

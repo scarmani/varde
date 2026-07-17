@@ -4,7 +4,13 @@ from actions import RulesAction, RulesState, apply_action, legal_actions
 from mcts import (
     MCTS_AGENT_HASH,
     MCTS_VERSION,
+    _Node,
+    _TerminalSample,
+    _final_selection_key,
+    _scoreable_area,
     _seeded_tie_value,
+    _selection_reason,
+    _terminal_sample,
     choose_mcts_action,
     choose_mcts_state_action,
 )
@@ -180,7 +186,7 @@ class TestRulesActions(unittest.TestCase):
 
 class TestTerminalMCTS(unittest.TestCase):
     def test_agent_hash_and_request_validation(self):
-        self.assertEqual(MCTS_VERSION, 3)
+        self.assertEqual(MCTS_VERSION, 4)
         self.assertEqual(len(MCTS_AGENT_HASH), 64)
         int(MCTS_AGENT_HASH, 16)
         with self.assertRaises(ValueError):
@@ -234,6 +240,53 @@ class TestTerminalMCTS(unittest.TestCase):
                 ),
             ))
         self.assertEqual(winners, set(orbit))
+
+    def test_terminal_margin_is_bounded_color_symmetric_and_secondary(self):
+        for rules in CANDIDATES:
+            for n in (3, 4, 5, 6):
+                with self.subTest(rules=rules, n=n):
+                    game = Game(n, rules=rules)
+                    for point in game.board.points:
+                        game.state[point] = (BLACK,)
+                    state = RulesState(game, accepted=True)
+                    black = _terminal_sample(state, "seat-black")
+                    white = _terminal_sample(state, "seat-white")
+                    expected_area = (
+                        len(game.board.cells)
+                        if rules in ("gjerde", "gjerde-go")
+                        else len(game.board.points)
+                    )
+                    self.assertEqual(_scoreable_area(game), expected_area)
+                    self.assertEqual(black.reward, 1.0 - white.reward)
+                    self.assertEqual(black.margin, -white.margin)
+                    self.assertAlmostEqual(
+                        black.normalized_margin,
+                        -white.normalized_margin,
+                    )
+                    self.assertLessEqual(abs(black.normalized_margin), 1.0)
+
+        state = RulesState(Game(3), accepted=True)
+        lower_margin = _Node(state, action=RulesAction("pass"))
+        higher_margin = _Node(state, action=RulesAction("accept"))
+        lower_wdl = _Node(state, action=RulesAction("resume"))
+        lower_margin.record(_TerminalSample(1.0, 1, 0.1, "win"))
+        higher_margin.record(_TerminalSample(1.0, 2, 0.2, "win"))
+        lower_wdl.record(_TerminalSample(0.5, 54, 1.0, "draw"))
+        key_args = (77, state.key())
+        self.assertGreater(
+            _final_selection_key(higher_margin, *key_args),
+            _final_selection_key(lower_margin, *key_args),
+        )
+        self.assertGreater(
+            _final_selection_key(lower_margin, *key_args),
+            _final_selection_key(lower_wdl, *key_args),
+        )
+        root = _Node(state)
+        root.children = [lower_margin, higher_margin]
+        self.assertEqual(
+            _selection_reason(root, higher_margin),
+            "terminal-margin",
+        )
 
     def test_mcts_is_legal_deterministic_nonmutating_and_save_compatible(self):
         for rules in CANDIDATES:
@@ -350,6 +403,15 @@ class TestTerminalMCTS(unittest.TestCase):
                 item["visits"],
             )
             self.assertEqual(item["terminal_margin_count"], item["visits"])
+            self.assertEqual(
+                item["normalized_terminal_margin_count"],
+                item["visits"],
+            )
+            if item["normalized_terminal_margin_mean"] is not None:
+                self.assertLessEqual(
+                    abs(item["normalized_terminal_margin_mean"]),
+                    1.0,
+                )
         selected = [item for item in telemetry if item["selected"]]
         self.assertEqual(len(selected), 1)
         self.assertEqual(selected[0]["final_rank"], 1)

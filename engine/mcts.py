@@ -7,11 +7,11 @@ import math
 import random
 
 from actions import RulesAction, RulesState, apply_action, legal_actions
-from varde import BLACK, WHITE, control
+from varde import BLACK, WHITE, GJERDE_RULESETS, control
 
 
 MCTS_FORMAT = "varde-terminal-mcts"
-MCTS_VERSION = 3
+MCTS_VERSION = 4
 ROLLOUT_POLICIES = frozenset(("uniform", "epsilon-greedy"))
 EXPLORATION = math.sqrt(2.0)
 ROLLOUT_EPSILON = 0.15
@@ -25,6 +25,7 @@ MCTS_AGENT_HASH = hashlib.sha256(
             "epsilon": ROLLOUT_EPSILON,
             "late_pass_rate": LIGHT_LATE_PASS_RATE,
             "terminal": "game-score-win-draw-loss",
+            "terminal_margin": "secondary-normalized-by-scoreable-area",
             "ties": "sha256(seed,root-position,node-position,action)",
         },
         sort_keys=True,
@@ -70,6 +71,7 @@ class MCTSDecision:
 class _TerminalSample:
     reward: float
     margin: int | float
+    normalized_margin: float
     outcome: str
 
 
@@ -88,6 +90,9 @@ class _Node:
         "margin_sum",
         "margin_min",
         "margin_max",
+        "normalized_margin_sum",
+        "normalized_margin_min",
+        "normalized_margin_max",
     )
 
     def __init__(self, state, parent=None, action=None):
@@ -104,10 +109,17 @@ class _Node:
         self.margin_sum = 0
         self.margin_min = None
         self.margin_max = None
+        self.normalized_margin_sum = 0.0
+        self.normalized_margin_min = None
+        self.normalized_margin_max = None
 
     @property
     def mean(self):
         return self.value_sum / self.visits if self.visits else 0.5
+
+    @property
+    def normalized_margin_mean(self):
+        return self.normalized_margin_sum / self.visits if self.visits else 0.0
 
     def record(self, sample):
         self.visits += 1
@@ -129,11 +141,28 @@ class _Node:
             if self.margin_max is None
             else max(self.margin_max, sample.margin)
         )
+        self.normalized_margin_sum += sample.normalized_margin
+        self.normalized_margin_min = (
+            sample.normalized_margin
+            if self.normalized_margin_min is None
+            else min(self.normalized_margin_min, sample.normalized_margin)
+        )
+        self.normalized_margin_max = (
+            sample.normalized_margin
+            if self.normalized_margin_max is None
+            else max(self.normalized_margin_max, sample.normalized_margin)
+        )
 
 
 def _seed_for_position(seed, state):
     digest = hashlib.sha256(f"{seed}|{state.key()!r}".encode()).digest()
     return int.from_bytes(digest[:8], "big")
+
+
+def _scoreable_area(game):
+    if game.rules in GJERDE_RULESETS:
+        return len(game.board.cells)
+    return len(game.board.points)
 
 
 def _terminal_sample(state, root_seat):
@@ -143,11 +172,13 @@ def _terminal_sample(state, root_seat):
     other_color = WHITE if color == BLACK else BLACK
     score = state.game.score()
     margin = score[color] - score[other_color]
+    area = _scoreable_area(state.game)
+    normalized_margin = max(-1.0, min(1.0, margin / area))
     if margin > 0:
-        return _TerminalSample(1.0, margin, "win")
+        return _TerminalSample(1.0, margin, normalized_margin, "win")
     if margin < 0:
-        return _TerminalSample(0.0, margin, "loss")
-    return _TerminalSample(0.5, margin, "draw")
+        return _TerminalSample(0.0, margin, normalized_margin, "loss")
+    return _TerminalSample(0.5, margin, normalized_margin, "draw")
 
 
 def _terminal_reward(state, root_seat):
@@ -244,6 +275,10 @@ def _select_child(node, root_seat, seed, root_key):
         exploration = EXPLORATION * math.sqrt(log_parent / child.visits)
         return (
             exploitation + exploration,
+            (
+                child.normalized_margin_mean
+                if maximizing else -child.normalized_margin_mean
+            ),
             _seeded_tie_value(seed, root_key, node.state.key(), child.action),
         )
 
@@ -254,6 +289,7 @@ def _final_selection_key(child, seed, root_key):
     return (
         child.visits,
         child.mean,
+        child.normalized_margin_mean,
         _seeded_tie_value(seed, root_key, root_key, child.action),
     )
 
@@ -277,7 +313,15 @@ def _selection_reason(root, selected):
     ]
     if len(mean_leaders) == 1:
         return "mean-value"
-    if selected not in mean_leaders:
+    best_margin = max(child.normalized_margin_mean for child in mean_leaders)
+    margin_leaders = [
+        child
+        for child in mean_leaders
+        if child.normalized_margin_mean == best_margin
+    ]
+    if len(margin_leaders) == 1:
+        return "terminal-margin"
+    if selected not in margin_leaders:
         raise AssertionError("selected root action is outside the final tie")
     return "seeded-hash"
 
@@ -292,6 +336,7 @@ def _root_action_telemetry(root, selected, seed, root_key):
             return (
                 0,
                 0.5,
+                0.0,
                 _seeded_tie_value(seed, root_key, root_key, action),
             )
         return _final_selection_key(child, seed, root_key)
@@ -302,6 +347,9 @@ def _root_action_telemetry(root, selected, seed, root_key):
         child = children.get(action)
         visits = child.visits if child is not None else 0
         margin_sum = child.margin_sum if child is not None else 0
+        normalized_margin_sum = (
+            child.normalized_margin_sum if child is not None else 0.0
+        )
         records.append({
             "action": action.to_dict(),
             "action_id": _action_identity(action),
@@ -318,6 +366,17 @@ def _root_action_telemetry(root, selected, seed, root_key):
             "terminal_margin_mean": margin_sum / visits if visits else None,
             "terminal_margin_min": child.margin_min if child is not None else None,
             "terminal_margin_max": child.margin_max if child is not None else None,
+            "normalized_terminal_margin_count": visits,
+            "normalized_terminal_margin_sum": normalized_margin_sum,
+            "normalized_terminal_margin_mean": (
+                normalized_margin_sum / visits if visits else None
+            ),
+            "normalized_terminal_margin_min": (
+                child.normalized_margin_min if child is not None else None
+            ),
+            "normalized_terminal_margin_max": (
+                child.normalized_margin_max if child is not None else None
+            ),
         })
     return tuple(records)
 

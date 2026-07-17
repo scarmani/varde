@@ -211,6 +211,16 @@ def _validate_root_telemetry(decision, expected_actions):
             raise AssertionError("root W/D/L counts do not reconcile")
         if item["terminal_margin_count"] != item["visits"]:
             raise AssertionError("root margin counts do not reconcile")
+        if item["normalized_terminal_margin_count"] != item["visits"]:
+            raise AssertionError("root normalized margin counts do not reconcile")
+        for key in (
+            "normalized_terminal_margin_mean",
+            "normalized_terminal_margin_min",
+            "normalized_terminal_margin_max",
+        ):
+            value = item[key]
+            if value is not None and not -1.0 <= value <= 1.0:
+                raise AssertionError("normalized terminal margin is out of bounds")
     selected = [item for item in telemetry if item["selected"]]
     if len(selected) != 1 or selected[0]["final_rank"] != 1:
         raise AssertionError("root telemetry selected rank differs")
@@ -316,6 +326,7 @@ def _metrics(records):
             "latency_ms_p95": None,
             "root_coverage_fraction_mean": None,
             "selected_terminal_margin_mean": None,
+            "selected_normalized_terminal_margin_mean": None,
             "selection_reasons": {},
         }
     nodes = [record["decision"]["nodes"] for record in complete]
@@ -327,6 +338,7 @@ def _metrics(records):
         record["decision"]["root_coverage_fraction"] for record in complete
     ]
     selected_margins = []
+    selected_normalized_margins = []
     reasons = {}
     for record in complete:
         decision = record["decision"]
@@ -339,6 +351,10 @@ def _metrics(records):
         )
         if selected["terminal_margin_mean"] is not None:
             selected_margins.append(selected["terminal_margin_mean"])
+        if selected["normalized_terminal_margin_mean"] is not None:
+            selected_normalized_margins.append(
+                selected["normalized_terminal_margin_mean"]
+            )
     return {
         "decisions": len(complete),
         "hit_rate": sum(record["hit"] for record in complete) / len(complete),
@@ -354,6 +370,10 @@ def _metrics(records):
         "selected_terminal_margin_mean": (
             round(statistics.fmean(selected_margins), 6)
             if selected_margins else None
+        ),
+        "selected_normalized_terminal_margin_mean": (
+            round(statistics.fmean(selected_normalized_margins), 6)
+            if selected_normalized_margins else None
         ),
         "selection_reasons": dict(sorted(reasons.items())),
     }
