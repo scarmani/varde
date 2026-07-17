@@ -1,0 +1,1914 @@
+{
+  "catalog": {
+    "format": "varde-mcts-v4-certified-holdout",
+    "payload_sha256": "369e9574afbd68459f0127e0720ecfa836c6cc63a1351e98d312dcec6c6e0c89",
+    "positions": [
+      {
+        "acceptable_actions": [
+          "play:4,2"
+        ],
+        "actor_color": "B",
+        "board_size": 3,
+        "category": "capture",
+        "certificate": {
+          "action_statuses": {
+            "pass": "disproven",
+            "play:-1,1": "disproven",
+            "play:1,-5": "disproven",
+            "play:4,2": "proven",
+            "play:8,0": "disproven"
+          },
+          "claim_limit": "bounded local obligation only; not a game-theoretic result",
+          "format": "varde-bounded-local-obligation-certificate",
+          "horizon": 1,
+          "node_limit": 100000,
+          "nodes": 14,
+          "override_eligible": true,
+          "root_actions": 5,
+          "scope": "capture remains safe through every immediate reply",
+          "version": 1
+        },
+        "decoy": false,
+        "description": "The sole safe capture remains alive through the reply.",
+        "id": "v4-capture-toy-a",
+        "obligation": {
+          "category": "capture",
+          "horizon": 1,
+          "scope": "capture remains safe through every immediate reply"
+        },
+        "provenance": {
+          "board_size": 3,
+          "kind": "reachable-seeded-play",
+          "plies": 52,
+          "post_actions": [],
+          "rules": "breath",
+          "seed": 20260728000,
+          "seeded_plies": 52,
+          "transcript_sha256": "ce7d942e06095f44da2445d96bc6a40871765f2838c822e1e67173a8edbb1009"
+        },
+        "root_legal_actions": 5,
+        "rules": "breath",
+        "state_key_sha256": "eea9b127ab2a81392f5c64d618ca77f8d03607c7d318bc1a4711f12e35b0202a"
+      },
+      {
+        "acceptable_actions": [
+          "play:4,2"
+        ],
+        "actor_color": "B",
+        "board_size": 3,
+        "category": "capture",
+        "certificate": {
+          "action_statuses": {
+            "pass": "disproven",
+            "play:1,-5": "disproven",
+            "play:4,2": "proven",
+            "play:8,0": "disproven"
+          },
+          "claim_limit": "bounded local obligation only; not a game-theoretic result",
+          "format": "varde-bounded-local-obligation-certificate",
+          "horizon": 1,
+          "node_limit": 100000,
+          "nodes": 11,
+          "override_eligible": true,
+          "root_actions": 4,
+          "scope": "capture remains safe through every immediate reply",
+          "version": 1
+        },
+        "decoy": false,
+        "description": "A later root preserves the same unique safe capture.",
+        "id": "v4-capture-toy-b",
+        "obligation": {
+          "category": "capture",
+          "horizon": 1,
+          "scope": "capture remains safe through every immediate reply"
+        },
+        "provenance": {
+          "board_size": 3,
+          "kind": "reachable-seeded-play",
+          "plies": 54,
+          "post_actions": [],
+          "rules": "breath",
+          "seed": 20260728000,
+          "seeded_plies": 54,
+          "transcript_sha256": "c00e6503fcab577a19abc5457d1ef795812809840511b789b3ca9577c66418b5"
+        },
+        "root_legal_actions": 4,
+        "rules": "breath",
+        "state_key_sha256": "5aaa6de626c4c88cc3229eb45e6d20288eaecef271706f9f7a6e1308d186c754"
+      },
+      {
+        "acceptable_actions": [
+          "play:-5,-5"
+        ],
+        "actor_color": "W",
+        "board_size": 4,
+        "category": "capture",
+        "certificate": {
+          "action_statuses": {
+            "pass": "disproven",
+            "play:-1,-5": "disproven",
+            "play:-1,3": "disproven",
+            "play:-2,-4": "disproven",
+            "play:-2,-6": "disproven",
+            "play:-4,-4": "disproven",
+            "play:-4,-6": "disproven",
+            "play:-5,-5": "proven",
+            "play:1,-3": "disproven",
+            "play:1,7": "disproven",
+            "play:2,-4": "disproven"
+          },
+          "claim_limit": "bounded local obligation only; not a game-theoretic result",
+          "format": "varde-bounded-local-obligation-certificate",
+          "horizon": 1,
+          "node_limit": 100000,
+          "nodes": 24,
+          "override_eligible": true,
+          "root_actions": 11,
+          "scope": "capture remains safe through every immediate reply",
+          "version": 1
+        },
+        "decoy": false,
+        "description": "Find the unique safe capture on the wider board.",
+        "id": "v4-capture-beginner-a",
+        "obligation": {
+          "category": "capture",
+          "horizon": 1,
+          "scope": "capture remains safe through every immediate reply"
+        },
+        "provenance": {
+          "board_size": 4,
+          "kind": "reachable-seeded-play",
+          "plies": 93,
+          "post_actions": [],
+          "rules": "breath",
+          "seed": 20260729000,
+          "seeded_plies": 93,
+          "transcript_sha256": "933fec4c2586e52154a829b2a7df66b0c150851549ed7467d6d57bbb0285c070"
+        },
+        "root_legal_actions": 11,
+        "rules": "breath",
+        "state_key_sha256": "fd3dfb557bacbcbb7d1c63a694c8027a99aea21aabedd678f9ca4f7a07d8f3c4"
+      },
+      {
+        "acceptable_actions": [
+          "play:-5,-5"
+        ],
+        "actor_color": "W",
+        "board_size": 4,
+        "category": "capture",
+        "certificate": {
+          "action_statuses": {
+            "pass": "disproven",
+            "play:-1,-5": "disproven",
+            "play:-2,-4": "disproven",
+            "play:-4,-4": "disproven",
+            "play:-4,-6": "disproven",
+            "play:-5,-5": "proven",
+            "play:1,-3": "disproven",
+            "play:2,-4": "disproven"
+          },
+          "claim_limit": "bounded local obligation only; not a game-theoretic result",
+          "format": "varde-bounded-local-obligation-certificate",
+          "horizon": 1,
+          "node_limit": 100000,
+          "nodes": 20,
+          "override_eligible": true,
+          "root_actions": 8,
+          "scope": "capture remains safe through every immediate reply",
+          "version": 1
+        },
+        "decoy": false,
+        "description": "Preserve the only capture that survives an immediate reply.",
+        "id": "v4-capture-beginner-b",
+        "obligation": {
+          "category": "capture",
+          "horizon": 1,
+          "scope": "capture remains safe through every immediate reply"
+        },
+        "provenance": {
+          "board_size": 4,
+          "kind": "reachable-seeded-play",
+          "plies": 95,
+          "post_actions": [],
+          "rules": "breath",
+          "seed": 20260729000,
+          "seeded_plies": 95,
+          "transcript_sha256": "4a5b5d88e1f11726024c70894b7fffa505011e2dacb64885663f75ee2d5566ef"
+        },
+        "root_legal_actions": 8,
+        "rules": "breath",
+        "state_key_sha256": "b09e1f6bde399a27a24c1a21ae322402095271f298dd514142e407cea9f99093"
+      },
+      {
+        "acceptable_actions": [
+          "play:-7,1"
+        ],
+        "actor_color": "W",
+        "board_size": 3,
+        "category": "defense",
+        "certificate": {
+          "action_statuses": {
+            "pass": "disproven",
+            "play:-1,-1": "disproven",
+            "play:-1,-3": "disproven",
+            "play:-4,-4": "disproven",
+            "play:-4,0": "disproven",
+            "play:-7,1": "proven",
+            "play:-8,2": "disproven",
+            "play:1,-1": "disproven",
+            "play:1,-3": "disproven",
+            "play:1,5": "disproven",
+            "play:4,4": "disproven",
+            "play:7,3": "disproven"
+          },
+          "claim_limit": "bounded local obligation only; not a game-theoretic result",
+          "format": "varde-bounded-local-obligation-certificate",
+          "horizon": 1,
+          "node_limit": 100000,
+          "nodes": 13,
+          "override_eligible": true,
+          "root_actions": 12,
+          "scope": "threatened friendly group survives every immediate reply",
+          "version": 1
+        },
+        "decoy": false,
+        "description": "Fill the sole liberty and survive every immediate reply.",
+        "id": "v4-defense-toy-a",
+        "obligation": {
+          "anchor": [
+            -8,
+            0
+          ],
+          "category": "defense",
+          "horizon": 1,
+          "liberty": [
+            -7,
+            1
+          ],
+          "scope": "threatened friendly group survives every immediate reply"
+        },
+        "provenance": {
+          "board_size": 3,
+          "kind": "reachable-seeded-play",
+          "plies": 43,
+          "post_actions": [],
+          "rules": "breath",
+          "seed": 20260749001,
+          "seeded_plies": 43,
+          "transcript_sha256": "d40b8a6b58b289a787ad76ea61c796815c7bb267b2cfe8eff3827dcad1f202e9"
+        },
+        "root_legal_actions": 12,
+        "rules": "breath",
+        "state_key_sha256": "d85e6e2cc0bcea04f3e0b9860c43c9e74e84f4c0809353f2e98a8b88754626c5"
+      },
+      {
+        "acceptable_actions": [
+          "play:-5,3"
+        ],
+        "actor_color": "W",
+        "board_size": 3,
+        "category": "defense",
+        "certificate": {
+          "action_statuses": {
+            "pass": "disproven",
+            "play:-1,3": "disproven",
+            "play:-1,5": "disproven",
+            "play:-2,0": "disproven",
+            "play:-5,3": "proven",
+            "play:1,5": "disproven",
+            "play:2,-2": "disproven",
+            "play:2,2": "disproven",
+            "play:5,3": "disproven",
+            "play:8,0": "disproven"
+          },
+          "claim_limit": "bounded local obligation only; not a game-theoretic result",
+          "format": "varde-bounded-local-obligation-certificate",
+          "horizon": 1,
+          "node_limit": 100000,
+          "nodes": 13,
+          "override_eligible": true,
+          "root_actions": 10,
+          "scope": "threatened friendly group survives every immediate reply",
+          "version": 1
+        },
+        "decoy": false,
+        "description": "Defend the threatened edge group through one reply.",
+        "id": "v4-defense-toy-b",
+        "obligation": {
+          "anchor": [
+            -8,
+            2
+          ],
+          "category": "defense",
+          "horizon": 1,
+          "liberty": [
+            -5,
+            3
+          ],
+          "scope": "threatened friendly group survives every immediate reply"
+        },
+        "provenance": {
+          "board_size": 3,
+          "kind": "reachable-seeded-play",
+          "plies": 41,
+          "post_actions": [],
+          "rules": "breath",
+          "seed": 20260749002,
+          "seeded_plies": 41,
+          "transcript_sha256": "a1c8fb7e7d88ce47ef025f2dc7969cf0fc333d66e73f47d019d760a5efbfca9f"
+        },
+        "root_legal_actions": 10,
+        "rules": "breath",
+        "state_key_sha256": "a822d92c92ce971407d28fe58c851b4569639988368e390624aba986faf48989"
+      },
+      {
+        "acceptable_actions": [
+          "play:4,6"
+        ],
+        "actor_color": "B",
+        "board_size": 4,
+        "category": "defense",
+        "certificate": {
+          "action_statuses": {
+            "pass": "disproven",
+            "play:-2,6": "disproven",
+            "play:-5,3": "disproven",
+            "play:-7,5": "disproven",
+            "play:-8,2": "disproven",
+            "play:10,0": "disproven",
+            "play:11,1": "disproven",
+            "play:2,-2": "disproven",
+            "play:2,0": "disproven",
+            "play:4,6": "proven",
+            "play:5,-3": "disproven",
+            "play:5,-5": "disproven"
+          },
+          "claim_limit": "bounded local obligation only; not a game-theoretic result",
+          "format": "varde-bounded-local-obligation-certificate",
+          "horizon": 1,
+          "node_limit": 100000,
+          "nodes": 17,
+          "override_eligible": true,
+          "root_actions": 12,
+          "scope": "threatened friendly group survives every immediate reply",
+          "version": 1
+        },
+        "decoy": false,
+        "description": "Find the only reply-safe defense on Beginner.",
+        "id": "v4-defense-beginner-a",
+        "obligation": {
+          "anchor": [
+            5,
+            5
+          ],
+          "category": "defense",
+          "horizon": 1,
+          "liberty": [
+            4,
+            6
+          ],
+          "scope": "threatened friendly group survives every immediate reply"
+        },
+        "provenance": {
+          "board_size": 4,
+          "kind": "reachable-seeded-play",
+          "plies": 82,
+          "post_actions": [],
+          "rules": "breath",
+          "seed": 20260750001,
+          "seeded_plies": 82,
+          "transcript_sha256": "82697e4fa8b08657fee49ef018c9e934c9da330c460ef929da50ef881d68a889"
+        },
+        "root_legal_actions": 12,
+        "rules": "breath",
+        "state_key_sha256": "f1bd29036d137491097abbf41ddfe5b4354fd529d58d406b49a057f7be5dfd0c"
+      },
+      {
+        "acceptable_actions": [
+          "play:5,-5"
+        ],
+        "actor_color": "B",
+        "board_size": 4,
+        "category": "defense",
+        "certificate": {
+          "action_statuses": {
+            "pass": "disproven",
+            "play:-1,5": "disproven",
+            "play:-1,7": "disproven",
+            "play:-11,-3": "disproven",
+            "play:-11,1": "disproven",
+            "play:-2,4": "disproven",
+            "play:1,5": "disproven",
+            "play:2,2": "disproven",
+            "play:5,-1": "disproven",
+            "play:5,-5": "proven",
+            "play:8,-2": "disproven",
+            "play:8,-4": "disproven"
+          },
+          "claim_limit": "bounded local obligation only; not a game-theoretic result",
+          "format": "varde-bounded-local-obligation-certificate",
+          "horizon": 1,
+          "node_limit": 100000,
+          "nodes": 19,
+          "override_eligible": true,
+          "root_actions": 12,
+          "scope": "threatened friendly group survives every immediate reply",
+          "version": 1
+        },
+        "decoy": false,
+        "description": "Save the opposite-edge group through the reply horizon.",
+        "id": "v4-defense-beginner-b",
+        "obligation": {
+          "anchor": [
+            4,
+            -6
+          ],
+          "category": "defense",
+          "horizon": 1,
+          "liberty": [
+            5,
+            -5
+          ],
+          "scope": "threatened friendly group survives every immediate reply"
+        },
+        "provenance": {
+          "board_size": 4,
+          "kind": "reachable-seeded-play",
+          "plies": 86,
+          "post_actions": [],
+          "rules": "breath",
+          "seed": 20260750002,
+          "seeded_plies": 86,
+          "transcript_sha256": "1aaf00c53aa8576d7985d61a4fd563fd5c5d89567a518e7cf348fc291a52b615"
+        },
+        "root_legal_actions": 12,
+        "rules": "breath",
+        "state_key_sha256": "ccbba1cbe716a21ae5ed1400835c9c2959b4c6f494f0adcd6e92449b484e1c27"
+      },
+      {
+        "acceptable_actions": [
+          "extend:-2,-2"
+        ],
+        "actor_color": "B",
+        "board_size": 3,
+        "category": "rescue",
+        "certificate": {
+          "action_statuses": {
+            "extend:-2,-2": "proven",
+            "extend:-2,-4": "disproven",
+            "pass": "disproven",
+            "play:-2,-2": "disproven",
+            "play:-2,-4": "disproven",
+            "play:-7,-3": "disproven",
+            "play:-8,0": "disproven",
+            "play:2,-4": "disproven"
+          },
+          "claim_limit": "bounded local obligation only; not a game-theoretic result",
+          "format": "varde-bounded-local-obligation-certificate",
+          "horizon": 4,
+          "node_limit": 100000,
+          "nodes": 6,
+          "override_eligible": true,
+          "root_actions": 8,
+          "scope": "rescue reaches extension-turn closure with target alive",
+          "version": 1
+        },
+        "decoy": false,
+        "description": "Continue the rescue and close with the target alive.",
+        "id": "v4-rescue-toy-a",
+        "obligation": {
+          "anchor": [
+            -5,
+            3
+          ],
+          "category": "rescue",
+          "horizon": 4,
+          "liberty": [
+            -5,
+            1
+          ],
+          "scope": "rescue reaches extension-turn closure with target alive"
+        },
+        "provenance": {
+          "board_size": 3,
+          "kind": "reachable-seeded-play",
+          "plies": 45,
+          "post_actions": [],
+          "rules": "breath-run",
+          "seed": 20260720000,
+          "seeded_plies": 45,
+          "transcript_sha256": "5c063be0af05c7a088e6431b1208229c66cf4fae8663f3ac5d2131cc0b1033df"
+        },
+        "root_legal_actions": 8,
+        "rules": "breath-run",
+        "state_key_sha256": "4db1765c8742ec59860f23705064f9f80b069fb8082054734e6a0df453aeb1cb"
+      },
+      {
+        "acceptable_actions": [
+          "extend:-2,-2"
+        ],
+        "actor_color": "B",
+        "board_size": 3,
+        "category": "rescue",
+        "certificate": {
+          "action_statuses": {
+            "extend:-2,-2": "proven",
+            "pass": "disproven",
+            "play:-2,-2": "disproven",
+            "play:-7,-3": "disproven",
+            "play:-8,0": "disproven",
+            "play:2,-4": "disproven"
+          },
+          "claim_limit": "bounded local obligation only; not a game-theoretic result",
+          "format": "varde-bounded-local-obligation-certificate",
+          "horizon": 4,
+          "node_limit": 100000,
+          "nodes": 3,
+          "override_eligible": true,
+          "root_actions": 6,
+          "scope": "rescue reaches extension-turn closure with target alive",
+          "version": 1
+        },
+        "decoy": false,
+        "description": "The later extension root still has one certified continuation.",
+        "id": "v4-rescue-toy-b",
+        "obligation": {
+          "anchor": [
+            -5,
+            3
+          ],
+          "category": "rescue",
+          "horizon": 4,
+          "liberty": [
+            -5,
+            1
+          ],
+          "scope": "rescue reaches extension-turn closure with target alive"
+        },
+        "provenance": {
+          "board_size": 3,
+          "kind": "reachable-seeded-play",
+          "plies": 47,
+          "post_actions": [],
+          "rules": "breath-run",
+          "seed": 20260720000,
+          "seeded_plies": 47,
+          "transcript_sha256": "222ce04e24e0618d97566cf5ba7d351a1d84fc502f86d954be2c7b508cfc9ffc"
+        },
+        "root_legal_actions": 6,
+        "rules": "breath-run",
+        "state_key_sha256": "b6e6c2a2a9a1aedfd5e6207b78b87c1ec4d31182af7b6b1bbf5fce834a505723"
+      },
+      {
+        "acceptable_actions": [
+          "extend:2,6"
+        ],
+        "actor_color": "W",
+        "board_size": 4,
+        "category": "rescue",
+        "certificate": {
+          "action_statuses": {
+            "extend:2,6": "proven",
+            "pass": "disproven",
+            "play:-2,-4": "disproven",
+            "play:-4,-2": "disproven",
+            "play:2,-4": "disproven",
+            "play:2,6": "disproven",
+            "play:4,-4": "disproven",
+            "play:4,6": "disproven",
+            "play:5,-5": "disproven",
+            "play:7,-3": "disproven",
+            "play:7,-5": "disproven",
+            "play:8,0": "disproven"
+          },
+          "claim_limit": "bounded local obligation only; not a game-theoretic result",
+          "format": "varde-bounded-local-obligation-certificate",
+          "horizon": 4,
+          "node_limit": 100000,
+          "nodes": 2,
+          "override_eligible": true,
+          "root_actions": 12,
+          "scope": "rescue reaches extension-turn closure with target alive",
+          "version": 1
+        },
+        "decoy": false,
+        "description": "Close a seeded Beginner rescue with the target alive.",
+        "id": "v4-rescue-beginner-a",
+        "obligation": {
+          "anchor": [
+            -10,
+            4
+          ],
+          "category": "rescue",
+          "horizon": 4,
+          "liberty": [
+            -5,
+            5
+          ],
+          "scope": "rescue reaches extension-turn closure with target alive"
+        },
+        "provenance": {
+          "board_size": 4,
+          "kind": "reachable-seeded-play",
+          "plies": 95,
+          "post_actions": [],
+          "rules": "breath-run",
+          "seed": 20260721000,
+          "seeded_plies": 95,
+          "transcript_sha256": "36b54f05c45abc1c660940ca60a2990c71a767cb9df75a89f8b72bab070259b5"
+        },
+        "root_legal_actions": 12,
+        "rules": "breath-run",
+        "state_key_sha256": "666574b06809e8d159b12d2efe5db41bb0f05497142271bdd492b01dd5120572"
+      },
+      {
+        "acceptable_actions": [
+          "extend:2,6"
+        ],
+        "actor_color": "W",
+        "board_size": 4,
+        "category": "rescue",
+        "certificate": {
+          "action_statuses": {
+            "extend:2,6": "proven",
+            "pass": "disproven",
+            "play:2,-4": "disproven",
+            "play:2,6": "disproven",
+            "play:4,-4": "disproven",
+            "play:4,6": "disproven",
+            "play:5,-5": "disproven",
+            "play:7,-3": "disproven",
+            "play:7,-5": "disproven",
+            "play:8,0": "disproven"
+          },
+          "claim_limit": "bounded local obligation only; not a game-theoretic result",
+          "format": "varde-bounded-local-obligation-certificate",
+          "horizon": 4,
+          "node_limit": 100000,
+          "nodes": 2,
+          "override_eligible": true,
+          "root_actions": 10,
+          "scope": "rescue reaches extension-turn closure with target alive",
+          "version": 1
+        },
+        "decoy": false,
+        "description": "Resolve a second seeded Beginner rescue obligation.",
+        "id": "v4-rescue-beginner-b",
+        "obligation": {
+          "anchor": [
+            -11,
+            -3
+          ],
+          "category": "rescue",
+          "horizon": 4,
+          "liberty": [
+            -2,
+            -4
+          ],
+          "scope": "rescue reaches extension-turn closure with target alive"
+        },
+        "provenance": {
+          "board_size": 4,
+          "kind": "reachable-seeded-play",
+          "plies": 97,
+          "post_actions": [],
+          "rules": "breath-run",
+          "seed": 20260721000,
+          "seeded_plies": 97,
+          "transcript_sha256": "4633792e60dc740fae2f97f6024c8eed39d1a03a76736b820446ec4b74dae0d1"
+        },
+        "root_legal_actions": 10,
+        "rules": "breath-run",
+        "state_key_sha256": "49eb0d3ef371084aff3f7866bcaf88953d1d49665c090384f2d3bd710e72e14b"
+      },
+      {
+        "acceptable_actions": [
+          "play:0,-2"
+        ],
+        "actor_color": "W",
+        "board_size": 3,
+        "category": "fence",
+        "certificate": {
+          "action_statuses": {
+            "pass": "disproven",
+            "play:-3,5": "disproven",
+            "play:-9,-3": "disproven",
+            "play:-9,1": "disproven",
+            "play:0,-2": "proven",
+            "play:12,-2": "disproven",
+            "play:15,1": "disproven",
+            "play:6,0": "disproven",
+            "play:9,-7": "disproven",
+            "play:9,5": "disproven"
+          },
+          "claim_limit": "bounded local obligation only; not a game-theoretic result",
+          "format": "varde-bounded-local-obligation-certificate",
+          "horizon": 1,
+          "node_limit": 100000,
+          "nodes": 17,
+          "override_eligible": true,
+          "root_actions": 10,
+          "scope": "completed fence remains complete through every immediate reply",
+          "version": 1
+        },
+        "decoy": false,
+        "description": "Complete the center fence so it survives one reply.",
+        "id": "v4-fence-toy-a",
+        "obligation": {
+          "category": "fence",
+          "cell": [
+            0,
+            0
+          ],
+          "horizon": 1,
+          "scope": "completed fence remains complete through every immediate reply"
+        },
+        "provenance": {
+          "board_size": 3,
+          "kind": "reachable-seeded-play",
+          "plies": 67,
+          "post_actions": [],
+          "rules": "gjerde",
+          "seed": 20260722000,
+          "seeded_plies": 67,
+          "transcript_sha256": "59562d42d88ac7adcc13103a621e1517d00ac43fb3cd321d1f0eafbd7015fb64"
+        },
+        "root_legal_actions": 10,
+        "rules": "gjerde",
+        "state_key_sha256": "875ac4b6cd978885d0e81858de78161feb596c7f8e4d94b59949deb0ca04ca5e"
+      },
+      {
+        "acceptable_actions": [
+          "play:0,-2"
+        ],
+        "actor_color": "B",
+        "board_size": 3,
+        "category": "fence",
+        "certificate": {
+          "action_statuses": {
+            "pass": "disproven",
+            "play:-12,-6": "disproven",
+            "play:-3,-9": "disproven",
+            "play:-3,5": "disproven",
+            "play:-9,-3": "disproven",
+            "play:-9,1": "disproven",
+            "play:-9,7": "disproven",
+            "play:0,-2": "proven"
+          },
+          "claim_limit": "bounded local obligation only; not a game-theoretic result",
+          "format": "varde-bounded-local-obligation-certificate",
+          "horizon": 1,
+          "node_limit": 100000,
+          "nodes": 16,
+          "override_eligible": true,
+          "root_actions": 8,
+          "scope": "completed fence remains complete through every immediate reply",
+          "version": 1
+        },
+        "decoy": false,
+        "description": "Complete a neighboring durable fence.",
+        "id": "v4-fence-toy-b",
+        "obligation": {
+          "category": "fence",
+          "cell": [
+            0,
+            -1
+          ],
+          "horizon": 1,
+          "scope": "completed fence remains complete through every immediate reply"
+        },
+        "provenance": {
+          "board_size": 3,
+          "kind": "reachable-seeded-play",
+          "plies": 68,
+          "post_actions": [],
+          "rules": "gjerde",
+          "seed": 20260722000,
+          "seeded_plies": 68,
+          "transcript_sha256": "000d74f7dffbd57aba91664bf9004a01356e33d1b0b8d308702e05f8bee5193a"
+        },
+        "root_legal_actions": 8,
+        "rules": "gjerde",
+        "state_key_sha256": "5c04db1df1bf8677421a503a49786224fd933788eee26bbe116199e558593276"
+      },
+      {
+        "acceptable_actions": [
+          "play:-21,5"
+        ],
+        "actor_color": "W",
+        "board_size": 4,
+        "category": "fence",
+        "certificate": {
+          "action_statuses": {
+            "pass": "disproven",
+            "play:-12,6": "disproven",
+            "play:-15,3": "disproven",
+            "play:-21,3": "disproven",
+            "play:-21,5": "proven",
+            "play:-9,-7": "disproven",
+            "play:-9,-9": "disproven",
+            "play:12,-10": "disproven",
+            "play:12,-6": "disproven",
+            "play:3,-13": "disproven",
+            "play:3,-5": "disproven",
+            "play:6,-4": "disproven"
+          },
+          "claim_limit": "bounded local obligation only; not a game-theoretic result",
+          "format": "varde-bounded-local-obligation-certificate",
+          "horizon": 1,
+          "node_limit": 100000,
+          "nodes": 24,
+          "override_eligible": true,
+          "root_actions": 12,
+          "scope": "completed fence remains complete through every immediate reply",
+          "version": 1
+        },
+        "decoy": false,
+        "description": "Seal a durable boundary on the Beginner board.",
+        "id": "v4-fence-beginner-a",
+        "obligation": {
+          "category": "fence",
+          "cell": [
+            -3,
+            3
+          ],
+          "horizon": 1,
+          "scope": "completed fence remains complete through every immediate reply"
+        },
+        "provenance": {
+          "board_size": 4,
+          "kind": "reachable-seeded-play",
+          "plies": 131,
+          "post_actions": [],
+          "rules": "gjerde",
+          "seed": 20260723000,
+          "seeded_plies": 131,
+          "transcript_sha256": "c34df3677a195c13e84be46f7563587e6b388b8af251da448d148da9eb90ebc5"
+        },
+        "root_legal_actions": 12,
+        "rules": "gjerde",
+        "state_key_sha256": "161b68d2ed922a16e8f7b2610fec25d13d619b79db70ddb77391dc71a5090520"
+      },
+      {
+        "acceptable_actions": [
+          "play:-15,-5"
+        ],
+        "actor_color": "B",
+        "board_size": 4,
+        "category": "fence",
+        "certificate": {
+          "action_statuses": {
+            "pass": "disproven",
+            "play:-15,-5": "proven",
+            "play:-15,3": "disproven",
+            "play:-18,0": "disproven",
+            "play:-9,-7": "disproven",
+            "play:-9,-9": "disproven",
+            "play:12,-6": "disproven",
+            "play:3,-1": "disproven",
+            "play:3,-5": "disproven",
+            "play:3,3": "disproven",
+            "play:6,-4": "disproven"
+          },
+          "claim_limit": "bounded local obligation only; not a game-theoretic result",
+          "format": "varde-bounded-local-obligation-certificate",
+          "horizon": 1,
+          "node_limit": 100000,
+          "nodes": 22,
+          "override_eligible": true,
+          "root_actions": 11,
+          "scope": "completed fence remains complete through every immediate reply",
+          "version": 1
+        },
+        "decoy": false,
+        "description": "Choose the sole completion that remains fenced after reply.",
+        "id": "v4-fence-beginner-b",
+        "obligation": {
+          "category": "fence",
+          "cell": [
+            -3,
+            0
+          ],
+          "horizon": 1,
+          "scope": "completed fence remains complete through every immediate reply"
+        },
+        "provenance": {
+          "board_size": 4,
+          "kind": "reachable-seeded-play",
+          "plies": 132,
+          "post_actions": [],
+          "rules": "gjerde",
+          "seed": 20260723000,
+          "seeded_plies": 132,
+          "transcript_sha256": "3602b259456c03c13df8ebca4d60e0347b339f5dc7c170666d9d21ee788acc7d"
+        },
+        "root_legal_actions": 11,
+        "rules": "gjerde",
+        "state_key_sha256": "100c38476012b891c7c7f740a4d27390b635fd4315aa032db17606b8fb8de740"
+      },
+      {
+        "acceptable_actions": [
+          "swap"
+        ],
+        "actor_color": "W",
+        "board_size": 3,
+        "category": "takeover",
+        "certificate": {
+          "action_statuses": {
+            "pass": "disproven",
+            "swap": "proven"
+          },
+          "claim_limit": "bounded local obligation only; not a game-theoretic result",
+          "format": "varde-bounded-local-obligation-certificate",
+          "horizon": 0,
+          "node_limit": 100000,
+          "nodes": 2,
+          "override_eligible": true,
+          "root_actions": 2,
+          "scope": "original seat owns the strictly leading color after choice",
+          "version": 1
+        },
+        "decoy": false,
+        "description": "Take the strictly leading Black seat.",
+        "id": "v4-takeover-toy-a",
+        "obligation": {
+          "category": "takeover",
+          "horizon": 0,
+          "scope": "original seat owns the strictly leading color after choice"
+        },
+        "provenance": {
+          "board_size": 3,
+          "construction": "full Black board",
+          "kind": "constructed-decision-isolation",
+          "rules": "breath-run"
+        },
+        "root_legal_actions": 2,
+        "rules": "breath-run",
+        "state_key_sha256": "feaff1a241258638912f27f3c3fe10a22e6429a100146be2dd557787571a96b8"
+      },
+      {
+        "acceptable_actions": [
+          "swap"
+        ],
+        "actor_color": "W",
+        "board_size": 3,
+        "category": "takeover",
+        "certificate": {
+          "action_statuses": {
+            "pass": "disproven",
+            "swap": "proven"
+          },
+          "claim_limit": "bounded local obligation only; not a game-theoretic result",
+          "format": "varde-bounded-local-obligation-certificate",
+          "horizon": 0,
+          "node_limit": 100000,
+          "nodes": 2,
+          "override_eligible": true,
+          "root_actions": 2,
+          "scope": "original seat owns the strictly leading color after choice",
+          "version": 1
+        },
+        "decoy": false,
+        "description": "Take the fenced Black lead.",
+        "id": "v4-takeover-toy-b",
+        "obligation": {
+          "category": "takeover",
+          "horizon": 0,
+          "scope": "original seat owns the strictly leading color after choice"
+        },
+        "provenance": {
+          "board_size": 3,
+          "construction": "full Black board",
+          "kind": "constructed-decision-isolation",
+          "rules": "gjerde"
+        },
+        "root_legal_actions": 2,
+        "rules": "gjerde",
+        "state_key_sha256": "c149bc1e4ff5569e4b1417ebf963ad04362d3ac91e9f8badddedc77f19375b4a"
+      },
+      {
+        "acceptable_actions": [
+          "swap"
+        ],
+        "actor_color": "W",
+        "board_size": 4,
+        "category": "takeover",
+        "certificate": {
+          "action_statuses": {
+            "pass": "disproven",
+            "swap": "proven"
+          },
+          "claim_limit": "bounded local obligation only; not a game-theoretic result",
+          "format": "varde-bounded-local-obligation-certificate",
+          "horizon": 0,
+          "node_limit": 100000,
+          "nodes": 2,
+          "override_eligible": true,
+          "root_actions": 2,
+          "scope": "original seat owns the strictly leading color after choice",
+          "version": 1
+        },
+        "decoy": false,
+        "description": "Take the larger Black lead.",
+        "id": "v4-takeover-beginner-a",
+        "obligation": {
+          "category": "takeover",
+          "horizon": 0,
+          "scope": "original seat owns the strictly leading color after choice"
+        },
+        "provenance": {
+          "board_size": 4,
+          "construction": "full Black board",
+          "kind": "constructed-decision-isolation",
+          "rules": "breath"
+        },
+        "root_legal_actions": 2,
+        "rules": "breath",
+        "state_key_sha256": "30c101a5b5a30eee00d38eb7622dcaddd4be1627da276445e83554e2be94aa3b"
+      },
+      {
+        "acceptable_actions": [
+          "swap"
+        ],
+        "actor_color": "W",
+        "board_size": 4,
+        "category": "takeover",
+        "certificate": {
+          "action_statuses": {
+            "pass": "disproven",
+            "swap": "proven"
+          },
+          "claim_limit": "bounded local obligation only; not a game-theoretic result",
+          "format": "varde-bounded-local-obligation-certificate",
+          "horizon": 0,
+          "node_limit": 100000,
+          "nodes": 2,
+          "override_eligible": true,
+          "root_actions": 2,
+          "scope": "original seat owns the strictly leading color after choice",
+          "version": 1
+        },
+        "decoy": false,
+        "description": "Take the larger fenced lead.",
+        "id": "v4-takeover-beginner-b",
+        "obligation": {
+          "category": "takeover",
+          "horizon": 0,
+          "scope": "original seat owns the strictly leading color after choice"
+        },
+        "provenance": {
+          "board_size": 4,
+          "construction": "full Black board",
+          "kind": "constructed-decision-isolation",
+          "rules": "gjerde"
+        },
+        "root_legal_actions": 2,
+        "rules": "gjerde",
+        "state_key_sha256": "bca5a66a7315e006e4fc8b9a542e3a5678be1b0b6e992e5c3650905e00c36d37"
+      },
+      {
+        "acceptable_actions": [
+          "accept"
+        ],
+        "actor_color": "B",
+        "board_size": 3,
+        "category": "ending",
+        "certificate": {
+          "action_statuses": {
+            "accept": "proven",
+            "resume": "disproven"
+          },
+          "claim_limit": "bounded local obligation only; not a game-theoretic result",
+          "format": "varde-bounded-local-obligation-certificate",
+          "horizon": 0,
+          "node_limit": 100000,
+          "nodes": 2,
+          "override_eligible": true,
+          "root_actions": 2,
+          "scope": "seat accepts a lead or uses its one legal resumption while behind",
+          "version": 1
+        },
+        "decoy": false,
+        "description": "Accept the seeded one-point lead.",
+        "id": "v4-ending-toy-a",
+        "obligation": {
+          "category": "ending",
+          "horizon": 0,
+          "scope": "seat accepts a lead or uses its one legal resumption while behind"
+        },
+        "provenance": {
+          "board_size": 3,
+          "kind": "reachable-seeded-play",
+          "plies": 14,
+          "post_actions": [
+            "pass",
+            "pass"
+          ],
+          "rules": "breath",
+          "seed": 20260724300,
+          "seeded_plies": 12,
+          "transcript_sha256": "70d1befb0b21336bbc7b9a11d1dcc85e5ddff9ee0d553587863bca691730dbc0"
+        },
+        "root_legal_actions": 2,
+        "rules": "breath",
+        "state_key_sha256": "4a4bf5396bbffcae004fe01eaf56a9010dc57b83b945af5565cdbc913eaf5b44"
+      },
+      {
+        "acceptable_actions": [
+          "resume"
+        ],
+        "actor_color": "W",
+        "board_size": 3,
+        "category": "ending",
+        "certificate": {
+          "action_statuses": {
+            "accept": "disproven",
+            "resume": "proven"
+          },
+          "claim_limit": "bounded local obligation only; not a game-theoretic result",
+          "format": "varde-bounded-local-obligation-certificate",
+          "horizon": 0,
+          "node_limit": 100000,
+          "nodes": 2,
+          "override_eligible": true,
+          "root_actions": 2,
+          "scope": "seat accepts a lead or uses its one legal resumption while behind",
+          "version": 1
+        },
+        "decoy": false,
+        "description": "Use the legal resumption while behind.",
+        "id": "v4-ending-toy-b",
+        "obligation": {
+          "category": "ending",
+          "horizon": 0,
+          "scope": "seat accepts a lead or uses its one legal resumption while behind"
+        },
+        "provenance": {
+          "board_size": 3,
+          "kind": "reachable-seeded-play",
+          "plies": 15,
+          "post_actions": [
+            "pass",
+            "pass"
+          ],
+          "rules": "breath",
+          "seed": 20260724301,
+          "seeded_plies": 13,
+          "transcript_sha256": "b490f41014eea084081a1226be9794e8960c926d730dd91f7695fd730c002cd3"
+        },
+        "root_legal_actions": 2,
+        "rules": "breath",
+        "state_key_sha256": "f2ea8d409b0b84d217f2c3d581c53b74ea6ead850265bbba79bf5294f78a40af"
+      },
+      {
+        "acceptable_actions": [
+          "resume"
+        ],
+        "actor_color": "B",
+        "board_size": 4,
+        "category": "ending",
+        "certificate": {
+          "action_statuses": {
+            "accept": "disproven",
+            "resume": "proven"
+          },
+          "claim_limit": "bounded local obligation only; not a game-theoretic result",
+          "format": "varde-bounded-local-obligation-certificate",
+          "horizon": 0,
+          "node_limit": 100000,
+          "nodes": 2,
+          "override_eligible": true,
+          "root_actions": 2,
+          "scope": "seat accepts a lead or uses its one legal resumption while behind",
+          "version": 1
+        },
+        "decoy": false,
+        "description": "Resume the seeded losing score.",
+        "id": "v4-ending-beginner-a",
+        "obligation": {
+          "category": "ending",
+          "horizon": 0,
+          "scope": "seat accepts a lead or uses its one legal resumption while behind"
+        },
+        "provenance": {
+          "board_size": 4,
+          "kind": "reachable-seeded-play",
+          "plies": 14,
+          "post_actions": [
+            "pass",
+            "pass"
+          ],
+          "rules": "breath",
+          "seed": 20260724400,
+          "seeded_plies": 12,
+          "transcript_sha256": "3decbf1ee5124cee51a08211b4d71742b96db7f1a216211f68d9e012a3f874b7"
+        },
+        "root_legal_actions": 2,
+        "rules": "breath",
+        "state_key_sha256": "ec8d0c1f472ce5b377b204be7c03d1b94f835ce67621205595138d10a238eeed"
+      },
+      {
+        "acceptable_actions": [
+          "resume"
+        ],
+        "actor_color": "W",
+        "board_size": 4,
+        "category": "ending",
+        "certificate": {
+          "action_statuses": {
+            "accept": "disproven",
+            "resume": "proven"
+          },
+          "claim_limit": "bounded local obligation only; not a game-theoretic result",
+          "format": "varde-bounded-local-obligation-certificate",
+          "horizon": 0,
+          "node_limit": 100000,
+          "nodes": 2,
+          "override_eligible": true,
+          "root_actions": 2,
+          "scope": "seat accepts a lead or uses its one legal resumption while behind",
+          "version": 1
+        },
+        "decoy": false,
+        "description": "Resume a second losing score.",
+        "id": "v4-ending-beginner-b",
+        "obligation": {
+          "category": "ending",
+          "horizon": 0,
+          "scope": "seat accepts a lead or uses its one legal resumption while behind"
+        },
+        "provenance": {
+          "board_size": 4,
+          "kind": "reachable-seeded-play",
+          "plies": 15,
+          "post_actions": [
+            "pass",
+            "pass"
+          ],
+          "rules": "breath",
+          "seed": 20260724401,
+          "seeded_plies": 13,
+          "transcript_sha256": "3adafc1166b1509f5056980cda135241fa49e113c9a602ad5c7d0f9da85a938c"
+        },
+        "root_legal_actions": 2,
+        "rules": "breath",
+        "state_key_sha256": "f07712750b345fa49219a08475d1d50e852b4978de78a551b71248f8ace106e9"
+      },
+      {
+        "acceptable_actions": [],
+        "actor_color": "B",
+        "board_size": 3,
+        "category": "capture",
+        "certificate": {
+          "action_statuses": {
+            "pass": "disproven",
+            "play:-1,-3": "disproven",
+            "play:-2,-4": "proven",
+            "play:-2,0": "disproven",
+            "play:-4,-4": "proven",
+            "play:-7,-1": "proven",
+            "play:-7,1": "disproven",
+            "play:1,-3": "disproven",
+            "play:2,-2": "disproven",
+            "play:5,1": "disproven",
+            "play:7,1": "disproven"
+          },
+          "claim_limit": "bounded local obligation only; not a game-theoretic result",
+          "format": "varde-bounded-local-obligation-certificate",
+          "horizon": 1,
+          "node_limit": 100000,
+          "nodes": 49,
+          "override_eligible": false,
+          "root_actions": 11,
+          "scope": "capture remains safe through every immediate reply",
+          "version": 1
+        },
+        "decoy": true,
+        "description": "Several captures survive, so no unique override is certified.",
+        "id": "v4-decoy-capture-toy",
+        "obligation": {
+          "category": "capture",
+          "horizon": 1,
+          "scope": "capture remains safe through every immediate reply"
+        },
+        "provenance": {
+          "board_size": 3,
+          "kind": "reachable-seeded-play",
+          "plies": 42,
+          "post_actions": [],
+          "rules": "breath",
+          "seed": 20260720000,
+          "seeded_plies": 42,
+          "transcript_sha256": "ed3a5370db7d2c9147caf81b973abd2cc01f63cfa78d8846eb3616525a2f7a2a"
+        },
+        "root_legal_actions": 11,
+        "rules": "breath",
+        "state_key_sha256": "7b0a1a5b13c30fb8f0be7d8f177683898251e286f3aeebb1f1a6207bf1df9ea4"
+      },
+      {
+        "acceptable_actions": [],
+        "actor_color": "W",
+        "board_size": 4,
+        "category": "capture",
+        "certificate": {
+          "action_statuses": {
+            "pass": "disproven",
+            "play:-1,-5": "disproven",
+            "play:-10,-4": "proven",
+            "play:-11,-1": "disproven",
+            "play:-2,-6": "disproven",
+            "play:-5,-3": "disproven",
+            "play:-5,3": "proven",
+            "play:-5,5": "disproven",
+            "play:-8,-2": "disproven",
+            "play:1,-1": "proven",
+            "play:10,-2": "proven",
+            "play:11,-3": "disproven"
+          },
+          "claim_limit": "bounded local obligation only; not a game-theoretic result",
+          "format": "varde-bounded-local-obligation-certificate",
+          "horizon": 1,
+          "node_limit": 100000,
+          "nodes": 57,
+          "override_eligible": false,
+          "root_actions": 12,
+          "scope": "capture remains safe through every immediate reply",
+          "version": 1
+        },
+        "decoy": true,
+        "description": "The wider root has several locally safe captures.",
+        "id": "v4-decoy-capture-beginner",
+        "obligation": {
+          "category": "capture",
+          "horizon": 1,
+          "scope": "capture remains safe through every immediate reply"
+        },
+        "provenance": {
+          "board_size": 4,
+          "kind": "reachable-seeded-play",
+          "plies": 89,
+          "post_actions": [],
+          "rules": "breath",
+          "seed": 20260721000,
+          "seeded_plies": 89,
+          "transcript_sha256": "1082af7ef6089a1e7cf159b7297b8cf2dba540a9ffdec97a149b066b7dd9632b"
+        },
+        "root_legal_actions": 12,
+        "rules": "breath",
+        "state_key_sha256": "622712ee3b8cdb85f45684535e97a17957b6f815fe72d75a7601ed56612efe88"
+      },
+      {
+        "acceptable_actions": [],
+        "actor_color": "W",
+        "board_size": 3,
+        "category": "defense",
+        "certificate": {
+          "action_statuses": {
+            "pass": "disproven",
+            "play:-2,2": "disproven",
+            "play:-7,-1": "disproven",
+            "play:-8,0": "disproven",
+            "play:-8,2": "disproven",
+            "play:2,-4": "disproven",
+            "play:2,4": "disproven",
+            "play:5,-1": "disproven",
+            "play:7,-1": "disproven",
+            "play:7,1": "disproven",
+            "play:8,-2": "disproven"
+          },
+          "claim_limit": "bounded local obligation only; not a game-theoretic result",
+          "format": "varde-bounded-local-obligation-certificate",
+          "horizon": 1,
+          "node_limit": 100000,
+          "nodes": 2,
+          "override_eligible": false,
+          "root_actions": 11,
+          "scope": "threatened friendly group survives every immediate reply",
+          "version": 1
+        },
+        "decoy": true,
+        "description": "The apparent sole-liberty defense fails the reply proof.",
+        "id": "v4-decoy-defense-toy",
+        "obligation": {
+          "anchor": [
+            -7,
+            3
+          ],
+          "category": "defense",
+          "horizon": 1,
+          "liberty": [
+            -8,
+            2
+          ],
+          "scope": "threatened friendly group survives every immediate reply"
+        },
+        "provenance": {
+          "board_size": 3,
+          "kind": "reachable-seeded-play",
+          "plies": 43,
+          "post_actions": [],
+          "rules": "breath",
+          "seed": 20260734001,
+          "seeded_plies": 43,
+          "transcript_sha256": "28d73304f8e00b7827c2f179a576ab1cc5d3a3faa5ffd8dc3d8551c393b89fd7"
+        },
+        "root_legal_actions": 11,
+        "rules": "breath",
+        "state_key_sha256": "042d86d164ddd288b0f17f45e4d350a146c67f75adb15c7ad1e6a812b5181221"
+      },
+      {
+        "acceptable_actions": [],
+        "actor_color": "W",
+        "board_size": 4,
+        "category": "defense",
+        "certificate": {
+          "action_statuses": {
+            "pass": "disproven",
+            "play:-1,-5": "disproven",
+            "play:-1,7": "disproven",
+            "play:-10,2": "disproven",
+            "play:-8,2": "disproven",
+            "play:11,1": "disproven",
+            "play:2,-6": "disproven",
+            "play:2,6": "disproven",
+            "play:5,1": "disproven",
+            "play:7,-3": "disproven",
+            "play:7,5": "disproven"
+          },
+          "claim_limit": "bounded local obligation only; not a game-theoretic result",
+          "format": "varde-bounded-local-obligation-certificate",
+          "horizon": 1,
+          "node_limit": 100000,
+          "nodes": 3,
+          "override_eligible": false,
+          "root_actions": 11,
+          "scope": "threatened friendly group survives every immediate reply",
+          "version": 1
+        },
+        "decoy": true,
+        "description": "The apparent Beginner defense is refuted immediately.",
+        "id": "v4-decoy-defense-beginner",
+        "obligation": {
+          "anchor": [
+            -11,
+            3
+          ],
+          "category": "defense",
+          "horizon": 1,
+          "liberty": [
+            -10,
+            2
+          ],
+          "scope": "threatened friendly group survives every immediate reply"
+        },
+        "provenance": {
+          "board_size": 4,
+          "kind": "reachable-seeded-play",
+          "plies": 89,
+          "post_actions": [],
+          "rules": "breath",
+          "seed": 20260735000,
+          "seeded_plies": 89,
+          "transcript_sha256": "20e9990fb5347981411bdb638a67827b33122b77b4e2df0cb2767a4cd610f71c"
+        },
+        "root_legal_actions": 11,
+        "rules": "breath",
+        "state_key_sha256": "53dd8f270d6e4409ddfbbbbe1d8182b9a27cd0a74d126eddd234404abbc9e7ad"
+      },
+      {
+        "acceptable_actions": [],
+        "actor_color": "W",
+        "board_size": 3,
+        "category": "rescue",
+        "certificate": {
+          "action_statuses": {
+            "extend:1,3": "unknown",
+            "finish-extension": "disproven"
+          },
+          "claim_limit": "bounded local obligation only; not a game-theoretic result",
+          "format": "varde-bounded-local-obligation-certificate",
+          "horizon": 4,
+          "node_limit": 100000,
+          "nodes": 10,
+          "override_eligible": false,
+          "root_actions": 2,
+          "scope": "rescue reaches extension-turn closure with target alive",
+          "version": 1
+        },
+        "decoy": true,
+        "description": "The extension cannot be certified inside the declared horizon.",
+        "id": "v4-decoy-rescue-toy",
+        "obligation": {
+          "anchor": [
+            -8,
+            -2
+          ],
+          "category": "rescue",
+          "horizon": 4,
+          "liberty": [
+            -7,
+            -3
+          ],
+          "scope": "rescue reaches extension-turn closure with target alive"
+        },
+        "provenance": {
+          "board_size": 3,
+          "kind": "reachable-seeded-play",
+          "plies": 28,
+          "post_actions": [],
+          "rules": "breath-run",
+          "seed": 20260739002,
+          "seeded_plies": 28,
+          "transcript_sha256": "926aadbaad271362bee19c6cdb9584d97fb12b35390762b24fca0a9fcb18e444"
+        },
+        "root_legal_actions": 2,
+        "rules": "breath-run",
+        "state_key_sha256": "72da4c2b740b65a986c61bf384ca66794d34bb4bdf3c97b86d08b26e855fc708"
+      },
+      {
+        "acceptable_actions": [],
+        "actor_color": "W",
+        "board_size": 4,
+        "category": "rescue",
+        "certificate": {
+          "action_statuses": {
+            "extend:1,-5": "unknown",
+            "finish-extension": "disproven"
+          },
+          "claim_limit": "bounded local obligation only; not a game-theoretic result",
+          "format": "varde-bounded-local-obligation-certificate",
+          "horizon": 4,
+          "node_limit": 100000,
+          "nodes": 16,
+          "override_eligible": false,
+          "root_actions": 2,
+          "scope": "rescue reaches extension-turn closure with target alive",
+          "version": 1
+        },
+        "decoy": true,
+        "description": "The longer rescue remains unknown at the fixed horizon.",
+        "id": "v4-decoy-rescue-beginner",
+        "obligation": {
+          "anchor": [
+            -7,
+            -5
+          ],
+          "category": "rescue",
+          "horizon": 4,
+          "liberty": [
+            1,
+            -5
+          ],
+          "scope": "rescue reaches extension-turn closure with target alive"
+        },
+        "provenance": {
+          "board_size": 4,
+          "kind": "reachable-seeded-play",
+          "plies": 85,
+          "post_actions": [],
+          "rules": "breath-run",
+          "seed": 20260740000,
+          "seeded_plies": 85,
+          "transcript_sha256": "cd002be745d3b92e253da3192b4598412637620e219bae8c4e260bfa555b52f3"
+        },
+        "root_legal_actions": 2,
+        "rules": "breath-run",
+        "state_key_sha256": "e8801d64ebbe0811cb4ff7f20fc7393c66bc49175a385077a086ecd31b466a14"
+      },
+      {
+        "acceptable_actions": [],
+        "actor_color": "B",
+        "board_size": 3,
+        "category": "fence",
+        "certificate": {
+          "action_statuses": {
+            "pass": "proven",
+            "play:-12,6": "proven",
+            "play:-15,-3": "proven",
+            "play:-9,-1": "proven",
+            "play:-9,1": "proven",
+            "play:15,3": "proven",
+            "play:3,7": "proven"
+          },
+          "claim_limit": "bounded local obligation only; not a game-theoretic result",
+          "format": "varde-bounded-local-obligation-certificate",
+          "horizon": 1,
+          "node_limit": 100000,
+          "nodes": 71,
+          "override_eligible": false,
+          "root_actions": 7,
+          "scope": "completed fence remains complete through every immediate reply",
+          "version": 1
+        },
+        "decoy": true,
+        "description": "The fence is already durable under every action; abstain.",
+        "id": "v4-decoy-fence-toy",
+        "obligation": {
+          "category": "fence",
+          "cell": [
+            0,
+            0
+          ],
+          "horizon": 1,
+          "scope": "completed fence remains complete through every immediate reply"
+        },
+        "provenance": {
+          "board_size": 3,
+          "kind": "reachable-seeded-play",
+          "plies": 70,
+          "post_actions": [],
+          "rules": "gjerde",
+          "seed": 20260744000,
+          "seeded_plies": 70,
+          "transcript_sha256": "1731b7883037d1f5817060dfb58c865d9ccfe9b2b6bff63822a4064247a88362"
+        },
+        "root_legal_actions": 7,
+        "rules": "gjerde",
+        "state_key_sha256": "22f080d02560396bda91f38c436a1367b379f7f45adee5a4eccf690101a1dd00"
+      },
+      {
+        "acceptable_actions": [],
+        "actor_color": "B",
+        "board_size": 4,
+        "category": "fence",
+        "certificate": {
+          "action_statuses": {
+            "pass": "proven",
+            "play:-18,-8": "proven",
+            "play:-18,4": "proven",
+            "play:-3,-1": "proven",
+            "play:-6,0": "proven",
+            "play:-6,8": "proven",
+            "play:-9,-1": "proven",
+            "play:-9,-11": "proven",
+            "play:-9,-5": "proven",
+            "play:15,1": "proven",
+            "play:3,-3": "proven",
+            "play:6,-4": "proven"
+          },
+          "claim_limit": "bounded local obligation only; not a game-theoretic result",
+          "format": "varde-bounded-local-obligation-certificate",
+          "horizon": 1,
+          "node_limit": 100000,
+          "nodes": 151,
+          "override_eligible": false,
+          "root_actions": 12,
+          "scope": "completed fence remains complete through every immediate reply",
+          "version": 1
+        },
+        "decoy": true,
+        "description": "No unique action owns an already durable fence.",
+        "id": "v4-decoy-fence-beginner",
+        "obligation": {
+          "category": "fence",
+          "cell": [
+            -2,
+            -1
+          ],
+          "horizon": 1,
+          "scope": "completed fence remains complete through every immediate reply"
+        },
+        "provenance": {
+          "board_size": 4,
+          "kind": "reachable-seeded-play",
+          "plies": 128,
+          "post_actions": [],
+          "rules": "gjerde",
+          "seed": 20260745000,
+          "seeded_plies": 128,
+          "transcript_sha256": "d39772f15f6814b1436821503e7e6a4e3e5824b7d463aa852f7b194f11b14286"
+        },
+        "root_legal_actions": 12,
+        "rules": "gjerde",
+        "state_key_sha256": "3515f94210fe5f57150a94a26683484684ec637cc9c983eb8a39bc67934938a2"
+      },
+      {
+        "acceptable_actions": [],
+        "actor_color": "W",
+        "board_size": 3,
+        "category": "takeover",
+        "certificate": {
+          "action_statuses": {
+            "pass": "unknown",
+            "swap": "unknown"
+          },
+          "claim_limit": "bounded local obligation only; not a game-theoretic result",
+          "format": "varde-bounded-local-obligation-certificate",
+          "horizon": 0,
+          "node_limit": 100000,
+          "nodes": 2,
+          "override_eligible": false,
+          "root_actions": 2,
+          "scope": "original seat owns the strictly leading color after choice",
+          "version": 1
+        },
+        "decoy": true,
+        "description": "A tied full board gives no proven swap.",
+        "id": "v4-decoy-takeover-toy",
+        "obligation": {
+          "category": "takeover",
+          "horizon": 0,
+          "scope": "original seat owns the strictly leading color after choice"
+        },
+        "provenance": {
+          "board_size": 3,
+          "construction": "seed-0 balanced full board",
+          "kind": "constructed-decision-isolation",
+          "rules": "breath"
+        },
+        "root_legal_actions": 2,
+        "rules": "breath",
+        "state_key_sha256": "698db2a7d148b9f093c29b4ba3b4b74d506bd7346cd97a6d522d8da615afe373"
+      },
+      {
+        "acceptable_actions": [],
+        "actor_color": "W",
+        "board_size": 4,
+        "category": "takeover",
+        "certificate": {
+          "action_statuses": {
+            "pass": "unknown",
+            "swap": "unknown"
+          },
+          "claim_limit": "bounded local obligation only; not a game-theoretic result",
+          "format": "varde-bounded-local-obligation-certificate",
+          "horizon": 0,
+          "node_limit": 100000,
+          "nodes": 2,
+          "override_eligible": false,
+          "root_actions": 2,
+          "scope": "original seat owns the strictly leading color after choice",
+          "version": 1
+        },
+        "decoy": true,
+        "description": "A tied Beginner board makes takeover locally ambiguous.",
+        "id": "v4-decoy-takeover-beginner",
+        "obligation": {
+          "category": "takeover",
+          "horizon": 0,
+          "scope": "original seat owns the strictly leading color after choice"
+        },
+        "provenance": {
+          "board_size": 4,
+          "construction": "seed-0 balanced full board",
+          "kind": "constructed-decision-isolation",
+          "rules": "breath"
+        },
+        "root_legal_actions": 2,
+        "rules": "breath",
+        "state_key_sha256": "66a26870cf3223cad7d57d583f8980ad36fa7c27d555b9f499286eec7aa261e9"
+      },
+      {
+        "acceptable_actions": [],
+        "actor_color": "B",
+        "board_size": 3,
+        "category": "ending",
+        "certificate": {
+          "action_statuses": {
+            "accept": "unknown",
+            "resume": "unknown"
+          },
+          "claim_limit": "bounded local obligation only; not a game-theoretic result",
+          "format": "varde-bounded-local-obligation-certificate",
+          "horizon": 0,
+          "node_limit": 100000,
+          "nodes": 2,
+          "override_eligible": false,
+          "root_actions": 2,
+          "scope": "seat accepts a lead or uses its one legal resumption while behind",
+          "version": 1
+        },
+        "decoy": true,
+        "description": "A tied score proves neither ending choice.",
+        "id": "v4-decoy-ending-toy",
+        "obligation": {
+          "category": "ending",
+          "horizon": 0,
+          "scope": "seat accepts a lead or uses its one legal resumption while behind"
+        },
+        "provenance": {
+          "board_size": 3,
+          "kind": "reachable-seeded-play",
+          "plies": 4,
+          "post_actions": [
+            "pass",
+            "pass"
+          ],
+          "rules": "breath",
+          "seed": 20260729000,
+          "seeded_plies": 2,
+          "transcript_sha256": "a8de102608100f9e1b74fe2d6a61556d66fe06cc9d1725870a26ffe5487e36b7"
+        },
+        "root_legal_actions": 2,
+        "rules": "breath",
+        "state_key_sha256": "68533a1cb0a567047905740619c74980ccf0f573a3dc248db33ba3a6b581a997"
+      },
+      {
+        "acceptable_actions": [],
+        "actor_color": "B",
+        "board_size": 4,
+        "category": "ending",
+        "certificate": {
+          "action_statuses": {
+            "accept": "unknown",
+            "resume": "unknown"
+          },
+          "claim_limit": "bounded local obligation only; not a game-theoretic result",
+          "format": "varde-bounded-local-obligation-certificate",
+          "horizon": 0,
+          "node_limit": 100000,
+          "nodes": 2,
+          "override_eligible": false,
+          "root_actions": 2,
+          "scope": "seat accepts a lead or uses its one legal resumption while behind",
+          "version": 1
+        },
+        "decoy": true,
+        "description": "A tied Beginner score requires solver abstention.",
+        "id": "v4-decoy-ending-beginner",
+        "obligation": {
+          "category": "ending",
+          "horizon": 0,
+          "scope": "seat accepts a lead or uses its one legal resumption while behind"
+        },
+        "provenance": {
+          "board_size": 4,
+          "kind": "reachable-seeded-play",
+          "plies": 4,
+          "post_actions": [
+            "pass",
+            "pass"
+          ],
+          "rules": "breath",
+          "seed": 20260730000,
+          "seeded_plies": 2,
+          "transcript_sha256": "dc6f39e158271601cfd4bcfe662a3490370bd2dbf43fc4304c103094b2dcbd73"
+        },
+        "root_legal_actions": 2,
+        "rules": "breath",
+        "state_key_sha256": "d2c717c86af09f2b67a2829a50cf535dedb4f5bd3a9236ba217f83ccfab1fc1e"
+      }
+    ],
+    "version": 1
+  },
+  "catalog_sha256": "51998d044d4128dec8bd5b9b487a07b189adeb57e9bfe2ec82522f83fb499635",
+  "certificate": {
+    "claim_limit": "not a game-theoretic result",
+    "format": "varde-bounded-local-obligation-certificate",
+    "node_limit": 100000,
+    "scope": "bounded local obligation",
+    "version": 1
+  },
+  "claim_limits": {
+    "balance_evidence": false,
+    "local_tactical_evidence_only": true,
+    "ruleset_promise_evidence": false,
+    "strategic_depth_evidence": false,
+    "strength_evidence": false
+  },
+  "created_date": "2026-07-17",
+  "decoy_positions": 12,
+  "execution": {
+    "output_dir": "/Users/armand/varde-runs/mcts-search-v4-20260717",
+    "raw_output_repository_external": true,
+    "workers": 1
+  },
+  "format": "varde-mcts-search-v4-holdout-manifest",
+  "freeze_gate": {
+    "at_least_half_positives_reachable": true,
+    "candidate_code_present": false,
+    "candidate_outcomes_inspected": false,
+    "decoys_require_abstention": true,
+    "holdout_outcomes_used_to_tune_candidates": false,
+    "positive_certificates_reproduced": true,
+    "root_width_between_2_and_12": true
+  },
+  "holdout_format": "varde-mcts-v4-certified-holdout",
+  "holdout_version": 1,
+  "independence": {
+    "v3_common_screen_manifest": "research/manifests/mcts-tactical-margin-v4-20260717.json",
+    "v3_common_screen_sha256": "1bc0fa63f221354f9cfaa67d0c98ca65a475e8e4c53556f0bacdd9579a03126a",
+    "v3_positions": 16,
+    "v3_state_hashes_disjoint": true,
+    "v3_unique_state_hashes": 15,
+    "v4_positions": 36
+  },
+  "payload_sha256": "8039180154e036b1d355926f7376d4c865268d88fd03e7b695554f0f925cf650",
+  "positive_positions": 24,
+  "reachable_positive_positions": 20,
+  "source": {
+    "code_hash": "d3579252d094d2dbc520bf85ede6712f402413f690e4f0b96d0fc2775063eac8",
+    "files": {
+      "engine/actions.py": "779afcd01fc172e9f9c759c9b2fe47bc46ac8e12dd0f4d799f36f0df5bb48643",
+      "engine/varde.py": "dbc2e9127dbda1f3ac8833f91ad35fc102267ab2a4e52a28abaa98191d82843b",
+      "research/harness/freeze_mcts_v4_holdout.py": "f7d27b9ff3b4f8ed826ee5edb2843947173335cae53c36ac7ff74da580111922",
+      "research/harness/mcts_tactical_fixtures.py": "a8f29b191b6bc81fe0f53ea044b8811881b8336593fb91ba7d5cb9d9b78155c6",
+      "research/harness/mcts_telemetry.py": "0dc85aa4192bf8b1cce7fd6b7386bc3c7dd29236e0ea5a9b790e15eaa8ba30e0",
+      "research/harness/mcts_v4_holdout.py": "c1b99ac55b5119579a923d730b8a0b430b9de7bdd81f42146baf557fa02a7dbd"
+    },
+    "source_commit": "066a2465773e93a0465d76f1cb50cfd2fbc4585b",
+    "stacked_base": "315443366ddeb499d294f47221e89c2c1dbca4d7"
+  },
+  "status": "frozen-before-candidate-implementation",
+  "version": 1
+}

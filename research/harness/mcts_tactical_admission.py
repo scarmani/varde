@@ -93,6 +93,9 @@ def code_hash():
         HARNESS_ROOT / "mcts_telemetry.py",
         ENGINE_ROOT / "actions.py",
         ENGINE_ROOT / "mcts.py",
+        ENGINE_ROOT / "mcts_tactical_solver.py",
+        ENGINE_ROOT / "mcts_unpruning.py",
+        ENGINE_ROOT / "mcts_settling.py",
         ENGINE_ROOT / "varde.py",
     )
     digest = hashlib.sha256()
@@ -125,6 +128,9 @@ def provenance(
                 HARNESS_ROOT / "mcts_telemetry.py",
                 ENGINE_ROOT / "actions.py",
                 ENGINE_ROOT / "mcts.py",
+                ENGINE_ROOT / "mcts_tactical_solver.py",
+                ENGINE_ROOT / "mcts_unpruning.py",
+                ENGINE_ROOT / "mcts_settling.py",
                 ENGINE_ROOT / "varde.py",
             )
         },
@@ -304,6 +310,27 @@ def evaluate_task(task):
                     / context["root_legal_actions"],
                     6,
                 ),
+                "solver": {
+                    "status": decision.solver_status,
+                    "nodes": decision.solver_nodes,
+                    "cache_hits": decision.solver_cache_hits,
+                    "invocations": decision.solver_invocations,
+                    "overrides": decision.solver_overrides,
+                },
+                "expansion": {
+                    "exposed_actions": decision.exposed_actions,
+                    "hidden_actions": decision.hidden_actions,
+                    "next_expansion_visit": decision.next_expansion_visit,
+                },
+                "settling": {
+                    "phase_counts": dict(decision.settling_phase_counts),
+                    "terminal_reasons": dict(decision.terminal_reasons),
+                    "resumption_rollouts": decision.resumption_rollouts,
+                    "terminal_backups": decision.terminal_backups,
+                    "all_backups_terminal": (
+                        decision.terminal_backups == decision.simulations
+                    ),
+                },
             },
             # Timing is observational and intentionally excluded from all
             # deterministic decision hashes used by the auditor.

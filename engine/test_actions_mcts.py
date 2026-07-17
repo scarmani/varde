@@ -222,9 +222,18 @@ class TestTerminalMCTS(unittest.TestCase):
         self.assertEqual(MCTS_AGENT_HASH, mcts_agent_hash("tie-margin"))
         self.assertEqual(
             set(MCTS_AGENT_HASHES),
-            {"tie-margin", "tactical-only", "combined"},
+            {
+                "tie-margin",
+                "tactical-only",
+                "combined",
+                "v4-control",
+                "v4-solver",
+                "v4-ordered-control",
+                "v4-unpruning",
+                "v4-settling",
+            },
         )
-        self.assertEqual(len(set(MCTS_AGENT_HASHES.values())), 3)
+        self.assertEqual(len(set(MCTS_AGENT_HASHES.values())), 8)
         with self.assertRaises(ValueError):
             choose_mcts_action(Game(3), BLACK, simulations=0)
         with self.assertRaises(ValueError):

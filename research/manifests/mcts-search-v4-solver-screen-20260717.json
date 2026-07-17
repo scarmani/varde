@@ -1,0 +1,110 @@
+{
+  "admission_gate": {
+    "aggregate_hit_rate_nondecreasing_by_policy": true,
+    "all_decisions_legal_nonmutating_and_complete": true,
+    "every_high_budget_position_policy_at_least_75_percent": true,
+    "high_budget_overall_at_least_80_percent": true
+  },
+  "claim_limits": {
+    "balance_evidence": false,
+    "forced_game_outcome_evidence": false,
+    "latency_observational_not_deterministic": true,
+    "local_tactical_admission_evidence_only": true,
+    "match_strength_evidence": false,
+    "natural_width_positions_are_diagnostic_only": true,
+    "promotion_blocked": true,
+    "ruleset_promise_evidence": false,
+    "strategic_depth_evidence": false
+  },
+  "config": {
+    "budgets": [
+      4,
+      16,
+      64
+    ],
+    "policies": [
+      "uniform",
+      "epsilon-greedy"
+    ],
+    "replicates": 4,
+    "search_variant": "v4-solver",
+    "seed": 20260716021
+  },
+  "config_sha256": "997f8b5a3befd746235da471f848a74bea51d0eaafd4d57ab7ab35f6d7a52437",
+  "created_date": "2026-07-17",
+  "decisions": 384,
+  "execution": {
+    "argv": [
+      "python3",
+      "research/harness/mcts_tactical_admission.py",
+      "--budgets",
+      "4,16,64",
+      "--policies",
+      "uniform,epsilon-greedy",
+      "--replicates",
+      "4",
+      "--seed",
+      "20260716021",
+      "--search-variant",
+      "v4-solver",
+      "--workers",
+      "4",
+      "--checkpoint-interval",
+      "8",
+      "--output-dir",
+      "/Users/armand/varde-runs/mcts-search-v4-20260717/common/solver"
+    ],
+    "audit_argv": [
+      "python3",
+      "research/harness/audit_mcts_tactical_admission.py",
+      "--manifest",
+      "MANIFEST_PATH",
+      "--output",
+      "AUDIT_OUTPUT_PATH"
+    ],
+    "checkpoint_interval": 8,
+    "output_dir": "/Users/armand/varde-runs/mcts-search-v4-20260717/common/solver",
+    "workers": 4
+  },
+  "fixture_contract": {
+    "admission_positions": 6,
+    "diagnostic_positions": 10,
+    "fixture_catalog_sha256": "89eabc4a56b77c12ae4fed45295b0f50aa477ab136f1a84bfdaa2291257a510f",
+    "maximum_admission_root_actions": 8,
+    "outcomes_used": false,
+    "proof_claim_limit": "local tactical choice, not forced outcome",
+    "proof_format": "varde-exhaustive-root-transition-proof",
+    "proof_scope": "exhaustive legal root transitions",
+    "proof_version": 1
+  },
+  "format": "varde-mcts-tactical-admission-manifest",
+  "freeze_gate": {
+    "fixture_and_harness_tests_passed": true,
+    "outcomes_inspected_before_freeze": false,
+    "paired_matches_blocked_until_search_variant_selection": true,
+    "paired_matches_launched_by_this_unit": false
+  },
+  "positions": 16,
+  "purpose": "MCTS Search V4 isolated common development screen for v4-solver",
+  "schedule_sha256": "1b0938414af5b11ac97d38de07df22be40fb7d79808aa9dbffa2e4bafc5120ab",
+  "source": {
+    "code_hash": "8ef5f734172b6d648184c5dbc0642d6cabb233b675ae476bdd395b2d0735cfba",
+    "files": {
+      "engine/actions.py": "779afcd01fc172e9f9c759c9b2fe47bc46ac8e12dd0f4d799f36f0df5bb48643",
+      "engine/mcts.py": "330232c1c28b0295d161d271e799211d09f06ea7119a625399db44fc8b29fd6e",
+      "engine/mcts_settling.py": "93a04d2f5e3f493848c5ff3d06a341b9359a3a47937c674f4cce257038059e1f",
+      "engine/mcts_tactical_solver.py": "c336d364c1baa45f31bda87af62b44016a6bcc45e03969611f00c97588f6f1d6",
+      "engine/mcts_unpruning.py": "23ab31879a6a9ee170efb8e476059d2ba99577199756a6e69e066126fe884687",
+      "engine/varde.py": "dbc2e9127dbda1f3ac8833f91ad35fc102267ab2a4e52a28abaa98191d82843b",
+      "research/harness/mcts_tactical_admission.py": "944ad3e08be288ee061b2bf5164c864a9d35320cf6e866f529cdf09369b14ee2",
+      "research/harness/mcts_tactical_fixtures.py": "a8f29b191b6bc81fe0f53ea044b8811881b8336593fb91ba7d5cb9d9b78155c6",
+      "research/harness/mcts_telemetry.py": "0dc85aa4192bf8b1cce7fd6b7386bc3c7dd29236e0ea5a9b790e15eaa8ba30e0"
+    },
+    "fixture_catalog_hash": "89eabc4a56b77c12ae4fed45295b0f50aa477ab136f1a84bfdaa2291257a510f",
+    "manifest_builder_sha256": "088de231ffa4dec5e9c4360cfbd5201be48be31da413990d88d9215361c3582a",
+    "mcts_agent_hash": "b3781821ba39b6ccbdb51145da3e6ff4017abadec43220a6fe67b358ccb0beeb",
+    "source_commit": "68a1ab79ad8c848a177a4219293dd5059aaad418"
+  },
+  "status": "frozen-before-outcomes",
+  "version": 2
+}

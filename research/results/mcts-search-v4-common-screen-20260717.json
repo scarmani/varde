@@ -1,0 +1,197 @@
+{
+  "candidate_a": {
+    "qualified": false
+  },
+  "candidate_b": {
+    "delta_at_least_10_points": false,
+    "qualified": false,
+    "unpruning_high_rung_delta_over_ordered_control": 0.0625
+  },
+  "candidate_c": {
+    "gate": {
+      "accepted_terminal_backups_100_percent": true,
+      "admission_delta_from_control": -0.06250000000000006,
+      "admission_no_more_than_5_points_below_control": false,
+      "integrity_clean": true,
+      "mean_rollout_reduction": -0.044154020746285605,
+      "mean_rollout_reduction_at_least_50_percent": false,
+      "no_rollout_longer_than_4p": true,
+      "p95_latency_reduction": -2.640762886502507,
+      "p95_latency_reduction_at_least_40_percent": false
+    },
+    "qualified": false
+  },
+  "claim_limits": {
+    "balance_evidence": false,
+    "development_screen_only": true,
+    "holdout_evidence": false,
+    "strategic_depth_evidence": false,
+    "strength_evidence": false
+  },
+  "format": "varde-mcts-search-v4-common-screen-audit",
+  "payload_sha256": "588d21c13ced01bb7e98b33213e0d94149f0f1300683ad66fce280ff120c058f",
+  "selection": {
+    "composition_requires_implementation": false,
+    "sealed_holdout_may_run": false,
+    "selected_recipe": null,
+    "selected_tactical": null,
+    "selection_kind": "none-qualified",
+    "tactical_candidates": []
+  },
+  "source": {
+    "auditor_sha256": "5ef12bc43d684f4c778da6acdfc0c6e7a0a2474c5bbe9e2b47f9f83355e8269b",
+    "input_audit_payload_hashes": {
+      "v4-control": "651831ba7bfa5c90125e2aea128ee4a611fe0390e272ad43fe43f41188e3216e",
+      "v4-ordered-control": "4aad9b7b5706e189084c96ba654e5b736260a2171183e123cd5a47d5a67593ee",
+      "v4-settling": "27befa195e341b637008f7b8691d8070d125bda93bed1951bedc3241d985bab3",
+      "v4-solver": "fc92957200b9fcc4307dd96913fce8df99ace65ec36d906d2829f779658cca7b",
+      "v4-unpruning": "4e01372a619314869eb3dda649cc26a7e4682d5c2d9a11d8abc485bcf04cca53"
+    },
+    "source_commit": "69da3b75954491f86e41a4391cb86651359282ed"
+  },
+  "status": "complete",
+  "variants": {
+    "v4-control": {
+      "admission_gate": {
+        "aggregate_hit_rate_nondecreasing_by_policy": false,
+        "all_decisions_legal_nonmutating_and_complete": true,
+        "every_high_budget_position_policy_at_least_75_percent": false,
+        "high_budget_overall_at_least_80_percent": false
+      },
+      "admitted": false,
+      "deterministic_records_sha256": "e8e2e6fe4c0543bf864c8b551524024a9d4e81a32f861116c0d20a75a6efb1a0",
+      "failed_high_rung_cells": {
+        "admission-breath-run-small-continuation|uniform@64": 0.5,
+        "admission-breath-small-capture|epsilon-greedy@64": 0.5,
+        "admission-breath-small-capture|uniform@64": 0.0,
+        "admission-breath-small-defense|epsilon-greedy@64": 0.0,
+        "admission-breath-small-defense|uniform@64": 0.25,
+        "admission-gjerde-go-small-fence|epsilon-greedy@64": 0.25,
+        "admission-gjerde-go-small-fence|uniform@64": 0.0
+      },
+      "high_budget_overall_hit_rate": 0.5208333333333334,
+      "manifest_payload_hash": "3655097e2710107b4b7c8ff343a3ed64b46507b7499a0cfa71d8bd561608a25f",
+      "metrics": {
+        "decisions": 384,
+        "expected_terminal_backups": 10752,
+        "latency_ms_p95": 7345.942,
+        "max_rollout_actions": 612,
+        "mean_rollout_actions": 52.349481770833336,
+        "terminal_backups": 10752
+      }
+    },
+    "v4-ordered-control": {
+      "admission_gate": {
+        "aggregate_hit_rate_nondecreasing_by_policy": false,
+        "all_decisions_legal_nonmutating_and_complete": true,
+        "every_high_budget_position_policy_at_least_75_percent": false,
+        "high_budget_overall_at_least_80_percent": false
+      },
+      "admitted": false,
+      "deterministic_records_sha256": "00fa87324de5535d3ddac464f7027c3b25cdf947f89b18965bf5eadbbfe04b98",
+      "failed_high_rung_cells": {
+        "admission-breath-run-small-continuation|epsilon-greedy@64": 0.25,
+        "admission-breath-small-capture|uniform@64": 0.0,
+        "admission-breath-small-defense|epsilon-greedy@64": 0.0,
+        "admission-breath-small-defense|uniform@64": 0.25,
+        "admission-gjerde-go-small-fence|epsilon-greedy@64": 0.25,
+        "admission-gjerde-go-small-fence|uniform@64": 0.25
+      },
+      "high_budget_overall_hit_rate": 0.5416666666666666,
+      "manifest_payload_hash": "6cdbe57483de7146d998e971201e591f7ef02edc54c5f18df03a2aa35ffb8834",
+      "metrics": {
+        "decisions": 384,
+        "expected_terminal_backups": 10752,
+        "latency_ms_p95": 7548.661,
+        "max_rollout_actions": 535,
+        "mean_rollout_actions": 52.1622109375,
+        "terminal_backups": 10752
+      }
+    },
+    "v4-settling": {
+      "admission_gate": {
+        "aggregate_hit_rate_nondecreasing_by_policy": false,
+        "all_decisions_legal_nonmutating_and_complete": true,
+        "every_high_budget_position_policy_at_least_75_percent": false,
+        "high_budget_overall_at_least_80_percent": false
+      },
+      "admitted": false,
+      "deterministic_records_sha256": "b780372dd61401aded45884ec0426030b17b4ca89728d9e38b1f39d06082d7cc",
+      "failed_high_rung_cells": {
+        "admission-breath-run-small-continuation|epsilon-greedy@64": 0.25,
+        "admission-breath-run-small-continuation|uniform@64": 0.25,
+        "admission-breath-small-capture|epsilon-greedy@64": 0.25,
+        "admission-breath-small-capture|uniform@64": 0.0,
+        "admission-breath-small-defense|epsilon-greedy@64": 0.0,
+        "admission-breath-small-defense|uniform@64": 0.25,
+        "admission-gjerde-go-small-fence|epsilon-greedy@64": 0.0,
+        "admission-gjerde-go-small-fence|uniform@64": 0.5
+      },
+      "high_budget_overall_hit_rate": 0.4583333333333333,
+      "manifest_payload_hash": "aebe7fe24388aaa47abbf453918efaf32633a82736094d9cb913ebe3896f1217",
+      "metrics": {
+        "decisions": 384,
+        "expected_terminal_backups": 10752,
+        "latency_ms_p95": 26744.833,
+        "max_rollout_actions": 143,
+        "mean_rollout_actions": 54.66092187500001,
+        "terminal_backups": 10752
+      }
+    },
+    "v4-solver": {
+      "admission_gate": {
+        "aggregate_hit_rate_nondecreasing_by_policy": true,
+        "all_decisions_legal_nonmutating_and_complete": true,
+        "every_high_budget_position_policy_at_least_75_percent": false,
+        "high_budget_overall_at_least_80_percent": true
+      },
+      "admitted": false,
+      "deterministic_records_sha256": "b9e36d5fac02252dc95c4a1d484187e8d63b8bd3e32155bba52d4b81d2ff0ea3",
+      "failed_high_rung_cells": {
+        "admission-breath-run-small-continuation|uniform@64": 0.5,
+        "admission-gjerde-go-small-fence|epsilon-greedy@64": 0.5,
+        "admission-gjerde-go-small-fence|uniform@64": 0.5
+      },
+      "high_budget_overall_hit_rate": 0.8541666666666666,
+      "manifest_payload_hash": "b1ccef9734a69c3df0de852913c5b76530f92e8bd2b273bbbfdfe42fc1242c5b",
+      "metrics": {
+        "decisions": 384,
+        "expected_terminal_backups": 10752,
+        "latency_ms_p95": 8777.95,
+        "max_rollout_actions": 529,
+        "mean_rollout_actions": 52.428283854166665,
+        "terminal_backups": 10752
+      }
+    },
+    "v4-unpruning": {
+      "admission_gate": {
+        "aggregate_hit_rate_nondecreasing_by_policy": false,
+        "all_decisions_legal_nonmutating_and_complete": true,
+        "every_high_budget_position_policy_at_least_75_percent": false,
+        "high_budget_overall_at_least_80_percent": false
+      },
+      "admitted": false,
+      "deterministic_records_sha256": "f1e4d2146e732b130a0a34567e6ba75a18979365165e1b2ddeed946559afbc4d",
+      "failed_high_rung_cells": {
+        "admission-breath-run-small-continuation|epsilon-greedy@64": 0.5,
+        "admission-breath-small-capture|epsilon-greedy@64": 0.5,
+        "admission-breath-small-capture|uniform@64": 0.5,
+        "admission-breath-small-defense|epsilon-greedy@64": 0.0,
+        "admission-breath-small-defense|uniform@64": 0.25,
+        "admission-gjerde-go-small-fence|epsilon-greedy@64": 0.5,
+        "admission-gjerde-go-small-fence|uniform@64": 0.25
+      },
+      "high_budget_overall_hit_rate": 0.6041666666666666,
+      "manifest_payload_hash": "803e2f5ffe195fbc75e88ccaf6a2a5c51e443027a35bc3a33a2003565e5984d2",
+      "metrics": {
+        "decisions": 384,
+        "expected_terminal_backups": 10752,
+        "latency_ms_p95": 6931.704,
+        "max_rollout_actions": 584,
+        "mean_rollout_actions": 51.496453124999995,
+        "terminal_backups": 10752
+      }
+    }
+  },
+  "version": 1
+}
