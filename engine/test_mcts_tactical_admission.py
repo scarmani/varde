@@ -14,9 +14,9 @@ if str(ENGINE) not in sys.path:
 if str(HARNESS) not in sys.path:
     sys.path.insert(0, str(HARNESS))
 
-from actions import apply_action, legal_actions
-from evaluate_rulesets import _agent_action
-from mcts_tactical_admission import (
+from actions import apply_action, legal_actions  # noqa: E402
+from evaluate_rulesets import _agent_action  # noqa: E402
+from mcts_tactical_admission import (  # noqa: E402
     DEFAULT_BUDGETS,
     DEFAULT_POLICIES,
     DEFAULT_REPLICATES,
@@ -28,16 +28,45 @@ from mcts_tactical_admission import (
     run_admission,
     stable_hash,
 )
-from audit_mcts_tactical_admission import _validate_manifest
-from mcts_tactical_fixtures import fixture_catalog, tactical_positions
-from mcts_telemetry import action_key, annotate_choice, tactical_context
+from audit_mcts_tactical_admission import _validate_manifest  # noqa: E402
+from freeze_mcts_tactical_admission import build_manifest  # noqa: E402
+from mcts_tactical_fixtures import (  # noqa: E402
+    admission_positions,
+    diagnostic_positions,
+    fixture_catalog,
+    tactical_positions,
+    validate_transition_proof,
+)
+from mcts_telemetry import action_key, annotate_choice, tactical_context  # noqa: E402
 
 
 def synthetic_admission(task):
+    root_telemetry = [
+        {
+            "action": {"action": "pass"},
+            "action_id": f"synthetic:{index}",
+            "final_rank": index + 1,
+            "selected": index == 0,
+            "visits": task["budget"] if index == 0 else 0,
+            "value_sum": task["budget"] * 0.5 if index == 0 else 0.0,
+            "mean_value": 0.5,
+            "wins": 0,
+            "draws": task["budget"] if index == 0 else 0,
+            "losses": 0,
+            "terminal_margin_count": task["budget"] if index == 0 else 0,
+            "terminal_margin_sum": 0,
+            "terminal_margin_mean": 0.0 if index == 0 else None,
+            "terminal_margin_min": 0 if index == 0 else None,
+            "terminal_margin_max": 0 if index == 0 else None,
+        }
+        for index in range(task["root_legal_actions"])
+    ]
     return {key: task[key] for key in TASK_KEYS} | {
         "root_legal_actions": task["root_legal_actions"],
         "state_key_sha256": task["state_key_sha256"],
         "acceptable_actions": task["acceptable_actions"],
+        "evidence_class": task["evidence_class"],
+        "proof_sha256": task["proof_sha256"],
         "status": "complete",
         "error": None,
         "action": task["acceptable_actions"][0],
@@ -50,6 +79,8 @@ def synthetic_admission(task):
             "mean_value": 0.5,
             "average_rollout_actions": 12.0,
             "max_rollout_actions": 20,
+            "selection_reason": "most-visits",
+            "root_action_telemetry": root_telemetry,
             "root_coverage_fraction": min(
                 1.0, task["budget"] / task["root_legal_actions"]
             ),
@@ -64,8 +95,10 @@ class TestTacticalFixtureCatalog(unittest.TestCase):
     def test_catalog_covers_all_candidates_and_declared_decision_types(self):
         positions = tactical_positions()
         catalog = fixture_catalog()
-        self.assertEqual(len(positions), 10)
-        self.assertEqual(len(catalog["positions"]), 10)
+        self.assertEqual(len(positions), 16)
+        self.assertEqual(len(catalog["positions"]), 16)
+        self.assertEqual(len(diagnostic_positions()), 10)
+        self.assertEqual(len(admission_positions()), 6)
         self.assertEqual(
             {position.state.game.rules for position in positions},
             {"classic", "rosette", "breath", "breath-run", "gjerde", "gjerde-go"},
@@ -74,9 +107,28 @@ class TestTacticalFixtureCatalog(unittest.TestCase):
             "capture", "defense", "takeover", "rescue-chain",
             "fence-completion", "acceptance",
         }.issubset({position.category for position in positions}))
-        self.assertEqual(
-            sum(position.synthetic_history for position in positions), 1
-        )
+        self.assertEqual(sum(position.synthetic_history for position in positions), 7)
+
+    def test_admission_positions_have_small_strict_reproducible_proofs(self):
+        expected_metrics = {
+            "immediate-capture-count",
+            "sole-liberty-defense",
+            "seat-score-after-action",
+            "rescue-continuation",
+            "fence-completion",
+            "forced-score-acceptance",
+        }
+        proofs = [
+            validate_transition_proof(position)
+            for position in admission_positions()
+        ]
+        self.assertEqual({proof["metric"] for proof in proofs}, expected_metrics)
+        self.assertTrue(all(proof["root_actions"] <= 8 for proof in proofs))
+        self.assertTrue(all(proof["strict_over_rejected"] for proof in proofs))
+        self.assertTrue(all(
+            "not a forced game outcome" in proof["claim_limit"]
+            for proof in proofs
+        ))
 
     def test_every_acceptable_action_is_legal_nonmutating_and_categorized(self):
         for position in tactical_positions():
@@ -151,7 +203,7 @@ class TestTacticalAdmissionHarness(unittest.TestCase):
         first = build_schedule(config)
         second = build_schedule(copy.deepcopy(config))
         self.assertEqual(first, second)
-        self.assertEqual(len(first), 10 * 2 * 3 * 4)
+        self.assertEqual(len(first), 16 * 2 * 3 * 4)
         self.assertNotIn("outcome", first[0])
         self.assertNotIn("score", first[0])
 
@@ -164,6 +216,38 @@ class TestTacticalAdmissionHarness(unittest.TestCase):
             manifest["execution"]["output_dir"],
             "/Users/armand/varde-runs/mcts-tactical-admission-20260716",
         )
+
+    def test_v2_manifest_is_deterministic_split_and_valid_before_outcomes(self):
+        config = self._config(
+            budgets=list(DEFAULT_BUDGETS),
+            policies=list(DEFAULT_POLICIES),
+            replicates=DEFAULT_REPLICATES,
+        )
+        first = build_manifest(
+            config,
+            output_dir="/tmp/varde-mcts-v2-test",
+            workers=2,
+            checkpoint_interval=8,
+            created_date="2026-07-17",
+        )
+        second = build_manifest(
+            copy.deepcopy(config),
+            output_dir="/tmp/varde-mcts-v2-test",
+            workers=2,
+            checkpoint_interval=8,
+            created_date="2026-07-17",
+        )
+        self.assertEqual(first, second)
+        self.assertEqual(first["version"], 2)
+        self.assertEqual(first["status"], "frozen-before-outcomes")
+        self.assertEqual(first["positions"], 16)
+        self.assertEqual(first["decisions"], 384)
+        self.assertEqual(first["fixture_contract"]["diagnostic_positions"], 10)
+        self.assertEqual(first["fixture_contract"]["admission_positions"], 6)
+        self.assertLessEqual(
+            first["fixture_contract"]["maximum_admission_root_actions"], 8
+        )
+        self.assertEqual(len(_validate_manifest(first)), 384)
 
     def test_committed_audit_is_clean_negative_admission_evidence(self):
         path = ROOT / "research/results/mcts-tactical-admission-20260716.json"
@@ -195,6 +279,17 @@ class TestTacticalAdmissionHarness(unittest.TestCase):
         self.assertEqual(record["decision"]["simulations"], 2)
         self.assertGreaterEqual(record["decision"]["nodes"], 2)
         self.assertGreaterEqual(record["decision"]["average_rollout_actions"], 0)
+        self.assertEqual(
+            len(record["decision"]["root_action_telemetry"]),
+            record["root_legal_actions"],
+        )
+        self.assertEqual(
+            sum(
+                item["visits"]
+                for item in record["decision"]["root_action_telemetry"]
+            ),
+            2,
+        )
         self.assertGreaterEqual(record["timing"]["elapsed_ms"], 0)
         self.assertTrue(record["tactical_choice"]["chose_takeover"])
 
@@ -243,7 +338,7 @@ class TestTacticalAdmissionHarness(unittest.TestCase):
             self.assertEqual(resumed["status"], "complete")
             self.assertEqual(
                 [record["task_id"] for record in resumed["records"]],
-                list(range(10)),
+                list(range(16)),
             )
             baseline_hash = deterministic_records_hash(resumed["records"])
             fresh = root / "fresh"

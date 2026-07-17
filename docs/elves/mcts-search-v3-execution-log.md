@@ -67,5 +67,110 @@ https://github.com/scarmani/varde/pull/20.
 
 ## Batch 1 — Measurement substrate and corpus V2
 
-Status: not started. Start only in the fresh launch call after rereading the
-survival guide and reconciling the PR head.
+Status: in progress.
+
+### Contract
+
+**Behaviors:** add optional per-root terminal telemetry without changing any
+seeded MCTS v2 choice or tree statistic; split the existing ten natural-width
+positions into diagnostics and add a small-root corpus whose acceptable actions
+are certified by exhaustive rule-transition proofs; freeze and run a new
+4/16/64 pre-fix baseline before any search-semantic change.
+
+**Build on:**
+
+- Extend `MCTSDecision` and `_Node` in `engine/mcts.py`; preserve the public
+  wrapper defaults, RNG calls, legal-action ordering, UCT arithmetic, and final
+  selection key.
+- Extend `research/harness/mcts_telemetry.py` for rule-transition facts instead
+  of duplicating evaluator logic.
+- Extend the existing fixture, schedule, atomic checkpoint/resume, summary, and
+  audit machinery. Preserve the immutable version-1 manifest/result surface.
+- Use `research/fixtures/mcts-v1-golden.json` and
+  `research/harness/verify_mcts_golden.py` for exact legacy choice/tree parity.
+
+**Acceptance criteria:**
+
+- [ ] Default MCTS decision dictionaries and all 96 golden choice/tree fixtures
+  remain exact; MCTS agent version/hash stay unchanged in this behavior-neutral
+  batch.
+- [ ] Optional root telemetry covers every legal root action with unique stable
+  identity, rank, visits, W/D/L counts, terminal-margin aggregates, mean, and
+  the selected action/reason; totals reconcile exactly with simulations.
+- [ ] The ten existing positions remain diagnostic, byte-stable in setup and
+  acceptable actions, while new admission positions have at most eight legal
+  root actions and machine-validated strict transition proofs.
+- [ ] Historical manifest version 1 still rebuilds its exact 240-task schedule;
+  V2 regeneration, checkpoint/resume, audit, and provenance checks are
+  deterministic.
+- [ ] A version-2 manifest is committed before outcomes, then the frozen
+  4/16/64 run completes legally and non-mutating with full telemetry.
+- [ ] Full tests, Python compile, JavaScript syntax, and diff checks pass.
+
+**Blast radius:** medium. `engine/mcts.py` has ten direct engine/research
+consumers; its additions must be optional and its defaults exactly compatible.
+The tactical fixture/schedule schema is shared by the admission tests and
+auditor, so version-1 schedule reconstruction must be explicit rather than
+silently adopting V2 fields. No product UI/server or rules engine is touched.
+
+### Pre-implementation survey
+
+- `_Node` currently backs only `visits` and `value_sum`; adding outcome counters
+  on the same backup walk can observe results without another rollout or RNG
+  call.
+- `_terminal_reward` already calls the authoritative terminal score once. It
+  can return the same W/D/L reward plus the root-seat margin without evaluator
+  input.
+- `MCTSDecision.to_dict()` is used as a deterministic artifact. Optional root
+  telemetry must be omitted entirely at the default so old dictionaries remain
+  exact.
+- `mcts_telemetry.action_key()` is the established stable research identity;
+  engine telemetry will emit action dictionaries/identities without importing
+  research code.
+- The current fixture catalog constructs fresh mutable states and has ten
+  positions. V2 can add explicit `diagnostic`/`admission` classification and a
+  validated proof payload while retaining a legacy ten-position accessor.
+- Full terminal minimax was explored first, but even roots with few legal
+  actions expand into large capture/resumption trees. The bounded alternative
+  is exhaustive enumeration of every legal **root transition** under a named
+  rule fact (capture count, sole-liberty defense, seat-score takeover, rescue
+  continuation, fence completion, forced acceptance). These proofs establish
+  local tactical dominance only and will say so explicitly.
+- Existing atomic writers, ordered worker mapping, deterministic-record hashes,
+  and manifest auditor are the patterns to extend; no parallel harness will be
+  created.
+
+### Implementation checkpoint
+
+- Added optional root telemetry on the existing backup path. With telemetry
+  omitted, decision dictionaries, RNG use, UCT selection, and the MCTS v2 agent
+  hash are unchanged. With telemetry enabled, every legal root action reports
+  visits, W/D/L, terminal-margin aggregates, final rank, and selection reason.
+- Added six synthetic-history, small-root positions (root widths 1, 2, 2, 4,
+  7, and 8) with reproducible exhaustive root-transition proofs. The original
+  ten positions remain a separate diagnostic class. Proofs explicitly do not
+  claim a forced game outcome.
+- Extended the existing schedule/checkpoint/audit machinery to V2 while the V1
+  manifest still rebuilds its exact 240-task schedule.
+- Full product validation after implementation: 257 tests passed. A later
+  candidate-parity test raises the expected current total to 258.
+- The historical 96-fixture golden verifier passes 80 fixtures and fails all 16
+  Breath-run fixtures. A detached worktree at untouched base `b620a11` reproduces
+  the same failures for fixture indices 48 and 49, proving that automatic
+  Breath-run extension finishing made that old corpus stale before this branch.
+  The corpus is preserved unchanged. Current-state telemetry-on/off parity is
+  instead tested across all six candidates and both rollout policies.
+
+### Launch reconciliation
+
+- Launched: 2026-07-16T23:40:50-05:00.
+- Local HEAD, `origin/codex/mcts-search-v3`, and PR #20 head all equal
+  `9c141a1a2338afdbba8a50638c175f5b37f91e39`; PR remains open and draft.
+- Plan SHA-256 still equals
+  `219ea42829e92de50027a4563a0e40b67291d20d35919df6e250a26d9e6a87ef`.
+- The bounded Fable cycle reinforced measurement-first Batch 1 and the rule
+  that corpus proofs must not be weakened to manufacture admission. Its
+  reference to `docs/AGENT_OPERATING_CONTRACT.md` and an incorrect base hash
+  were discarded because live Varde state disproves them.
+- Global `elves/pre-batch-N` tags already belong to prior runs. This run uses
+  branch-qualified rollback tags and does not move or delete historical tags.

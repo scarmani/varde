@@ -28,11 +28,15 @@ from mcts_tactical_admission import (  # noqa: E402
     summarize,
     write_json_atomic,
 )
-from mcts_tactical_fixtures import fixture_catalog  # noqa: E402
+from mcts_tactical_fixtures import (  # noqa: E402
+    diagnostic_positions,
+    fixture_catalog,
+    tactical_positions,
+)
 
 
 FORMAT = "varde-mcts-tactical-admission-audit"
-VERSION = 1
+VERSION = 2
 
 
 def file_hash(path):
@@ -42,19 +46,25 @@ def file_hash(path):
 def _validate_manifest(manifest):
     if manifest.get("format") != "varde-mcts-tactical-admission-manifest":
         raise ValueError("unknown tactical-admission manifest format")
-    if manifest.get("version") != 1:
-        raise ValueError("tactical-admission manifest must be version 1")
+    version = manifest.get("version")
+    if version not in (1, 2):
+        raise ValueError("unsupported tactical-admission manifest version")
     if manifest.get("status") != "frozen-before-outcomes":
         raise ValueError("tactical-admission manifest was not frozen")
     config = manifest.get("config")
-    tasks = build_schedule(config)
+    positions = diagnostic_positions() if version == 1 else tactical_positions()
+    tasks = build_schedule(
+        config,
+        positions=positions,
+        schema_version=version,
+    )
     if stable_hash(config) != manifest.get("config_sha256"):
         raise ValueError("manifest config hash differs")
     if stable_hash(tasks) != manifest.get("schedule_sha256"):
         raise ValueError("manifest schedule hash differs")
     if len(tasks) != manifest.get("decisions"):
         raise ValueError("manifest decision count differs")
-    catalog = fixture_catalog()
+    catalog = fixture_catalog(schema_version=version, positions=positions)
     if stable_hash(catalog) != manifest["source"].get("fixture_catalog_hash"):
         raise ValueError("manifest fixture catalog differs")
     return tasks
@@ -95,6 +105,11 @@ def _validate_raw(manifest, tasks):
             raise ValueError(f"raw root width differs at task {task['task_id']}")
         if record.get("acceptable_actions") != task["acceptable_actions"]:
             raise ValueError(f"raw acceptable actions differ at task {task['task_id']}")
+        for key in ("evidence_class", "proof_sha256"):
+            if key in task and record.get(key) != task[key]:
+                raise ValueError(
+                    f"raw {key} differs at task {task['task_id']}"
+                )
     recomputed = summarize(
         records, state["config"], state["provenance"], state["status"]
     )
@@ -125,7 +140,7 @@ def audit_manifest(manifest):
     admitted = audited_clean and summary["admitted"]
     payload = {
         "format": FORMAT,
-        "version": VERSION,
+        "version": manifest["version"],
         "status": "complete",
         "claim_status": "outcome-blind tactical admission evidence",
         "manifest_payload_hash": stable_hash(manifest),
@@ -133,7 +148,14 @@ def audit_manifest(manifest):
         "run_source_commit": state["provenance"]["source_commit"],
         "runtime_source_commit_at_audit": runtime["source_commit"],
         "config": manifest["config"],
-        "fixture_catalog": fixture_catalog(),
+        "fixture_catalog": fixture_catalog(
+            schema_version=manifest["version"],
+            positions=(
+                diagnostic_positions()
+                if manifest["version"] == 1
+                else tactical_positions()
+            ),
+        ),
         "accounting": summary["accounting"],
         "correctness_and_provenance_audit_clean": audited_clean,
         "failure_task_ids": failures,

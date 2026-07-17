@@ -12,16 +12,34 @@
   "learnings": "docs/elves/mcts-search-v3-learnings.md",
   "execution_log": "docs/elves/mcts-search-v3-execution-log.md",
   "merge_policy": "user-merges",
+  "status": "in_progress",
   "batch": {
-    "current": 0,
+    "current": 1,
     "total": 6,
-    "status": "staged"
+    "status": "in_progress"
   },
   "continuation_guard": {
-    "stop_allowed": true,
-    "reason": "Required Elves two-call staging boundary; implementation has not launched.",
-    "next_required_action": "Fresh launch call: verify tripwire and PR, set stop_allowed false, execute Batch 1 only."
+    "remaining_batches": 6,
+    "stop_allowed": false,
+    "checkpoint_is_stop": false,
+    "reason": "Fresh launch command received; continue through every valid evidence-gated batch.",
+    "next_required_action": "Execute Batch 1 measurement substrate and admission corpus V2."
   },
+  "test_baseline": {
+    "passed": 254,
+    "total": 254,
+    "skipped": 0,
+    "status": "captured at launch; 254 passed in 29.667s"
+  },
+  "batches": [
+    {"id": 1, "name": "Measurement substrate and admission corpus V2", "status": "in_progress", "commit": null, "rollback_tag": "elves/mcts-search-v3-pre-batch-1", "started_at": "2026-07-16T23:40:50-05:00", "completed_at": null},
+    {"id": 2, "name": "Geometry-neutral deterministic ties", "status": "pending", "commit": null, "rollback_tag": "elves/mcts-search-v3-pre-batch-2", "started_at": null, "completed_at": null},
+    {"id": 3, "name": "Terminal-margin secondary backup", "status": "pending", "commit": null, "rollback_tag": "elves/mcts-search-v3-pre-batch-3", "started_at": null, "completed_at": null},
+    {"id": 4, "name": "Minimal tactical proposal and rollout ablation", "status": "pending", "commit": null, "rollback_tag": "elves/mcts-search-v3-pre-batch-4", "started_at": null, "completed_at": null},
+    {"id": 5, "name": "Calibrate the 2048 or 4096 deep tier", "status": "pending", "commit": null, "rollback_tag": "elves/mcts-search-v3-pre-batch-5", "started_at": null, "completed_at": null},
+    {"id": 6, "name": "Conditional paired diagnostic and final handoff", "status": "pending", "commit": null, "rollback_tag": "elves/mcts-search-v3-pre-batch-6", "started_at": null, "completed_at": null}
+  ],
+  "review_comments": [],
   "active_compute": [],
   "preflight": {
     "python_tests": "254 passed in 29.629s",
@@ -38,6 +56,6 @@
     "setup_head": "afe0a1f708a21e3f51ecc11f264f80b65fcb0cc1",
     "setup_checks": "two test jobs in progress"
   },
-  "last_completed_action": "Committed and pushed setup-only Batch 0, opened draft PR 20, and recorded its exact initial state.",
-  "updated_at": "2026-07-16T23:24:20-05:00"
+  "last_completed_action": "Reconciled the fresh launch against local, remote, PR, and plan-hash truth; activated Batch 1.",
+  "updated_at": "2026-07-16T23:40:50-05:00"
 }

@@ -25,6 +25,7 @@ for root in (ENGINE_ROOT, HARNESS_ROOT):
 from actions import apply_action, legal_actions  # noqa: E402
 from mcts import MCTS_AGENT_HASH, choose_mcts_state_action  # noqa: E402
 from mcts_tactical_fixtures import (  # noqa: E402
+    FIXTURE_VERSION,
     fixture_catalog,
     tactical_positions,
 )
@@ -32,8 +33,8 @@ from mcts_telemetry import action_key, annotate_choice, tactical_context  # noqa
 
 
 FORMAT = "varde-mcts-tactical-admission"
-VERSION = 1
-RECIPE = "terminal-mcts-tactical-admission-v1"
+VERSION = 2
+RECIPE = "terminal-mcts-tactical-admission-v2"
 DEFAULT_OUTPUT = Path.home() / "varde-runs" / "mcts-tactical-admission"
 DEFAULT_BUDGETS = (4, 16, 64)
 DEFAULT_POLICIES = ("uniform", "epsilon-greedy")
@@ -96,12 +97,16 @@ def code_hash():
     return digest.hexdigest()
 
 
-def provenance():
+def provenance(*, schema_version=FIXTURE_VERSION, positions=None):
+    positions = tactical_positions() if positions is None else tuple(positions)
     return {
         "source_commit": source_commit(),
         "code_hash": code_hash(),
         "mcts_agent_hash": MCTS_AGENT_HASH,
-        "fixture_catalog_hash": stable_hash(fixture_catalog()),
+        "fixture_catalog_hash": stable_hash(fixture_catalog(
+            schema_version=schema_version,
+            positions=positions,
+        )),
         "files": {
             str(path.relative_to(REPO_ROOT)): file_hash(path)
             for path in (
@@ -139,15 +144,16 @@ def validate_config(config):
         raise ValueError("seed must be an integer")
 
 
-def build_schedule(config):
+def build_schedule(config, *, positions=None, schema_version=VERSION):
     validate_config(config)
+    positions = tactical_positions() if positions is None else tuple(positions)
     tasks = []
-    for position in tactical_positions():
-        public = position.public_dict()
+    for position in positions:
+        public = position.public_dict(schema_version=schema_version)
         for policy in config["policies"]:
             for budget in config["budgets"]:
                 for replicate in range(config["replicates"]):
-                    tasks.append({
+                    task = {
                         "task_id": len(tasks),
                         "position_id": position.id,
                         "fixture_id": position.fixture_id,
@@ -162,16 +168,54 @@ def build_schedule(config):
                         "root_legal_actions": public["legal_actions"],
                         "state_key_sha256": public["state_key_sha256"],
                         "acceptable_actions": public["acceptable_actions"],
-                    })
+                    }
+                    if schema_version >= 2:
+                        task.update({
+                            "evidence_class": public["evidence_class"],
+                            "proof_sha256": (
+                                stable_hash(public["proof"])
+                                if public["proof"] is not None
+                                else None
+                            ),
+                        })
+                    tasks.append(task)
     return tasks
 
 
 def _base_record(task):
-    return {key: task[key] for key in TASK_KEYS} | {
+    record = {key: task[key] for key in TASK_KEYS} | {
         "root_legal_actions": task["root_legal_actions"],
         "state_key_sha256": task["state_key_sha256"],
         "acceptable_actions": task["acceptable_actions"],
     }
+    for key in ("evidence_class", "proof_sha256"):
+        if key in task:
+            record[key] = task[key]
+    return record
+
+
+def _validate_root_telemetry(decision, expected_actions):
+    telemetry = decision.root_actions
+    if len(telemetry) != expected_actions:
+        raise AssertionError("root telemetry action count differs")
+    if len({item["action_id"] for item in telemetry}) != len(telemetry):
+        raise AssertionError("root telemetry action ids are not unique")
+    if [item["final_rank"] for item in telemetry] != list(
+        range(1, len(telemetry) + 1)
+    ):
+        raise AssertionError("root telemetry ranks are not contiguous")
+    if sum(item["visits"] for item in telemetry) != decision.simulations:
+        raise AssertionError("root telemetry visits do not reconcile")
+    for item in telemetry:
+        if item["wins"] + item["draws"] + item["losses"] != item["visits"]:
+            raise AssertionError("root W/D/L counts do not reconcile")
+        if item["terminal_margin_count"] != item["visits"]:
+            raise AssertionError("root margin counts do not reconcile")
+    selected = [item for item in telemetry if item["selected"]]
+    if len(selected) != 1 or selected[0]["final_rank"] != 1:
+        raise AssertionError("root telemetry selected rank differs")
+    if selected[0]["action_id"] != action_key(decision.action):
+        raise AssertionError("root telemetry selected action differs")
 
 
 def evaluate_task(task):
@@ -190,6 +234,7 @@ def evaluate_task(task):
             simulations=task["budget"],
             seed=task["seed"],
             rollout_policy=task["policy"],
+            include_root_telemetry=True,
         )
         elapsed_ms = (time.perf_counter() - started) * 1000
         state_unchanged = state.key() == before
@@ -197,6 +242,7 @@ def evaluate_task(task):
             raise AssertionError("MCTS mutated the admission position")
         if decision.action not in legal_actions(state):
             raise AssertionError("MCTS returned an illegal admission action")
+        _validate_root_telemetry(decision, context["root_legal_actions"])
         next_state = apply_action(state, decision.action)
         captured = sum(
             len(wave) for wave in next_state.game.last_capture_waves
@@ -216,8 +262,14 @@ def evaluate_task(task):
                     decision.average_rollout_actions, 3
                 ),
                 "max_rollout_actions": decision.max_rollout_actions,
+                "selection_reason": decision.selection_reason,
+                "root_action_telemetry": [
+                    dict(item) for item in decision.root_actions
+                ],
                 "root_coverage_fraction": round(
-                    min(1.0, task["budget"] / context["root_legal_actions"]), 6
+                    sum(item["visits"] > 0 for item in decision.root_actions)
+                    / context["root_legal_actions"],
+                    6,
                 ),
             },
             # Timing is observational and intentionally excluded from all
@@ -262,12 +314,31 @@ def _metrics(records):
             "max_rollout_actions": None,
             "latency_ms_median": None,
             "latency_ms_p95": None,
+            "root_coverage_fraction_mean": None,
+            "selected_terminal_margin_mean": None,
+            "selection_reasons": {},
         }
     nodes = [record["decision"]["nodes"] for record in complete]
     rollout = [
         record["decision"]["average_rollout_actions"] for record in complete
     ]
     latency = [record["timing"]["elapsed_ms"] for record in complete]
+    coverage = [
+        record["decision"]["root_coverage_fraction"] for record in complete
+    ]
+    selected_margins = []
+    reasons = {}
+    for record in complete:
+        decision = record["decision"]
+        reasons[decision["selection_reason"]] = (
+            reasons.get(decision["selection_reason"], 0) + 1
+        )
+        selected = next(
+            item for item in decision["root_action_telemetry"]
+            if item["selected"]
+        )
+        if selected["terminal_margin_mean"] is not None:
+            selected_margins.append(selected["terminal_margin_mean"])
     return {
         "decisions": len(complete),
         "hit_rate": sum(record["hit"] for record in complete) / len(complete),
@@ -279,6 +350,12 @@ def _metrics(records):
         ),
         "latency_ms_median": round(statistics.median(latency), 3),
         "latency_ms_p95": _percentile(latency, 0.95),
+        "root_coverage_fraction_mean": round(statistics.fmean(coverage), 6),
+        "selected_terminal_margin_mean": (
+            round(statistics.fmean(selected_margins), 6)
+            if selected_margins else None
+        ),
+        "selection_reasons": dict(sorted(reasons.items())),
     }
 
 
@@ -314,19 +391,32 @@ def summarize(records, config, run_provenance, status):
         and all(record["state_unchanged"] for record in records)
     )
     high = max(config["budgets"])
+    admission_records = [
+        record for record in records
+        if record.get("evidence_class", "diagnostic") == "admission"
+    ]
+    diagnostic_records = [
+        record for record in records
+        if record.get("evidence_class", "diagnostic") == "diagnostic"
+    ]
     high_groups = [
         items for (position, _policy, budget), items in positions.items()
-        if budget == high
+        if budget == high and items[0].get("evidence_class") == "admission"
     ]
     every_position_policy_75 = bool(high_groups) and all(
         _metrics(items)["hit_rate"] >= 0.75 for items in high_groups
     )
-    high_records = [record for record in records if record["budget"] == high]
+    high_records = [
+        record for record in admission_records if record["budget"] == high
+    ]
     high_overall = _metrics(high_records)["hit_rate"]
     monotonic = {}
     for policy in config["policies"]:
         rates = [
-            _metrics(groups.get((policy, budget), []))["hit_rate"]
+            _metrics([
+                record for record in groups.get((policy, budget), [])
+                if record.get("evidence_class") == "admission"
+            ])["hit_rate"]
             for budget in config["budgets"]
         ]
         monotonic[policy] = (
@@ -360,6 +450,30 @@ def summarize(records, config, run_provenance, status):
         },
         "ladder": ladder,
         "position_ladder": position_ladder,
+        "admission_ladder": {
+            f"{policy}@{budget}": _metrics([
+                record for record in items
+                if record.get("evidence_class") == "admission"
+            ])
+            for (policy, budget), items in sorted(groups.items())
+        },
+        "diagnostic_ladder": {
+            f"{policy}@{budget}": _metrics([
+                record for record in items
+                if record.get("evidence_class") == "diagnostic"
+            ])
+            for (policy, budget), items in sorted(groups.items())
+        },
+        "evidence_accounting": {
+            "admission_positions": len({
+                record["position_id"] for record in admission_records
+            }),
+            "admission_decisions": len(admission_records),
+            "diagnostic_positions": len({
+                record["position_id"] for record in diagnostic_records
+            }),
+            "diagnostic_decisions": len(diagnostic_records),
+        },
         "high_budget": high,
         "high_budget_overall_hit_rate": high_overall,
         "monotonic_by_policy": monotonic,
@@ -367,9 +481,10 @@ def summarize(records, config, run_provenance, status):
         "admitted": all(gate.values()),
         "deterministic_records_hash": deterministic_records_hash(records),
         "interpretation": (
-            "Tactical fixture admission only. It measures selected decisions, "
-            "root coverage, rollout work, and latency; it is not match, balance, "
-            "strategic-depth, or ruleset-promise evidence."
+            "Admission positions prove strict local rule-transition dominance; "
+            "natural-width positions remain diagnostics. Neither class proves a "
+            "forced game outcome, match strength, balance, strategic depth, or "
+            "ruleset promise."
         ),
         "paired_match_stages_launched": False,
     }

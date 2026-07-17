@@ -11,7 +11,10 @@ from varde import BLACK, WHITE, CORNERS, Game, signature
 
 
 FIXTURE_FORMAT = "varde-mcts-tactical-fixtures"
-FIXTURE_VERSION = 1
+FIXTURE_VERSION = 2
+PROOF_FORMAT = "varde-exhaustive-root-transition-proof"
+PROOF_VERSION = 1
+EVIDENCE_CLASSES = frozenset(("diagnostic", "admission"))
 
 
 @dataclass(frozen=True)
@@ -23,10 +26,18 @@ class TacticalPosition:
     state: RulesState
     acceptable_actions: tuple[RulesAction, ...]
     synthetic_history: bool = False
+    evidence_class: str = "diagnostic"
+    proof: dict | None = None
 
-    def public_dict(self):
+    def __post_init__(self):
+        if self.evidence_class not in EVIDENCE_CLASSES:
+            raise ValueError("unknown tactical evidence class")
+        if (self.evidence_class == "admission") != (self.proof is not None):
+            raise ValueError("only admission positions contain a proof")
+
+    def public_dict(self, *, schema_version=FIXTURE_VERSION):
         context = tactical_context(self.state)
-        return {
+        payload = {
             "id": self.id,
             "fixture_id": self.fixture_id,
             "category": self.category,
@@ -43,6 +54,10 @@ class TacticalPosition:
             ).hexdigest(),
             "synthetic_history": self.synthetic_history,
         }
+        if schema_version >= 2:
+            payload["evidence_class"] = self.evidence_class
+            payload["proof"] = self.proof
+        return payload
 
 
 def _prepared_game(rules, color, *, n=3, moves=8):
@@ -56,6 +71,125 @@ def _prepared_game(rules, color, *, n=3, moves=8):
 def _freeze(game):
     game.history = {signature(game.board, game.state, game.to_move)}
     return RulesState.from_game(game)
+
+
+def _snapshot_state(
+    rules,
+    stacks,
+    color,
+    moves,
+    *,
+    extension_used=False,
+    extension_points=(),
+):
+    game = Game(3, rules=rules)
+    if len(stacks) != len(game.board.points):
+        raise AssertionError("snapshot stack count differs from board")
+    for point, stack in zip(game.board.points, stacks):
+        game.state[point] = tuple(stack)
+    game.to_move = color
+    game.moves_played = moves
+    game.swap_decided = True
+    game.extension_used = extension_used
+    game.extension_points = list(extension_points)
+    game.quiet_moves = 0
+    game.finished = False
+    game.no_progress_end = False
+    return _freeze(game)
+
+
+def _transition_value(state, action, metric):
+    context = tactical_context(state)
+    key = action_key(action)
+    if metric == "immediate-capture-count":
+        return context["immediate_capture_actions"].get(key, 0)
+    if metric == "sole-liberty-defense":
+        return int(key in context["defense_actions"])
+    if metric == "rescue-continuation":
+        return int(action.kind == "extend")
+    if metric == "fence-completion":
+        return int(key in context["fence_completion_actions"])
+    if metric == "seat-score-after-action":
+        root_seat = state.actor_seat
+        advanced = apply_action(state, action)
+        return advanced.game.score()[advanced.color_for_seat(root_seat)]
+    if metric == "forced-score-acceptance":
+        return int(action.kind == "accept")
+    raise ValueError("unknown transition-proof metric")
+
+
+def transition_proof(state, metric):
+    """Exhaustively rank every legal root transition under one rule fact.
+
+    This proves a local tactical choice, not a forced game outcome. Full
+    terminal enumeration is intentionally not implied by this proof format.
+    """
+    actions = legal_actions(state)
+    values = {
+        action_key(action): _transition_value(state, action, metric)
+        for action in actions
+    }
+    best_value = max(values.values())
+    best_actions = tuple(
+        action for action in actions if values[action_key(action)] == best_value
+    )
+    rejected = [
+        value for key, value in values.items()
+        if key not in {action_key(action) for action in best_actions}
+    ]
+    return best_actions, {
+        "format": PROOF_FORMAT,
+        "version": PROOF_VERSION,
+        "scope": "exhaustive-legal-root-transitions",
+        "metric": metric,
+        "root_actions": len(actions),
+        "action_values": dict(sorted(values.items())),
+        "best_value": best_value,
+        "strict_over_rejected": not rejected or best_value > max(rejected),
+        "claim_limit": "local tactical transition only; not a forced game outcome",
+    }
+
+
+def validate_transition_proof(position):
+    if position.evidence_class != "admission" or position.proof is None:
+        raise ValueError("position is not admission-grade")
+    acceptable, proof = transition_proof(
+        position.state, position.proof["metric"]
+    )
+    if acceptable != position.acceptable_actions or proof != position.proof:
+        raise ValueError("transition proof does not reproduce")
+    if proof["root_actions"] > 8 or not proof["strict_over_rejected"]:
+        raise ValueError("admission proof is not small-root and strict")
+    return proof
+
+
+def _admission_position(
+    position_id,
+    fixture_id,
+    category,
+    description,
+    state,
+    metric,
+    expected,
+):
+    acceptable, proof = transition_proof(state, metric)
+    if acceptable != expected:
+        raise AssertionError(
+            f"{position_id} proof selected {acceptable!r}, expected {expected!r}"
+        )
+    position = TacticalPosition(
+        position_id,
+        fixture_id,
+        category,
+        description,
+        state,
+        acceptable,
+        synthetic_history=True,
+        evidence_class="admission",
+        proof=proof,
+    )
+    validate_transition_proof(position)
+    return position
 
 
 def _central_point(game, degree):
@@ -294,8 +428,8 @@ def _gjerde_go_acceptance():
     )
 
 
-def tactical_positions():
-    positions = (
+def diagnostic_positions():
+    return (
         _classic_capture(),
         _breath_capture(),
         _breath_defense(),
@@ -306,15 +440,170 @@ def tactical_positions():
         _gjerde_go_capture(),
         _gjerde_go_acceptance(),
     )
+
+
+def _small_capture():
+    state = _snapshot_state(
+        "breath",
+        (
+            "", "W", "", "W", "W", "W", "", "", "B", "W", "W", "B",
+            "B", "W", "W", "", "B", "B", "W", "W", "B", "B", "B", "B",
+            "W", "", "W", "B", "B", "W", "W", "W", "W", "B", "", "B",
+            "W", "W", "", "B", "", "W", "W", "B", "W", "B", "W", "B",
+            "B", "W", "B", "B", "W", "",
+        ),
+        BLACK,
+        52,
+    )
+    return _admission_position(
+        "admission-breath-small-capture",
+        "admission-breath-small-capture",
+        "capture",
+        "Choose the unique immediate capture from an eight-action Breath root.",
+        state,
+        "immediate-capture-count",
+        (RulesAction("play", (2, -2)),),
+    )
+
+
+def _small_defense():
+    state = _snapshot_state(
+        "breath",
+        (
+            "", "W", "W", "W", "W", "W", "", "W", "B", "W", "W", "B",
+            "B", "W", "W", "W", "B", "B", "W", "W", "", "B", "B", "B",
+            "W", "W", "W", "B", "B", "B", "W", "W", "W", "B", "B", "B",
+            "W", "W", "B", "B", "", "W", "W", "B", "W", "B", "W", "B",
+            "B", "W", "B", "B", "W", "",
+        ),
+        WHITE,
+        61,
+    )
+    return _admission_position(
+        "admission-breath-small-defense",
+        "admission-breath-small-defense",
+        "defense",
+        "Fill the unique sole-liberty defense from a four-action Breath root.",
+        state,
+        "sole-liberty-defense",
+        (RulesAction("play", (-8, -2)),),
+    )
+
+
+def _small_takeover():
+    state = _takeover().state
+    return _admission_position(
+        "admission-pie-small-takeover",
+        "admission-pie-small-takeover",
+        "takeover",
+        "Take the high-scoring Black seat in the isolated two-action pie state.",
+        state,
+        "seat-score-after-action",
+        (RulesAction("swap"),),
+    )
+
+
+def _small_rescue_continuation():
+    state = _snapshot_state(
+        "breath-run",
+        (
+            "W", "B", "", "", "W", "", "", "", "B", "B", "", "B",
+            "B", "W", "", "B", "B", "", "W", "W", "", "", "", "",
+            "", "", "", "", "W", "", "", "", "", "", "", "", "",
+            "", "", "", "", "", "", "", "W", "B", "W", "", "", "W",
+            "", "B", "", "",
+        ),
+        WHITE,
+        19,
+        extension_used=True,
+        extension_points=((-8, -2),),
+    )
+    return _admission_position(
+        "admission-breath-run-small-continuation",
+        "admission-breath-run-small-continuation",
+        "rescue-chain",
+        "Continue the only legal rescue instead of ending the extension turn.",
+        state,
+        "rescue-continuation",
+        (RulesAction("extend", (-7, -3)),),
+    )
+
+
+def _small_fence_completion():
+    state = _snapshot_state(
+        "gjerde-go",
+        (
+            "B", "", "B", "W", "W", "W", "B", "B", "W", "W", "B", "B",
+            "B", "B", "B", "W", "", "W", "B", "B", "B", "W", "", "B",
+            "B", "B", "B", "", "B", "W", "W", "W", "B", "B", "B", "B",
+            "W", "", "", "B", "W", "W", "W", "B", "W", "W", "W", "",
+            "W", "W", "", "W", "B", "W", "W", "W", "W", "W", "W", "W",
+            "B", "W", "W", "W", "B", "B", "W", "W", "B", "B", "B", "",
+        ),
+        BLACK,
+        80,
+    )
+    return _admission_position(
+        "admission-gjerde-go-small-fence",
+        "admission-gjerde-go-small-fence",
+        "fence-completion",
+        "Choose either exact fence completion from a seven-action Gjerde-Go root.",
+        state,
+        "fence-completion",
+        (
+            RulesAction("play", (-15, -3)),
+            RulesAction("play", (-3, -1)),
+        ),
+    )
+
+
+def _forced_acceptance():
+    game = _prepared_game("gjerde-go", BLACK)
+    for point in game.board.cell_edges[(0, 0)]:
+        game.state[point] = (BLACK,)
+    game.history = {signature(game.board, game.state, game.to_move)}
+    game.play_pass()
+    game.play_pass()
+    game.resumption_used = True
+    state = RulesState.from_game(game)
+    if legal_actions(state) != (RulesAction("accept"),):
+        raise AssertionError("forced acceptance fixture must have one action")
+    return _admission_position(
+        "admission-gjerde-go-forced-acceptance",
+        "admission-gjerde-go-forced-acceptance",
+        "acceptance",
+        "Accept the terminal score after the one resumption has been consumed.",
+        state,
+        "forced-score-acceptance",
+        (RulesAction("accept"),),
+    )
+
+
+def admission_positions():
+    return (
+        _small_capture(),
+        _small_defense(),
+        _small_takeover(),
+        _small_rescue_continuation(),
+        _small_fence_completion(),
+        _forced_acceptance(),
+    )
+
+
+def tactical_positions():
+    positions = (*diagnostic_positions(), *admission_positions())
     if len({position.id for position in positions}) != len(positions):
         raise AssertionError("tactical position ids must be unique")
     return positions
 
 
-def fixture_catalog():
-    positions = tactical_positions()
+def fixture_catalog(*, schema_version=FIXTURE_VERSION, positions=None):
+    positions = tactical_positions() if positions is None else tuple(positions)
     return {
         "format": FIXTURE_FORMAT,
-        "version": FIXTURE_VERSION,
-        "positions": [position.public_dict() for position in positions],
+        "version": schema_version,
+        "positions": [
+            position.public_dict(schema_version=schema_version)
+            for position in positions
+        ],
     }

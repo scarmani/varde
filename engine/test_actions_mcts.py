@@ -255,6 +255,91 @@ class TestTerminalMCTS(unittest.TestCase):
         self.assertIn(decision.action, legal_actions(state))
         self.assertEqual(state.key(), before)
 
+    def test_optional_root_telemetry_reconciles_without_changing_choice(self):
+        game = Game(3, rules="breath")
+        for point in game.board.points:
+            game.state[point] = (BLACK,)
+        game.to_move = WHITE
+        game.moves_played = 1
+        game.swap_decided = False
+        state = RulesState.from_game(game)
+        before = state.key()
+
+        default = choose_mcts_state_action(
+            state,
+            WHITE,
+            simulations=8,
+            seed=20260717,
+            rollout_policy="uniform",
+        )
+        observed = choose_mcts_state_action(
+            state,
+            WHITE,
+            simulations=8,
+            seed=20260717,
+            rollout_policy="uniform",
+            include_root_telemetry=True,
+        )
+
+        self.assertEqual(default.action, observed.action)
+        self.assertEqual(default.nodes, observed.nodes)
+        self.assertEqual(default.mean_value, observed.mean_value)
+        self.assertNotIn("root_action_telemetry", default.to_dict())
+        telemetry = observed.to_dict()["root_action_telemetry"]
+        self.assertEqual(len(telemetry), len(legal_actions(state)))
+        self.assertEqual(
+            {item["action_id"] for item in telemetry},
+            {"swap", "pass"},
+        )
+        self.assertEqual(
+            [item["final_rank"] for item in telemetry],
+            list(range(1, len(telemetry) + 1)),
+        )
+        self.assertEqual(sum(item["visits"] for item in telemetry), 8)
+        for item in telemetry:
+            self.assertEqual(
+                item["wins"] + item["draws"] + item["losses"],
+                item["visits"],
+            )
+            self.assertEqual(item["terminal_margin_count"], item["visits"])
+        selected = [item for item in telemetry if item["selected"]]
+        self.assertEqual(len(selected), 1)
+        self.assertEqual(selected[0]["final_rank"], 1)
+        self.assertEqual(state.key(), before)
+
+        with self.assertRaisesRegex(ValueError, "must be a boolean"):
+            choose_mcts_state_action(
+                state,
+                WHITE,
+                simulations=1,
+                include_root_telemetry="yes",
+            )
+
+    def test_optional_telemetry_preserves_current_seeded_candidate_decisions(self):
+        for rules in CANDIDATES:
+            for policy in ("uniform", "epsilon-greedy"):
+                with self.subTest(rules=rules, policy=policy):
+                    state = RulesState.from_game(Game(3, rules=rules))
+                    default = choose_mcts_state_action(
+                        state,
+                        BLACK,
+                        simulations=2,
+                        seed=731,
+                        rollout_policy=policy,
+                    )
+                    observed = choose_mcts_state_action(
+                        state,
+                        BLACK,
+                        simulations=2,
+                        seed=731,
+                        rollout_policy=policy,
+                        include_root_telemetry=True,
+                    )
+                    payload = observed.to_dict()
+                    payload.pop("root_action_telemetry")
+                    payload.pop("selection_reason")
+                    self.assertEqual(payload, default.to_dict())
+
 
 if __name__ == "__main__":
     unittest.main()

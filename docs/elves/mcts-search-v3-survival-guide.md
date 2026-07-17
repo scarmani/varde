@@ -35,17 +35,17 @@ rules or import native evaluator leaf values.
 
 ## Current phase
 
-Status: staged, not launched
+Status: launched and in progress
 
-Active batch: Batch 0 — setup and preflight complete
+Active batch: Batch 1 — measurement substrate and admission corpus V2
 
-Just completed: dedicated worktree creation, clean baseline validation (254
-tests, Python compile, JavaScript syntax, Git diff check, GitHub authentication),
-and draft PR #20 at setup head `afe0a1f708a21e3f51ecc11f264f80b65fcb0cc1`.
+Just completed: the fresh launch reconciliation. Local HEAD, the remote branch,
+and PR #20 all equal `9c141a1a2338afdbba8a50638c175f5b37f91e39`;
+the frozen plan hash still matches.
 
-Single next action: in a fresh user-authorized launch turn, reread this guide,
-verify the tripwire and PR state, set `stop_allowed` false, and execute Batch 1
-only.
+Single next action: establish the Batch 1 contract and pre-implementation
+survey, then implement behavior-neutral root-action telemetry before changing
+any MCTS search choice.
 
 ## Active compute
 
@@ -55,9 +55,9 @@ No Varde research or test process is active. Two pre-existing system
 ## Stop gate
 
 - Planned implementation/evidence batches remaining: 6
-- Stop allowed right now: yes, solely for the required Elves staging boundary
-- Next required action: fresh launch call, then Batch 1 measurement/corpus work
-- Do not interpret the staging stop as task completion.
+- Stop allowed right now: no
+- Next required action: execute Batch 1 measurement/corpus work
+- Continue automatically through valid batches; do not merge.
 
 ## Validation gates
 

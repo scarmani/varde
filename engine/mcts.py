@@ -42,9 +42,11 @@ class MCTSDecision:
     seed: int
     average_rollout_actions: float
     max_rollout_actions: int
+    root_actions: tuple = ()
+    selection_reason: str | None = None
 
     def to_dict(self):
-        return {
+        payload = {
             **self.action.to_dict(),
             "simulations": self.simulations,
             "nodes": self.nodes,
@@ -55,6 +57,19 @@ class MCTSDecision:
             "max_rollout_actions": self.max_rollout_actions,
             "agent_hash": MCTS_AGENT_HASH,
         }
+        if self.root_actions:
+            payload["root_action_telemetry"] = [
+                dict(item) for item in self.root_actions
+            ]
+            payload["selection_reason"] = self.selection_reason
+        return payload
+
+
+@dataclass(frozen=True)
+class _TerminalSample:
+    reward: float
+    margin: int | float
+    outcome: str
 
 
 class _Node:
@@ -66,6 +81,12 @@ class _Node:
         "untried",
         "visits",
         "value_sum",
+        "wins",
+        "draws",
+        "losses",
+        "margin_sum",
+        "margin_min",
+        "margin_max",
     )
 
     def __init__(self, state, parent=None, action=None):
@@ -76,10 +97,37 @@ class _Node:
         self.untried = list(legal_actions(state))
         self.visits = 0
         self.value_sum = 0.0
+        self.wins = 0
+        self.draws = 0
+        self.losses = 0
+        self.margin_sum = 0
+        self.margin_min = None
+        self.margin_max = None
 
     @property
     def mean(self):
         return self.value_sum / self.visits if self.visits else 0.5
+
+    def record(self, sample):
+        self.visits += 1
+        self.value_sum += sample.reward
+        if sample.outcome == "win":
+            self.wins += 1
+        elif sample.outcome == "draw":
+            self.draws += 1
+        else:
+            self.losses += 1
+        self.margin_sum += sample.margin
+        self.margin_min = (
+            sample.margin
+            if self.margin_min is None
+            else min(self.margin_min, sample.margin)
+        )
+        self.margin_max = (
+            sample.margin
+            if self.margin_max is None
+            else max(self.margin_max, sample.margin)
+        )
 
 
 def _seed_for_position(seed, state):
@@ -87,17 +135,23 @@ def _seed_for_position(seed, state):
     return int.from_bytes(digest[:8], "big")
 
 
-def _terminal_reward(state, root_seat):
+def _terminal_sample(state, root_seat):
     if not state.terminal:
         raise ValueError("MCTS rewards require an accepted terminal score")
     color = state.color_for_seat(root_seat)
     other_color = WHITE if color == BLACK else BLACK
     score = state.game.score()
-    if score[color] > score[other_color]:
-        return 1.0
-    if score[color] < score[other_color]:
-        return 0.0
-    return 0.5
+    margin = score[color] - score[other_color]
+    if margin > 0:
+        return _TerminalSample(1.0, margin, "win")
+    if margin < 0:
+        return _TerminalSample(0.0, margin, "loss")
+    return _TerminalSample(0.5, margin, "draw")
+
+
+def _terminal_reward(state, root_seat):
+    """Compatibility helper for the original terminal W/D/L value."""
+    return _terminal_sample(state, root_seat).reward
 
 
 def _uniform_action(state, rng):
@@ -166,7 +220,7 @@ def _rollout(state, root_seat, policy, rng):
         action = _rollout_action(rollout, policy, rng)
         apply_action(rollout, action, copy=False, validate=False)
         actions_played += 1
-    return _terminal_reward(rollout, root_seat), actions_played
+    return _terminal_sample(rollout, root_seat), actions_played
 
 
 def _select_child(node, root_seat):
@@ -185,6 +239,75 @@ def _select_child(node, root_seat):
     return max(node.children, key=score)
 
 
+def _final_selection_key(child):
+    return (
+        child.visits,
+        child.mean,
+        -child.action.sort_key()[0],
+        child.action.point or (),
+    )
+
+
+def _action_identity(action):
+    if action.point is None:
+        return action.kind
+    return f"{action.kind}:{action.point[0]},{action.point[1]}"
+
+
+def _selection_reason(root, selected):
+    most_visits = max(child.visits for child in root.children)
+    visit_leaders = [
+        child for child in root.children if child.visits == most_visits
+    ]
+    if len(visit_leaders) == 1:
+        return "most-visits"
+    best_mean = max(child.mean for child in visit_leaders)
+    mean_leaders = [
+        child for child in visit_leaders if child.mean == best_mean
+    ]
+    if len(mean_leaders) == 1:
+        return "mean-value"
+    if selected not in mean_leaders:
+        raise AssertionError("selected root action is outside the final tie")
+    return "legacy-action-order"
+
+
+def _root_action_telemetry(root, selected):
+    children = {child.action: child for child in root.children}
+    actions = [*children, *root.untried]
+
+    def rank_key(action):
+        child = children.get(action)
+        if child is None:
+            return (0, 0.5, -action.sort_key()[0], action.point or ())
+        return _final_selection_key(child)
+
+    ranked = sorted(actions, key=rank_key, reverse=True)
+    records = []
+    for rank, action in enumerate(ranked, start=1):
+        child = children.get(action)
+        visits = child.visits if child is not None else 0
+        margin_sum = child.margin_sum if child is not None else 0
+        records.append({
+            "action": action.to_dict(),
+            "action_id": _action_identity(action),
+            "final_rank": rank,
+            "selected": action == selected.action,
+            "visits": visits,
+            "value_sum": child.value_sum if child is not None else 0.0,
+            "mean_value": child.mean if child is not None else 0.5,
+            "wins": child.wins if child is not None else 0,
+            "draws": child.draws if child is not None else 0,
+            "losses": child.losses if child is not None else 0,
+            "terminal_margin_count": visits,
+            "terminal_margin_sum": margin_sum,
+            "terminal_margin_mean": margin_sum / visits if visits else None,
+            "terminal_margin_min": child.margin_min if child is not None else None,
+            "terminal_margin_max": child.margin_max if child is not None else None,
+        })
+    return tuple(records)
+
+
 def choose_mcts_state_action(
     rules_state,
     computer_color,
@@ -192,6 +315,7 @@ def choose_mcts_state_action(
     simulations=250,
     seed=1,
     rollout_policy="uniform",
+    include_root_telemetry=False,
 ):
     """Choose one legal action without mutating ``rules_state``.
 
@@ -205,6 +329,8 @@ def choose_mcts_state_action(
         raise ValueError("seed must be an integer")
     if rollout_policy not in ROLLOUT_POLICIES:
         raise ValueError("unknown rollout policy")
+    if not isinstance(include_root_telemetry, bool):
+        raise ValueError("include_root_telemetry must be a boolean")
     if computer_color not in (BLACK, WHITE):
         raise ValueError("computer color must be B or W")
 
@@ -229,28 +355,25 @@ def choose_mcts_state_action(
             child = _Node(child_state, parent=node, action=action)
             node.children.append(child)
             node = child
-        reward, rollout_actions = _rollout(
+        sample, rollout_actions = _rollout(
             node.state, root_seat, rollout_policy, rng
         )
         total_rollout_actions += rollout_actions
         max_rollout_actions = max(max_rollout_actions, rollout_actions)
         while node is not None:
-            node.visits += 1
-            node.value_sum += reward
+            node.record(sample)
             node = node.parent
 
     if rules_state.key() != before:
         raise AssertionError("MCTS mutated the analyzed rules state")
     if not root.children:
         raise ValueError("no legal MCTS action")
-    selected = max(
-        root.children,
-        key=lambda child: (
-            child.visits,
-            child.mean,
-            -child.action.sort_key()[0],
-            child.action.point or (),
-        ),
+    selected = max(root.children, key=_final_selection_key)
+    selection_reason = (
+        _selection_reason(root, selected) if include_root_telemetry else None
+    )
+    root_actions = (
+        _root_action_telemetry(root, selected) if include_root_telemetry else ()
     )
     return MCTSDecision(
         action=selected.action,
@@ -261,6 +384,8 @@ def choose_mcts_state_action(
         seed=seed,
         average_rollout_actions=total_rollout_actions / simulations,
         max_rollout_actions=max_rollout_actions,
+        root_actions=root_actions,
+        selection_reason=selection_reason,
     )
 
 
@@ -271,6 +396,7 @@ def choose_mcts_action(
     simulations=250,
     seed=1,
     rollout_policy="uniform",
+    include_root_telemetry=False,
 ):
     """Compatibility wrapper for analyzing a plain engine game."""
     return choose_mcts_state_action(
@@ -279,6 +405,7 @@ def choose_mcts_action(
         simulations=simulations,
         seed=seed,
         rollout_policy=rollout_policy,
+        include_root_telemetry=include_root_telemetry,
     )
 
 
