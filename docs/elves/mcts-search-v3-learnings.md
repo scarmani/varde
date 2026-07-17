@@ -89,6 +89,23 @@ in Varde.
   Batch 4 needs proposal-level rules facts rather than more terminal sampling of
   uniformly expanded roots.
 
+## Batch 4 evidence
+
+- One legal-transition set can exactly identify all six admission proof facts
+  without mutation or evaluator input, but exact proposal recognition does not
+  imply that terminal MCTS will ultimately select that action.
+- Tactical-only guidance scored `54.1667%`; combining it with terminal margin
+  scored `41.6667%`. Both failed pooled, per-cell, and monotonicity gates.
+- Myopic tactical rollouts can prolong games dramatically: a guided rollout
+  reached 3,111 actions, with observational uniform@64 p95 between 91 and 146
+  seconds in the eight-worker runs.
+- Immediate tactical preferences can create cycles of locally forcing play
+  that are strategically incoherent under terminal scoring. Proposal order and
+  rollout greed are therefore not a sufficient MCTS repair.
+- The meaningful-budget gate now has a definitive prerequisite failure. Running
+  2,048 or 4,096 simulations would multiply a tactically inadmissible, highly
+  variable workload and is prohibited by the staged plan.
+
 ## Update rule
 
 Append only evidence-backed findings after each batch. Record failed hypotheses

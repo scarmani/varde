@@ -376,7 +376,7 @@ ties; confidence HIGH that it is insufficient for tactical admission alone.
 
 ## Batch 4 — Minimal tactical proposal/rollout ablation
 
-Status: in progress.
+Status: complete — neither candidate admitted; deep calibration blocked.
 
 ### Contract
 
@@ -395,21 +395,21 @@ a replacement.
 
 **Acceptance criteria:**
 
-- [ ] The transition-priority recipe exactly selects every acceptable action
+- [x] The transition-priority recipe exactly selects every acceptable action
   in all six proof-grade fixtures and leaves the analyzed state unchanged.
-- [ ] Legal transitions cover every legal action exactly once and preserve
+- [x] Legal transitions cover every legal action exactly once and preserve
   superko, swap identity, extension, finish, pass, resume, and accept semantics.
-- [ ] Tactical-only, combined, and retained tie-margin agents have distinct
+- [x] Tactical-only, combined, and retained tie-margin agents have distinct
   immutable hashes; manifests and records name the exact variant.
-- [ ] Two manifests are committed before either outcome set is inspected.
-- [ ] Both 4/16/64 jobs complete legally and non-mutating with exact telemetry;
-  choose the simplest variant meeting the admission gate.
-- [ ] Admission requires at least `80%` pooled high-rung hits, every high-rung
+- [x] Two manifests are committed before either outcome set is inspected.
+- [x] Both 4/16/64 jobs completed legally and non-mutating with exact telemetry;
+  neither met the admission gate, so no candidate was selected.
+- [x] Admission required at least `80%` pooled high-rung hits, every high-rung
   position/policy cell at least `75%`, monotonic policy ladders, and zero
   integrity failure. Diagnostic fixtures cannot veto proof-grade admission.
-- [ ] If neither variant passes, preserve both negatives and block deep-budget
+- [x] Neither variant passed; both negatives are preserved and deep-budget
   calibration rather than raising simulations.
-- [ ] Full tests, Python compile, JavaScript syntax, and diff checks pass.
+- [x] Full tests, Python compile, JavaScript syntax, and diff checks pass.
 
 **Blast radius:** the research action adapter gains a non-mutating legal-
 transition generator; MCTS gains opt-in tactical variants and the admission
@@ -433,3 +433,46 @@ server, browser, saves, scoring, and live termination remain untouched.
 - Historical and default consumers continue to use `tie-margin`. The tactical
   variants are explicit opt-ins so no product or old research behavior changes
   before the admission result exists.
+
+### Frozen evidence and result
+
+- Both manifests were committed together at `062a69b` before either output
+  directory existed. Tactical-only manifest SHA-256:
+  `69c3ee6870019a2ba3800bb9b9ade4ba877d5b8d0b1f09af76847835b04f0ce9`;
+  combined manifest SHA-256:
+  `408e56d76ae8fdda879021a91b83894495342aa609d1ae5e6e0709ed722fbb20`.
+- Tactical-only hash
+  `e5a41b98d09d11df9f82e86515f93f7c0e6eea7eb9882ab9656d2bdd4fe60786`
+  completed 384/384 decisions cleanly but scored only `54.1667%` at the
+  high admission rung. Deterministic-record SHA-256:
+  `168e473fab3c56c4861613eb61ebf9a6cf719a0574ba05ef34e9ae0be9540838`.
+- Combined hash
+  `431a03275d6c8bcff8613395c982b58791f1e6352409fdc00c556522bd1dfa64`
+  also completed 384/384 cleanly and regressed to `41.6667%` admission.
+  Deterministic-record SHA-256:
+  `4e00a3dbc80795da5e430a7912cc3263a74c3ac1a96996778642261f65092816`.
+- Both variants failed the `80%` pooled gate, the `75%` per-cell floor, and
+  policy-ladder monotonicity. Sole-liberty defense remained `1/8` in both;
+  combined fence completion fell to `0/8`.
+- Guidance also created severe operational tails. At only 64 simulations,
+  tactical-only uniform p95 was 91.3 s and combined uniform p95 146.2 s under
+  the eight-worker run; a rollout reached 3,111 rules actions. Timing is
+  observational, but rollout length is deterministic evidence of the cost
+  mechanism.
+- The exact proof priorities succeeding as unit facts while MCTS admission
+  fails shows that proposal order and myopic rollout preference do not create a
+  reliable terminal policy. More simulations would scale a failed and costly
+  search, not repair it.
+- Per the frozen plan, Batch 5 must record 2,048/4,096 calibration as blocked.
+  No paired match, strength, balance, depth, or promotion claim is permitted.
+
+### Regression attestation
+
+Batch 4 adds opt-in research variants only. The retained default agent hash is
+still MCTS V4 `4224495e…`, and its public decision dictionaries remain
+compatible. The full 266-test suite passed in 31.993 s before the frozen jobs;
+syntax, Ruff, and diff checks passed. No illegal action, mutation, crash, or
+incomplete record occurred. Rules, scoring, native opponents, server, browser,
+saves, and live termination are unchanged. Confidence HIGH that the tested
+tactical guidance is inadmissible and operationally unsuitable for deep
+scaling.

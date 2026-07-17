@@ -357,6 +357,41 @@ class TestTacticalAdmissionHarness(unittest.TestCase):
         )
         self.assertTrue(payload["promotion_blocked"])
 
+    def test_committed_tactical_v5_audits_preserve_failed_gate(self):
+        expected = {
+            "mcts-tactical-only-v5-20260717.json": (
+                "tactical-only",
+                0.5416666666666666,
+            ),
+            "mcts-tactical-combined-v5-20260717.json": (
+                "combined",
+                0.4166666666666667,
+            ),
+        }
+        for filename, (variant, high_rate) in expected.items():
+            with self.subTest(variant=variant):
+                path = ROOT / "research/results" / filename
+                payload = json.loads(path.read_text())
+                expected_hash = payload.pop("payload_hash")
+                self.assertEqual(stable_hash(payload), expected_hash)
+                self.assertEqual(payload["config"]["search_variant"], variant)
+                self.assertEqual(payload["accounting"]["complete"], 384)
+                self.assertEqual(payload["accounting"]["crash"], 0)
+                self.assertTrue(
+                    payload["correctness_and_provenance_audit_clean"]
+                )
+                self.assertAlmostEqual(
+                    payload["high_budget_overall_hit_rate"],
+                    high_rate,
+                )
+                self.assertFalse(payload["admitted"])
+                self.assertFalse(
+                    payload["admission_gate"][
+                        "aggregate_hit_rate_nondecreasing_by_policy"
+                    ]
+                )
+                self.assertTrue(payload["promotion_blocked"])
+
     def test_real_takeover_decision_is_legal_telemetric_and_nonmutating(self):
         task = next(
             task for task in build_schedule(self._config(budgets=[2]))
