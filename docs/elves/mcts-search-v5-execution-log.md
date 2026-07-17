@@ -79,7 +79,7 @@ batch.
 
 ## Batch 1 — Freeze corpora and independent oracle
 
-Status: in progress.
+Status: completed at `e828a1d`.
 
 ### Contract
 
@@ -103,3 +103,44 @@ Status: in progress.
 **Blast radius**
 
 - New V5 research modules, manifests, fixtures, and tests only.
+
+### Outcome
+
+- Added a generic predicate/schedule oracle that imports neither MCTS nor the
+  tactical solver. It produces complete action-status sets and bounded actor
+  traces, and fails closed at 10,000 nodes.
+- Froze development and holdout manifests at source `1204de9`; each contains
+  24 positions, twelve per board stratum, twelve per root-width stratum, four
+  per tactical family, and six exact decoys.
+- Development, holdout, and all 51 historical V3/V4 state hashes are pairwise
+  disjoint. Oracle certificates completed without a node-limit hit.
+- Dedicated 15-test suite covered quantifiers, actor ownership, equivalent
+  proofs, fence semantics, decoys, superko, symmetry, non-mutation, exact
+  regeneration, and hash separation. Full product suite: 313 tests passed in
+  76.166 seconds. Changed-file Ruff, compilation, and diff checks passed.
+- Frozen manifest file SHA-256 values:
+  - development: `290e5f7625a4536113a2f8ae52c128581fdc488a72552f284bca43103e75e8b3`;
+  - holdout: `af6bbab0fb1a88c147758a83f291e4042f54e407e973e46707d8b8d23e82f8d0`.
+
+## Batch 2 — Correct root-only proof guidance
+
+Status: in progress.
+
+### Contract
+
+**Behavior**
+
+- Correct rescue closure and fence predicates in a set-valued solver result.
+- Scan once at the root, reuse root transitions, and add only decaying
+  `+1/0/-1` selection guidance. Never exclude an action or back up proof value.
+
+**Acceptance criteria**
+
+- Exact development oracle agreement and zero false positive decoy guidance.
+- One root scan per decision, equivalent sets preserved, unknown-only parity,
+  p95 ceilings, legality, superko, determinism, and non-mutation.
+
+**Blast radius**
+
+- V5 research solver/search variants and their tests only; V4 recipes retain
+  exact behavior and hashes.

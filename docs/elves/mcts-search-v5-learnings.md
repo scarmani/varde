@@ -20,3 +20,15 @@
 Add only evidence-backed, reusable findings. Keep transient debugging in the
 execution log. Failed hypotheses and invalid instruments are completed results,
 not invitations to tune a frozen gate.
+
+## Batch 1
+
+- A declarative predicate plus explicit quantifier schedule cleanly separates
+  direct decisions, universal one-reply safety, and existential same-seat
+  rescue closure without importing automatic obligation detection.
+- Both frozen splits contain 24 unique states with exact 12/12 board and width
+  strata, one decoy per family, and positive/decoy actor traces per family.
+  Their 48 hashes are mutually disjoint and disjoint from all 51 V3/V4 states.
+- The immediate Gjerde-Go completion fixtures are directly proven but fail the
+  one-reply durability predicate, confirming the fence-label distinction with
+  real legal transitions.

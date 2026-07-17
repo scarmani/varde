@@ -63,20 +63,21 @@ development factorial, and continue only through predeclared gates.
 ## Current Phase
 
 - **Status:** in progress.
-- **Active batch:** Batch 1 of 6.
-- **What was just finished:** Batch 0 committed and pushed at `aa88748`; draft
-  PR #22 is open, mergeable, correctly stacked, and CI is running.
-- **Single next action:** freeze the hash-disjoint development/holdout corpora
-  and implement the independent exhaustive oracle without changing V4 files.
+- **Active batch:** Batch 2 of 6.
+- **What was just finished:** Batch 1 froze two exact 24-position manifests at
+  `e828a1d`; 313 product tests and 15 focused tests passed, with disjoint hashes
+  and complete independent-oracle certificates.
+- **Single next action:** implement set-valued root-only proof guidance with
+  corrected rescue/fence semantics, decaying bias, and exactly one root scan.
 
 ## Stop Gate
 
-- **Planned batches remaining:** 6.
+- **Planned batches remaining:** 5.
 - **Stop allowed right now:** no.
 - **Why:** the user authorized the full finite V5 run and no mandatory gate or
   other actual stop condition has fired.
-- **Next required action:** execute Batch 1's corpus/oracle contract and its
-  manifest, independence, proof-fixture, and non-mutation validation.
+- **Next required action:** execute Batch 2's root-guidance contract and prove
+  oracle agreement, one-scan telemetry, decay, and unknown-trace parity.
 
 ## Effort Standard
 
@@ -115,18 +116,18 @@ development factorial, and continue only through predeclared gates.
 
 ## Next Exact Batch
 
-- **Batch:** Batch 1 — frozen corpora and independent oracle.
-- **Scope:** add new hash-disjoint 24-position development and 24-position
-  holdout manifests plus a generic exhaustive oracle driven by explicit goal
-  predicates and quantifier schedules. Preserve every V4 artifact byte-for-byte.
-- **Acceptance criteria:** manifest validation and regeneration are exact;
-  strata and required tactical cases are present; oracle fixtures cover
-  quantifiers, actor-changing rescue closure, equivalent proof sets,
-  immediate/durable fencing, abstention decoys, superko, node ceiling,
-  non-mutation, and hand-audited traces.
-- **Risk:** accidentally coupling oracle and solver obligation logic or
-  observing holdout results before candidate selection would invalidate the
-  research round.
+- **Batch:** Batch 2 — corrected root-only proof guidance.
+- **Scope:** implement complete set-valued proven/unknown/disproven solver
+  results, corrected rescue closure, distinct immediate/durable fencing, root
+  transition reuse, and decaying selection bias. Invoke the solver only once at
+  the root and never alter backed-up terminal values.
+- **Acceptance criteria:** 100% development oracle/solver agreement; zero false
+  positive decoy guidance; one scan per decision; equivalent proven sets
+  retained; unknown-only control/guidance traces identical; Toy p95 below
+  100 ms and Beginner p95 below 400 ms; legality and non-mutation clean.
+- **Risk:** importing oracle/corpus certification logic into the solver would
+  invalidate independence; forced exclusion or value backup would violate the
+  registered mechanism.
 
 ## Post-Checkpoint Control Loop
 
