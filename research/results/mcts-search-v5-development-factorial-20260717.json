@@ -1,0 +1,87 @@
+{
+  "format": "varde-mcts-search-v5-development-factorial-result",
+  "version": 1,
+  "status": "complete-gated-stop",
+  "source_commit": "0a1063cfb6f586f1d8bfb22773cfea021e830d15",
+  "manifest_payload_sha256": "c159b4444596ecdc3fae0aa9a267f8a3ffdc66698708738691086495efece912",
+  "manifest_file_sha256": "264d75e81cce782b632ecc2492ff7dd7fc10d75a32c8f869fdfc814a4efdf99e",
+  "runtime_seconds": 5133.86,
+  "raw_evidence": {
+    "path": "/Users/armand/varde-runs/mcts-search-v5-20260717/development",
+    "state_sha256": "acdd8430f7eb2847208f03652580960a09ba27e60ecdae91079a48430f84c7d1",
+    "decisions_jsonl_sha256": "bb4f873c7bb9154bcc8ea1e77593d8db8fb9fc3e6cc035fcbcc3b888fd37adb1",
+    "audit_file_sha256": "f4057596289be0a25fdc8aba58141bc3d803babf877c2330e389002755b1a018",
+    "audit_payload_sha256": "b3c6041691ce84fac57aafcaf5446148f4950e0a9b4e02d0b9e082bb63855fa7",
+    "deterministic_records_sha256": "37e2f2735279ef3b497af4f8bc6aabafc1cb4718c74812a1dc5c2ae0b0b40afb",
+    "audit_regenerated_exactly": true,
+    "checkpoint_hash_valid": true
+  },
+  "accounting": {
+    "scheduled": 4704,
+    "complete": 4704,
+    "crash": 0,
+    "terminal_backups": 135168,
+    "expected_terminal_backups": 135168,
+    "oracle_solver_disagreements": 0,
+    "false_positive_guidance": 0,
+    "integrity_passed": true
+  },
+  "high_rung_admission": {
+    "v5-g0-u0-s0": 0.2708333333333333,
+    "v5-g0-u0-s1": 0.2569444444444444,
+    "v5-g0-u1-s0": 0.3263888888888889,
+    "v5-g0-u1-s1": 0.4305555555555556,
+    "v5-g1-u0-s0": 0.3125,
+    "v5-g1-u0-s1": 0.3055555555555556,
+    "v5-g1-u1-s0": 0.4722222222222222,
+    "v5-g1-u1-s1": 0.5416666666666666
+  },
+  "common_admission_failures": [
+    "pooled 64-simulation admission below 80 percent",
+    "at least one positive position-policy cell below 3 of 4",
+    "aggregate results not monotonic for both rollout policies"
+  ],
+  "proof_guidance": {
+    "oracle_solver_agreement": 1.0,
+    "false_positive_guidance": 0,
+    "root_scans_per_guided_decision": 1,
+    "toy_scan_p95_ms_max": 19.339,
+    "beginner_scan_p95_ms_max": 88.476,
+    "scan_latency_gate_passed": true
+  },
+  "reserved_unpruning": {
+    "ordered_control_wide_hit_rate": 0.022727272727272728,
+    "reserved_unpruning_wide_hit_rate": 0.1590909090909091,
+    "delta": 0.13636363636363635,
+    "ten_point_gate_passed": true,
+    "mandatory_wide_median_visits_unguided": 4.0,
+    "mandatory_wide_median_visits_guided": 5.0
+  },
+  "settling_v2": {
+    "mean_rollout_reduction_range": [
+      0.5634056771331283,
+      0.5747554153527656
+    ],
+    "p95_latency_reduction_range": [
+      -1.0187223852216367,
+      -0.7091463787713985
+    ],
+    "all_rollouts_within_4p": true,
+    "qualified_arms": 0,
+    "efficiency_gate_passed": false
+  },
+  "selection": {
+    "eligible_recipes": [],
+    "selected_recipe": null,
+    "holdout_may_run": false,
+    "deep_calibration_may_run": false,
+    "paired_ruleset_diagnostic_may_run": false
+  },
+  "claim_limits": {
+    "tactical_admission_only": true,
+    "strength": false,
+    "balance": false,
+    "strategic_depth": false,
+    "beauty": false
+  }
+}

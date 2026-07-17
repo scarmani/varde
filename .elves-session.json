@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "session_id": "elves-2026-07-17-varde-mcts-search-v5",
+  "mission": "Implement and evaluate corrected root proof guidance, obligation-reserved unpruning, and true-terminal settling V2 in a frozen eight-arm factorial.",
+  "mode": "finite",
+  "status": "completed_gated_stop",
+  "started_at": "2026-07-17T13:06:56-05:00",
+  "deadline_hours": 12,
+  "branch": "codex/mcts-search-v5",
+  "worktree": "/private/tmp/varde-mcts-search-v5",
+  "base_commit": "808c31720730fcf23bbc02c4549bd7151bdab3ec",
+  "collision_tripwire": "808c31720730fcf23bbc02c4549bd7151bdab3ec",
+  "plan_path": "docs/plans/mcts-search-v5.md",
+  "plan_sha256": "b476f08b3799babd96ee1f4187da4578b0fba161d11007bb539e16336d9767e0",
+  "survival_guide_path": "docs/elves/mcts-search-v5-survival-guide.md",
+  "learnings_path": "docs/elves/mcts-search-v5-learnings.md",
+  "execution_log_path": "docs/elves/mcts-search-v5-execution-log.md",
+  "merge_policy": "user-merges",
+  "pr_number": 22,
+  "continuation_guard": {
+    "remaining_batches": 0,
+    "stop_allowed": true,
+    "checkpoint_is_stop": false,
+    "next_required_action": "None. No recipe qualified; holdout, deep calibration, and paired diagnostics are prohibited for V5."
+  },
+  "test_baseline": {
+    "passed": 299,
+    "total": 299,
+    "skipped": 0,
+    "status": "passed in 108.988s"
+  },
+  "current_batch": {
+    "id": 6,
+    "name": "Conditional holdout and handoff",
+    "status": "completed_gated_stop"
+  },
+  "batches": [
+    {"id": 0, "name": "Stage the stacked run", "status": "completed", "commit": "aa887487827ac1db3079b63ec7f45bfdd620e279", "rollback_tag": "elves/mcts-search-v5-pre-batch-0"},
+    {"id": 1, "name": "Freeze corpora and oracle", "status": "completed", "commit": "e828a1dbe7671fec4a1b2ee988ccc606087cd144", "rollback_tag": "elves/mcts-search-v5-pre-batch-1"},
+    {"id": 2, "name": "Correct root proof guidance", "status": "completed", "commit": "f572f407ae4b647ff50d75003eee5c45c12a50b4", "rollback_tag": "elves/mcts-search-v5-pre-batch-2"},
+    {"id": 3, "name": "Add reserved unpruning", "status": "completed", "commit": "f1b4fe8ba10293617ab89e43853baeabb4b5dd9c", "rollback_tag": "elves/mcts-search-v5-pre-batch-3"},
+    {"id": 4, "name": "Add settling V2", "status": "completed", "commit": "427081fdad60d8a8bf42d9c49b1d89e9eb00459d", "rollback_tag": "elves/mcts-search-v5-pre-batch-4"},
+    {"id": 5, "name": "Run eight-arm development factorial", "status": "completed_gated_stop", "commit": "3e9af1ba550cd883f97eaf750b008624e8915542", "rollback_tag": "elves/mcts-search-v5-pre-batch-5"},
+    {"id": 6, "name": "Conditional holdout and handoff", "status": "completed_gated_stop", "commit": "3e9af1ba550cd883f97eaf750b008624e8915542", "rollback_tag": "elves/mcts-search-v5-pre-batch-6"}
+  ],
+  "review_comments": [],
+  "active_compute": [],
+  "last_completed_action": "The 4,704-decision development factorial completed with perfect integrity but no eligible recipe. Batch 6 preserved the mandatory gated stop at 3e9af1b; no holdout or downstream compute ran.",
+  "final_validation": {
+    "tests_passed": 347,
+    "tests_status": "passed in 170.669s",
+    "manifest_regenerated_exactly": true,
+    "draft_pr": 22,
+    "merged": false
+  },
+  "updated_at": "2026-07-17T16:40:57-05:00"
+}

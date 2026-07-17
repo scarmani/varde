@@ -1,0 +1,103 @@
+{
+  "claim_limits": {
+    "balance_evidence": false,
+    "development_tactical_admission_only": true,
+    "holdout_evidence": false,
+    "strategic_depth_evidence": false,
+    "strength_evidence": false
+  },
+  "configuration": {
+    "budgets": [
+      4,
+      16,
+      64
+    ],
+    "factorial_tasks": 4608,
+    "instrument_tasks": 96,
+    "ordered_control_instrument": "v4-ordered-control",
+    "policies": [
+      "uniform",
+      "epsilon-greedy"
+    ],
+    "replicates": 4,
+    "seed": 20260717051,
+    "task_order": "budget-variant-position-policy-replicate-then-instrument",
+    "task_schedule_sha256": "aa6469813e729e2c27e26cd65910b7736c485fc4d28b960a5f94a9012b705f72",
+    "tasks": 4704,
+    "variants": [
+      "v5-g0-u0-s0",
+      "v5-g0-u0-s1",
+      "v5-g0-u1-s0",
+      "v5-g0-u1-s1",
+      "v5-g1-u0-s0",
+      "v5-g1-u0-s1",
+      "v5-g1-u1-s0",
+      "v5-g1-u1-s1"
+    ]
+  },
+  "corpus": {
+    "catalog_sha256": "a07e82c5fec3ae879810d4ef05dfb5f67ea522dbd5b3d3b51c027b2c37a41a7f",
+    "decoys": 6,
+    "manifest": "research/manifests/mcts-search-v5-development-20260717.json",
+    "positions": 24,
+    "positive_positions": 18
+  },
+  "created_date": "2026-07-17",
+  "execution": {
+    "checkpoint_resume": true,
+    "output_dir": "/Users/armand/varde-runs/mcts-search-v5-20260717/development",
+    "raw_output_repository_external": true,
+    "worker_count_invariant": true
+  },
+  "format": "varde-mcts-search-v5-development-factorial",
+  "gates": {
+    "integrity_failures": 0,
+    "mandatory_wide_median_visits_at_64": 3,
+    "max_rollout_actions": "4P",
+    "monotonic_by_policy": true,
+    "pooled_admission_at_64": 0.8,
+    "positive_position_policy_cell_at_64": "3/4",
+    "settling_admission_floor_delta": -0.05,
+    "settling_mean_rollout_reduction": 0.5,
+    "settling_p95_latency_reduction": 0.4,
+    "unpruning_delta_over_ordered_control": 0.1
+  },
+  "payload_sha256": "c159b4444596ecdc3fae0aa9a267f8a3ffdc66698708738691086495efece912",
+  "preflight": {
+    "declared_oracle_solver_agreement": true,
+    "holdout_not_loaded": true,
+    "oracle_solver_agreement": true,
+    "root_scan_once_required": true,
+    "terminal_backups_only": true
+  },
+  "recipe": "mcts-search-v5-eight-arm-factorial-v1",
+  "source": {
+    "agent_hashes": {
+      "v4-ordered-control": "1c550842a5e19b4d53ec698a2271f1e4e4bff3339aec0b4dd2c6620d739fa731",
+      "v5-g0-u0-s0": "6e71dbcc0cb2c3ff314cd08b61d91c7ad8f13d64d7fe0521c217efe2104a6b4c",
+      "v5-g0-u0-s1": "73ad097dbd0c8a9d331b69067b8492c9f28617b4d54868668c1b9e07594ce52e",
+      "v5-g0-u1-s0": "233a30b4f427a9aa4bffc4a08872c605a57bfb0d045aa8ded928b74d6ebe0fe2",
+      "v5-g0-u1-s1": "44e2d647087c817f980c4fde093402b8bcb421df5e959750c655afb06d1b988c",
+      "v5-g1-u0-s0": "fa6c22992efdc98c2945c2138e09c5a11c996e03faccc952d989d998c0e1251b",
+      "v5-g1-u0-s1": "856c11c4f9479f6a8ade5e5a6ac318e112ecbd36caa33afc164eb40a2f580b85",
+      "v5-g1-u1-s0": "913ca0ba250d6e81ddc51cb1b5116be7980da91e9eec77c4f3d645ec1bbd310e",
+      "v5-g1-u1-s1": "7daec5618447135e84191e37f1ce9e7e9fe177072742eb899c6e7d9971d126aa"
+    },
+    "code_hash": "c953bed07e461dcd31e57075f71941b3e3ea2a6f21b986b27d0fff0f3fe5c8af",
+    "files": {
+      "engine/actions.py": "779afcd01fc172e9f9c759c9b2fe47bc46ac8e12dd0f4d799f36f0df5bb48643",
+      "engine/mcts.py": "b6b3039b18df3ff14572e27f36a131a8ac57fff538f1f25d35e096a6fd8139b8",
+      "engine/mcts_v5_settling.py": "07f897f47b66981711e723c24be4fbd17d424e70c0e62d18d34ff11c3dddc910",
+      "engine/mcts_v5_solver.py": "99e424723e247d8d1aeab1191c1365b63babde935d9624097888ce7601791731",
+      "engine/mcts_v5_unpruning.py": "b5514d7aeb77bb3e2505bf40b8368b4e94fc8d832a317ffe79a50c00a2633997",
+      "engine/varde.py": "dbc2e9127dbda1f3ac8833f91ad35fc102267ab2a4e52a28abaa98191d82843b",
+      "research/harness/mcts_v5_corpus.py": "1a91678f32059156a79ead306dd2468237d886031d1144b1588a14d975c53212",
+      "research/harness/mcts_v5_factorial.py": "1c36657aaef6b7b12001dcb9b103f0dd1e4b8e5e6ac9da5e15fb1efd5c1140dd",
+      "research/harness/mcts_v5_oracle.py": "a42c1ef67655e8ed7c749dddf9c8be737081bc97bb38d6626cbae622b2b26556"
+    },
+    "source_commit": "0a1063cfb6f586f1d8bfb22773cfea021e830d15",
+    "stacked_base": "808c31720730fcf23bbc02c4549bd7151bdab3ec"
+  },
+  "status": "frozen-before-factorial-outcomes",
+  "version": 1
+}
