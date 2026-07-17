@@ -27,15 +27,15 @@ negative evidence and never merge.
 
 ## Current Phase
 
-Batch 3 — implement Candidate B as paired ordered-control and progressive-
-unpruning recipes. The holdout remains sealed for outcome testing until Batch 5.
+Batch 4 — implement Candidate C as a true-terminal settling playout policy. The
+holdout remains sealed for outcome testing until Batch 5.
 
 ## Stop Gate
 
-- Planned batches remaining: 4.
+- Planned batches remaining: 3.
 - Stop allowed right now: no.
-- Next exact action: add semantic rule-fact ordering, the exact visit-gated
-  exposure schedule at root and interior nodes, and deterministic tests.
+- Next exact action: add P/2P settling phases, one legal losing-seat
+  resumption, terminal-only backup telemetry, and isolated efficiency tests.
 
 ## Validation
 

@@ -77,11 +77,28 @@ Status: complete at `48ee0b6`.
 
 ## Batch 3 — Progressive unpruning
 
-Status: in progress.
+Status: complete at `2561071`; high-rung delta remains pending Batch 5.
+
+### Evidence
+
+- Added separately hashed `v4-ordered-control` and `v4-unpruning` recipes. Both
+  use one generated legal-transition set ordered by administrative actions,
+  extensions, captures, defenses, fence completions, then other actions.
+- Progressive exposure exactly matches 4/8/16/32/64 actions at
+  4/16/64/256/1,024 visits and eventually exposes every action at root and
+  interior nodes.
+- At a natural 54-action root and 64 visits, exactly 16 actions were exposed,
+  median visits per exposed child was 4, and all 38 hidden actions had zero
+  visits. Across 128 semantic seeds, 50 different first points won equal-tier
+  ordering, rejecting a fixed board-direction fallback.
+- Forced single administrative actions remain visible. Structural feasibility
+  passes; the required +10 percentage-point high-rung admission improvement
+  over ordered control is intentionally unresolved until the common screen.
+- Full gate: 288 tests pass in 63.818 s; changed-file Ruff and compilation pass.
 
 ## Batch 4 — True-terminal settling
 
-Status: pending.
+Status: in progress.
 
 ## Batch 5 — Admission, composition, and holdout
 

@@ -16,10 +16,10 @@
   "merge_policy": "user-merges",
   "pr_number": 21,
   "continuation_guard": {
-    "remaining_batches": 4,
+    "remaining_batches": 3,
     "stop_allowed": false,
     "checkpoint_is_stop": false,
-    "next_required_action": "Implement ordered-control and progressive-unpruning as isolated Candidate B recipes, then verify their deterministic widening feasibility gates."
+    "next_required_action": "Implement Candidate C true-terminal settling rollouts, instrument terminal reasons and resumption use, and run its isolated efficiency feasibility gate."
   },
   "test_baseline": {
     "passed": 268,
@@ -27,18 +27,18 @@
     "skipped": 0,
     "status": "passed in 47.362s"
   },
-  "current_batch": {"id": 3, "name": "Progressive unpruning", "status": "in_progress"},
+  "current_batch": {"id": 4, "name": "True-terminal settling", "status": "in_progress"},
   "batches": [
     {"id": 0, "name": "Staged run", "status": "complete", "commit": "dddbaf4c5cbef15962ac069571d95074b0afbbe1", "rollback_tag": "elves/mcts-search-v4-pre-batch-0"},
     {"id": 1, "name": "Independent holdout", "status": "complete", "commit": "9dcd4e1a50f5b3288b0d3d98cc1f49eb7bba2a76", "rollback_tag": "elves/mcts-search-v4-pre-batch-1"},
     {"id": 2, "name": "Certified tactical subsearch", "status": "complete", "commit": "48ee0b66ed198030eeb7b77a72551578425cbca7", "rollback_tag": "elves/mcts-search-v4-pre-batch-2"},
-    {"id": 3, "name": "Progressive unpruning", "status": "in_progress", "commit": null, "rollback_tag": "elves/mcts-search-v4-pre-batch-3"},
-    {"id": 4, "name": "True-terminal settling", "status": "pending", "commit": null, "rollback_tag": null},
+    {"id": 3, "name": "Progressive unpruning", "status": "complete", "commit": "2561071723687d4c89ff47d6392b47af54fe9ecf", "rollback_tag": "elves/mcts-search-v4-pre-batch-3"},
+    {"id": 4, "name": "True-terminal settling", "status": "in_progress", "commit": null, "rollback_tag": "elves/mcts-search-v4-pre-batch-4"},
     {"id": 5, "name": "Admission, composition, and holdout", "status": "pending", "commit": null, "rollback_tag": null},
     {"id": 6, "name": "Conditional deep tier and handoff", "status": "pending", "commit": null, "rollback_tag": null}
   ],
   "review_comments": [],
   "active_compute": [],
-  "last_completed_action": "Candidate A reproduced 24/24 certificates with zero decoy overrides and passed its latency/integrity feasibility gate at 48ee0b6.",
-  "updated_at": "2026-07-17T11:30:00-05:00"
+  "last_completed_action": "Candidate B passed structural widening feasibility at 2561071; its required high-rung admission delta remains pending the common screen.",
+  "updated_at": "2026-07-17T11:48:00-05:00"
 }

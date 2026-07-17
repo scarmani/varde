@@ -30,3 +30,7 @@ agent results, performance observations, and any later match diagnostics.
   completed under the 10,000-node limit, with p95 below the Toy/Beginner gates.
   This establishes implementation feasibility only; automatic obligation
   detection and whole-decision admission remain separate tests.
+- Progressive unpruning redistributes a 64-simulation wide root from roughly
+  one visit per sampled action to a median of four visits across 16 exposed
+  actions. Whether that improves tactical admission by the required ten points
+  is an outcome question reserved for the common screen.
