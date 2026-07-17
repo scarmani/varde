@@ -134,7 +134,8 @@ actions, mutations, or incomplete backups.
 | True-terminal settling | 45.833% | fail |
 
 - Candidate A passes pooled and monotonic gates but fails complete cell
-  admission. Its overall p95 latency at 64 is 8.778 s.
+  admission. Its overall p95 latency across the screen is 8.778 s; its
+  policy-specific p95 at 64 exceeds 10 s.
 - Candidate B improves ordered control by 6.25 percentage points, below the
   required 10 points, and also fails complete admission.
 - Candidate C backs up 100% accepted terminals and stays within 4P, but is

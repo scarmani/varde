@@ -97,6 +97,28 @@ The solver cleared the pooled 80% and monotonic gates but failed the required
 - Gjerde-Go fence completion with uniform rollout: 2/4;
 - Gjerde-Go fence completion with epsilon-greedy rollout: 2/4.
 
+### Post-run certificate audit
+
+A post-run trace audit found two reasons not to interpret those cell misses as
+a clean test of exact tactical search:
+
+- the rescue verifier and solver both recurse through legal `extend` actions
+  after the actor can change, so an opponent extension can be treated as an
+  existential continuation for the original actor; and
+- the small fence fixture labels either immediate completion as acceptable,
+  while the solver proves the stricter claim that the completed fence survives
+  every immediate reply. Both completion actions fail that stricter claim in
+  the recorded state.
+
+The holdout verifier is in a separate module but duplicates the rescue
+recursion, so its agreement is not independent semantic confirmation. The
+24/24 certificate-reproduction result remains an accurate implementation
+agreement result, but rescue certificates are not admissible soundness
+evidence. The common-screen choices, timing, legality, and non-mutation records
+remain valid observations. A future solver study needs an independently
+specified alternating-turn oracle and fixtures whose acceptance predicate is
+identical to the obligation being proved.
+
 Progressive unpruning improved ordered control by 6.25 percentage points, below
 the required 10 points, and did not pass pooled or cell admission.
 
@@ -142,9 +164,14 @@ tuning pass. The most defensible next hypotheses are:
 5. settling triggered by measured absence of score-changing continuations,
    with transition-cost accounting, rather than the current P/2P clock alone.
 
-The V4 holdout remains unspent as an outcome-selection corpus and can be reused
-only under a newly frozen architecture-selection plan that does not tune on its
-certificates or state hashes.
+The V4 corpus was consumed for the plan's explicit certificate-reproduction
+feasibility test, but it was not used for an MCTS outcome ladder. It should now
+be treated as a regression corpus, not as an unbiased architecture-selection
+holdout. A future predeclared search plan should freeze a fresh outcome holdout.
+
+The repair and combination investigation is recorded separately in
+`research/reports/mcts-search-v5-candidate-investigation-20260717.md`. It is a
+pre-plan diagnostic, not a Search V5 result.
 
 ## Evidence index
 
