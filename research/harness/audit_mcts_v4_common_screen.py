@@ -4,9 +4,11 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 from pathlib import Path
 import statistics
+import subprocess
 import sys
 
 
@@ -30,6 +32,16 @@ VARIANTS = (
     "v4-unpruning",
     "v4-settling",
 )
+
+
+def _source_commit():
+    return subprocess.run(
+        ["git", "rev-parse", "HEAD"],
+        cwd=REPO_ROOT,
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout.strip()
 
 
 def _percentile(values, fraction):
@@ -182,6 +194,13 @@ def audit_common(inputs):
     variants = {}
     for variant in VARIANTS:
         item = loaded[variant]
+        failed_high_cells = {
+            key: value["hit_rate"]
+            for key, value in item["audit"]["position_ladder"].items()
+            if key.startswith("admission-")
+            and key.endswith("@64")
+            and value["hit_rate"] < 0.75
+        }
         variants[variant] = {
             "admitted": item["audit"]["admitted"],
             "high_budget_overall_hit_rate": item["audit"][
@@ -193,11 +212,22 @@ def audit_common(inputs):
             "deterministic_records_sha256": item["audit"][
                 "reproducibility"
             ]["deterministic_records_sha256"],
+            "failed_high_rung_cells": failed_high_cells,
         }
     payload = {
         "format": FORMAT,
         "version": VERSION,
         "status": "complete",
+        "source": {
+            "source_commit": _source_commit(),
+            "auditor_sha256": hashlib.sha256(
+                Path(__file__).read_bytes()
+            ).hexdigest(),
+            "input_audit_payload_hashes": {
+                variant: loaded[variant]["audit"]["payload_hash"]
+                for variant in VARIANTS
+            },
+        },
         "variants": variants,
         "candidate_a": {
             "qualified": solver_qualified,
