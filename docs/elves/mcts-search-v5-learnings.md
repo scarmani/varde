@@ -43,3 +43,15 @@ not invitations to tune a frozen gate.
 - A tied takeover decoy produces all-unknown statuses; control and guided runs
   then have identical actions, values, visits, and terminal traces. The proof
   scan consumes no RNG and never backs up or forces a result.
+
+## Batch 3
+
+- Mandatory membership can be separated cleanly from the unchanged square-root
+  capacity: administrative, one-per-obligation, and complete proven-set actions
+  form an overflow set; the remaining capacity follows V4 fact/hash order.
+- On the 52-action Toy capture root, the 64-visit schedule exposed 16 actions
+  and the mandatory subset received a median of at least three visits. This is
+  an instrument-validity result, not yet the registered admission comparison.
+- Equal-tier first exposure covered more than 40 distinct points across 128
+  seeds, while all four V5 factor recipes and the historical V4-unpruning hash
+  remained distinct and deterministic.

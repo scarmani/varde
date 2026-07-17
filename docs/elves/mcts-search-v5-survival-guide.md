@@ -63,22 +63,22 @@ development factorial, and continue only through predeclared gates.
 ## Current Phase
 
 - **Status:** in progress.
-- **Active batch:** Batch 3 of 6.
-- **What was just finished:** Batch 2 committed at `f572f40`; all 24 oracle
-  comparisons, one-scan/decay/parity checks, p95 ceilings, and 323 product tests
-  passed without changing any V4 recipe hash.
-- **Single next action:** implement obligation-reserved progressive unpruning
-  with administrative/proven-set overflow and exact exposure telemetry.
+- **Active batch:** Batch 4 of 6.
+- **What was just finished:** Batch 3 committed at `f1b4fe8`; schedule,
+  mandatory-overflow, neutrality, median-visit, deterministic, V4-parity, and
+  330-product-test checks passed.
+- **Single next action:** implement Settling V2 with half-P eligibility, the
+  four exact event classes, legal resumption, and hard 4P integrity failure.
 
 ## Stop Gate
 
-- **Planned batches remaining:** 4.
+- **Planned batches remaining:** 3.
 - **Stop allowed right now:** no.
 - **Why:** the user authorized the full finite V5 run and no mandatory gate or
   other actual stop condition has fired.
-- **Next required action:** execute Batch 3's reserved-unpruning contract and
-  prove mandatory exposure, schedule counts, neutrality, eventual expansion,
-  and exact V4 behavior/hash preservation.
+- **Next required action:** execute Batch 4's Settling V2 contract and prove
+  event classification, pass/extension/resumption semantics, true-terminal
+  backups, action ceiling accounting, and V1/V4 preservation.
 
 ## Effort Standard
 
@@ -117,16 +117,16 @@ development factorial, and continue only through predeclared gates.
 
 ## Next Exact Batch
 
-- **Batch:** Batch 3 — obligation-reserved progressive unpruning.
-- **Scope:** retain `ceil(2 × sqrt(visits))`, expose every administrative action,
-  reserve one slot per urgent obligation, expose the full proven set in guided
-  arms, and fill remaining slots by existing fact order and semantic hash.
-- **Acceptance criteria:** exact schedules and overflow; administrative and
-  urgent actions never hidden; eventual full expansion; deterministic neutral
-  ties; at 64 visits, wide roots expose mandatory actions with median at least
-  three visits; V4 decisions/hashes unchanged.
-- **Risk:** unordered set iteration or post-hoc quota changes would break
-  determinism; mandatory overflow must not become forced action exclusion.
+- **Batch:** Batch 4 — true-terminal Settling V2.
+- **Scope:** begin eligibility at `ceil(0.5P)`, recognize only capture,
+  extension/closure, controlled sole-liberty defense, and immediate fence
+  completion, settle after pass/no-event, force finish/pass at P, preserve one
+  legal losing-seat resumption plus at most one event, and fail beyond 4P.
+- **Acceptance criteria:** transition/event generation once per state; exact
+  phase and event tests; every accepted backup terminal; no illegal action or
+  mutation; deterministic recipes; V4 Settling V1 behavior/hash unchanged.
+- **Risk:** counting generic score/control change would recreate the V4 failure;
+  the 4P bound is integrity accounting, never a backed-up heuristic cutoff.
 
 ## Post-Checkpoint Control Loop
 

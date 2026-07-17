@@ -164,7 +164,7 @@ Status: completed at `f572f40`.
 
 ## Batch 3 — Obligation-reserved progressive unpruning
 
-Status: in progress.
+Status: completed at `f1b4fe8`.
 
 ### Contract
 
@@ -184,3 +184,41 @@ Status: in progress.
 
 - V5 unpruning module/integration/tests only; historical V4 order and recipes
   remain byte-behavior compatible.
+
+### Outcome
+
+- Added an independent V5 exposure-plan module. Administrative actions, one
+  rule-ordered action per detected obligation, and the complete guided proven
+  set are mandatory; they can overflow but never reduce the base schedule.
+- Exact base exposure remains 4/8/16/32/64 at 4/16/64/256/1,024 visits and
+  reaches every action. Next-threshold telemetry accounts for overflow.
+- A natural 52-action root exposed 16 at 64 visits and gave mandatory actions
+  median visits at least three. Across 128 seeds, equal-tier first exposure
+  reached over 40 distinct points.
+- Four V5 factor hashes are distinct; the V4-unpruning hash remains
+  `17ec848552b44894fa44cf3fe8296346129f28aa96518a264e60ed3be76b3c0e`.
+- Seven dedicated unpruning tests and all 330 product tests passed in 110.769
+  seconds. Changed-file Ruff, compilation, diff, forbidden-file, and CI checks
+  passed.
+
+## Batch 4 — True-terminal Settling V2
+
+Status: in progress.
+
+### Contract
+
+**Behavior**
+
+- Apply the frozen four-event policy from half-P, force finish/pass at P, and
+  preserve the real two-pass acceptance/resumption protocol.
+- Reuse one transition/event set per state and treat any action beyond 4P as an
+  integrity failure rather than a heuristic value.
+
+**Acceptance criteria**
+
+- Exact event/phase/resumption tests, 100% accepted-terminal backups,
+  deterministic/non-mutating recipes, and historical Settling V1 parity.
+
+**Blast radius**
+
+- New V5 settling module plus research-only MCTS recipe combinations/tests.
