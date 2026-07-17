@@ -3,8 +3,9 @@
 ## Decision state
 
 No Varde ruleset is promoted as the flagship. The native-only screen, first
-independent uniform-MCTS@12 diagnostic, and outcome-blind tactical admission
-ladder are complete. The independent agent failed tactical admission, and
+independent uniform-MCTS@12 diagnostic, and staged Search V3 tactical admission
+program are complete. Every tested independent agent failed tactical admission,
+and
 adversarial and human evidence remain unrun. This is a deliberate blocked
 decision, not a negative verdict on the candidates.
 
@@ -22,13 +23,13 @@ balance, depth, emergence, elegance, or beauty.
 | Candidate freeze | `classic-1.3`, `rosette-0.1`, `breath-0.1`, `breath-run-0.1`, `gjerde-breath-0.1`, and `gjerde-go-0.1` are public candidates. |
 | Research-only variants | Breath rescue is a control; extension variants are archived; Breath cap is broken. Old saves still load. |
 | Evaluator firewall | Six hash-pinned native evaluators pass constructed mechanics fixtures; literal Classic seeded behavior is unchanged. |
-| Independent agent | Seeded terminal-score UCT supports play, pass, swap, extension, finish, both end decisions, and resumption with uniform and light rollouts. Tactical admission at 64 simulations is only 26.25%. |
-| Decision telemetry | Research records retain nodes, rollout lengths, latency, root width, capture/defense choices, takeover, rescue-chain actions, and fence completion without changing search behavior. |
+| Independent agent | Seeded terminal-score UCT supports every rules action. Search V3 removed coordinate ties, added terminal-margin telemetry, and tested two opt-in tactical-guidance variants; the best proof-grade high-rung result was 60.42%, below the 80% gate. |
+| Decision telemetry | Research records every root action's visits, W/D/L, raw and normalized terminal margin, rank, selection reason, rollout length, nodes, latency, and tactical choice without mutating analyzed positions. |
 | Falsification CLI | Paired colors, budgets, sizes, seeds, workers, telemetry, cancellation, watchdog classification, JSONL, summary, checkpoint, and resume are implemented. |
 | Reproducibility | Schedules and decisions are deterministic after excluding observational latency; checkpoints resume in order and fail closed on tampering. |
 | Human study | Counterbalanced 8/10/12-player schedule, neutral briefs, engine-derived puzzles, post-game ratings, motif coding, and retention prompts are implemented. |
 | Browser telemetry | Opt-in hotseat action/timing records export locally; no direct identifiers, wall-clock time, or server collection endpoint exist. |
-| Product regression | 254 Python tests pass; Python and JavaScript syntax checks pass. Existing browser export/save/load/resumption/watch evidence is unchanged because this unit has no browser or live-game behavior change. |
+| Product regression | 268 Python tests pass; Python and JavaScript syntax checks pass. Existing browser export/save/load/resumption/watch evidence is unchanged because this unit has no browser or live-game behavior change. |
 
 ## Native screening v2
 
@@ -79,13 +80,13 @@ terminal UCT's budget is not yet a justified evidence program.
 
 | Required stage | Status | Promotion use |
 |---|---|---|
-| Constructed tactical admission | Native mechanics fixtures pass; terminal MCTS v1 failed its 240-decision 4/16/64 ladder at 26.25% high-budget pooled hits | Necessary implementation gate only; blocks further paired MCTS |
+| Constructed tactical admission | Search V3 completed four clean 384-decision split-corpus runs; proof-grade high-rung rates were 60.42%, 54.17%, 52.08%, 54.17%, and 41.67% across the behavior-neutral baseline and isolated/combined variants | Necessary implementation gate only; blocks further paired MCTS |
 | Cross-family operational smoke | Complete: one Toy pair per candidate | None |
 | Native operational screen: 20 paired n=4 seeds | Complete: 480 games across mixed and matched native jobs; zero operational failures; [diagnostic report](native-screening-v2-results.md) | Falsification and evaluator-artifact triage only |
 | Independent shallow calibration | Uniform MCTS@12 completed 240 games and audited cleanly, but failed strategic admission: native scored 97.7% overall | Operational/action-plumbing evidence only; repair agent before another match batch |
 | Health screen: 50 fresh paired seeds | Not run | None until complete |
 | Confirmation: 100 fresh paired seeds | Not run | None until complete |
-| MCTS 250 → 1,000 → 4,000 depth ladder | Not run | No depth claim |
+| MCTS 2,048 / 4,096 deep calibration | Neither selected; both jobs were blocked before launch by failed admission and severe 64-simulation rollout-cost tails | No named tier or depth claim |
 | Uniform versus light rollout stability | Not run at admissible sample | All outcomes provisional |
 | Single-purpose exploit policies | Not run under the frozen revisions | No degeneration-resistance claim |
 | Ruleset-native MAP-Elites exploit search | Not run; the deterministic V3 archive is retained, while native descriptors/adapters are instantiated only after a ruleset survives health screening | No strategic-diversity claim |
@@ -184,5 +185,7 @@ python3 research/harness/human_study.py \
 8. Promote one flagship only after the final high-budget, outside-play,
    forced-win, and complete negative-evidence publication gates pass.
 
-The next operator decision is the versioned MCTS diagnostic/search repair. It
-is not a choice of flagship or a larger simulation budget.
+The next operator decision is whether to fund a different MCTS architecture.
+The tested tie, terminal-margin, and myopic tactical-guidance repairs are
+insufficient; neither 2,048 nor 4,096 is justified. It is not a choice of
+flagship or a larger simulation budget.

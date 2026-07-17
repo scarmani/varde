@@ -530,3 +530,49 @@ Batch 5 changes no executable behavior. The selected budget is null by design,
 all blocked prerequisites are explicit, and no Varde research process was
 launched. Confidence HIGH that the staged gate requires `neither`; no claim is
 made about a future differently designed MCTS.
+
+## Batch 6 — Conditional paired diagnostic and final handoff
+
+Status: final readiness review in progress; paired diagnostic skipped by gate.
+
+### Contract
+
+**Behaviors:** do not freeze or run paired games because Batch 5 selected no
+admitted tier. Refresh public research status from the compact artifacts, audit
+the cumulative branch and external evidence, run the complete product suite,
+poll every PR review/check surface, generate the temporary Elves report, remove
+operational session artifacts, and hand off the draft PR without merging.
+
+**Acceptance criteria:**
+
+- [x] Paired-game status is explicitly `not run — failed admission/deep-tier
+  prerequisite`; no output directory or match claim is created.
+- [x] Public tactical-admission and ruleset-status documents report all positive
+  and negative results, including the `neither` budget decision.
+- [x] Every compact result payload, manifest schedule, and external raw artifact
+  hash revalidates; all five 384-decision jobs remain integrity-clean negatives.
+- [x] Cumulative diff leaves `engine/varde.py`, rules, scoring, server, browser,
+  saves, native opponents, and live termination untouched.
+- [ ] Full 268-test suite, Python compile, JavaScript syntax, Ruff, and diff
+  checks pass at the final documentation head.
+- [ ] Direct final review covers the base-to-head diff, complete commit history,
+  plan, execution log, session state, PR comments/reviews, and CI.
+- [ ] Elves HTML report is generated under `/tmp`, operational session files are
+  removed from the PR, post-cleanup CI is green, and PR #20 stays draft/unmerged.
+
+**Blast radius:** final public research documentation and cleanup only. Any
+blocking review finding must be repaired and revalidated before handoff; no new
+search experiment is authorized in this batch.
+
+### Evidence reconciliation
+
+- Rebuilt all five manifest schedules at 384 tasks each and verified each
+  compact payload hash, manifest payload link, accounting block, and every
+  external `state.json`, `decisions.jsonl`, and `summary.json` SHA-256.
+- Verified the deep-calibration payload hash and its null selected budget,
+  `neither` decision, and `deep_jobs_launched=false` assertion.
+- Base-to-head review confirms no diff in `engine/varde.py`, `server.py`, or
+  `web/game.js`. The live browser opponent remains the existing native search.
+- Public documentation now distinguishes the historical 26.25% V1 diagnostic
+  from the five-run split-corpus sequence and states that these are agent, not
+  ruleset, results.
