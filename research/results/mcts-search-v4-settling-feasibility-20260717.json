@@ -1,0 +1,295 @@
+{
+  "accounting": {
+    "mutated": 0,
+    "over_4p": 0,
+    "rollouts": 12,
+    "terminal": 12
+  },
+  "claim_limits": {
+    "candidate_admission_evidence": false,
+    "efficiency_evidence": false,
+    "strength_evidence": false,
+    "terminal_integrity_only": true
+  },
+  "config": {
+    "policies": [
+      "uniform",
+      "epsilon-greedy"
+    ],
+    "positions": 6,
+    "seed": 20260717,
+    "terminal_values_only": true
+  },
+  "created_date": "2026-07-17",
+  "efficiency_gate_pending_common_screen": true,
+  "feasibility_gate": {
+    "accepted_terminal_backups_100_percent": true,
+    "admission_within_5_points_of_control": null,
+    "integrity_clean": true,
+    "mean_rollout_reduction_at_least_50_percent": null,
+    "no_rollout_longer_than_4p": true,
+    "p95_latency_reduction_at_least_40_percent": null,
+    "resumption_observed": true
+  },
+  "format": "varde-mcts-search-v4-settling-feasibility",
+  "payload_sha256": "842805454d4b7af9917936b1b835a4d46a852c8a7053ebada1befa888c72e8b2",
+  "qualified_for_common_development_screen": true,
+  "recipe_id": "mcts-search-v4-settling-v1",
+  "records": [
+    {
+      "actions": 18,
+      "board_size": 3,
+      "four_p_limit": 216,
+      "phase_counts": {
+        "ending-accept": 2,
+        "ending-resume": 1,
+        "fallback": 2,
+        "post-resumption-pass": 1,
+        "progress": 9,
+        "settle-no-progress-pass": 1,
+        "settle-reply-pass": 2
+      },
+      "policy": "uniform",
+      "position_id": "admission-breath-small-capture",
+      "resumption_used": true,
+      "rules": "breath",
+      "state_unchanged": true,
+      "terminal": true,
+      "terminal_reason": "accepted-after-resumption",
+      "within_four_p": true
+    },
+    {
+      "actions": 18,
+      "board_size": 3,
+      "four_p_limit": 216,
+      "phase_counts": {
+        "ending-accept": 1,
+        "ending-resume": 1,
+        "fallback": 2,
+        "post-resumption-pass": 1,
+        "progress": 10,
+        "settle-no-progress-pass": 1,
+        "settle-reply-pass": 2
+      },
+      "policy": "epsilon-greedy",
+      "position_id": "admission-breath-small-capture",
+      "resumption_used": true,
+      "rules": "breath",
+      "state_unchanged": true,
+      "terminal": true,
+      "terminal_reason": "accepted-after-resumption",
+      "within_four_p": true
+    },
+    {
+      "actions": 7,
+      "board_size": 3,
+      "four_p_limit": 216,
+      "phase_counts": {
+        "ending-accept": 1,
+        "ending-resume": 1,
+        "post-resumption-pass": 1,
+        "progress": 1,
+        "settle-no-progress-pass": 1,
+        "settle-reply-pass": 2
+      },
+      "policy": "uniform",
+      "position_id": "admission-breath-small-defense",
+      "resumption_used": true,
+      "rules": "breath",
+      "state_unchanged": true,
+      "terminal": true,
+      "terminal_reason": "accepted-after-resumption",
+      "within_four_p": true
+    },
+    {
+      "actions": 7,
+      "board_size": 3,
+      "four_p_limit": 216,
+      "phase_counts": {
+        "ending-accept": 1,
+        "ending-resume": 1,
+        "post-resumption-pass": 1,
+        "progress": 1,
+        "settle-no-progress-pass": 1,
+        "settle-reply-pass": 2
+      },
+      "policy": "epsilon-greedy",
+      "position_id": "admission-breath-small-defense",
+      "resumption_used": true,
+      "rules": "breath",
+      "state_unchanged": true,
+      "terminal": true,
+      "terminal_reason": "accepted-after-resumption",
+      "within_four_p": true
+    },
+    {
+      "actions": 6,
+      "board_size": 3,
+      "four_p_limit": 216,
+      "phase_counts": {
+        "ending-accept": 1,
+        "ending-resume": 1,
+        "fallback": 3,
+        "post-resumption-pass": 1
+      },
+      "policy": "uniform",
+      "position_id": "admission-pie-small-takeover",
+      "resumption_used": true,
+      "rules": "breath",
+      "state_unchanged": true,
+      "terminal": true,
+      "terminal_reason": "accepted-after-resumption",
+      "within_four_p": true
+    },
+    {
+      "actions": 7,
+      "board_size": 3,
+      "four_p_limit": 216,
+      "phase_counts": {
+        "ending-accept": 1,
+        "ending-resume": 1,
+        "fallback": 4,
+        "post-resumption-pass": 1
+      },
+      "policy": "epsilon-greedy",
+      "position_id": "admission-pie-small-takeover",
+      "resumption_used": true,
+      "rules": "breath",
+      "state_unchanged": true,
+      "terminal": true,
+      "terminal_reason": "accepted-after-resumption",
+      "within_four_p": true
+    },
+    {
+      "actions": 53,
+      "board_size": 3,
+      "four_p_limit": 216,
+      "phase_counts": {
+        "ending-accept": 1,
+        "ending-resume": 1,
+        "fallback": 36,
+        "post-resumption-pass": 1,
+        "progress": 11,
+        "settle-no-progress-pass": 1,
+        "settle-reply-pass": 2
+      },
+      "policy": "uniform",
+      "position_id": "admission-breath-run-small-continuation",
+      "resumption_used": true,
+      "rules": "breath-run",
+      "state_unchanged": true,
+      "terminal": true,
+      "terminal_reason": "accepted-after-resumption",
+      "within_four_p": true
+    },
+    {
+      "actions": 71,
+      "board_size": 3,
+      "four_p_limit": 216,
+      "phase_counts": {
+        "ending-accept": 1,
+        "ending-resume": 1,
+        "fallback": 40,
+        "post-resumption-pass": 1,
+        "progress": 25,
+        "settle-no-progress-pass": 1,
+        "settle-reply-pass": 2
+      },
+      "policy": "epsilon-greedy",
+      "position_id": "admission-breath-run-small-continuation",
+      "resumption_used": true,
+      "rules": "breath-run",
+      "state_unchanged": true,
+      "terminal": true,
+      "terminal_reason": "accepted-after-resumption",
+      "within_four_p": true
+    },
+    {
+      "actions": 71,
+      "board_size": 3,
+      "four_p_limit": 288,
+      "phase_counts": {
+        "ending-accept": 1,
+        "ending-resume": 1,
+        "post-resumption-progress": 1,
+        "progress": 64,
+        "settle-pass": 4
+      },
+      "policy": "uniform",
+      "position_id": "admission-gjerde-go-small-fence",
+      "resumption_used": true,
+      "rules": "gjerde-go",
+      "state_unchanged": true,
+      "terminal": true,
+      "terminal_reason": "accepted-after-resumption",
+      "within_four_p": true
+    },
+    {
+      "actions": 62,
+      "board_size": 3,
+      "four_p_limit": 288,
+      "phase_counts": {
+        "ending-accept": 1,
+        "ending-resume": 1,
+        "post-resumption-pass": 1,
+        "progress": 56,
+        "settle-no-progress-pass": 1,
+        "settle-reply-pass": 2
+      },
+      "policy": "epsilon-greedy",
+      "position_id": "admission-gjerde-go-small-fence",
+      "resumption_used": true,
+      "rules": "gjerde-go",
+      "state_unchanged": true,
+      "terminal": true,
+      "terminal_reason": "accepted-after-resumption",
+      "within_four_p": true
+    },
+    {
+      "actions": 1,
+      "board_size": 3,
+      "four_p_limit": 288,
+      "phase_counts": {
+        "ending-accept": 1
+      },
+      "policy": "uniform",
+      "position_id": "admission-gjerde-go-forced-acceptance",
+      "resumption_used": false,
+      "rules": "gjerde-go",
+      "state_unchanged": true,
+      "terminal": true,
+      "terminal_reason": "accepted-after-resumption",
+      "within_four_p": true
+    },
+    {
+      "actions": 1,
+      "board_size": 3,
+      "four_p_limit": 288,
+      "phase_counts": {
+        "ending-accept": 1
+      },
+      "policy": "epsilon-greedy",
+      "position_id": "admission-gjerde-go-forced-acceptance",
+      "resumption_used": false,
+      "rules": "gjerde-go",
+      "state_unchanged": true,
+      "terminal": true,
+      "terminal_reason": "accepted-after-resumption",
+      "within_four_p": true
+    }
+  ],
+  "source": {
+    "code_hash": "1d2550ba3a38819d806e4b7a08179c721837c52520ff8aea55f9b3e16f3fe456",
+    "files": {
+      "engine/actions.py": "779afcd01fc172e9f9c759c9b2fe47bc46ac8e12dd0f4d799f36f0df5bb48643",
+      "engine/mcts.py": "330232c1c28b0295d161d271e799211d09f06ea7119a625399db44fc8b29fd6e",
+      "engine/mcts_settling.py": "93a04d2f5e3f493848c5ff3d06a341b9359a3a47937c674f4cce257038059e1f",
+      "engine/varde.py": "dbc2e9127dbda1f3ac8833f91ad35fc102267ab2a4e52a28abaa98191d82843b",
+      "research/harness/evaluate_mcts_v4_settling.py": "66274cf45966f4ff2214975de20037cf6c4669779ea1b133e3408b33652e44ad"
+    },
+    "mcts_agent_hash": "d37e2c5fdeb1d95a245bcdb441192c02e77983a6931f9b1b88ef5be108f7a014",
+    "source_commit": "36b430bdb934cb60fdbc06815de32904900a93d5"
+  },
+  "structural_feasibility_passed": true,
+  "version": 1
+}
