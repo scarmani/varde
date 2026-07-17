@@ -26,7 +26,9 @@ from mcts_tactical_admission import (
     evaluate_task,
     load_state,
     run_admission,
+    stable_hash,
 )
+from audit_mcts_tactical_admission import _validate_manifest
 from mcts_tactical_fixtures import fixture_catalog, tactical_positions
 from mcts_telemetry import action_key, annotate_choice, tactical_context
 
@@ -152,6 +154,33 @@ class TestTacticalAdmissionHarness(unittest.TestCase):
         self.assertEqual(len(first), 10 * 2 * 3 * 4)
         self.assertNotIn("outcome", first[0])
         self.assertNotIn("score", first[0])
+
+    def test_frozen_manifest_contract_rebuilds_exact_schedule(self):
+        path = ROOT / "research/manifests/mcts-tactical-admission-20260716.json"
+        manifest = json.loads(path.read_text())
+        tasks = _validate_manifest(manifest)
+        self.assertEqual(len(tasks), 240)
+        self.assertEqual(
+            manifest["execution"]["output_dir"],
+            "/Users/armand/varde-runs/mcts-tactical-admission-20260716",
+        )
+
+    def test_committed_audit_is_clean_negative_admission_evidence(self):
+        path = ROOT / "research/results/mcts-tactical-admission-20260716.json"
+        payload = json.loads(path.read_text())
+        expected_hash = payload.pop("payload_hash")
+        self.assertEqual(stable_hash(payload), expected_hash)
+        self.assertEqual(payload["accounting"]["complete"], 240)
+        self.assertTrue(payload["correctness_and_provenance_audit_clean"])
+        self.assertEqual(payload["high_budget_overall_hit_rate"], 0.2625)
+        self.assertFalse(payload["admitted"])
+        self.assertFalse(
+            payload["next_stage_gate"]["paired_mcts24_may_be_frozen"]
+        )
+        self.assertFalse(
+            payload["next_stage_gate"]["paired_match_stage_launched_by_this_unit"]
+        )
+        self.assertTrue(payload["promotion_blocked"])
 
     def test_real_takeover_decision_is_legal_telemetric_and_nonmutating(self):
         task = next(

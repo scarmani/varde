@@ -1,0 +1,906 @@
+{
+  "accounting": {
+    "attempted": 240,
+    "complete": 240,
+    "crash": 0,
+    "pending": 0,
+    "scheduled": 240
+  },
+  "admission_gate": {
+    "aggregate_hit_rate_nondecreasing_by_policy": false,
+    "all_decisions_legal_nonmutating_and_complete": true,
+    "every_high_budget_position_policy_at_least_75_percent": false,
+    "high_budget_overall_at_least_80_percent": false
+  },
+  "admitted": false,
+  "claim_limits": {
+    "balance_evidence": false,
+    "latency_observational_not_deterministic": true,
+    "match_strength_evidence": false,
+    "promotion_blocked": true,
+    "ruleset_promise_evidence": false,
+    "strategic_depth_evidence": false,
+    "tactical_fixture_evidence_only": true
+  },
+  "claim_status": "outcome-blind tactical admission evidence",
+  "config": {
+    "budgets": [
+      4,
+      16,
+      64
+    ],
+    "policies": [
+      "uniform",
+      "epsilon-greedy"
+    ],
+    "replicates": 4,
+    "seed": 20260716021
+  },
+  "correctness_and_provenance_audit_clean": true,
+  "failure_task_ids": [],
+  "fixture_catalog": {
+    "format": "varde-mcts-tactical-fixtures",
+    "positions": [
+      {
+        "acceptable_actions": [
+          "play:-1,1"
+        ],
+        "actor_color": "B",
+        "board_size": 3,
+        "category": "capture",
+        "description": "Capture the isolated enemy surface stone immediately.",
+        "fixture_id": "classic-immediate-capture",
+        "id": "classic-immediate-capture",
+        "legal_actions": 52,
+        "rules": "classic",
+        "state_key_sha256": "4bfb69b690f24eb82b9b812bb99dfbe448dba8694273458a2539a4c9d4f1a62b",
+        "synthetic_history": false
+      },
+      {
+        "acceptable_actions": [
+          "play:-1,1"
+        ],
+        "actor_color": "B",
+        "board_size": 3,
+        "category": "capture",
+        "description": "Fill the last ordinary liberty and capture the isolated enemy stone.",
+        "fixture_id": "breath-immediate-capture",
+        "id": "breath-immediate-capture",
+        "legal_actions": 52,
+        "rules": "breath",
+        "state_key_sha256": "468c97f26d84168fd8d8928b04a85b2cd823f44148ff015eeb1771de71f48586",
+        "synthetic_history": false
+      },
+      {
+        "acceptable_actions": [
+          "play:-1,1"
+        ],
+        "actor_color": "B",
+        "board_size": 3,
+        "category": "defense",
+        "description": "Defend the isolated friendly stone by filling its sole liberty.",
+        "fixture_id": "breath-sole-liberty-defense",
+        "id": "breath-sole-liberty-defense",
+        "legal_actions": 52,
+        "rules": "breath",
+        "state_key_sha256": "83c65d9496188e33373ac60bcf82884d782bad3fcce9b74910e8a6ac63fd6076",
+        "synthetic_history": false
+      },
+      {
+        "acceptable_actions": [
+          "swap"
+        ],
+        "actor_color": "W",
+        "board_size": 3,
+        "category": "takeover",
+        "description": "Take over the overwhelmingly winning Black seat rather than pass.",
+        "fixture_id": "pie-takeover-seat-perspective",
+        "id": "pie-takeover-seat-perspective",
+        "legal_actions": 2,
+        "rules": "breath",
+        "state_key_sha256": "780af150e323f80ebec3c2a1533b71a4da2bc94d4350f3e8dff18122964ced90",
+        "synthetic_history": true
+      },
+      {
+        "acceptable_actions": [
+          "play:2,0",
+          "play:1,1",
+          "play:-1,1",
+          "play:-2,0",
+          "play:-1,-1",
+          "play:1,-1"
+        ],
+        "actor_color": "B",
+        "board_size": 3,
+        "category": "capture",
+        "description": "Cap any column of the sealed lone ring to unzip five stones.",
+        "fixture_id": "rosette-entombment-cap",
+        "id": "rosette-entombment-cap",
+        "legal_actions": 49,
+        "rules": "rosette",
+        "state_key_sha256": "e8a5d2bdcdf279f86476a957d1ad027b432e15fc0b57824b58d834a8ac025e70",
+        "synthetic_history": false
+      },
+      {
+        "acceptable_actions": [
+          "extend:7,1"
+        ],
+        "actor_color": "B",
+        "board_size": 3,
+        "category": "rescue-chain",
+        "description": "Choose the free rescue of a one-liberty group over a normal move.",
+        "fixture_id": "breath-run-rescue-chain",
+        "id": "breath-run-rescue-chain:entry",
+        "legal_actions": 52,
+        "rules": "breath-run",
+        "state_key_sha256": "5d23f501fe111a3d47af207db4059967b64c29a753c637060ec7cce753025f96",
+        "synthetic_history": false
+      },
+      {
+        "acceptable_actions": [
+          "extend:8,2"
+        ],
+        "actor_color": "B",
+        "board_size": 3,
+        "category": "rescue-chain",
+        "description": "Continue the rescue chain instead of ending it immediately.",
+        "fixture_id": "breath-run-rescue-chain",
+        "id": "breath-run-rescue-chain:continue",
+        "legal_actions": 2,
+        "rules": "breath-run",
+        "state_key_sha256": "7979ea0d613811ea93421de3ac1fdb7d260ef7479d9863f72212d04ef49b2c63",
+        "synthetic_history": false
+      },
+      {
+        "acceptable_actions": [
+          "play:3,1"
+        ],
+        "actor_color": "B",
+        "board_size": 3,
+        "category": "fence-completion",
+        "description": "Claim the sixth boundary line to complete a one-cell fence.",
+        "fixture_id": "gjerde-fence-completion",
+        "id": "gjerde-fence-completion",
+        "legal_actions": 68,
+        "rules": "gjerde",
+        "state_key_sha256": "08188d6bc602d21f1d6c5f14a19da2ef638d18c5beac547a0e2a032f7ce19182",
+        "synthetic_history": false
+      },
+      {
+        "acceptable_actions": [
+          "play:3,-1"
+        ],
+        "actor_color": "B",
+        "board_size": 3,
+        "category": "capture",
+        "description": "Fill the fourth liberty and capture the isolated enemy line.",
+        "fixture_id": "gjerde-go-immediate-capture",
+        "id": "gjerde-go-immediate-capture",
+        "legal_actions": 69,
+        "rules": "gjerde-go",
+        "state_key_sha256": "586104cb4a5fa2e86b4f82e09b71e71c4d7364f54c490c2b51c23f51164c9b0a",
+        "synthetic_history": false
+      },
+      {
+        "acceptable_actions": [
+          "accept"
+        ],
+        "actor_color": "B",
+        "board_size": 3,
+        "category": "acceptance",
+        "description": "Accept the sparse 1-0 fenced score rather than reopen play.",
+        "fixture_id": "gjerde-go-ahead-acceptance",
+        "id": "gjerde-go-ahead-acceptance",
+        "legal_actions": 2,
+        "rules": "gjerde-go",
+        "state_key_sha256": "9f5820ea9219464daf31b71bdfdb391ee7499f19d5c8a5280fea99f4ca9edbe8",
+        "synthetic_history": false
+      }
+    ],
+    "version": 1
+  },
+  "format": "varde-mcts-tactical-admission-audit",
+  "high_budget_overall_hit_rate": 0.2625,
+  "ladder": {
+    "epsilon-greedy@16": {
+      "average_rollout_actions_mean": 56.977,
+      "decisions": 40,
+      "hit_rate": 0.275,
+      "latency_ms_median": 798.001,
+      "latency_ms_p95": 2291.59,
+      "max_rollout_actions": 108,
+      "nodes_mean": 16.55,
+      "nodes_p95": 17
+    },
+    "epsilon-greedy@4": {
+      "average_rollout_actions_mean": 57.462,
+      "decisions": 40,
+      "hit_rate": 0.275,
+      "latency_ms_median": 201.483,
+      "latency_ms_p95": 514.22,
+      "max_rollout_actions": 97,
+      "nodes_mean": 5.0,
+      "nodes_p95": 5
+    },
+    "epsilon-greedy@64": {
+      "average_rollout_actions_mean": 56.509,
+      "decisions": 40,
+      "hit_rate": 0.3,
+      "latency_ms_median": 2988.979,
+      "latency_ms_p95": 8012.309,
+      "max_rollout_actions": 110,
+      "nodes_mean": 59.175,
+      "nodes_p95": 65
+    },
+    "uniform@16": {
+      "average_rollout_actions_mean": 87.042,
+      "decisions": 40,
+      "hit_rate": 0.2,
+      "latency_ms_median": 772.428,
+      "latency_ms_p95": 2282.739,
+      "max_rollout_actions": 455,
+      "nodes_mean": 16.55,
+      "nodes_p95": 17
+    },
+    "uniform@4": {
+      "average_rollout_actions_mean": 88.062,
+      "decisions": 40,
+      "hit_rate": 0.25,
+      "latency_ms_median": 213.985,
+      "latency_ms_p95": 629.576,
+      "max_rollout_actions": 460,
+      "nodes_mean": 5.0,
+      "nodes_p95": 5
+    },
+    "uniform@64": {
+      "average_rollout_actions_mean": 89.199,
+      "decisions": 40,
+      "hit_rate": 0.225,
+      "latency_ms_median": 3126.926,
+      "latency_ms_p95": 7293.911,
+      "max_rollout_actions": 612,
+      "nodes_mean": 59.25,
+      "nodes_p95": 65
+    }
+  },
+  "manifest_payload_hash": "343112f87afd486826b89c992f98703254f129bbf20c722689de77735da1a9c6",
+  "next_stage_gate": {
+    "paired_light_rollout_may_be_frozen": false,
+    "paired_match_stage_launched_by_this_unit": false,
+    "paired_mcts24_may_be_frozen": false,
+    "required_action_if_not_admitted": "diagnose failed fixture-policy-budget cells"
+  },
+  "payload_hash": "9ed0532081b2d8a59d02a59353a2c7bb1424af54c019669f5ed60377b6025d55",
+  "position_ladder": {
+    "breath-immediate-capture|epsilon-greedy@16": {
+      "average_rollout_actions_mean": 55.812,
+      "decisions": 4,
+      "hit_rate": 0.0,
+      "latency_ms_median": 792.092,
+      "latency_ms_p95": 795.796,
+      "max_rollout_actions": 72,
+      "nodes_mean": 17.0,
+      "nodes_p95": 17
+    },
+    "breath-immediate-capture|epsilon-greedy@4": {
+      "average_rollout_actions_mean": 55.25,
+      "decisions": 4,
+      "hit_rate": 0.0,
+      "latency_ms_median": 206.719,
+      "latency_ms_p95": 208.275,
+      "max_rollout_actions": 64,
+      "nodes_mean": 5.0,
+      "nodes_p95": 5
+    },
+    "breath-immediate-capture|epsilon-greedy@64": {
+      "average_rollout_actions_mean": 56.055,
+      "decisions": 4,
+      "hit_rate": 0.0,
+      "latency_ms_median": 3144.716,
+      "latency_ms_p95": 3165.166,
+      "max_rollout_actions": 72,
+      "nodes_mean": 65.0,
+      "nodes_p95": 65
+    },
+    "breath-immediate-capture|uniform@16": {
+      "average_rollout_actions_mean": 69.64,
+      "decisions": 4,
+      "hit_rate": 0.0,
+      "latency_ms_median": 708.582,
+      "latency_ms_p95": 759.653,
+      "max_rollout_actions": 110,
+      "nodes_mean": 17.0,
+      "nodes_p95": 17
+    },
+    "breath-immediate-capture|uniform@4": {
+      "average_rollout_actions_mean": 70.25,
+      "decisions": 4,
+      "hit_rate": 0.0,
+      "latency_ms_median": 183.863,
+      "latency_ms_p95": 231.24,
+      "max_rollout_actions": 155,
+      "nodes_mean": 5.0,
+      "nodes_p95": 5
+    },
+    "breath-immediate-capture|uniform@64": {
+      "average_rollout_actions_mean": 68.922,
+      "decisions": 4,
+      "hit_rate": 0.0,
+      "latency_ms_median": 2828.057,
+      "latency_ms_p95": 2843.034,
+      "max_rollout_actions": 118,
+      "nodes_mean": 65.0,
+      "nodes_p95": 65
+    },
+    "breath-run-rescue-chain:continue|epsilon-greedy@16": {
+      "average_rollout_actions_mean": 72.688,
+      "decisions": 4,
+      "hit_rate": 1.0,
+      "latency_ms_median": 606.757,
+      "latency_ms_p95": 661.851,
+      "max_rollout_actions": 101,
+      "nodes_mean": 17.0,
+      "nodes_p95": 17
+    },
+    "breath-run-rescue-chain:continue|epsilon-greedy@4": {
+      "average_rollout_actions_mean": 71.188,
+      "decisions": 4,
+      "hit_rate": 1.0,
+      "latency_ms_median": 170.881,
+      "latency_ms_p95": 176.514,
+      "max_rollout_actions": 90,
+      "nodes_mean": 5.0,
+      "nodes_p95": 5
+    },
+    "breath-run-rescue-chain:continue|epsilon-greedy@64": {
+      "average_rollout_actions_mean": 72.672,
+      "decisions": 4,
+      "hit_rate": 0.75,
+      "latency_ms_median": 2298.141,
+      "latency_ms_p95": 2320.205,
+      "max_rollout_actions": 106,
+      "nodes_mean": 65.0,
+      "nodes_p95": 65
+    },
+    "breath-run-rescue-chain:continue|uniform@16": {
+      "average_rollout_actions_mean": 72.5,
+      "decisions": 4,
+      "hit_rate": 0.5,
+      "latency_ms_median": 759.52,
+      "latency_ms_p95": 774.736,
+      "max_rollout_actions": 120,
+      "nodes_mean": 17.0,
+      "nodes_p95": 17
+    },
+    "breath-run-rescue-chain:continue|uniform@4": {
+      "average_rollout_actions_mean": 71.875,
+      "decisions": 4,
+      "hit_rate": 0.5,
+      "latency_ms_median": 200.912,
+      "latency_ms_p95": 214.47,
+      "max_rollout_actions": 112,
+      "nodes_mean": 5.0,
+      "nodes_p95": 5
+    },
+    "breath-run-rescue-chain:continue|uniform@64": {
+      "average_rollout_actions_mean": 71.864,
+      "decisions": 4,
+      "hit_rate": 0.5,
+      "latency_ms_median": 3154.552,
+      "latency_ms_p95": 3202.042,
+      "max_rollout_actions": 123,
+      "nodes_mean": 65.0,
+      "nodes_p95": 65
+    },
+    "breath-run-rescue-chain:entry|epsilon-greedy@16": {
+      "average_rollout_actions_mean": 75.531,
+      "decisions": 4,
+      "hit_rate": 0.0,
+      "latency_ms_median": 662.664,
+      "latency_ms_p95": 678.966,
+      "max_rollout_actions": 108,
+      "nodes_mean": 17.0,
+      "nodes_p95": 17
+    },
+    "breath-run-rescue-chain:entry|epsilon-greedy@4": {
+      "average_rollout_actions_mean": 77.062,
+      "decisions": 4,
+      "hit_rate": 0.0,
+      "latency_ms_median": 161.781,
+      "latency_ms_p95": 176.416,
+      "max_rollout_actions": 97,
+      "nodes_mean": 5.0,
+      "nodes_p95": 5
+    },
+    "breath-run-rescue-chain:entry|epsilon-greedy@64": {
+      "average_rollout_actions_mean": 72.781,
+      "decisions": 4,
+      "hit_rate": 0.0,
+      "latency_ms_median": 2390.959,
+      "latency_ms_p95": 2425.615,
+      "max_rollout_actions": 110,
+      "nodes_mean": 65.0,
+      "nodes_p95": 65
+    },
+    "breath-run-rescue-chain:entry|uniform@16": {
+      "average_rollout_actions_mean": 71.015,
+      "decisions": 4,
+      "hit_rate": 0.0,
+      "latency_ms_median": 786.595,
+      "latency_ms_p95": 815.053,
+      "max_rollout_actions": 117,
+      "nodes_mean": 17.0,
+      "nodes_p95": 17
+    },
+    "breath-run-rescue-chain:entry|uniform@4": {
+      "average_rollout_actions_mean": 70.0,
+      "decisions": 4,
+      "hit_rate": 0.0,
+      "latency_ms_median": 212.38,
+      "latency_ms_p95": 215.407,
+      "max_rollout_actions": 111,
+      "nodes_mean": 5.0,
+      "nodes_p95": 5
+    },
+    "breath-run-rescue-chain:entry|uniform@64": {
+      "average_rollout_actions_mean": 73.281,
+      "decisions": 4,
+      "hit_rate": 0.0,
+      "latency_ms_median": 3091.078,
+      "latency_ms_p95": 3197.039,
+      "max_rollout_actions": 125,
+      "nodes_mean": 65.0,
+      "nodes_p95": 65
+    },
+    "breath-sole-liberty-defense|epsilon-greedy@16": {
+      "average_rollout_actions_mean": 55.953,
+      "decisions": 4,
+      "hit_rate": 0.25,
+      "latency_ms_median": 819.318,
+      "latency_ms_p95": 823.379,
+      "max_rollout_actions": 66,
+      "nodes_mean": 17.0,
+      "nodes_p95": 17
+    },
+    "breath-sole-liberty-defense|epsilon-greedy@4": {
+      "average_rollout_actions_mean": 57.0,
+      "decisions": 4,
+      "hit_rate": 0.0,
+      "latency_ms_median": 214.632,
+      "latency_ms_p95": 217.383,
+      "max_rollout_actions": 67,
+      "nodes_mean": 5.0,
+      "nodes_p95": 5
+    },
+    "breath-sole-liberty-defense|epsilon-greedy@64": {
+      "average_rollout_actions_mean": 55.965,
+      "decisions": 4,
+      "hit_rate": 0.0,
+      "latency_ms_median": 3078.177,
+      "latency_ms_p95": 3151.489,
+      "max_rollout_actions": 70,
+      "nodes_mean": 65.0,
+      "nodes_p95": 65
+    },
+    "breath-sole-liberty-defense|uniform@16": {
+      "average_rollout_actions_mean": 69.781,
+      "decisions": 4,
+      "hit_rate": 0.0,
+      "latency_ms_median": 725.547,
+      "latency_ms_p95": 740.738,
+      "max_rollout_actions": 117,
+      "nodes_mean": 17.0,
+      "nodes_p95": 17
+    },
+    "breath-sole-liberty-defense|uniform@4": {
+      "average_rollout_actions_mean": 67.688,
+      "decisions": 4,
+      "hit_rate": 0.0,
+      "latency_ms_median": 195.377,
+      "latency_ms_p95": 202.385,
+      "max_rollout_actions": 102,
+      "nodes_mean": 5.0,
+      "nodes_p95": 5
+    },
+    "breath-sole-liberty-defense|uniform@64": {
+      "average_rollout_actions_mean": 70.429,
+      "decisions": 4,
+      "hit_rate": 0.0,
+      "latency_ms_median": 2941.15,
+      "latency_ms_p95": 2985.687,
+      "max_rollout_actions": 109,
+      "nodes_mean": 65.0,
+      "nodes_p95": 65
+    },
+    "classic-immediate-capture|epsilon-greedy@16": {
+      "average_rollout_actions_mean": 57.234,
+      "decisions": 4,
+      "hit_rate": 0.0,
+      "latency_ms_median": 858.11,
+      "latency_ms_p95": 878.357,
+      "max_rollout_actions": 72,
+      "nodes_mean": 17.0,
+      "nodes_p95": 17
+    },
+    "classic-immediate-capture|epsilon-greedy@4": {
+      "average_rollout_actions_mean": 56.312,
+      "decisions": 4,
+      "hit_rate": 0.0,
+      "latency_ms_median": 189.988,
+      "latency_ms_p95": 216.833,
+      "max_rollout_actions": 66,
+      "nodes_mean": 5.0,
+      "nodes_p95": 5
+    },
+    "classic-immediate-capture|epsilon-greedy@64": {
+      "average_rollout_actions_mean": 56.66,
+      "decisions": 4,
+      "hit_rate": 0.0,
+      "latency_ms_median": 2904.827,
+      "latency_ms_p95": 2936.799,
+      "max_rollout_actions": 80,
+      "nodes_mean": 65.0,
+      "nodes_p95": 65
+    },
+    "classic-immediate-capture|uniform@16": {
+      "average_rollout_actions_mean": 184.797,
+      "decisions": 4,
+      "hit_rate": 0.0,
+      "latency_ms_median": 1569.842,
+      "latency_ms_p95": 1704.831,
+      "max_rollout_actions": 455,
+      "nodes_mean": 17.0,
+      "nodes_p95": 17
+    },
+    "classic-immediate-capture|uniform@4": {
+      "average_rollout_actions_mean": 218.25,
+      "decisions": 4,
+      "hit_rate": 0.0,
+      "latency_ms_median": 463.108,
+      "latency_ms_p95": 528.125,
+      "max_rollout_actions": 460,
+      "nodes_mean": 5.0,
+      "nodes_p95": 5
+    },
+    "classic-immediate-capture|uniform@64": {
+      "average_rollout_actions_mean": 196.621,
+      "decisions": 4,
+      "hit_rate": 0.0,
+      "latency_ms_median": 6378.151,
+      "latency_ms_p95": 6418.149,
+      "max_rollout_actions": 612,
+      "nodes_mean": 65.0,
+      "nodes_p95": 65
+    },
+    "gjerde-fence-completion|epsilon-greedy@16": {
+      "average_rollout_actions_mean": 71.625,
+      "decisions": 4,
+      "hit_rate": 0.0,
+      "latency_ms_median": 2297.782,
+      "latency_ms_p95": 2326.15,
+      "max_rollout_actions": 86,
+      "nodes_mean": 17.0,
+      "nodes_p95": 17
+    },
+    "gjerde-fence-completion|epsilon-greedy@4": {
+      "average_rollout_actions_mean": 72.25,
+      "decisions": 4,
+      "hit_rate": 0.0,
+      "latency_ms_median": 514.938,
+      "latency_ms_p95": 521.02,
+      "max_rollout_actions": 92,
+      "nodes_mean": 5.0,
+      "nodes_p95": 5
+    },
+    "gjerde-fence-completion|epsilon-greedy@64": {
+      "average_rollout_actions_mean": 71.574,
+      "decisions": 4,
+      "hit_rate": 0.0,
+      "latency_ms_median": 8014.548,
+      "latency_ms_p95": 8088.365,
+      "max_rollout_actions": 87,
+      "nodes_mean": 65.0,
+      "nodes_p95": 65
+    },
+    "gjerde-fence-completion|uniform@16": {
+      "average_rollout_actions_mean": 90.688,
+      "decisions": 4,
+      "hit_rate": 0.0,
+      "latency_ms_median": 1755.917,
+      "latency_ms_p95": 1783.324,
+      "max_rollout_actions": 144,
+      "nodes_mean": 17.0,
+      "nodes_p95": 17
+    },
+    "gjerde-fence-completion|uniform@4": {
+      "average_rollout_actions_mean": 98.75,
+      "decisions": 4,
+      "hit_rate": 0.0,
+      "latency_ms_median": 490.688,
+      "latency_ms_p95": 510.777,
+      "max_rollout_actions": 135,
+      "nodes_mean": 5.0,
+      "nodes_p95": 5
+    },
+    "gjerde-fence-completion|uniform@64": {
+      "average_rollout_actions_mean": 93.176,
+      "decisions": 4,
+      "hit_rate": 0.0,
+      "latency_ms_median": 6827.775,
+      "latency_ms_p95": 7016.644,
+      "max_rollout_actions": 161,
+      "nodes_mean": 65.0,
+      "nodes_p95": 65
+    },
+    "gjerde-go-ahead-acceptance|epsilon-greedy@16": {
+      "average_rollout_actions_mean": 52.562,
+      "decisions": 4,
+      "hit_rate": 0.5,
+      "latency_ms_median": 1221.496,
+      "latency_ms_p95": 1303.664,
+      "max_rollout_actions": 81,
+      "nodes_mean": 14.5,
+      "nodes_p95": 15
+    },
+    "gjerde-go-ahead-acceptance|epsilon-greedy@4": {
+      "average_rollout_actions_mean": 52.562,
+      "decisions": 4,
+      "hit_rate": 0.75,
+      "latency_ms_median": 365.855,
+      "latency_ms_p95": 472.111,
+      "max_rollout_actions": 78,
+      "nodes_mean": 5.0,
+      "nodes_p95": 5
+    },
+    "gjerde-go-ahead-acceptance|epsilon-greedy@64": {
+      "average_rollout_actions_mean": 53.117,
+      "decisions": 4,
+      "hit_rate": 1.0,
+      "latency_ms_median": 4625.173,
+      "latency_ms_p95": 4698.608,
+      "max_rollout_actions": 87,
+      "nodes_mean": 52.75,
+      "nodes_p95": 54
+    },
+    "gjerde-go-ahead-acceptance|uniform@16": {
+      "average_rollout_actions_mean": 83.031,
+      "decisions": 4,
+      "hit_rate": 0.5,
+      "latency_ms_median": 1189.45,
+      "latency_ms_p95": 1513.787,
+      "max_rollout_actions": 244,
+      "nodes_mean": 14.5,
+      "nodes_p95": 16
+    },
+    "gjerde-go-ahead-acceptance|uniform@4": {
+      "average_rollout_actions_mean": 72.562,
+      "decisions": 4,
+      "hit_rate": 0.75,
+      "latency_ms_median": 342.544,
+      "latency_ms_p95": 447.579,
+      "max_rollout_actions": 149,
+      "nodes_mean": 5.0,
+      "nodes_p95": 5
+    },
+    "gjerde-go-ahead-acceptance|uniform@64": {
+      "average_rollout_actions_mean": 83.961,
+      "decisions": 4,
+      "hit_rate": 0.75,
+      "latency_ms_median": 4671.445,
+      "latency_ms_p95": 5030.683,
+      "max_rollout_actions": 267,
+      "nodes_mean": 53.5,
+      "nodes_p95": 58
+    },
+    "gjerde-go-immediate-capture|epsilon-greedy@16": {
+      "average_rollout_actions_mean": 70.828,
+      "decisions": 4,
+      "hit_rate": 0.0,
+      "latency_ms_median": 1786.966,
+      "latency_ms_p95": 1795.931,
+      "max_rollout_actions": 87,
+      "nodes_mean": 17.0,
+      "nodes_p95": 17
+    },
+    "gjerde-go-immediate-capture|epsilon-greedy@4": {
+      "average_rollout_actions_mean": 72.812,
+      "decisions": 4,
+      "hit_rate": 0.0,
+      "latency_ms_median": 433.703,
+      "latency_ms_p95": 466.614,
+      "max_rollout_actions": 90,
+      "nodes_mean": 5.0,
+      "nodes_p95": 5
+    },
+    "gjerde-go-immediate-capture|epsilon-greedy@64": {
+      "average_rollout_actions_mean": 71.019,
+      "decisions": 4,
+      "hit_rate": 0.25,
+      "latency_ms_median": 6216.887,
+      "latency_ms_p95": 6324.548,
+      "max_rollout_actions": 95,
+      "nodes_mean": 65.0,
+      "nodes_p95": 65
+    },
+    "gjerde-go-immediate-capture|uniform@16": {
+      "average_rollout_actions_mean": 138.297,
+      "decisions": 4,
+      "hit_rate": 0.0,
+      "latency_ms_median": 2306.539,
+      "latency_ms_p95": 2517.495,
+      "max_rollout_actions": 311,
+      "nodes_mean": 17.0,
+      "nodes_p95": 17
+    },
+    "gjerde-go-immediate-capture|uniform@4": {
+      "average_rollout_actions_mean": 117.0,
+      "decisions": 4,
+      "hit_rate": 0.25,
+      "latency_ms_median": 672.24,
+      "latency_ms_p95": 770.038,
+      "max_rollout_actions": 184,
+      "nodes_mean": 5.0,
+      "nodes_p95": 5
+    },
+    "gjerde-go-immediate-capture|uniform@64": {
+      "average_rollout_actions_mean": 144.172,
+      "decisions": 4,
+      "hit_rate": 0.0,
+      "latency_ms_median": 7323.338,
+      "latency_ms_p95": 8031.68,
+      "max_rollout_actions": 432,
+      "nodes_mean": 65.0,
+      "nodes_p95": 65
+    },
+    "pie-takeover-seat-perspective|epsilon-greedy@16": {
+      "average_rollout_actions_mean": 2.376,
+      "decisions": 4,
+      "hit_rate": 1.0,
+      "latency_ms_median": 1.561,
+      "latency_ms_p95": 1.604,
+      "max_rollout_actions": 6,
+      "nodes_mean": 15.0,
+      "nodes_p95": 15
+    },
+    "pie-takeover-seat-perspective|epsilon-greedy@4": {
+      "average_rollout_actions_mean": 4.812,
+      "decisions": 4,
+      "hit_rate": 1.0,
+      "latency_ms_median": 0.721,
+      "latency_ms_p95": 0.76,
+      "max_rollout_actions": 6,
+      "nodes_mean": 5.0,
+      "nodes_p95": 5
+    },
+    "pie-takeover-seat-perspective|epsilon-greedy@64": {
+      "average_rollout_actions_mean": 0.664,
+      "decisions": 4,
+      "hit_rate": 1.0,
+      "latency_ms_median": 2.271,
+      "latency_ms_p95": 2.464,
+      "max_rollout_actions": 6,
+      "nodes_mean": 19.0,
+      "nodes_p95": 19
+    },
+    "pie-takeover-seat-perspective|uniform@16": {
+      "average_rollout_actions_mean": 2.453,
+      "decisions": 4,
+      "hit_rate": 1.0,
+      "latency_ms_median": 1.043,
+      "latency_ms_p95": 1.102,
+      "max_rollout_actions": 7,
+      "nodes_mean": 15.0,
+      "nodes_p95": 15
+    },
+    "pie-takeover-seat-perspective|uniform@4": {
+      "average_rollout_actions_mean": 4.562,
+      "decisions": 4,
+      "hit_rate": 1.0,
+      "latency_ms_median": 0.492,
+      "latency_ms_p95": 0.562,
+      "max_rollout_actions": 6,
+      "nodes_mean": 5.0,
+      "nodes_p95": 5
+    },
+    "pie-takeover-seat-perspective|uniform@64": {
+      "average_rollout_actions_mean": 0.699,
+      "decisions": 4,
+      "hit_rate": 1.0,
+      "latency_ms_median": 1.883,
+      "latency_ms_p95": 2.242,
+      "max_rollout_actions": 7,
+      "nodes_mean": 19.0,
+      "nodes_p95": 19
+    },
+    "rosette-entombment-cap|epsilon-greedy@16": {
+      "average_rollout_actions_mean": 55.156,
+      "decisions": 4,
+      "hit_rate": 0.0,
+      "latency_ms_median": 752.241,
+      "latency_ms_p95": 766.296,
+      "max_rollout_actions": 70,
+      "nodes_mean": 17.0,
+      "nodes_p95": 17
+    },
+    "rosette-entombment-cap|epsilon-greedy@4": {
+      "average_rollout_actions_mean": 55.375,
+      "decisions": 4,
+      "hit_rate": 0.0,
+      "latency_ms_median": 180.922,
+      "latency_ms_p95": 183.491,
+      "max_rollout_actions": 67,
+      "nodes_mean": 5.0,
+      "nodes_p95": 5
+    },
+    "rosette-entombment-cap|epsilon-greedy@64": {
+      "average_rollout_actions_mean": 54.586,
+      "decisions": 4,
+      "hit_rate": 0.0,
+      "latency_ms_median": 2653.191,
+      "latency_ms_p95": 2697.224,
+      "max_rollout_actions": 72,
+      "nodes_mean": 65.0,
+      "nodes_p95": 65
+    },
+    "rosette-entombment-cap|uniform@16": {
+      "average_rollout_actions_mean": 88.219,
+      "decisions": 4,
+      "hit_rate": 0.0,
+      "latency_ms_median": 749.67,
+      "latency_ms_p95": 755.559,
+      "max_rollout_actions": 141,
+      "nodes_mean": 17.0,
+      "nodes_p95": 17
+    },
+    "rosette-entombment-cap|uniform@4": {
+      "average_rollout_actions_mean": 89.688,
+      "decisions": 4,
+      "hit_rate": 0.0,
+      "latency_ms_median": 207.599,
+      "latency_ms_p95": 240.719,
+      "max_rollout_actions": 126,
+      "nodes_mean": 5.0,
+      "nodes_p95": 5
+    },
+    "rosette-entombment-cap|uniform@64": {
+      "average_rollout_actions_mean": 88.867,
+      "decisions": 4,
+      "hit_rate": 0.0,
+      "latency_ms_median": 3020.659,
+      "latency_ms_p95": 3034.687,
+      "max_rollout_actions": 158,
+      "nodes_mean": 65.0,
+      "nodes_p95": 65
+    }
+  },
+  "promotion_blocked": true,
+  "reproducibility": {
+    "config_sha256": "9be5d8fbed78e688b2d978a3e63c90ebe87bca1c77e3f65217411c581e65e526",
+    "deterministic_records_sha256": "cc2bf340c1c990fd21e07c7264fc2eed9f551c892ab9100be2bca63508e5c8d3",
+    "latency_is_observational_and_excluded_from_decision_hash": true,
+    "raw_artifact_sha256": {
+      "decisions.jsonl": "4e212a5e3d8fe261ee4b5dd02b48d5c44ca0c7f0d73e58063d8633c312136846",
+      "state.json": "33e2dfdcfb659cbd5ebd692917d195e5ba2bb7998b124b137e2b1db460cf5a89",
+      "summary.json": "43dbe5d09ab0d5653b1a218a0173a2d7596afd5cc2f80f828d7fd3db456b059a"
+    },
+    "schedule_sha256": "0d19484d5207155ce775deda34df7b4552e209a582d0ca5e69547fb9193b0735"
+  },
+  "run_source_commit": "e92000fe13637e1360009ed537ee7830eac46bb6",
+  "runtime_source_commit_at_audit": "e92000fe13637e1360009ed537ee7830eac46bb6",
+  "source": {
+    "code_hash": "d21e5dec1f386f558b049e55b03a604441047b859313852bdb84d37b408042a9",
+    "files": {
+      "engine/actions.py": "95742a2f37e93e629b53cb85824fa873ca8db739ad03286eaacb97a58f04c71e",
+      "engine/mcts.py": "db96420d12938dddf0d8f7a0ff433f3cfd0db9d070492c13ed646eb7103dc78c",
+      "engine/varde.py": "dbc2e9127dbda1f3ac8833f91ad35fc102267ab2a4e52a28abaa98191d82843b",
+      "research/harness/mcts_tactical_admission.py": "11b48e9dcc6b97c55c70480fe2a172138cbb15188756c7d479bd28f3fb112bc4",
+      "research/harness/mcts_tactical_fixtures.py": "b03fb5c23a3ba9cb0224c023514bcae369e43cef7de5b187d9687b1ed473e2fc",
+      "research/harness/mcts_telemetry.py": "0dc85aa4192bf8b1cce7fd6b7386bc3c7dd29236e0ea5a9b790e15eaa8ba30e0"
+    },
+    "fixture_catalog_hash": "f53c9f7110fd8228ee50c6b08b9d645a7812bafb9b9a37ca63ddae911044f7fe",
+    "mcts_agent_hash": "63cdec59394646f4bddd8afe33245331b1f55f922d79523030722bbb8d496e97",
+    "source_commit": "e91749697ec0150bea91e2cd3506e09bed7c134d"
+  },
+  "status": "complete",
+  "version": 1
+}

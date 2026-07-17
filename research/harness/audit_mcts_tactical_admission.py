@@ -69,7 +69,7 @@ def _validate_runtime_source(manifest):
 
 
 def _validate_raw(manifest, tasks):
-    output = Path(manifest["output_dir"])
+    output = Path(manifest["execution"]["output_dir"])
     paths = {
         name: output / name
         for name in ("state.json", "decisions.jsonl", "summary.json")
