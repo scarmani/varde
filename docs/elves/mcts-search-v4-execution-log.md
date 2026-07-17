@@ -11,7 +11,7 @@
 
 ## Batch 0 — Staged run
 
-Status: in progress.
+Status: complete at `dddbaf4`; draft PR #21 opened.
 
 ### Contract
 
@@ -35,10 +35,12 @@ repository-wide findings; documentation-only setup diff; draft/unmerged PR.
 - Python compilation, JavaScript syntax, and diff checks pass.
 - Repository-wide Ruff reports ten pre-existing errors; this run requires every
   changed Python file to pass Ruff and will not broaden into unrelated cleanup.
+- Documentation-only head `dddbaf4` was pushed and draft PR #21 opened against
+  `codex/mcts-search-v3`; the PR is open, mergeable, unreviewed, and unmerged.
 
 ## Batch 1 — Independent holdout
 
-Status: pending.
+Status: in progress.
 
 ## Batch 2 — Certified tactical subsearch
 

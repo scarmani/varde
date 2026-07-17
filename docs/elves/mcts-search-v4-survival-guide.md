@@ -27,15 +27,15 @@ negative evidence and never merge.
 
 ## Current Phase
 
-Batch 0 — stage plan, recovery state, baseline, branch, and draft PR before any
-search-behavior change.
+Batch 1 — build, certify, and freeze the independent tactical holdout before
+any search-behavior change. Draft PR #21 is stacked on PR #20.
 
 ## Stop Gate
 
-- Planned batches remaining: 7.
+- Planned batches remaining: 6.
 - Stop allowed right now: no.
-- Next exact action: complete Batch 0 staging, push, open draft PR, then continue
-  immediately into Batch 1 holdout construction.
+- Next exact action: implement the independent corpus generator and verifier,
+  freeze all case/corpus hashes, and validate its disjointness from V3.
 
 ## Validation
 

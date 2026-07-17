@@ -14,12 +14,12 @@
   "learnings_path": "docs/elves/mcts-search-v4-learnings.md",
   "execution_log_path": "docs/elves/mcts-search-v4-execution-log.md",
   "merge_policy": "user-merges",
-  "pr_number": null,
+  "pr_number": 21,
   "continuation_guard": {
-    "remaining_batches": 7,
+    "remaining_batches": 6,
     "stop_allowed": false,
     "checkpoint_is_stop": false,
-    "next_required_action": "Complete Batch 0 staging and open the stacked draft PR, then continue to Batch 1."
+    "next_required_action": "Build, certify, and freeze the independent Batch 1 holdout before any search behavior change."
   },
   "test_baseline": {
     "passed": 268,
@@ -27,10 +27,10 @@
     "skipped": 0,
     "status": "passed in 47.362s"
   },
-  "current_batch": {"id": 0, "name": "Staged run", "status": "in_progress"},
+  "current_batch": {"id": 1, "name": "Independent holdout", "status": "in_progress"},
   "batches": [
-    {"id": 0, "name": "Staged run", "status": "in_progress", "commit": null, "rollback_tag": null},
-    {"id": 1, "name": "Independent holdout", "status": "pending", "commit": null, "rollback_tag": null},
+    {"id": 0, "name": "Staged run", "status": "complete", "commit": "dddbaf4c5cbef15962ac069571d95074b0afbbe1", "rollback_tag": "elves/mcts-search-v4-pre-batch-0"},
+    {"id": 1, "name": "Independent holdout", "status": "in_progress", "commit": null, "rollback_tag": "elves/mcts-search-v4-pre-batch-1"},
     {"id": 2, "name": "Certified tactical subsearch", "status": "pending", "commit": null, "rollback_tag": null},
     {"id": 3, "name": "Progressive unpruning", "status": "pending", "commit": null, "rollback_tag": null},
     {"id": 4, "name": "True-terminal settling", "status": "pending", "commit": null, "rollback_tag": null},
@@ -39,6 +39,6 @@
   ],
   "review_comments": [],
   "active_compute": [],
-  "last_completed_action": "Verified exact PR #20 base and green 268-test baseline.",
-  "updated_at": "2026-07-17T10:43:25-05:00"
+  "last_completed_action": "Opened draft PR #21 from documentation-only Batch 0 head dddbaf4, stacked on exact PR #20 head.",
+  "updated_at": "2026-07-17T10:44:16-05:00"
 }
