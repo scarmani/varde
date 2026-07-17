@@ -131,6 +131,22 @@ class TestMCTSV5FrozenCorpora(unittest.TestCase):
         self.assertEqual(stable_hash(payload), expected)
         json.dumps(payload, allow_nan=False)
 
+    def test_frozen_manifests_regenerate_exactly(self):
+        for split in ("development", "holdout"):
+            with self.subTest(split=split):
+                path = (
+                    ROOT / "research" / "manifests"
+                    / f"mcts-search-v5-{split}-20260717.json"
+                )
+                payload = json.loads(path.read_text())
+                expected = build_manifest(
+                    split,
+                    output_dir=payload["execution"]["output_dir"],
+                    created_date=payload["created_date"],
+                    source_commit_value=payload["source"]["source_commit"],
+                )
+                self.assertEqual(payload, expected)
+
 
 if __name__ == "__main__":
     unittest.main()
