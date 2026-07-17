@@ -240,7 +240,7 @@ Status: completed at `427081f`.
 
 ## Batch 5 — Eight-arm development factorial
 
-Status: in progress.
+Status: completed mandatory gated stop.
 
 ### Contract
 
@@ -260,3 +260,38 @@ Status: in progress.
 
 - New V5 research harness/manifests and repository-external raw evidence;
   compact generated audit only after the frozen run.
+
+### Outcome
+
+- Froze 4,704 deterministic tasks at source `0a1063c` and ran them with eight
+  workers in 5,133.86 seconds. The resumable 64-task checkpoints completed with
+  zero crashes; the final checkpoint and independent audit regeneration both
+  validated exactly.
+- All 135,168 simulation backups were accepted terminals. Oracle and solver
+  agreed on every guided action, root scans occurred exactly once, and there
+  were zero false-positive guidance records.
+- Proof scan latency and mandatory-visit feasibility passed. Reserved
+  unpruning beat ordered control by 13.64 admission points on the registered
+  wide-root instrument.
+- Settling V2 reduced rollout actions by 56.34–57.48% but worsened p95 latency
+  by 70.91–101.87%; none of its four matched arms qualified.
+- Every recipe failed pooled admission, cell-floor, and monotonicity gates. The
+  best, `v5-g1-u1-s1`, reached 54.17% versus the required 80%.
+- Deterministic selection returned no eligible recipe and
+  `holdout_may_run=false`. The holdout, deep ladder, and paired diagnostic were
+  not launched.
+- Final review caught and removed wall-clock scan time from deterministic
+  `MCTSDecision.to_dict()` serialization; scan latency remains in research raw
+  telemetry. Frozen-manifest checking now verifies historical source blobs at
+  the exact outcome commit. All 347 product tests passed in 170.669 seconds,
+  followed by changed-file Ruff, compilation, JavaScript syntax, exact
+  manifest regeneration, forbidden-file, and diff checks.
+
+## Batch 6 — Conditional holdout and handoff
+
+Status: completed as a gated-stop handoff.
+
+- The Batch 5 mandatory gate prohibited all conditional compute.
+- Preserved the raw external evidence, compact result, report, hashes, and
+  negative component findings.
+- Draft PR #22 remains stacked on PR #21; no PR was merged or marked ready.

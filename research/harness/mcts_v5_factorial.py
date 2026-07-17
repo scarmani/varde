@@ -110,6 +110,21 @@ def code_hash():
     return digest.hexdigest()
 
 
+def code_hash_at_commit(commit):
+    digest = hashlib.sha256()
+    for path in _code_files():
+        relative = str(path.relative_to(REPO_ROOT))
+        content = subprocess.run(
+            ["git", "show", f"{commit}:{relative}"],
+            cwd=REPO_ROOT,
+            check=True,
+            capture_output=True,
+        ).stdout
+        digest.update(relative.encode())
+        digest.update(content)
+    return digest.hexdigest()
+
+
 def _position_rows():
     return tuple(position.public_dict() for position in development_positions())
 
@@ -273,7 +288,18 @@ def validate_manifest(manifest):
     if stable_hash(payload) != expected:
         raise ValueError("factorial manifest payload hash mismatch")
     if manifest["source"]["code_hash"] != code_hash():
-        raise ValueError("factorial source code hash mismatch")
+        commit = manifest["source"]["source_commit"]
+        if manifest["source"]["code_hash"] != code_hash_at_commit(commit):
+            raise ValueError("factorial source code hash mismatch")
+        for relative, expected_hash in manifest["source"]["files"].items():
+            content = subprocess.run(
+                ["git", "show", f"{commit}:{relative}"],
+                cwd=REPO_ROOT,
+                check=True,
+                capture_output=True,
+            ).stdout
+            if hashlib.sha256(content).hexdigest() != expected_hash:
+                raise ValueError("factorial historical source file mismatch")
     if manifest["configuration"]["task_schedule_sha256"] != stable_hash(
         build_schedule(seed=manifest["configuration"]["seed"])
     ):
@@ -281,6 +307,19 @@ def validate_manifest(manifest):
     if not manifest["preflight"]["oracle_solver_agreement"]:
         raise ValueError("oracle/solver preflight did not pass")
     return True
+
+
+def regenerate_manifest(manifest):
+    """Regenerate a frozen manifest while preserving its exact source snapshot."""
+    rebuilt = build_manifest(
+        output_dir=manifest["execution"]["output_dir"],
+        created_date=manifest["created_date"],
+        source_commit_value=manifest["source"]["source_commit"],
+    )
+    rebuilt["source"] = manifest["source"]
+    rebuilt.pop("payload_sha256", None)
+    rebuilt["payload_sha256"] = stable_hash(rebuilt)
+    return rebuilt
 
 
 def _action_id(action):
@@ -877,11 +916,7 @@ def main():
     manifest = json.loads(args.manifest.read_text())
     if args.check:
         validate_manifest(manifest)
-        rebuilt = build_manifest(
-            output_dir=manifest["execution"]["output_dir"],
-            created_date=manifest["created_date"],
-            source_commit_value=manifest["source"]["source_commit"],
-        )
+        rebuilt = regenerate_manifest(manifest)
         if rebuilt != manifest:
             raise SystemExit("factorial manifest differs from regeneration")
         print(args.manifest)

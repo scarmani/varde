@@ -62,23 +62,21 @@ development factorial, and continue only through predeclared gates.
 
 ## Current Phase
 
-- **Status:** in progress.
-- **Active batch:** Batch 5 of 6.
-- **What was just finished:** Batch 4 committed at `427081f`; event, eligibility,
-  pass, extension, resumption, 4P integrity, terminal-backup, V4-parity, and
-  338-product-test checks passed.
-- **Single next action:** freeze the exact eight-arm development manifest and
-  ordered-control wide-root instrument before launching any outcome tasks.
+- **Status:** complete at the mandatory development gated stop.
+- **Active batch:** none; Batch 6 handoff is complete.
+- **What was just finished:** all 4,704 frozen development tasks completed with
+  perfect integrity. No recipe qualified; `holdout_may_run=false`.
+- **Single next action:** user review of draft PR #22 and the preserved negative
+  evidence. No further compute is authorized by this plan.
 
 ## Stop Gate
 
-- **Planned batches remaining:** 2.
-- **Stop allowed right now:** no.
-- **Why:** the user authorized the full finite V5 run and no mandatory gate or
-  other actual stop condition has fired.
-- **Next required action:** execute Batch 5's frozen 4/16/64 factorial and
-  ordered-control instrument, audit every component/interaction gate, and stop
-  before holdout unless exactly one deterministically ranked recipe qualifies.
+- **Planned batches remaining:** 0.
+- **Stop allowed right now:** yes.
+- **Why:** the first mandatory development gate fired. Every arm failed pooled
+  admission, cell-floor, and monotonicity requirements; no recipe was selected.
+- **Next required action:** none. The sealed holdout, deep ladder, and paired
+  diagnostic are prohibited for this V5 run.
 
 ## Effort Standard
 
@@ -117,16 +115,8 @@ development factorial, and continue only through predeclared gates.
 
 ## Next Exact Batch
 
-- **Batch:** Batch 5 — frozen eight-arm development factorial.
-- **Scope:** precommit all eight factor combinations at 4/16/64, two policies,
-  four replicates, plus a high-rung ordered-control wide-root instrument. Run
-  atomically and resumably outside the repository with deterministic task IDs.
-- **Acceptance criteria:** complete integrity; oracle/solver, one-scan,
-  mandatory-visit, unpruning-delta, settling-efficiency, admission/cell,
-  monotonicity, attribution, and deterministic-ranking gates audited exactly.
-- **Risk:** runtime may consume the remaining envelope; project each rung from
-  completed lower-rung timing and do not launch a stage that crosses the hard
-  checkpoint. Never relax a threshold after outcomes.
+No batch remains. Any V6 investigation requires a new predeclared plan and
+must preserve this gated stop as negative evidence.
 
 ## Post-Checkpoint Control Loop
 

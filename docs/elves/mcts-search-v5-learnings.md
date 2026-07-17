@@ -65,3 +65,22 @@ not invitations to tune a frozen gate.
   resumption plus at most one event, and treats the 4P boundary as an exception.
 - All eight factor recipes now have distinct hashes while the historical V4
   settling hash remains unchanged.
+
+## Batch 5
+
+- The complete 4,704-decision factorial had perfect integrity and exact
+  oracle/solver agreement, but no arm approached the 80% admission gate. The
+  best arm reached 54.17% and failed half of its positive position/policy cells.
+- Reserved unpruning passed its isolated instrument gate by 13.64 points and
+  maintained median mandatory-action visits of 4–5, yet its strongest
+  non-settling combination reached only 47.22% admission.
+- Settling V2 cut rollout actions by about 56–57% while increasing p95 latency
+  by about 71–102%. Transition/event classification cost dominated the saved
+  plies, so action count is not a sufficient efficiency proxy.
+- Proof scans were correct and inexpensive in isolation (worst p95 19.339 ms
+  Toy, 88.476 ms Beginner), but a correct local prior did not overcome noisy
+  terminal values at 64 simulations.
+- Positive factorial attribution is not admission. All three factors improved
+  the best combined arm relative to their removals, but the combined arm still
+  failed pooled, cell-floor, and monotonicity gates. The sealed holdout must
+  remain untouched.

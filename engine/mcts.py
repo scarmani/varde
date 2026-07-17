@@ -232,7 +232,6 @@ class MCTSDecision:
                 "status": self.solver_status,
                 "nodes": self.solver_nodes,
                 "cache_hits": self.solver_cache_hits,
-                "elapsed_ms": round(self.solver_elapsed_ms, 3),
                 "invocations": self.solver_invocations,
                 "overrides": self.solver_overrides,
                 "claim_limit": (

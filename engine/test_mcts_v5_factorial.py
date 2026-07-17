@@ -20,6 +20,7 @@ from mcts_v5_factorial import (  # noqa: E402
     build_schedule,
     evaluate_task,
     load_checkpoint,
+    regenerate_manifest,
     run_factorial,
     stable_hash,
     validate_manifest,
@@ -87,11 +88,9 @@ class TestMCTSV5Factorial(unittest.TestCase):
             ROOT / "research" / "manifests"
             / "mcts-search-v5-development-factorial-20260717.json"
         )
-        frozen = json.loads(cls.frozen_path.read_text())
+        cls.frozen = json.loads(cls.frozen_path.read_text())
         cls.manifest = build_manifest(
-            output_dir=frozen["execution"]["output_dir"],
-            created_date=frozen["created_date"],
-            source_commit_value=frozen["source"]["source_commit"],
+            output_dir="/tmp/varde-v5-factorial-test",
         )
 
     def test_schedule_is_the_frozen_full_factorial_and_instrument(self):
@@ -119,8 +118,6 @@ class TestMCTSV5Factorial(unittest.TestCase):
         )
 
     def test_manifest_is_hash_valid_and_preflight_agrees(self):
-        frozen = json.loads(self.frozen_path.read_text())
-        self.assertEqual(self.manifest, frozen)
         self.assertTrue(validate_manifest(self.manifest))
         self.assertTrue(
             self.manifest["preflight"]["declared_oracle_solver_agreement"]
@@ -131,6 +128,10 @@ class TestMCTSV5Factorial(unittest.TestCase):
             len(set(self.manifest["source"]["agent_hashes"].values())),
             9,
         )
+
+    def test_frozen_outcome_manifest_regenerates_from_exact_source(self):
+        self.assertTrue(validate_manifest(self.frozen))
+        self.assertEqual(regenerate_manifest(self.frozen), self.frozen)
 
     def test_checkpoint_resume_matches_uninterrupted_across_workers(self):
         with TemporaryDirectory() as directory:
