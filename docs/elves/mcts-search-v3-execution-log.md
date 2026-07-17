@@ -293,7 +293,7 @@ selection on this corpus.
 
 ## Batch 3 — Terminal-margin secondary backup
 
-Status: in progress.
+Status: complete.
 
 ### Contract
 
@@ -309,19 +309,19 @@ raw artifacts, and results byte-for-byte.
 
 **Acceptance criteria:**
 
-- [ ] Vertex games normalize by board points and Gjerde games by scoreable
+- [x] Vertex games normalize by board points and Gjerde games by scoreable
   cells; every sample is finite and in `[-1, 1]`.
-- [ ] Terminal margin is exactly color-symmetric for every candidate and board
+- [x] Terminal margin is exactly color-symmetric for every candidate and board
   size and comes only from the accepted game score.
-- [ ] W/D/L remains primary in traversal and final choice; margin resolves only
+- [x] W/D/L remains primary in traversal and final choice; margin resolves only
   otherwise equal primary comparisons.
-- [ ] Raw and normalized root aggregates reconcile with visits and selected
+- [x] Raw and normalized root aggregates reconcile with visits and selected
   rank/reason remains exact.
-- [ ] A separate tie-plus-margin manifest is committed before outcomes and the
+- [x] A separate tie-plus-margin manifest is committed before outcomes and the
   identical 4/16/64 schedule is audited against both earlier agents.
-- [ ] Retain margin only if it improves admission or resolves documented
+- [x] Retain margin only if it improves admission or resolves documented
   saturation without material diagnostic regression.
-- [ ] Full tests, Python compile, JavaScript syntax, and diff checks pass.
+- [x] Full tests, Python compile, JavaScript syntax, and diff checks pass.
 
 **Blast radius:** research MCTS selection and telemetry plus the tactical
 harness's normalized-margin validation. No native evaluator is imported. Rules,
@@ -340,3 +340,36 @@ out of scope.
   no game transitions.
 - At opponent nodes, the secondary comparison must minimize the root seat's
   normalized margin just as primary exploitation uses `1 - mean`.
+
+### Frozen evidence and result
+
+- MCTS V4 hash:
+  `4224495eecc22ebedf3a199c04ff57b11446481f2e1218a6feffac4b09ad9adc`.
+  The margin manifest was committed at `debb368` before its output directory
+  existed. Manifest payload SHA-256:
+  `6885d609ea68a54a3f46edacbaf8c68f5cbead32fd96f9c2572782d103002f37`.
+- All 384 decisions completed with zero crash, illegal action, mutation, or
+  missing record. Deterministic-record SHA-256:
+  `59cbce15bcc3577360cafe9c5e476d3905a918308ea49fa56ba5883356331f0d`.
+- Margin did not improve proof-grade admission: the 64-simulation rate moved
+  from tie-only V3's `54.1667%` to `52.0833%`; the per-cell and monotonicity
+  gates still failed.
+- It did resolve documented saturation without a material natural-diagnostic
+  regression. At the high rung, margin uniquely selected 45 of 80 diagnostic
+  decisions, while diagnostic hit rate remained exactly `32.5%` before and
+  after. Across all 128 high-rung decisions, `terminal-margin` was the final
+  reason 49 times.
+- The retention alternative is therefore met: keep terminal-only normalized
+  margin in the combined candidate as an honest W/D/L tie discriminator, but
+  make no strength or admission claim. Batch 4 must supply tactical proposal
+  quality; simply increasing this agent's budget is still blocked.
+
+### Regression attestation
+
+Batch 3 changes only research-agent secondary comparisons and telemetry. Every
+rollout still reaches the accepted real score; normalized values are bounded
+and exactly color-symmetric across all six candidates and n=3..6. The full
+262-test suite passed in 31.841 s before freezing; syntax, Ruff, and diff checks
+also passed. No native evaluator, rule, scoring, save, server, browser, or live
+opponent behavior changed. Confidence HIGH that margin resolves many saturated
+ties; confidence HIGH that it is insufficient for tactical admission alone.

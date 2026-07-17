@@ -314,6 +314,33 @@ class TestTacticalAdmissionHarness(unittest.TestCase):
         )
         self.assertTrue(payload["promotion_blocked"])
 
+    def test_committed_margin_v4_audit_preserves_saturation_result(self):
+        path = ROOT / "research/results/mcts-tactical-margin-v4-20260717.json"
+        payload = json.loads(path.read_text())
+        expected_hash = payload.pop("payload_hash")
+        self.assertEqual(stable_hash(payload), expected_hash)
+        self.assertEqual(payload["accounting"]["complete"], 384)
+        self.assertEqual(payload["accounting"]["crash"], 0)
+        self.assertTrue(payload["correctness_and_provenance_audit_clean"])
+        self.assertAlmostEqual(
+            payload["high_budget_overall_hit_rate"],
+            0.5208333333333334,
+        )
+        self.assertFalse(payload["admitted"])
+        self.assertEqual(
+            payload["ladder"]["uniform@64"]["selection_reasons"][
+                "terminal-margin"
+            ],
+            26,
+        )
+        self.assertEqual(
+            payload["ladder"]["epsilon-greedy@64"]["selection_reasons"][
+                "terminal-margin"
+            ],
+            23,
+        )
+        self.assertTrue(payload["promotion_blocked"])
+
     def test_real_takeover_decision_is_legal_telemetric_and_nonmutating(self):
         task = next(
             task for task in build_schedule(self._config(budgets=[2]))

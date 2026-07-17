@@ -75,6 +75,20 @@ in Varde.
   historical MCTS V2 timing and tactical results cannot be validated against a
   current-agent hash after a behavior change.
 
+## Batch 3 evidence
+
+- Terminal margin normalized by scoreable area is finite, bounded, exactly
+  color-symmetric, and can be backed on the existing terminal-result walk.
+- Tie-plus-margin MCTS V4 scored `52.0833%` on proof-grade admission at 64,
+  below tie-only V3's `54.1667%`; it remains tactically inadmissible.
+- Margin nevertheless resolved 45/80 high-budget natural-diagnostic final ties
+  with diagnostic hit rate unchanged at `32.5%`. This satisfies the explicit
+  saturation-without-material-regression retention path.
+- A terminal-only secondary signal can distinguish equal W/D/L samples, but it
+  does not recognize immediate defense, capture, or fence completion reliably.
+  Batch 4 needs proposal-level rules facts rather than more terminal sampling of
+  uniformly expanded roots.
+
 ## Update rule
 
 Append only evidence-backed findings after each batch. Record failed hypotheses
