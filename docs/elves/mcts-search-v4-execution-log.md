@@ -147,4 +147,26 @@ actions, mutations, or incomplete backups.
 
 ## Batch 6 — Conditional deep tier and handoff
 
-Status: in progress; deep tier blocked by the Batch 5 gate.
+Status: complete at `f84d584`; deep tier blocked by the Batch 5 gate.
+
+### Final evidence
+
+- Added committed-artifact tests for frozen manifests, recipe hashes, raw-run
+  accounting, failed cells, the deterministic `none-qualified` selection, and
+  the absence of downstream artifacts.
+- Full final suite: 299 tests passed in 112.372 s, up from the 268-test
+  baseline; no skips. Changed-file Ruff, Python compilation, JavaScript syntax,
+  diff checks, and exact holdout-manifest regeneration pass.
+- Cumulative review confirms no change to `engine/varde.py`, `server.py`, or
+  `web/game.js`; all 1,920 common-screen decisions remain legal, non-mutating,
+  crash-free, and accepted-terminal.
+- A post-run semantic audit found that rescue certificate independence was
+  insufficient: the verifier duplicates the solver's actor-changing recursion.
+  The V4 report now limits that claim without changing any observed outcome or
+  gate decision.
+- A separate V5 investigation preregisters corrected root-only proof guidance,
+  obligation-reserved unpruning, and their factorial combination. It runs no
+  candidate and authorizes no deep tier.
+- Draft PR #21 is open, mergeable, unreviewed, and unmerged. The observed
+  checks were green at the reviewed head; final status is polled again after
+  operational cleanup.

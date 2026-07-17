@@ -44,3 +44,17 @@ agent results, performance observations, and any later match diagnostics.
 - Progressive unpruning produces a modest +6.25-point gain, not the required
   +10. True-terminal settling is a clean negative: longer rollouts, much worse
   latency, and lower admission. No composition or scale-up is justified.
+- A verifier in a separate module is not independent when it duplicates the
+  same quantifier recursion. Rescue proofs need actor ownership at every ply and
+  an oracle whose declarative goal/quantifier schedule shares no obligation
+  implementation with the solver.
+- Admission labels must match the exact proposition being proved. Immediate
+  fence completion cannot adjudicate a stricter one-reply durable-fence proof.
+- The registered small roots did not isolate widening's intended failure mode.
+  On exploratory 49--69-action roots, unpruning improved tactical hits from
+  2/56 for ordered control to 12/56, which motivates a fresh mandatory
+  wide-root instrument but does not reverse the registered failure.
+- V4's repeated interior solver scans caused avoidable cost. A diagnostic
+  root-only scan had about 7 ms median latency across the 16 frozen positions;
+  future proof integration should be root-only, set-valued, and decaying
+  guidance unless fresh gates establish more.

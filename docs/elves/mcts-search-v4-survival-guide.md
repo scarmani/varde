@@ -27,15 +27,17 @@ negative evidence and never merge.
 
 ## Current Phase
 
-Batch 6 — preserve the gated stop and complete evidence validation, cumulative
-review, CI, report, and unmerged handoff. No downstream compute is authorized.
+Finite run complete. Batch 5 selected `none-qualified`; Batch 6 preserved the
+negative, completed cumulative validation and review, and documented a fresh
+V5 repair investigation. No downstream compute is authorized.
 
 ## Stop Gate
 
-- Planned batches remaining: 1.
-- Stop allowed right now: no.
-- Next exact action: add committed-artifact tests and the final negative report,
-  run the full validation matrix, inspect the cumulative diff and PR, then stop.
+- Planned batches remaining: 0.
+- Stop allowed right now: yes.
+- Next exact action: generate the temporary Elves handoff report, remove only
+  operational session artifacts, poll draft PR #21 once more, and hand control
+  to the user without merging.
 
 ## Validation
 
