@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "session_id": "elves-2026-07-17-varde-mcts-search-v4",
+  "mission": "Implement and evaluate certified tactical subsearch, progressive unpruning, and true-terminal settling under sealed holdout and deep-tier gates.",
+  "mode": "finite",
+  "status": "in_progress",
+  "started_at": "2026-07-17T10:43:25-05:00",
+  "branch": "codex/mcts-search-v4",
+  "worktree": "/private/tmp/varde-mcts-search-v4",
+  "base_commit": "315443366ddeb499d294f47221e89c2c1dbca4d7",
+  "plan_path": "docs/plans/mcts-search-v4.md",
+  "plan_sha256": "ec64af59e28c6ba634402535edb93d48205a99d3ddbd7dca0d42186611196095",
+  "survival_guide_path": "docs/elves/mcts-search-v4-survival-guide.md",
+  "learnings_path": "docs/elves/mcts-search-v4-learnings.md",
+  "execution_log_path": "docs/elves/mcts-search-v4-execution-log.md",
+  "merge_policy": "user-merges",
+  "pr_number": null,
+  "continuation_guard": {
+    "remaining_batches": 7,
+    "stop_allowed": false,
+    "checkpoint_is_stop": false,
+    "next_required_action": "Complete Batch 0 staging and open the stacked draft PR, then continue to Batch 1."
+  },
+  "test_baseline": {
+    "passed": 268,
+    "total": 268,
+    "skipped": 0,
+    "status": "passed in 47.362s"
+  },
+  "current_batch": {"id": 0, "name": "Staged run", "status": "in_progress"},
+  "batches": [
+    {"id": 0, "name": "Staged run", "status": "in_progress", "commit": null, "rollback_tag": null},
+    {"id": 1, "name": "Independent holdout", "status": "pending", "commit": null, "rollback_tag": null},
+    {"id": 2, "name": "Certified tactical subsearch", "status": "pending", "commit": null, "rollback_tag": null},
+    {"id": 3, "name": "Progressive unpruning", "status": "pending", "commit": null, "rollback_tag": null},
+    {"id": 4, "name": "True-terminal settling", "status": "pending", "commit": null, "rollback_tag": null},
+    {"id": 5, "name": "Admission, composition, and holdout", "status": "pending", "commit": null, "rollback_tag": null},
+    {"id": 6, "name": "Conditional deep tier and handoff", "status": "pending", "commit": null, "rollback_tag": null}
+  ],
+  "review_comments": [],
+  "active_compute": [],
+  "last_completed_action": "Verified exact PR #20 base and green 268-test baseline.",
+  "updated_at": "2026-07-17T10:43:25-05:00"
+}
