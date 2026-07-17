@@ -26,3 +26,7 @@ agent results, performance observations, and any later match diagnostics.
 - The V3 fixture set contains 16 records but 15 unique state hashes because its
   diagnostic and admission takeover cases share a state. V4 records both
   counts explicitly and remains disjoint from those 15 hashes.
+- Exact local proofs are feasible at the declared horizons: all 36 cases
+  completed under the 10,000-node limit, with p95 below the Toy/Beginner gates.
+  This establishes implementation feasibility only; automatic obligation
+  detection and whole-decision admission remain separate tests.

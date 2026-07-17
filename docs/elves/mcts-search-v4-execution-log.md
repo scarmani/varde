@@ -60,11 +60,24 @@ Status: complete at `9dcd4e1`.
 
 ## Batch 2 — Certified tactical subsearch
 
-Status: in progress.
+Status: complete at `48ee0b6`.
+
+### Evidence
+
+- Added a three-valued, memoized, fail-closed local solver with a 10,000-node
+  ceiling and explicit bounded claim scopes. It is invoked only by the
+  research-only `v4-solver` recipe at roots and newly expanded nodes.
+- Exact feasibility: 24/24 positives reproduced, 12/12 decoys abstained, zero
+  illegal actions, mutations, certificate mismatches, or node-limit failures.
+- Observed p95 invocation: 43.717 ms on Toy and 257.692 ms on Beginner, below
+  the predeclared 100/400 ms ceilings.
+- Candidate A qualifies for the common 384-decision development screen. It is
+  not admitted, selected, strength-tested, or exposed through product APIs.
+- Full gate: 281 tests pass in 61.436 s; changed-file Ruff and compilation pass.
 
 ## Batch 3 — Progressive unpruning
 
-Status: pending.
+Status: in progress.
 
 ## Batch 4 — True-terminal settling
 

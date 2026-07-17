@@ -27,15 +27,15 @@ negative evidence and never merge.
 
 ## Current Phase
 
-Batch 2 — implement Candidate A as a bounded independent local solver. The
-holdout is sealed at `9dcd4e1` and must not be consulted until Batch 5.
+Batch 3 — implement Candidate B as paired ordered-control and progressive-
+unpruning recipes. The holdout remains sealed for outcome testing until Batch 5.
 
 ## Stop Gate
 
-- Planned batches remaining: 5.
+- Planned batches remaining: 4.
 - Stop allowed right now: no.
-- Next exact action: implement the three-valued 10,000-node solver, integrate
-  root/new-node override telemetry, and run only Candidate A feasibility tests.
+- Next exact action: add semantic rule-fact ordering, the exact visit-gated
+  exposure schedule at root and interior nodes, and deterministic tests.
 
 ## Validation
 
