@@ -27,15 +27,15 @@ negative evidence and never merge.
 
 ## Current Phase
 
-Batch 5 — freeze and execute the common development screen, select components
-by the predeclared rules, and consult the sealed holdout only for that recipe.
+Batch 6 — preserve the gated stop and complete evidence validation, cumulative
+review, CI, report, and unmerged handoff. No downstream compute is authorized.
 
 ## Stop Gate
 
-- Planned batches remaining: 2.
+- Planned batches remaining: 1.
 - Stop allowed right now: no.
-- Next exact action: commit the telemetry-complete common harness, freeze all
-  five recipe manifests before outcomes, then run/audit them in fixed order.
+- Next exact action: add committed-artifact tests and the final negative report,
+  run the full validation matrix, inspect the cumulative diff and PR, then stop.
 
 ## Validation
 

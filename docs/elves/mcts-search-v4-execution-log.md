@@ -118,8 +118,32 @@ Status: complete at `4722d21`; efficiency gates remain pending Batch 5.
 
 ## Batch 5 — Admission, composition, and holdout
 
-Status: in progress.
+Status: complete at `f2cc98c`; downstream stages gated off.
+
+### Common-screen evidence
+
+All five isolated 384-decision runs completed with zero crashes, illegal
+actions, mutations, or incomplete backups.
+
+| Recipe | High-rung admission | Complete gate |
+|---|---:|---|
+| V4 control | 52.083% | fail |
+| Certified solver | 85.417% | fail: three position/policy cells below 3/4 |
+| Ordered control | 54.167% | fail |
+| Progressive unpruning | 60.417% | fail |
+| True-terminal settling | 45.833% | fail |
+
+- Candidate A passes pooled and monotonic gates but fails complete cell
+  admission. Its overall p95 latency at 64 is 8.778 s.
+- Candidate B improves ordered control by 6.25 percentage points, below the
+  required 10 points, and also fails complete admission.
+- Candidate C backs up 100% accepted terminals and stays within 4P, but is
+  6.25 points worse than control, increases mean rollout length by 4.42%, and
+  makes p95 latency 3.64 times slower rather than 40% faster.
+- Deterministic selection returns `none-qualified`. Per plan, no composition is
+  implemented and the sealed holdout, 256–2,048 ladder, 4,096 contingency, and
+  paired diagnostics are not launched.
 
 ## Batch 6 — Conditional deep tier and handoff
 
-Status: pending.
+Status: in progress; deep tier blocked by the Batch 5 gate.

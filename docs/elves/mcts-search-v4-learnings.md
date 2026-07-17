@@ -37,3 +37,10 @@ agent results, performance observations, and any later match diagnostics.
 - True-terminal settling cleanly enforces phase and resumption semantics, but
   small spot checks were not faster than V4 control. The predeclared common
   workload, not those probes, will decide the efficiency gate.
+- The common screen confirms the solver is the only candidate with a large
+  pooled tactical gain (85.4%), yet it still misses rescue and fence cells and
+  is too slow for the later 64-simulation latency gate. Pooled accuracy cannot
+  substitute for the predeclared cell floor.
+- Progressive unpruning produces a modest +6.25-point gain, not the required
+  +10. True-terminal settling is a clean negative: longer rollouts, much worse
+  latency, and lower admission. No composition or scale-up is justified.
