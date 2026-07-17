@@ -20,17 +20,22 @@ import statistics
 import subprocess
 import sys
 import tempfile
+import time
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 ENGINE_ROOT = REPO_ROOT / "engine"
+HARNESS_ROOT = Path(__file__).resolve().parent
 if str(ENGINE_ROOT) not in sys.path:
     sys.path.insert(0, str(ENGINE_ROOT))
+if str(HARNESS_ROOT) not in sys.path:
+    sys.path.insert(0, str(HARNESS_ROOT))
 
 from actions import RulesAction, RulesState, apply_action, legal_actions  # noqa: E402
 from mcts import MCTS_AGENT_HASH, choose_mcts_state_action  # noqa: E402
 from native_evaluators import NATIVE_EVALUATOR_HASH  # noqa: E402
 from opponent import choose_decision  # noqa: E402
+from mcts_telemetry import annotate_choice, tactical_context  # noqa: E402
 from varde import (  # noqa: E402
     BLACK,
     WHITE,
@@ -84,6 +89,7 @@ def code_hash():
         ENGINE_ROOT / "native_evaluators.py",
         ENGINE_ROOT / "opponent.py",
         ENGINE_ROOT / "varde.py",
+        HARNESS_ROOT / "mcts_telemetry.py",
     )
     digest = hashlib.sha256()
     for path in paths:
@@ -217,12 +223,25 @@ def _native_action(state, agent, seed):
     actions = legal_actions(state)
     extensions = [action for action in actions if action.kind == "extend"]
     if extensions:
-        return extensions[derive_seed(seed, state.game.moves_played) % len(extensions)]
+        action = extensions[
+            derive_seed(seed, state.game.moves_played) % len(extensions)
+        ]
+        return action, {
+            "agent_family": "native",
+            "difficulty": agent["difficulty"],
+            "nodes": 0,
+            "reason_code": "extension",
+        }
     finish = next(
         (action for action in actions if action.kind == "finish-extension"), None
     )
     if finish is not None:
-        return finish
+        return finish, {
+            "agent_family": "native",
+            "difficulty": agent["difficulty"],
+            "nodes": 0,
+            "reason_code": "finish-extension",
+        }
     decision = choose_decision(
         state.game,
         state.actor_color,
@@ -232,12 +251,19 @@ def _native_action(state, agent, seed):
     action = RulesAction(decision.action, decision.point)
     if action not in actions:
         raise Illegal("native agent returned an illegal action")
-    return action
+    return action, {
+        "agent_family": "native",
+        "difficulty": agent["difficulty"],
+        "nodes": decision.nodes,
+        "elapsed_ms": round(decision.elapsed_ms, 3),
+        "reason_code": decision.reason_code,
+    }
 
 
 def _agent_action(state, agent, seed):
     if agent["family"] == "native":
         return _native_action(state, agent, seed)
+    started = time.perf_counter()
     decision = choose_mcts_state_action(
         state,
         state.actor_color,
@@ -247,7 +273,19 @@ def _agent_action(state, agent, seed):
     )
     if decision.action not in legal_actions(state):
         raise Illegal("MCTS returned an illegal action")
-    return decision.action
+    elapsed_ms = (time.perf_counter() - started) * 1000
+    return decision.action, {
+        "agent_family": "mcts",
+        "simulations": decision.simulations,
+        "nodes": decision.nodes,
+        "mean_value": round(decision.mean_value, 6),
+        "rollout_policy": decision.rollout_policy,
+        "average_rollout_actions": round(
+            decision.average_rollout_actions, 3
+        ),
+        "max_rollout_actions": decision.max_rollout_actions,
+        "elapsed_ms": round(elapsed_ms, 3),
+    }
 
 
 def _outcome_for_color(score, color):
@@ -325,7 +363,8 @@ def evaluate_task(task):
             before_state = dict(state.game.state)
             before_enemy_groups = len(groups_of(game.board, game.state, other(actor_color)))
             before_score = game.score()
-            action = _agent_action(
+            context = tactical_context(state) if task["telemetry"] else None
+            action, decision_telemetry = _agent_action(
                 state, agents[actor_seat], agent_seeds[actor_seat]
             )
             occupied = bool(
@@ -386,6 +425,9 @@ def evaluate_task(task):
                         "captured": captured,
                         "score_before": before_score,
                         "score_after": after_score,
+                        "decision": decision_telemetry,
+                        "tactical_context": context,
+                        "tactical_choice": annotate_choice(context, action),
                     }
                 )
         if not state.terminal:
