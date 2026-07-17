@@ -37,15 +37,17 @@ rules or import native evaluator leaf values.
 
 Status: launched and in progress
 
-Active batch: Batch 1 — measurement substrate and admission corpus V2
+Active batch: Batch 2 — geometry-neutral deterministic ties
 
-Just completed: the fresh launch reconciliation. Local HEAD, the remote branch,
-and PR #20 all equal `9c141a1a2338afdbba8a50638c175f5b37f91e39`;
-the frozen plan hash still matches.
+Just completed: Batch 1 preserved a clean 384/384-decision negative baseline.
+The proof-grade high-rung hit rate was `60.4167%`, so paired matches remain
+blocked. Local HEAD, the remote branch, and PR #20 all equal
+`965168f5a16f0c1cae059394fc880d5afe4130f5`; the frozen plan hash still
+matches.
 
-Single next action: establish the Batch 1 contract and pre-implementation
-survey, then implement behavior-neutral root-action telemetry before changing
-any MCTS search choice.
+Single next action: tag the Batch 2 rollback point, establish the isolated tie
+ablation contract, then replace coordinate-based traversal and final-choice
+ties with seeded position/action hashes without adding margin semantics.
 
 ## Active compute
 
@@ -54,9 +56,9 @@ No Varde research or test process is active. Two pre-existing system
 
 ## Stop gate
 
-- Planned implementation/evidence batches remaining: 6
+- Planned implementation/evidence batches remaining: 5
 - Stop allowed right now: no
-- Next required action: execute Batch 1 measurement/corpus work
+- Next required action: execute Batch 2 tie-only ablation
 - Continue automatically through valid batches; do not merge.
 
 ## Validation gates

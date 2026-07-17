@@ -14,26 +14,26 @@
   "merge_policy": "user-merges",
   "status": "in_progress",
   "batch": {
-    "current": 1,
+    "current": 2,
     "total": 6,
     "status": "in_progress"
   },
   "continuation_guard": {
-    "remaining_batches": 6,
+    "remaining_batches": 5,
     "stop_allowed": false,
     "checkpoint_is_stop": false,
     "reason": "Fresh launch command received; continue through every valid evidence-gated batch.",
-    "next_required_action": "Execute Batch 1 measurement substrate and admission corpus V2."
+    "next_required_action": "Execute Batch 2 geometry-neutral deterministic tie ablation."
   },
   "test_baseline": {
     "passed": 254,
     "total": 254,
     "skipped": 0,
-    "status": "captured at launch; 254 passed in 29.667s"
+    "status": "Batch 1 close: 259 passed in 32.351s"
   },
   "batches": [
-    {"id": 1, "name": "Measurement substrate and admission corpus V2", "status": "in_progress", "commit": null, "rollback_tag": "elves/mcts-search-v3-pre-batch-1", "started_at": "2026-07-16T23:40:50-05:00", "completed_at": null},
-    {"id": 2, "name": "Geometry-neutral deterministic ties", "status": "pending", "commit": null, "rollback_tag": "elves/mcts-search-v3-pre-batch-2", "started_at": null, "completed_at": null},
+    {"id": 1, "name": "Measurement substrate and admission corpus V2", "status": "complete", "commit": "965168f5a16f0c1cae059394fc880d5afe4130f5", "rollback_tag": "elves/mcts-search-v3-pre-batch-1", "started_at": "2026-07-16T23:40:50-05:00", "completed_at": "2026-07-17T00:14:46-05:00"},
+    {"id": 2, "name": "Geometry-neutral deterministic ties", "status": "in_progress", "commit": null, "rollback_tag": "elves/mcts-search-v3-pre-batch-2", "started_at": "2026-07-17T00:14:46-05:00", "completed_at": null},
     {"id": 3, "name": "Terminal-margin secondary backup", "status": "pending", "commit": null, "rollback_tag": "elves/mcts-search-v3-pre-batch-3", "started_at": null, "completed_at": null},
     {"id": 4, "name": "Minimal tactical proposal and rollout ablation", "status": "pending", "commit": null, "rollback_tag": "elves/mcts-search-v3-pre-batch-4", "started_at": null, "completed_at": null},
     {"id": 5, "name": "Calibrate the 2048 or 4096 deep tier", "status": "pending", "commit": null, "rollback_tag": "elves/mcts-search-v3-pre-batch-5", "started_at": null, "completed_at": null},
@@ -56,6 +56,6 @@
     "setup_head": "afe0a1f708a21e3f51ecc11f264f80b65fcb0cc1",
     "setup_checks": "two test jobs in progress"
   },
-  "last_completed_action": "Reconciled the fresh launch against local, remote, PR, and plan-hash truth; activated Batch 1.",
-  "updated_at": "2026-07-16T23:40:50-05:00"
+  "last_completed_action": "Closed Batch 1 with 384/384 clean decisions and a preserved 60.4167% failed admission result; paired matches remain blocked.",
+  "updated_at": "2026-07-17T00:14:46-05:00"
 }
