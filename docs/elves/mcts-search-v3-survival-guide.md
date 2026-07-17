@@ -37,17 +37,19 @@ rules or import native evaluator leaf values.
 
 Status: launched and in progress
 
-Active batch: Batch 3 — terminal-margin secondary backup
+Active batch: Batch 4 — minimal tactical proposal/rollout ablation
 
-Just completed: Batch 2 removed coordinate/action-order ties and preserved a
-clean negative ablation. Proof-grade high-rung admission fell from `60.4167%`
-to `54.1667%`; paired matches remain blocked. Local HEAD, the remote branch,
-and PR #20 all equal `504272ba4b17ed98621a365bc9eaea23ab7d82dd`;
-the frozen plan hash still matches.
+Just completed: Batch 3 preserved a clean failed admission (`52.0833%`) while
+retaining margin because it resolved 45/80 high-budget diagnostic ties with no
+diagnostic hit-rate regression. Paired matches remain blocked. Local HEAD, the
+remote branch, and PR #20 all equal
+`cb70a4f2df78e5a2d2ae0b50319a0be837a074aa`; the frozen plan hash still
+matches.
 
-Single next action: tag the Batch 3 rollback point, establish the margin-only
-contract, then add bounded terminal score margin as a secondary comparison
-after W/D/L—without changing rollouts, proposals, or using native evaluation.
+Single next action: tag the Batch 4 rollback point, establish the tactical
+guidance contract, and implement the smallest rules-transition-only proposal
+or rollout bias covering the six proof categories before freezing isolated and
+combined ablations.
 
 ## Active compute
 
@@ -56,9 +58,9 @@ No Varde research or test process is active. Two pre-existing system
 
 ## Stop gate
 
-- Planned implementation/evidence batches remaining: 4
+- Planned implementation/evidence batches remaining: 3
 - Stop allowed right now: no
-- Next required action: execute Batch 3 terminal-margin ablation
+- Next required action: execute Batch 4 tactical-guidance admission ablation
 - Continue automatically through valid batches; do not merge.
 
 ## Validation gates
