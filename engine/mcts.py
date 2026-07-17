@@ -14,6 +14,7 @@ from actions import (
     legal_transitions,
 )
 from mcts_tactical_solver import find_tactical_override
+from mcts_settling import run_settling_rollout
 from mcts_unpruning import (
     next_exposure_visit,
     ordered_rule_transitions,
@@ -34,6 +35,7 @@ SEARCH_VARIANTS = frozenset((
     "v4-solver",
     "v4-ordered-control",
     "v4-unpruning",
+    "v4-settling",
 ))
 DEFAULT_SEARCH_VARIANT = "tie-margin"
 EXPLORATION = math.sqrt(2.0)
@@ -63,10 +65,12 @@ def _agent_spec(search_variant):
         "v4-solver",
         "v4-ordered-control",
         "v4-unpruning",
+        "v4-settling",
     )
     solver = search_variant == "v4-solver"
     ordered = search_variant in ("v4-ordered-control", "v4-unpruning")
     unpruning = search_variant == "v4-unpruning"
+    settling = search_variant == "v4-settling"
     return {
         "format": MCTS_FORMAT,
         "version": TACTICAL_MCTS_VERSION if tactical else MCTS_VERSION,
@@ -91,6 +95,9 @@ def _agent_spec(search_variant):
         ),
         "progressive_unpruning": (
             "ceil-2-sqrt-visits-v1" if unpruning else "disabled"
+        ),
+        "true_terminal_settling": (
+            "p-2p-resume-once-v1" if settling else "disabled"
         ),
         "ties": "sha256(seed,root-position,node-position,action)",
     }
@@ -134,6 +141,10 @@ class MCTSDecision:
     exposed_actions: int | None = None
     hidden_actions: int | None = None
     next_expansion_visit: int | None = None
+    settling_phase_counts: tuple = ()
+    terminal_reasons: tuple = ()
+    resumption_rollouts: int = 0
+    terminal_backups: int = 0
 
     def to_dict(self):
         payload = {
@@ -170,6 +181,16 @@ class MCTSDecision:
                 "exposed_actions": self.exposed_actions,
                 "hidden_actions": self.hidden_actions,
                 "next_expansion_visit": self.next_expansion_visit,
+            }
+        if self.terminal_backups:
+            payload["rollout_terminal_telemetry"] = {
+                "settling_phase_counts": dict(self.settling_phase_counts),
+                "terminal_reasons": dict(self.terminal_reasons),
+                "resumption_rollouts": self.resumption_rollouts,
+                "terminal_backups": self.terminal_backups,
+                "all_backups_terminal": (
+                    self.terminal_backups == self.simulations
+                ),
             }
         return payload
 
@@ -524,7 +545,42 @@ def _prepare_tactical_expansion(node, rng):
     return action, advanced
 
 
-def _rollout(state, root_seat, policy, rng, tactical_guidance=False):
+def _accepted_terminal_reason(state):
+    if state.game.no_progress_end:
+        return "accepted-no-progress"
+    if state.game.resumption_used:
+        return "accepted-after-resumption"
+    return "accepted-two-pass"
+
+
+def _rollout(
+    state,
+    root_seat,
+    policy,
+    rng,
+    tactical_guidance=False,
+    settling=False,
+):
+    if settling:
+        settled = run_settling_rollout(
+            state,
+            lambda current, actions: _rollout_action(
+                current,
+                policy,
+                rng,
+                actions,
+            ),
+        )
+        return (
+            _terminal_sample(settled.terminal_state, root_seat),
+            settled.actions,
+            {
+                "phase_counts": settled.phase_counts,
+                "terminal_reason": settled.terminal_reason,
+                "resumption_used": settled.resumption_used,
+                "backup_terminal": settled.terminal_state.terminal,
+            },
+        )
     rollout = state.clone()
     actions_played = 0
     while not rollout.terminal:
@@ -534,7 +590,16 @@ def _rollout(state, root_seat, policy, rng, tactical_guidance=False):
             action = _rollout_action(rollout, policy, rng)
             apply_action(rollout, action, copy=False, validate=False)
         actions_played += 1
-    return _terminal_sample(rollout, root_seat), actions_played
+    return (
+        _terminal_sample(rollout, root_seat),
+        actions_played,
+        {
+            "phase_counts": (),
+            "terminal_reason": _accepted_terminal_reason(rollout),
+            "resumption_used": rollout.game.resumption_used,
+            "backup_terminal": rollout.terminal,
+        },
+    )
 
 
 def _seeded_tie_value(seed, root_key, node_key, action):
@@ -740,6 +805,7 @@ def choose_mcts_state_action(
         "v4-solver",
         "v4-ordered-control",
         "v4-unpruning",
+        "v4-settling",
     )
     tactical_guidance = search_variant in ("tactical-only", "combined")
     solver_enabled = search_variant == "v4-solver"
@@ -747,6 +813,7 @@ def choose_mcts_state_action(
         "v4-ordered-control", "v4-unpruning"
     )
     progressive_unpruning = search_variant == "v4-unpruning"
+    settling_enabled = search_variant == "v4-settling"
     rng = random.Random(_seed_for_position(seed, root_state))
     root = _Node(
         root_state,
@@ -757,6 +824,10 @@ def choose_mcts_state_action(
     )
     total_rollout_actions = 0
     max_rollout_actions = 0
+    settling_phase_counts = {}
+    terminal_reason_counts = {}
+    resumption_rollouts = 0
+    terminal_backups = 0
 
     for _simulation in range(simulations):
         node = root
@@ -824,15 +895,24 @@ def choose_mcts_state_action(
             )
             node.children.append(child)
             node = child
-        sample, rollout_actions = _rollout(
+        sample, rollout_actions, rollout_telemetry = _rollout(
             node.state,
             root_seat,
             rollout_policy,
             rng,
             tactical_guidance,
+            settling_enabled,
         )
         total_rollout_actions += rollout_actions
         max_rollout_actions = max(max_rollout_actions, rollout_actions)
+        for phase, count in rollout_telemetry["phase_counts"]:
+            settling_phase_counts[phase] = (
+                settling_phase_counts.get(phase, 0) + count
+            )
+        reason = rollout_telemetry["terminal_reason"]
+        terminal_reason_counts[reason] = terminal_reason_counts.get(reason, 0) + 1
+        resumption_rollouts += rollout_telemetry["resumption_used"]
+        terminal_backups += rollout_telemetry["backup_terminal"]
         while node is not None:
             node.record(sample)
             node = node.parent
@@ -911,6 +991,10 @@ def choose_mcts_state_action(
             next_exposure_visit(root.visits, len(root.ordered_actions))
             if root.progressive_unpruning else None
         ),
+        settling_phase_counts=tuple(sorted(settling_phase_counts.items())),
+        terminal_reasons=tuple(sorted(terminal_reason_counts.items())),
+        resumption_rollouts=resumption_rollouts,
+        terminal_backups=terminal_backups,
     )
 
 
