@@ -286,6 +286,11 @@ Status: completed mandatory gated stop.
   the exact outcome commit. All 347 product tests passed in 170.669 seconds,
   followed by changed-file Ruff, compilation, JavaScript syntax, exact
   manifest regeneration, forbidden-file, and diff checks.
+- The first final CI attempt exposed a shallow-checkout-only failure: GitHub's
+  depth-one clone did not contain the frozen outcome commit needed by exact
+  historical verification. The workflow now fetches full history instead of
+  weakening or skipping the provenance check; the affected test remained green
+  locally.
 
 ## Batch 6 — Conditional holdout and handoff
 
