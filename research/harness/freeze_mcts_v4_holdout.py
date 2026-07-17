@@ -125,7 +125,8 @@ def build_manifest(
             "claim_limit": "not a game-theoretic result",
         },
         "independence": {
-            "v3_positions": len(historical_hashes),
+            "v3_positions": len(tactical_positions()),
+            "v3_unique_state_hashes": len(historical_hashes),
             "v4_positions": len(holdout_hashes),
             "v3_state_hashes_disjoint": holdout_hashes.isdisjoint(
                 historical_hashes
