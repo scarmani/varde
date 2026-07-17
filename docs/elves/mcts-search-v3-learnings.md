@@ -61,6 +61,20 @@ in Varde.
   tier must therefore be calibrated from measured single-process feasibility,
   not presented as an interactive opponent by default.
 
+## Batch 2 evidence
+
+- Replacing both canonical action/coordinate fallbacks with seeded SHA-256 ties
+  removes a real directional artifact but reduces proof-grade admission from
+  `60.4167%` to `54.1667%` at 64 simulations on the identical schedule.
+- Root coverage was unchanged (`99.1795%` mean). The prior coordinate ordering
+  was sometimes accidentally aligned with the synthetic proof actions; removing
+  it exposes rather than creates the underlying lack of terminal discrimination.
+- Tie-only MCTS V3 failed the per-cell and monotonicity gates. It is retained as
+  a correctness foundation, not claimed as a stronger agent.
+- Search semantics and research evidence must remain separately versioned:
+  historical MCTS V2 timing and tactical results cannot be validated against a
+  current-agent hash after a behavior change.
+
 ## Update rule
 
 Append only evidence-backed findings after each batch. Record failed hypotheses

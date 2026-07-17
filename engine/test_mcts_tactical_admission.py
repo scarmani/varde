@@ -287,6 +287,26 @@ class TestTacticalAdmissionHarness(unittest.TestCase):
         )
         self.assertTrue(payload["promotion_blocked"])
 
+    def test_committed_tie_v3_audit_preserves_isolated_regression(self):
+        path = ROOT / "research/results/mcts-tactical-tie-v3-20260717.json"
+        payload = json.loads(path.read_text())
+        expected_hash = payload.pop("payload_hash")
+        self.assertEqual(stable_hash(payload), expected_hash)
+        self.assertEqual(payload["accounting"]["complete"], 384)
+        self.assertEqual(payload["accounting"]["crash"], 0)
+        self.assertTrue(payload["correctness_and_provenance_audit_clean"])
+        self.assertAlmostEqual(
+            payload["high_budget_overall_hit_rate"],
+            0.5416666666666666,
+        )
+        self.assertFalse(payload["admitted"])
+        self.assertFalse(
+            payload["admission_gate"][
+                "aggregate_hit_rate_nondecreasing_by_policy"
+            ]
+        )
+        self.assertTrue(payload["promotion_blocked"])
+
     def test_real_takeover_decision_is_legal_telemetric_and_nonmutating(self):
         task = next(
             task for task in build_schedule(self._config(budgets=[2]))

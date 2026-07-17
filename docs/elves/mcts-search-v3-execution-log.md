@@ -210,7 +210,7 @@ quality, as the preserved negative result demonstrates.
 
 ## Batch 2 — Geometry-neutral deterministic ties
 
-Status: in progress.
+Status: complete.
 
 ### Contract
 
@@ -226,18 +226,18 @@ manifest, raw artifacts, and compact result byte-for-byte.
 
 **Acceptance criteria:**
 
-- [ ] No coordinate or canonical action-order fallback remains in traversal,
+- [x] No coordinate or canonical action-order fallback remains in traversal,
   final selection, telemetry ranking, or selection-reason reporting.
-- [ ] Fixed seed/position/action ties are deterministic; changing seed or
+- [x] Fixed seed/position/action ties are deterministic; changing seed or
   analyzed position reshuffles them; all play, pass, swap, extension, finish,
   resume, and acceptance actions have semantic identities.
-- [ ] Directional-orbit tests demonstrate that no fixed board direction wins
+- [x] Directional-orbit tests demonstrate that no fixed board direction wins
   all seeded ties.
-- [ ] Legality, non-mutation, superko, save compatibility, administrative
+- [x] Legality, non-mutation, superko, save compatibility, administrative
   actions, all rulesets, and both rollout policies remain covered.
-- [ ] A separate tie-only manifest is committed before outcomes and the
+- [x] A separate tie-only manifest is committed before outcomes and the
   4/16/64 result is audited without pooling with MCTS V2.
-- [ ] Full tests, Python compile, JavaScript syntax, and diff checks pass.
+- [x] Full tests, Python compile, JavaScript syntax, and diff checks pass.
 
 **Blast radius:** `engine/mcts.py` selection semantics and all consumers that
 verify its version/hash. The browser opponent remains unrelated native search;
@@ -258,3 +258,35 @@ equating them to the new runtime agent.
 - The old performance artifact is immutable MCTS V2 evidence. Its regression
   test must pin internal historical consistency and assert that its hash differs
   from MCTS V3, rather than requiring current-agent equality.
+
+### Frozen evidence and result
+
+- MCTS V3 hash:
+  `fea77f2e4064a21abe763240822be7f2e4f1ff90a0cd12f677821b6bf6fbd0c3`.
+  The tie-only manifest was committed at `adf69c1` before its output directory
+  existed. Manifest payload SHA-256:
+  `3f472bd7af76bf6376e859e6b7c105807db792edbd6fda0a95154a2a4310be82`.
+- All 384 decisions completed with zero crash, illegal action, mutation, or
+  missing record. Deterministic-record SHA-256:
+  `4b5c1193276a8d1f81a3a2b3fbae84c9978ecd17bea8791426f9a626cb4068f9`.
+- The isolated tie fix did **not** improve tactical admission. The proof-grade
+  high-rung hit rate fell from MCTS V2's `60.4167%` to `54.1667%`; the
+  nondecreasing-by-policy gate also failed. Small-defense improved only from
+  `0/8` to `1/8`, while small-fence fell from `4/8` to `1/8` and the rescue
+  continuation fell from `6/8` to `5/8`.
+- Root coverage remained identical at `99.1795%` mean at 64 simulations. This
+  isolates the regression to downstream choice/tie effects, not task coverage.
+- Directional neutrality is retained as a correctness property despite the
+  strength regression. Batch 3 may test whether terminal-only margin resolves
+  the saturated comparisons; it must not reinterpret this result as positive.
+
+### Regression attestation
+
+Batch 2 intentionally changes only research-agent tie behavior and its
+version/hash. Terminal W/D/L, rollout policies, expansion randomness,
+exploration, legal actions, and telemetry accounting are unchanged. The full
+260-test suite passed in 32.203 s before the frozen run; syntax and diff checks
+also passed. Product rules, scoring, saves, server, browser, and live opponent
+remain untouched. Confidence HIGH for directional-bias removal and evidence
+isolation; confidence HIGH that tie randomization alone does not repair tactical
+selection on this corpus.
