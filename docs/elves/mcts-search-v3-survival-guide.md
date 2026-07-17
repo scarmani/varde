@@ -37,19 +37,17 @@ rules or import native evaluator leaf values.
 
 Status: launched and in progress
 
-Active batch: Batch 5 — blocked deep-tier calibration decision
+Active batch: Batch 6 — conditional paired diagnostic and final handoff
 
-Just completed: Batch 4 preserved two clean negative tactical-guidance runs.
-Tactical-only scored `54.1667%`, combined `41.6667%`, and both missed every
-admission prerequisite; guided uniform rollouts also reached 3,111 actions.
-Paired and deep jobs remain blocked. Local HEAD, the remote branch, and PR #20
-all equal `3206476f9031b4d0a05e378f3e88c4bc330f7506`; the frozen plan hash
-still matches.
+Just completed: Batch 5 selected neither 2,048 nor 4,096 from the failed
+admission and measured cost evidence. No deep process ran and no tier was
+named. Paired games remain blocked. Local HEAD, the remote branch, and PR #20
+all equal `38dfda584267757bea4fc046e44ef1bce1c8d1c2`; the frozen plan hash still
+matches.
 
-Single next action: tag the Batch 5 rollback point, calculate the explicit
-2,048/4,096 feasibility decision from the audited prerequisites and cost tails,
-and preserve a hash-pinned `neither` result without launching forbidden deep
-searches.
+Single next action: tag the Batch 6 rollback point, explicitly skip paired play,
+update public research status from generated evidence, then run cumulative
+auditors, direct diff review, exact-head CI reconciliation, and final handoff.
 
 ## Active compute
 
@@ -58,9 +56,9 @@ No Varde research or test process is active. Two pre-existing system
 
 ## Stop gate
 
-- Planned implementation/evidence batches remaining: 2
+- Planned implementation/evidence batches remaining: 1
 - Stop allowed right now: no
-- Next required action: execute Batch 5 blocked calibration record
+- Next required action: execute Batch 6 final audit and handoff
 - Continue automatically through valid batches; do not merge.
 
 ## Validation gates
