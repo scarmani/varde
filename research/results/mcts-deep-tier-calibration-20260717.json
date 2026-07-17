@@ -1,0 +1,67 @@
+{
+  "budget_candidates": {
+    "2048": {
+      "combined_uniform_p95_linear_projection_minutes": 77.976725,
+      "status": "not-run-failed-admission-prerequisite",
+      "tactical_only_uniform_p95_linear_projection_minutes": 48.708027
+    },
+    "4096": {
+      "combined_uniform_p95_linear_projection_minutes": 155.953451,
+      "status": "not-run-failed-admission-prerequisite",
+      "tactical_only_uniform_p95_linear_projection_minutes": 97.416053
+    }
+  },
+  "calibration": {
+    "deep_jobs_launched": false,
+    "named_research_tier": null,
+    "selected_budget": null,
+    "selection": "neither",
+    "selection_reason": "No MCTS V5 tactical candidate passed the mandatory admission gate; 64-simulation guided rollouts also showed prohibitive deterministic length and observational latency tails."
+  },
+  "claim_limits": {
+    "balance_evidence": false,
+    "interactive_suitability": false,
+    "match_strength_evidence": false,
+    "projection_is_a_benchmark": false,
+    "projection_is_linear_and_observational": true,
+    "strategic_depth_evidence": false
+  },
+  "created_date": "2026-07-17",
+  "format": "varde-mcts-deep-tier-calibration",
+  "inputs": {
+    "combined": {
+      "admitted": false,
+      "agent_hash": "431a03275d6c8bcff8613395c982b58791f1e6352409fdc00c556522bd1dfa64",
+      "deterministic_records_sha256": "4e00a3dbc80795da5e430a7912cc3263a74c3ac1a96996778642261f65092816",
+      "high_budget_overall_hit_rate": 0.4166666666666667,
+      "result_file_sha256": "d8286b3c9cc93506fae56774490cd5351407a42563979226777df4594461981c",
+      "uniform_64_max_rollout_actions": 3111,
+      "uniform_64_p95_ms_eight_worker_run": 146206.36
+    },
+    "tactical_only": {
+      "admitted": false,
+      "agent_hash": "e5a41b98d09d11df9f82e86515f93f7c0e6eea7eb9882ab9656d2bdd4fe60786",
+      "deterministic_records_sha256": "168e473fab3c56c4861613eb61ebf9a6cf719a0574ba05ef34e9ae0be9540838",
+      "high_budget_overall_hit_rate": 0.5416666666666666,
+      "result_file_sha256": "b508bdc35ece9451e068251df3fa2c1c622a08281436f979609a4fab131acf93",
+      "uniform_64_max_rollout_actions": 3111,
+      "uniform_64_p95_ms_eight_worker_run": 91327.55
+    }
+  },
+  "meaningful_budget_gate": {
+    "admission_in_both_policy_strata": false,
+    "complete_within_compute_envelope": false,
+    "feasibility_measurement_permitted": false,
+    "no_integrity_failures": true,
+    "root_rank_stability_measurement_permitted": false,
+    "selected_tier_passes": false
+  },
+  "method": {
+    "projection": "observed uniform@64 p95 multiplied by budget ratio; illustrative lower-confidence estimate only",
+    "required_order": "tactical admission before single-process 256/512/1024/2048/4096 calibration",
+    "source_commit": "217923b3600051f8cd49e783863a0afd80775a77"
+  },
+  "payload_hash": "92d07bb3dffe6bdd2a76983597fc036c8e116de6279a10ed51dc1ece13d3d62a",
+  "status": "complete-blocked-before-deep-runs",
+  "version": 1
+}

@@ -476,3 +476,57 @@ incomplete record occurred. Rules, scoring, native opponents, server, browser,
 saves, and live termination are unchanged. Confidence HIGH that the tested
 tactical guidance is inadmissible and operationally unsuitable for deep
 scaling.
+
+## Batch 5 — Calibrate the 2,048 or 4,096 deep tier
+
+Status: complete — neither budget selected; deep jobs not run.
+
+### Contract
+
+**Behaviors:** apply the meaningful-budget prerequisite exactly as frozen. A
+single-process 256/512/1,024/2,048 ladder is permitted only after Batch 4
+admission; 4,096 is conditional on an admitted but unstable 2,048 result. When
+admission fails, calculate and preserve the blocked decision from audited inputs
+without launching deep searches or naming a tier.
+
+**Acceptance criteria:**
+
+- [x] Consume only hash-pinned Batch 4 compact results.
+- [x] Record admission, integrity, feasibility, and rank-stability prerequisites
+  separately rather than collapsing them into preference.
+- [x] Record both candidate budgets explicitly as not run and why.
+- [x] Preserve observational linear cost projections as warnings, not benchmark
+  claims.
+- [x] Select `neither`, expose no deep CLI/browser tier, and launch no process.
+- [x] Add a payload-hash regression test and rerun all product checks.
+
+**Blast radius:** compact research evidence, tests, and documentation only. No
+MCTS behavior, evaluator CLI, product API, browser option, rule, save, or live
+termination change.
+
+### Evidence and decision
+
+- Both prerequisite agents were integrity-clean but inadmissible:
+  tactical-only `54.1667%`, combined `41.6667%`. This alone prohibits deep
+  calibration under the frozen order.
+- The deterministic cost mechanism reinforces the block. Both variants observed
+  a 3,111-action uniform rollout at 64 simulations. Observational eight-worker
+  uniform@64 p95 was 91.3 s and 146.2 s respectively.
+- A deliberately simple linear projection—*not a benchmark*—puts uniform p95 at
+  roughly 48.7/78.0 minutes per 2,048-simulation decision and 97.4/156.0 minutes
+  per 4,096-simulation decision for tactical-only/combined. Search-tree growth
+  and single-process scheduling could differ, so these numbers are warning
+  scale only.
+- The hash-pinned calibration artifact selects `neither` and records both deep
+  jobs as `not-run-failed-admission-prerequisite`. Payload SHA-256:
+  `92d07bb3dffe6bdd2a76983597fc036c8e116de6279a10ed51dc1ece13d3d62a`.
+- No named deep research tier, CLI exposure, browser difficulty, paired match,
+  or strength claim is created. This is the meaningful result required by the
+  evidence: neither 2,048 nor 4,096 is justified for the tested search.
+
+### Regression attestation
+
+Batch 5 changes no executable behavior. The selected budget is null by design,
+all blocked prerequisites are explicit, and no Varde research process was
+launched. Confidence HIGH that the staged gate requires `neither`; no claim is
+made about a future differently designed MCTS.

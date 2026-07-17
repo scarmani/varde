@@ -106,6 +106,17 @@ in Varde.
   2,048 or 4,096 simulations would multiply a tactically inadmissible, highly
   variable workload and is prohibited by the staged plan.
 
+## Batch 5 evidence
+
+- A meaningful calibration may validly select neither candidate. Here, both
+  2,048 and 4,096 are blocked before launch by failed tactical admission.
+- Linear scaling of observed p95 is not a performance benchmark, but it gives
+  the right warning scale: tens of minutes per 2,048 decision and roughly one
+  to two-and-a-half hours per 4,096 decision for the guided variants.
+- Naming a large simulation count despite failed prerequisites would convert a
+  user-visible number into false precision. No deep tier should be exposed until
+  a different search design passes admission at a tractable lower rung.
+
 ## Update rule
 
 Append only evidence-backed findings after each batch. Record failed hypotheses

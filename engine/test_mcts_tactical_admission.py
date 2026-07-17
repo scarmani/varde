@@ -392,6 +392,32 @@ class TestTacticalAdmissionHarness(unittest.TestCase):
                 )
                 self.assertTrue(payload["promotion_blocked"])
 
+    def test_deep_tier_calibration_selects_neither_without_running(self):
+        path = (
+            ROOT
+            / "research/results/mcts-deep-tier-calibration-20260717.json"
+        )
+        payload = json.loads(path.read_text())
+        expected_hash = payload.pop("payload_hash")
+        self.assertEqual(stable_hash(payload), expected_hash)
+        self.assertEqual(
+            payload["status"],
+            "complete-blocked-before-deep-runs",
+        )
+        self.assertEqual(payload["calibration"]["selection"], "neither")
+        self.assertIsNone(payload["calibration"]["selected_budget"])
+        self.assertFalse(payload["calibration"]["deep_jobs_launched"])
+        self.assertFalse(
+            payload["meaningful_budget_gate"][
+                "feasibility_measurement_permitted"
+            ]
+        )
+        for budget in ("2048", "4096"):
+            self.assertEqual(
+                payload["budget_candidates"][budget]["status"],
+                "not-run-failed-admission-prerequisite",
+            )
+
     def test_real_takeover_decision_is_legal_telemetric_and_nonmutating(self):
         task = next(
             task for task in build_schedule(self._config(budgets=[2]))
