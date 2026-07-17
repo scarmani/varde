@@ -16,12 +16,12 @@
   "learnings_path": "docs/elves/mcts-search-v5-learnings.md",
   "execution_log_path": "docs/elves/mcts-search-v5-execution-log.md",
   "merge_policy": "user-merges",
-  "pr_number": null,
+  "pr_number": 22,
   "continuation_guard": {
-    "remaining_batches": 7,
+    "remaining_batches": 6,
     "stop_allowed": false,
     "checkpoint_is_stop": false,
-    "next_required_action": "Finish Batch 0 preflight, push the plan/session-only commit, open the draft PR, then begin Batch 1."
+    "next_required_action": "Freeze the hash-disjoint development and holdout corpora and implement the independent exhaustive oracle in Batch 1."
   },
   "test_baseline": {
     "passed": 299,
@@ -30,13 +30,13 @@
     "status": "passed in 108.988s"
   },
   "current_batch": {
-    "id": 0,
-    "name": "Stage the stacked run",
+    "id": 1,
+    "name": "Freeze corpora and oracle",
     "status": "in_progress"
   },
   "batches": [
-    {"id": 0, "name": "Stage the stacked run", "status": "in_progress", "commit": null, "rollback_tag": "elves/mcts-search-v5-pre-batch-0"},
-    {"id": 1, "name": "Freeze corpora and oracle", "status": "pending", "commit": null, "rollback_tag": "elves/mcts-search-v5-pre-batch-1"},
+    {"id": 0, "name": "Stage the stacked run", "status": "completed", "commit": "aa887487827ac1db3079b63ec7f45bfdd620e279", "rollback_tag": "elves/mcts-search-v5-pre-batch-0"},
+    {"id": 1, "name": "Freeze corpora and oracle", "status": "in_progress", "commit": null, "rollback_tag": "elves/mcts-search-v5-pre-batch-1"},
     {"id": 2, "name": "Correct root proof guidance", "status": "pending", "commit": null, "rollback_tag": "elves/mcts-search-v5-pre-batch-2"},
     {"id": 3, "name": "Add reserved unpruning", "status": "pending", "commit": null, "rollback_tag": "elves/mcts-search-v5-pre-batch-3"},
     {"id": 4, "name": "Add settling V2", "status": "pending", "commit": null, "rollback_tag": "elves/mcts-search-v5-pre-batch-4"},
@@ -45,6 +45,6 @@
   ],
   "review_comments": [],
   "active_compute": [],
-  "last_completed_action": "Exact-base Batch 0 preflight passed: 299 tests, compilation, JavaScript syntax, JSON, diff, and survival-guide validation are clean; ten repository-wide Ruff findings are pre-existing.",
-  "updated_at": "2026-07-17T13:12:00-05:00"
+  "last_completed_action": "Batch 0 committed and pushed at aa88748; draft PR #22 is open, mergeable, correctly stacked on codex/mcts-search-v4, and CI started with no comments or reviews.",
+  "updated_at": "2026-07-17T13:17:55-05:00"
 }

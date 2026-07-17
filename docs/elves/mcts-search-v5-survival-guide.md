@@ -63,20 +63,20 @@ development factorial, and continue only through predeclared gates.
 ## Current Phase
 
 - **Status:** in progress.
-- **Active batch:** Batch 0 of 6.
-- **What was just finished:** exact-head stack verification, baseline product
-  validation, bounded Fable goal cycle, and staging-document creation.
-- **Single next action:** validate this guide, commit and push the Batch 0
-  staging documents, then open the stacked draft PR.
+- **Active batch:** Batch 1 of 6.
+- **What was just finished:** Batch 0 committed and pushed at `aa88748`; draft
+  PR #22 is open, mergeable, correctly stacked, and CI is running.
+- **Single next action:** freeze the hash-disjoint development/holdout corpora
+  and implement the independent exhaustive oracle without changing V4 files.
 
 ## Stop Gate
 
-- **Planned batches remaining:** 7.
+- **Planned batches remaining:** 6.
 - **Stop allowed right now:** no.
 - **Why:** the user authorized the full finite V5 run and no mandatory gate or
   other actual stop condition has fired.
-- **Next required action:** finish Batch 0 preflight, commit and push the staging
-  documents, open the draft PR, poll CI/comments, then begin Batch 1.
+- **Next required action:** execute Batch 1's corpus/oracle contract and its
+  manifest, independence, proof-fixture, and non-mutation validation.
 
 ## Effort Standard
 
@@ -111,7 +111,7 @@ development factorial, and continue only through predeclared gates.
 - [x] Full baseline product suite and syntax checks passed.
 - [x] Frozen plan and finite batch contract recorded.
 - [x] Stop Gate initialized with `Stop allowed right now: no`.
-- [ ] Draft V5 PR opened against `codex/mcts-search-v4`.
+- [x] Draft V5 PR opened against `codex/mcts-search-v4` as PR #22.
 
 ## Next Exact Batch
 
@@ -156,7 +156,8 @@ memory. Do not infer completion from a compacted transcript.
 ## Active Compute
 
 - No active paid or long-running compute.
-- No research search process is authorized before Batch 1 corpus freeze.
+- No research search process is authorized before Batch 1 corpus freeze and
+  oracle acceptance.
 
 ## Recovery Order
 

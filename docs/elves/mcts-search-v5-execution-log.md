@@ -23,7 +23,8 @@
 
 ## Batch 0 — Stage the stacked run
 
-Status: in progress.
+Status: completed at `aa88748`; launch-readiness update follows in the same
+batch.
 
 ### Contract
 
@@ -70,4 +71,35 @@ Status: in progress.
   JSON, and diff checks pass. Repository-wide Ruff reports the same ten
   pre-existing findings inherited from V4; changed-file Ruff is binding.
 - Review: survival-guide validator initially found five missing operational
-  headings; they were added before commit. Plan/diff audit and PR loop pending.
+  headings; the guide was expanded to the exact resumability contract and then
+  passed validation. The staging diff contained only five plan/session files.
+- Push/PR: `aa88748` pushed; draft PR #22 opened against
+  `codex/mcts-search-v4`. Exact head/base, mergeability, and draft state were
+  verified. Both CI jobs started; there were no comments or reviews.
+
+## Batch 1 — Freeze corpora and independent oracle
+
+Status: in progress.
+
+### Contract
+
+**Behavior**
+
+- Freeze new, hash-disjoint 24-position development and 24-position holdout
+  corpora covering six tactical families, both board strata, narrow/wide roots,
+  actor-changing and actor-preserving rescues, equivalent proofs, conflicting
+  obligations, fence semantics, and exact decoys.
+- Add a generic exhaustive oracle driven only by explicit goal predicates and
+  quantifier schedules, sharing legal transitions but no solver obligation
+  logic.
+
+**Acceptance criteria**
+
+- Exact deterministic regeneration, hashes, stratum validation, and V4
+  artifact preservation.
+- Oracle quantifier, closure, abstention, superko, ceiling, non-mutation, and
+  hand-audited trace fixtures pass.
+
+**Blast radius**
+
+- New V5 research modules, manifests, fixtures, and tests only.
