@@ -13,6 +13,7 @@ from actions import (
     legal_actions,
     legal_transitions,
 )
+from mcts_tactical_solver import find_tactical_override
 from varde import BLACK, WHITE, GJERDE_RULESETS, control, groups_of
 
 
@@ -20,7 +21,13 @@ MCTS_FORMAT = "varde-terminal-mcts"
 MCTS_VERSION = 4
 TACTICAL_MCTS_VERSION = 5
 ROLLOUT_POLICIES = frozenset(("uniform", "epsilon-greedy"))
-SEARCH_VARIANTS = frozenset(("tie-margin", "tactical-only", "combined"))
+SEARCH_VARIANTS = frozenset((
+    "tie-margin",
+    "tactical-only",
+    "combined",
+    "v4-control",
+    "v4-solver",
+))
 DEFAULT_SEARCH_VARIANT = "tie-margin"
 EXPLORATION = math.sqrt(2.0)
 ROLLOUT_EPSILON = 0.15
@@ -42,11 +49,15 @@ def _agent_spec(search_variant):
             "ties": "sha256(seed,root-position,node-position,action)",
         }
     tactical = search_variant in ("tactical-only", "combined")
-    margin = search_variant in ("tie-margin", "combined")
+    margin = search_variant in (
+        "tie-margin", "combined", "v4-control", "v4-solver"
+    )
+    solver = search_variant == "v4-solver"
     return {
         "format": MCTS_FORMAT,
         "version": TACTICAL_MCTS_VERSION if tactical else MCTS_VERSION,
         "search_variant": search_variant,
+        "recipe_id": f"mcts-search-{search_variant}-v1",
         "exploration": EXPLORATION,
         "epsilon": ROLLOUT_EPSILON,
         "late_pass_rate": LIGHT_LATE_PASS_RATE,
@@ -56,6 +67,9 @@ def _agent_spec(search_variant):
         ),
         "tactical_guidance": (
             "single-legal-transition-set-v1" if tactical else "disabled"
+        ),
+        "certified_local_solver": (
+            "three-valued-10000-node-v1" if solver else "disabled"
         ),
         "ties": "sha256(seed,root-position,node-position,action)",
     }
@@ -91,6 +105,11 @@ class MCTSDecision:
     search_variant: str = DEFAULT_SEARCH_VARIANT
     root_actions: tuple = ()
     selection_reason: str | None = None
+    solver_status: str | None = None
+    solver_nodes: int = 0
+    solver_cache_hits: int = 0
+    solver_invocations: int = 0
+    solver_overrides: int = 0
 
     def to_dict(self):
         payload = {
@@ -111,6 +130,17 @@ class MCTSDecision:
                 dict(item) for item in self.root_actions
             ]
             payload["selection_reason"] = self.selection_reason
+        if self.solver_status is not None:
+            payload["solver"] = {
+                "status": self.solver_status,
+                "nodes": self.solver_nodes,
+                "cache_hits": self.solver_cache_hits,
+                "invocations": self.solver_invocations,
+                "overrides": self.solver_overrides,
+                "claim_limit": (
+                    "bounded local obligation only; not a game-theoretic result"
+                ),
+            }
         return payload
 
 
@@ -141,9 +171,10 @@ class _Node:
         "normalized_margin_min",
         "normalized_margin_max",
         "tactical_prepared",
+        "solver_scan",
     )
 
-    def __init__(self, state, parent=None, action=None):
+    def __init__(self, state, parent=None, action=None, *, solver_enabled=False):
         self.state = state
         self.parent = parent
         self.action = action
@@ -161,6 +192,9 @@ class _Node:
         self.normalized_margin_min = None
         self.normalized_margin_max = None
         self.tactical_prepared = False
+        self.solver_scan = (
+            find_tactical_override(state) if solver_enabled else None
+        )
 
     @property
     def mean(self):
@@ -573,6 +607,13 @@ def _root_action_telemetry(
             "normalized_terminal_margin_max": (
                 child.normalized_margin_max if child is not None else None
             ),
+            "solver_status": (
+                root.solver_scan.status if root.solver_scan is not None else None
+            ),
+            "solver_override": bool(
+                root.solver_scan is not None
+                and root.solver_scan.override_action == action
+            ),
         })
     return tuple(records)
 
@@ -612,16 +653,38 @@ def choose_mcts_state_action(
     before = rules_state.key()
     root_seat = root_state.actor_seat
     root_key = root_state.key()
-    use_terminal_margin = search_variant in ("tie-margin", "combined")
+    use_terminal_margin = search_variant in (
+        "tie-margin", "combined", "v4-control", "v4-solver"
+    )
     tactical_guidance = search_variant in ("tactical-only", "combined")
+    solver_enabled = search_variant == "v4-solver"
     rng = random.Random(_seed_for_position(seed, root_state))
-    root = _Node(root_state)
+    root = _Node(root_state, solver_enabled=solver_enabled)
     total_rollout_actions = 0
     max_rollout_actions = 0
 
     for _simulation in range(simulations):
         node = root
-        while not node.state.terminal and not node.untried and node.children:
+        while not node.state.terminal:
+            forced = (
+                node.solver_scan.override_action
+                if node.solver_scan is not None else None
+            )
+            if forced is not None:
+                forced_child = next(
+                    (
+                        child for child in node.children
+                        if child.action == forced
+                    ),
+                    None,
+                )
+                if forced_child is not None:
+                    node = forced_child
+                    continue
+                if forced in node.untried:
+                    break
+            if node.untried or not node.children:
+                break
             node = _select_child(
                 node,
                 root_seat,
@@ -630,7 +693,15 @@ def choose_mcts_state_action(
                 use_terminal_margin,
             )
         if not node.state.terminal and node.untried:
-            if tactical_guidance and not node.tactical_prepared:
+            forced = (
+                node.solver_scan.override_action
+                if node.solver_scan is not None else None
+            )
+            if forced is not None and forced in node.untried:
+                node.untried.remove(forced)
+                action = forced
+                child_state = apply_action(node.state, action, validate=False)
+            elif tactical_guidance and not node.tactical_prepared:
                 action, child_state = _prepare_tactical_expansion(node, rng)
             elif tactical_guidance:
                 action = node.untried.pop()
@@ -639,7 +710,12 @@ def choose_mcts_state_action(
                 index = rng.randrange(len(node.untried))
                 action = node.untried.pop(index)
                 child_state = apply_action(node.state, action, validate=False)
-            child = _Node(child_state, parent=node, action=action)
+            child = _Node(
+                child_state,
+                parent=node,
+                action=action,
+                solver_enabled=solver_enabled,
+            )
             node.children.append(child)
             node = child
         sample, rollout_actions = _rollout(
@@ -659,19 +735,31 @@ def choose_mcts_state_action(
         raise AssertionError("MCTS mutated the analyzed rules state")
     if not root.children:
         raise ValueError("no legal MCTS action")
-    selected = max(
-        root.children,
-        key=lambda child: _final_selection_key(
-            child,
-            seed,
-            root_key,
-            use_terminal_margin,
-        ),
+    forced = (
+        root.solver_scan.override_action
+        if root.solver_scan is not None else None
     )
-    selection_reason = (
-        _selection_reason(root, selected, use_terminal_margin)
-        if include_root_telemetry else None
+    selected = next(
+        (child for child in root.children if child.action == forced),
+        None,
     )
+    if selected is None:
+        selected = max(
+            root.children,
+            key=lambda child: _final_selection_key(
+                child,
+                seed,
+                root_key,
+                use_terminal_margin,
+            ),
+        )
+    selection_reason = None
+    if include_root_telemetry:
+        selection_reason = (
+            "certified-local-obligation"
+            if forced is not None
+            else _selection_reason(root, selected, use_terminal_margin)
+        )
     root_actions = (
         _root_action_telemetry(
             root,
@@ -682,6 +770,10 @@ def choose_mcts_state_action(
         )
         if include_root_telemetry else ()
     )
+    tree_nodes = (root, *tuple(_walk(root)))
+    solver_scans = [
+        node.solver_scan for node in tree_nodes if node.solver_scan is not None
+    ]
     return MCTSDecision(
         action=selected.action,
         simulations=simulations,
@@ -695,6 +787,13 @@ def choose_mcts_state_action(
         search_variant=search_variant,
         root_actions=root_actions,
         selection_reason=selection_reason,
+        solver_status=(root.solver_scan.status if solver_enabled else None),
+        solver_nodes=sum(scan.nodes for scan in solver_scans),
+        solver_cache_hits=sum(scan.cache_hits for scan in solver_scans),
+        solver_invocations=len(solver_scans),
+        solver_overrides=sum(
+            scan.override_action is not None for scan in solver_scans
+        ),
     )
 
 

@@ -16,8 +16,6 @@
 
 Append only evidence-backed findings after each batch. Distinguish rule facts,
 agent results, performance observations, and any later match diagnostics.
-# MCTS Search V4 — Learnings
-
 - Small-root reachable positions are plentiful late in seeded Breath,
   Breath-run, and Gjerde trajectories; administrative takeover is inherently
   wide at a real opening, so its small-root holdout cases are explicitly
