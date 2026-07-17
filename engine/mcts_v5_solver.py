@@ -332,7 +332,9 @@ def solve_root_obligation(
         tuple(legal_transitions(state))
         if transitions is None else tuple(transitions)
     )
-    if tuple(action for action, _advanced in transitions) != legal_actions(state):
+    transition_actions = tuple(action for action, _advanced in transitions)
+    legal = legal_actions(state)
+    if len(transition_actions) != len(legal) or set(transition_actions) != set(legal):
         raise ValueError("root transitions do not match the legal action set")
     family = obligation.get("family")
     if family not in _CLASSIFIERS:
