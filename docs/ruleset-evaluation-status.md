@@ -2,10 +2,11 @@
 
 ## Decision state
 
-No Varde ruleset is promoted as the flagship. The native-only screen and first
-independent uniform-MCTS@12 diagnostic are complete; the independent agent
-failed strategic admission, and adversarial and human evidence remain unrun.
-This is a deliberate blocked decision, not a negative verdict on the candidates.
+No Varde ruleset is promoted as the flagship. The native-only screen, first
+independent uniform-MCTS@12 diagnostic, and outcome-blind tactical admission
+ladder are complete. The independent agent failed tactical admission, and
+adversarial and human evidence remain unrun. This is a deliberate blocked
+decision, not a negative verdict on the candidates.
 
 The current branch repairs the known Gjerde scoring defect, freezes six
 candidate revisions, separates each native evaluator from other rulesets'
@@ -21,12 +22,13 @@ balance, depth, emergence, elegance, or beauty.
 | Candidate freeze | `classic-1.3`, `rosette-0.1`, `breath-0.1`, `breath-run-0.1`, `gjerde-breath-0.1`, and `gjerde-go-0.1` are public candidates. |
 | Research-only variants | Breath rescue is a control; extension variants are archived; Breath cap is broken. Old saves still load. |
 | Evaluator firewall | Six hash-pinned native evaluators pass constructed mechanics fixtures; literal Classic seeded behavior is unchanged. |
-| Independent agent | Seeded terminal-score UCT supports play, pass, swap, extension, finish, both end decisions, and resumption with uniform and light rollouts. |
+| Independent agent | Seeded terminal-score UCT supports play, pass, swap, extension, finish, both end decisions, and resumption with uniform and light rollouts. Tactical admission at 64 simulations is only 26.25%. |
+| Decision telemetry | Research records retain nodes, rollout lengths, latency, root width, capture/defense choices, takeover, rescue-chain actions, and fence completion without changing search behavior. |
 | Falsification CLI | Paired colors, budgets, sizes, seeds, workers, telemetry, cancellation, watchdog classification, JSONL, summary, checkpoint, and resume are implemented. |
-| Reproducibility | Final artifacts are byte-identical after interruption and worker-count changes; tampered checkpoints fail closed. |
+| Reproducibility | Schedules and decisions are deterministic after excluding observational latency; checkpoints resume in order and fail closed on tampering. |
 | Human study | Counterbalanced 8/10/12-player schedule, neutral briefs, engine-derived puzzles, post-game ratings, motif coding, and retention prompts are implemented. |
 | Browser telemetry | Opt-in hotseat action/timing records export locally; no direct identifiers, wall-clock time, or server collection endpoint exist. |
-| Product regression | 245 tests, Python syntax, JavaScript syntax, browser export/save/load/resumption/watch flows, and opened screenshots pass locally. |
+| Product regression | 254 Python tests pass; Python and JavaScript syntax checks pass. Existing browser export/save/load/resumption/watch evidence is unchanged because this unit has no browser or live-game behavior change. |
 
 ## Native screening v2
 
@@ -77,7 +79,7 @@ terminal UCT's budget is not yet a justified evidence program.
 
 | Required stage | Status | Promotion use |
 |---|---|---|
-| Constructed tactical admission | Complete for both agent surfaces where applicable | Necessary implementation gate only |
+| Constructed tactical admission | Native mechanics fixtures pass; terminal MCTS v1 failed its 240-decision 4/16/64 ladder at 26.25% high-budget pooled hits | Necessary implementation gate only; blocks further paired MCTS |
 | Cross-family operational smoke | Complete: one Toy pair per candidate | None |
 | Native operational screen: 20 paired n=4 seeds | Complete: 480 games across mixed and matched native jobs; zero operational failures; [diagnostic report](native-screening-v2-results.md) | Falsification and evaluator-artifact triage only |
 | Independent shallow calibration | Uniform MCTS@12 completed 240 games and audited cleanly, but failed strategic admission: native scored 97.7% overall | Operational/action-plumbing evidence only; repair agent before another match batch |
@@ -129,6 +131,18 @@ python3 research/harness/audit_uniform_mcts12.py \
   --output research/results/uniform-mcts12-20260716.json
 ```
 
+Inspect and audit the tactical-admission decision ladder through its separately
+frozen manifest:
+
+```bash
+jq '{config, config_sha256, schedule_sha256, execution}' \
+  research/manifests/mcts-tactical-admission-20260716.json
+
+python3 research/harness/audit_mcts_tactical_admission.py \
+  --manifest research/manifests/mcts-tactical-admission-20260716.json \
+  --output research/results/mcts-tactical-admission-20260716.json
+```
+
 The 24/250/1,000/4,000 MCTS ladder is not yet a reproduction command. Although
 the @12 operational audit is clean, the agent failed strategic admission. Any
 later match work requires a new manifest, fresh seeds, a separate raw output
@@ -151,14 +165,17 @@ python3 research/harness/human_study.py \
 
 ## Best next steps
 
-1. Add MCTS tactical-admission fixtures for each ruleset's distinctive actions
-   and require action quality to improve over a small budget ladder.
-2. Add decision-level node, rollout-length, and latency telemetry to research
-   games, then localize Classic and line-board costs.
-3. Compare uniform, current light, and one minimal rules-neutral tactical
-   rollout on held-out fixtures and a tiny outcome-blind timing sample.
-4. Freeze another paired job only after a policy passes admission; do not launch
-   the current uniform @24 or light match batch merely because @12 audited.
+1. Expose per-root-action visits, outcome counts, terminal margin, and selected
+   rank; the existing aggregate telemetry has localized root under-sampling but
+   cannot show each acceptable action's backed evidence.
+2. Split the fixture corpus into dominance-proven small-root admission puzzles
+   and the current natural-width behavior diagnostics.
+3. Remove coordinate-biased final ties with a deterministic position/action
+   hash, then ablate terminal-margin backup and a minimal rules-layer tactical
+   proposal policy separately on held-out fixtures.
+4. Freeze another paired job only after one version passes admission and a
+   single-process timing check; current uniform @24 and light matches remain
+   blocked.
 5. Review agent disagreement before spending the 50-pair screen. Improve a
    native evaluator only through a new declared revision.
 6. Run the 50-pair health screen and ruleset-native MAP-Elites only for
@@ -167,5 +184,5 @@ python3 research/harness/human_study.py \
 8. Promote one flagship only after the final high-budget, outside-play,
    forced-win, and complete negative-evidence publication gates pass.
 
-The next operator decision is the exact MCTS tactical-admission and telemetry
-contract; it is not a choice of flagship or a larger simulation budget.
+The next operator decision is the versioned MCTS diagnostic/search repair. It
+is not a choice of flagship or a larger simulation budget.

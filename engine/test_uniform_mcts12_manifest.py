@@ -9,9 +9,13 @@ from test_ruleset_evaluation import synthetic_game
 from research.harness.audit_uniform_mcts12 import audit_manifest
 from research.harness.evaluate_rulesets import (
     build_schedule,
+    code_hash,
     run_evaluation,
     stable_hash,
 )
+from mcts import MCTS_AGENT_HASH
+from native_evaluators import NATIVE_EVALUATOR_HASH
+from varde import rulesets_public
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -84,6 +88,12 @@ class TestFrozenUniformMcts12Manifest(unittest.TestCase):
 class TestUniformMcts12Audit(unittest.TestCase):
     def _synthetic_manifest(self, root):
         manifest = copy.deepcopy(json.loads(MANIFEST_PATH.read_text()))
+        manifest["source"].update({
+            "code_hash": code_hash(),
+            "ruleset_registry_hash": stable_hash(rulesets_public()),
+            "native_evaluator_hash": NATIVE_EVALUATOR_HASH,
+            "mcts_agent_hash": MCTS_AGENT_HASH,
+        })
         manifest["candidates"] = manifest["candidates"][:1]
         manifest["fixed_parameters"]["games"] = 2
         manifest["fixed_parameters"]["pairs_per_ruleset_matchup"] = 1
