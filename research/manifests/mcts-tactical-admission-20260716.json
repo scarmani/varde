@@ -1,0 +1,83 @@
+{
+  "format": "varde-mcts-tactical-admission-manifest",
+  "version": 1,
+  "status": "frozen-before-outcomes",
+  "created_date": "2026-07-16",
+  "purpose": "Outcome-blind tactical admission and decision-level telemetry before any further paired MCTS match computation",
+  "source": {
+    "source_commit": "e91749697ec0150bea91e2cd3506e09bed7c134d",
+    "code_hash": "d21e5dec1f386f558b049e55b03a604441047b859313852bdb84d37b408042a9",
+    "mcts_agent_hash": "63cdec59394646f4bddd8afe33245331b1f55f922d79523030722bbb8d496e97",
+    "fixture_catalog_hash": "f53c9f7110fd8228ee50c6b08b9d645a7812bafb9b9a37ca63ddae911044f7fe",
+    "files": {
+      "engine/actions.py": "95742a2f37e93e629b53cb85824fa873ca8db739ad03286eaacb97a58f04c71e",
+      "engine/mcts.py": "db96420d12938dddf0d8f7a0ff433f3cfd0db9d070492c13ed646eb7103dc78c",
+      "engine/varde.py": "dbc2e9127dbda1f3ac8833f91ad35fc102267ab2a4e52a28abaa98191d82843b",
+      "research/harness/mcts_tactical_admission.py": "11b48e9dcc6b97c55c70480fe2a172138cbb15188756c7d479bd28f3fb112bc4",
+      "research/harness/mcts_tactical_fixtures.py": "b03fb5c23a3ba9cb0224c023514bcae369e43cef7de5b187d9687b1ed473e2fc",
+      "research/harness/mcts_telemetry.py": "0dc85aa4192bf8b1cce7fd6b7386bc3c7dd29236e0ea5a9b790e15eaa8ba30e0"
+    }
+  },
+  "config": {
+    "budgets": [4, 16, 64],
+    "policies": ["uniform", "epsilon-greedy"],
+    "replicates": 4,
+    "seed": 20260716021
+  },
+  "config_sha256": "9be5d8fbed78e688b2d978a3e63c90ebe87bca1c77e3f65217411c581e65e526",
+  "schedule_sha256": "0d19484d5207155ce775deda34df7b4552e209a582d0ca5e69547fb9193b0735",
+  "decisions": 240,
+  "positions": 10,
+  "fixture_contract": {
+    "rulesets": ["classic", "rosette", "breath", "breath-run", "gjerde", "gjerde-go"],
+    "decision_types": ["capture", "defense", "takeover", "rescue-chain", "fence-completion", "acceptance"],
+    "breath_run_steps": 2,
+    "synthetic_history_positions": ["pie-takeover-seat-perspective"],
+    "synthetic_history_reason": "Isolate swap seat perspective as a two-action decision instead of conflating it with a wide opening search",
+    "outcomes_used": false
+  },
+  "admission_gate": {
+    "all_decisions_legal_nonmutating_and_complete": true,
+    "every_high_budget_position_policy_at_least_75_percent": true,
+    "high_budget_overall_at_least_80_percent": true,
+    "aggregate_hit_rate_nondecreasing_by_policy": true
+  },
+  "execution": {
+    "workers": 8,
+    "checkpoint_interval": 8,
+    "output_dir": "/Users/armand/varde-runs/mcts-tactical-admission-20260716",
+    "argv": [
+      "python3",
+      "research/harness/mcts_tactical_admission.py",
+      "--budgets", "4,16,64",
+      "--policies", "uniform,epsilon-greedy",
+      "--replicates", "4",
+      "--seed", "20260716021",
+      "--workers", "8",
+      "--checkpoint-interval", "8",
+      "--output-dir", "/Users/armand/varde-runs/mcts-tactical-admission-20260716"
+    ],
+    "audit_argv": [
+      "python3",
+      "research/harness/audit_mcts_tactical_admission.py",
+      "--manifest", "research/manifests/mcts-tactical-admission-20260716.json",
+      "--output", "research/results/mcts-tactical-admission-20260716.json"
+    ]
+  },
+  "freeze_gate": {
+    "fixture_and_harness_tests_passed": true,
+    "outcomes_inspected_before_freeze": false,
+    "paired_mcts24_blocked_until_audit": true,
+    "paired_light_rollout_blocked_until_audit": true,
+    "paired_matches_launched_by_this_unit": false
+  },
+  "claim_limits": {
+    "tactical_fixture_evidence_only": true,
+    "match_strength_evidence": false,
+    "balance_evidence": false,
+    "strategic_depth_evidence": false,
+    "ruleset_promise_evidence": false,
+    "latency_observational_not_deterministic": true,
+    "promotion_blocked": true
+  }
+}
