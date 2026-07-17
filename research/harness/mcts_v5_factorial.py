@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 from concurrent.futures import ProcessPoolExecutor
 from datetime import date
+from functools import cache
 import hashlib
 import json
 import os
@@ -113,6 +114,7 @@ def _position_rows():
     return tuple(position.public_dict() for position in development_positions())
 
 
+@cache
 def build_schedule(*, seed=MASTER_SEED):
     positions = development_positions()
     tasks = []
@@ -184,7 +186,7 @@ def build_manifest(*, output_dir, created_date=None, source_commit_value=None):
             dict(oracle.action_statuses) == dict(solver.action_statuses)
         )
         guidance = scan_root_guidance(position.state)
-        oracle_guidance = _oracle_guidance_statuses(position.state)
+        oracle_guidance = _position_oracle_guidance_statuses(position.id)
         guidance_agreement &= all(
             oracle_guidance[_action_id(action)] == status
             for action, status in guidance.action_statuses
@@ -314,6 +316,14 @@ def _oracle_guidance_statuses(state):
     return by_action
 
 
+@cache
+def _position_oracle_guidance_statuses(position_id):
+    position = next(
+        item for item in development_positions() if item.id == position_id
+    )
+    return _oracle_guidance_statuses(position.state)
+
+
 def evaluate_task(task):
     positions = {position.id: position for position in development_positions()}
     position = positions[task["position_id"]]
@@ -357,7 +367,7 @@ def evaluate_task(task):
             if item["mandatory_exposure"]
         ]
         oracle_statuses = (
-            _oracle_guidance_statuses(state)
+            _position_oracle_guidance_statuses(position.id)
             if "-g1-" in f"-{task['variant']}-" else None
         )
         oracle_solver_agreement = (
