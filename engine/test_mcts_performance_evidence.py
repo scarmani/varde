@@ -24,7 +24,8 @@ class TestMCTSPerformanceEvidence(unittest.TestCase):
         v1 = self.timing["measurements"]["v1"]
         v2 = self.timing["measurements"]["v2"]
         self.assertEqual(v1["agent_hash"], self.golden["mcts_agent_hash"])
-        self.assertEqual(v2["agent_hash"], MCTS_AGENT_HASH)
+        self.assertRegex(v2["agent_hash"], r"^[0-9a-f]{64}$")
+        self.assertNotEqual(v2["agent_hash"], MCTS_AGENT_HASH)
         self.assertEqual(v1["average_rollout_actions"], v2["average_rollout_actions"])
         self.assertEqual(v1["max_rollout_actions"], v2["max_rollout_actions"])
 

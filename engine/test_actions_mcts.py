@@ -1,11 +1,26 @@
 import unittest
 
-from actions import RulesAction, RulesState, apply_action, legal_actions
+from actions import (
+    RulesAction,
+    RulesState,
+    apply_action,
+    legal_actions,
+    legal_transitions,
+)
 from mcts import (
     MCTS_AGENT_HASH,
+    MCTS_AGENT_HASHES,
     MCTS_VERSION,
+    _Node,
+    _TerminalSample,
+    _final_selection_key,
+    _scoreable_area,
+    _seeded_tie_value,
+    _selection_reason,
+    _terminal_sample,
     choose_mcts_action,
     choose_mcts_state_action,
+    mcts_agent_hash,
 )
 from varde import BLACK, WHITE, Game, Illegal, signature
 
@@ -14,6 +29,28 @@ CANDIDATES = ("classic", "rosette", "breath", "breath-run", "gjerde", "gjerde-go
 
 
 class TestRulesActions(unittest.TestCase):
+    def test_legal_transitions_cover_actions_once_without_mutation(self):
+        for rules in CANDIDATES:
+            with self.subTest(rules=rules):
+                game = Game(3, rules=rules)
+                game.play(game.legal_placements()[0])
+                state = RulesState.from_game(game)
+                before = state.key()
+                transitions = legal_transitions(state)
+                self.assertEqual(
+                    tuple(action for action, _advanced in transitions),
+                    legal_actions(state),
+                )
+                self.assertEqual(
+                    len({action for action, _advanced in transitions}),
+                    len(transitions),
+                )
+                self.assertTrue(all(
+                    advanced.key() != state.key()
+                    for _action, advanced in transitions
+                ))
+                self.assertEqual(state.key(), before)
+
     def test_structural_clone_is_equal_without_mutable_aliases(self):
         for rules in CANDIDATES:
             with self.subTest(rules=rules):
@@ -179,13 +216,115 @@ class TestRulesActions(unittest.TestCase):
 
 class TestTerminalMCTS(unittest.TestCase):
     def test_agent_hash_and_request_validation(self):
-        self.assertEqual(MCTS_VERSION, 2)
+        self.assertEqual(MCTS_VERSION, 4)
         self.assertEqual(len(MCTS_AGENT_HASH), 64)
         int(MCTS_AGENT_HASH, 16)
+        self.assertEqual(MCTS_AGENT_HASH, mcts_agent_hash("tie-margin"))
+        self.assertEqual(
+            set(MCTS_AGENT_HASHES),
+            {"tie-margin", "tactical-only", "combined"},
+        )
+        self.assertEqual(len(set(MCTS_AGENT_HASHES.values())), 3)
         with self.assertRaises(ValueError):
             choose_mcts_action(Game(3), BLACK, simulations=0)
         with self.assertRaises(ValueError):
             choose_mcts_action(Game(3), BLACK, rollout_policy="native")
+        with self.assertRaisesRegex(ValueError, "unknown MCTS search variant"):
+            choose_mcts_action(Game(3), BLACK, search_variant="oracle")
+
+    def test_seeded_ties_are_deterministic_semantic_and_direction_neutral(self):
+        actions = [
+            RulesAction("swap"),
+            RulesAction("extend", (-2, 0)),
+            RulesAction("play", (2, 0)),
+            RulesAction("pass"),
+            RulesAction("finish-extension"),
+            RulesAction("resume"),
+            RulesAction("accept"),
+        ]
+        first = [
+            _seeded_tie_value(17, "root", "node", action)
+            for action in actions
+        ]
+        self.assertEqual(
+            first,
+            [
+                _seeded_tie_value(17, "root", "node", action)
+                for action in actions
+            ],
+        )
+        self.assertEqual(len(first), len(set(first)))
+        self.assertNotEqual(
+            first,
+            [_seeded_tie_value(18, "root", "node", action) for action in actions],
+        )
+        self.assertNotEqual(
+            first,
+            [_seeded_tie_value(17, "other", "node", action) for action in actions],
+        )
+
+        # No board direction is an increasing/decreasing fallback. Across fixed
+        # seeds every member of a six-way rotational orbit wins at least once.
+        orbit = [
+            RulesAction("play", point)
+            for point in ((2, 0), (1, 1), (-1, 1), (-2, 0), (-1, -1), (1, -1))
+        ]
+        winners = set()
+        for seed in range(128):
+            winners.add(max(
+                orbit,
+                key=lambda action: _seeded_tie_value(
+                    seed, "symmetric-root", "symmetric-node", action
+                ),
+            ))
+        self.assertEqual(winners, set(orbit))
+
+    def test_terminal_margin_is_bounded_color_symmetric_and_secondary(self):
+        for rules in CANDIDATES:
+            for n in (3, 4, 5, 6):
+                with self.subTest(rules=rules, n=n):
+                    game = Game(n, rules=rules)
+                    for point in game.board.points:
+                        game.state[point] = (BLACK,)
+                    state = RulesState(game, accepted=True)
+                    black = _terminal_sample(state, "seat-black")
+                    white = _terminal_sample(state, "seat-white")
+                    expected_area = (
+                        len(game.board.cells)
+                        if rules in ("gjerde", "gjerde-go")
+                        else len(game.board.points)
+                    )
+                    self.assertEqual(_scoreable_area(game), expected_area)
+                    self.assertEqual(black.reward, 1.0 - white.reward)
+                    self.assertEqual(black.margin, -white.margin)
+                    self.assertAlmostEqual(
+                        black.normalized_margin,
+                        -white.normalized_margin,
+                    )
+                    self.assertLessEqual(abs(black.normalized_margin), 1.0)
+
+        state = RulesState(Game(3), accepted=True)
+        lower_margin = _Node(state, action=RulesAction("pass"))
+        higher_margin = _Node(state, action=RulesAction("accept"))
+        lower_wdl = _Node(state, action=RulesAction("resume"))
+        lower_margin.record(_TerminalSample(1.0, 1, 0.1, "win"))
+        higher_margin.record(_TerminalSample(1.0, 2, 0.2, "win"))
+        lower_wdl.record(_TerminalSample(0.5, 54, 1.0, "draw"))
+        key_args = (77, state.key())
+        self.assertGreater(
+            _final_selection_key(higher_margin, *key_args),
+            _final_selection_key(lower_margin, *key_args),
+        )
+        self.assertGreater(
+            _final_selection_key(lower_margin, *key_args),
+            _final_selection_key(lower_wdl, *key_args),
+        )
+        root = _Node(state)
+        root.children = [lower_margin, higher_margin]
+        self.assertEqual(
+            _selection_reason(root, higher_margin),
+            "terminal-margin",
+        )
 
     def test_mcts_is_legal_deterministic_nonmutating_and_save_compatible(self):
         for rules in CANDIDATES:
@@ -254,6 +393,100 @@ class TestTerminalMCTS(unittest.TestCase):
         )
         self.assertIn(decision.action, legal_actions(state))
         self.assertEqual(state.key(), before)
+
+    def test_optional_root_telemetry_reconciles_without_changing_choice(self):
+        game = Game(3, rules="breath")
+        for point in game.board.points:
+            game.state[point] = (BLACK,)
+        game.to_move = WHITE
+        game.moves_played = 1
+        game.swap_decided = False
+        state = RulesState.from_game(game)
+        before = state.key()
+
+        default = choose_mcts_state_action(
+            state,
+            WHITE,
+            simulations=8,
+            seed=20260717,
+            rollout_policy="uniform",
+        )
+        observed = choose_mcts_state_action(
+            state,
+            WHITE,
+            simulations=8,
+            seed=20260717,
+            rollout_policy="uniform",
+            include_root_telemetry=True,
+        )
+
+        self.assertEqual(default.action, observed.action)
+        self.assertEqual(default.nodes, observed.nodes)
+        self.assertEqual(default.mean_value, observed.mean_value)
+        self.assertNotIn("root_action_telemetry", default.to_dict())
+        telemetry = observed.to_dict()["root_action_telemetry"]
+        self.assertEqual(len(telemetry), len(legal_actions(state)))
+        self.assertEqual(
+            {item["action_id"] for item in telemetry},
+            {"swap", "pass"},
+        )
+        self.assertEqual(
+            [item["final_rank"] for item in telemetry],
+            list(range(1, len(telemetry) + 1)),
+        )
+        self.assertEqual(sum(item["visits"] for item in telemetry), 8)
+        for item in telemetry:
+            self.assertEqual(
+                item["wins"] + item["draws"] + item["losses"],
+                item["visits"],
+            )
+            self.assertEqual(item["terminal_margin_count"], item["visits"])
+            self.assertEqual(
+                item["normalized_terminal_margin_count"],
+                item["visits"],
+            )
+            if item["normalized_terminal_margin_mean"] is not None:
+                self.assertLessEqual(
+                    abs(item["normalized_terminal_margin_mean"]),
+                    1.0,
+                )
+        selected = [item for item in telemetry if item["selected"]]
+        self.assertEqual(len(selected), 1)
+        self.assertEqual(selected[0]["final_rank"], 1)
+        self.assertEqual(state.key(), before)
+
+        with self.assertRaisesRegex(ValueError, "must be a boolean"):
+            choose_mcts_state_action(
+                state,
+                WHITE,
+                simulations=1,
+                include_root_telemetry="yes",
+            )
+
+    def test_optional_telemetry_preserves_current_seeded_candidate_decisions(self):
+        for rules in CANDIDATES:
+            for policy in ("uniform", "epsilon-greedy"):
+                with self.subTest(rules=rules, policy=policy):
+                    state = RulesState.from_game(Game(3, rules=rules))
+                    default = choose_mcts_state_action(
+                        state,
+                        BLACK,
+                        simulations=2,
+                        seed=731,
+                        rollout_policy=policy,
+                    )
+                    observed = choose_mcts_state_action(
+                        state,
+                        BLACK,
+                        simulations=2,
+                        seed=731,
+                        rollout_policy=policy,
+                        include_root_telemetry=True,
+                    )
+                    payload = observed.to_dict()
+                    payload.pop("root_action_telemetry")
+                    payload.pop("selection_reason")
+                    self.assertEqual(payload, default.to_dict())
 
 
 if __name__ == "__main__":

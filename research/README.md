@@ -227,3 +227,12 @@ native search, and uniform MCTS with one simulation per action. All 12 games
 completed legally, but every stratum is headline-ineligible and promotion stays
 blocked. The exact implemented/unrun evidence matrix and next commands are in
 `docs/ruleset-evaluation-status.md`.
+
+## Search V3 tactical admission
+
+The staged Search V3 follow-up is summarized in
+`docs/mcts-tactical-admission-results.md`. Its split proof corpus and isolated
+tie, terminal-margin, tactical-only, and combined agents all failed admission.
+The compact `results/mcts-deep-tier-calibration-20260717.json` therefore selects
+neither 2,048 nor 4,096 and records that no deep or paired job was launched.
+These are negative agent results, not ruleset evidence.

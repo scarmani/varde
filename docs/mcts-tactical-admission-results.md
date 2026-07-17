@@ -1,5 +1,53 @@
 # MCTS tactical admission results
 
+## Search V3 follow-up — 2026-07-17
+
+The staged Search V3 program completed all six batches without running paired
+games or changing Varde's rules. It added exact root-action telemetry, separated
+the ten natural-width diagnostics from six small-root positions with exhaustive
+local transition proofs, and ran four separately hashed search ablations on the
+same 384-decision 4/16/64 schedule.
+
+| Agent | High-rung proof hit rate | Result |
+|---|---:|---|
+| Behavior-neutral MCTS V2 | 60.42% | Failed pooled and per-cell admission |
+| Seeded-hash ties, MCTS V3 | 54.17% | Removed directional fallback; strength regressed |
+| Tie + terminal margin, MCTS V4 | 52.08% | Resolved saturation; admission still failed |
+| Tactical guidance without margin, MCTS V5 | 54.17% | Failed pooled, per-cell, and monotonicity gates |
+| Tactical guidance + margin, MCTS V5 | 41.67% | Failed and regressed further |
+
+Every one of the 1,920 decisions in the baseline and four ablation runs
+completed legally and
+without mutation, crash, or missing record. Terminal margin resolved 45/80
+high-budget natural-diagnostic ties without changing their aggregate 32.5% hit
+rate, so it is retained as a saturation discriminator rather than claimed as a
+strength gain. Tactical transition priorities exactly recognize all six proof
+facts in isolation, but myopic guided rollouts did not turn that recognition
+into reliable terminal choices.
+
+The guided agents also exposed an operational failure mode: a uniform rollout
+reached 3,111 rules actions, and observational uniform@64 p95 reached 91–146
+seconds in the eight-worker runs. The hash-pinned
+[deep-tier decision](../research/results/mcts-deep-tier-calibration-20260717.json)
+therefore selects **neither 2,048 nor 4,096**. Both deep jobs and all paired
+matches remain unrun because tactical admission is a mandatory prerequisite.
+No deep research tier, strength claim, balance claim, or product difficulty is
+created.
+
+Compact evidence:
+
+- [split V2 baseline](../research/results/mcts-tactical-admission-v2-20260717.json)
+- [tie-only V3](../research/results/mcts-tactical-tie-v3-20260717.json)
+- [terminal-margin V4](../research/results/mcts-tactical-margin-v4-20260717.json)
+- [tactical-only V5](../research/results/mcts-tactical-only-v5-20260717.json)
+- [combined V5](../research/results/mcts-tactical-combined-v5-20260717.json)
+
+The next credible MCTS unit is architectural, not a larger budget: avoid
+full-game myopic tactical rollout chains and establish admission at a tractable
+lower rung before any new deep or paired manifest is frozen.
+
+## Historical first admission run — 2026-07-16
+
 ## Scope and integrity
 
 The frozen [manifest](../research/manifests/mcts-tactical-admission-20260716.json)
