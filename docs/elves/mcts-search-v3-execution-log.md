@@ -30,8 +30,9 @@ negative result.
 - [x] Full 254-test baseline passes.
 - [x] Python compilation, JavaScript syntax, and Git diff checks pass.
 - [x] Existing keep-awake processes are identified and left untouched.
-- [ ] Setup documents committed and pushed.
-- [ ] Pull request opened and exact PR/check state recorded.
+- [x] Setup documents committed and pushed at `afe0a1f`.
+- [x] Draft PR #20 opened; exact setup head is mergeable and its two test jobs
+  started with no comments or reviews present.
 
 **Blast radius:** plan and Elves run-control documents only. No engine, browser,
 research harness, manifest, result, or test behavior changes.
@@ -61,7 +62,8 @@ research harness, manifest, result, or test behavior changes.
 
 No product or research behavior has been changed in Batch 0. Confidence HIGH:
 the branch starts from the exact merged tactical-admission head and the complete
-declared baseline is green.
+declared local baseline is green. Draft review surface:
+https://github.com/scarmani/varde/pull/20.
 
 ## Batch 1 — Measurement substrate and corpus V2
 

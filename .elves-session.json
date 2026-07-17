@@ -31,7 +31,13 @@
     "github_auth": "active scarmani",
     "caffeinate_pids_preserved": [16495, 21008]
   },
-  "pull_request": null,
-  "last_completed_action": "Created exact-main worktree and passed setup preflight.",
-  "updated_at": "2026-07-16T23:22:54-05:00"
+  "pull_request": {
+    "number": 20,
+    "url": "https://github.com/scarmani/varde/pull/20",
+    "draft": true,
+    "setup_head": "afe0a1f708a21e3f51ecc11f264f80b65fcb0cc1",
+    "setup_checks": "two test jobs in progress"
+  },
+  "last_completed_action": "Committed and pushed setup-only Batch 0, opened draft PR 20, and recorded its exact initial state.",
+  "updated_at": "2026-07-16T23:24:20-05:00"
 }

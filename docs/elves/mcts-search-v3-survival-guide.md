@@ -15,6 +15,7 @@ rules or import native evaluator leaf values.
 - Branch: `codex/mcts-search-v3`
 - Worktree: `/private/tmp/varde-mcts-search-v3`
 - Base/collision tripwire: `b620a11a72097f22e5addbfaf58b56073f9612cd`
+- Pull request: draft PR #20, https://github.com/scarmani/varde/pull/20
 - PR/merge policy: open early; user reviews and merges; never self-merge
 - Plan: `docs/plans/mcts-search-v3.md`
 - Stop after: six implementation/evidence batches, or the first true integrity
@@ -38,8 +39,9 @@ Status: staged, not launched
 
 Active batch: Batch 0 — setup and preflight complete
 
-Just completed: dedicated worktree creation and clean baseline validation (254
-tests, Python compile, JavaScript syntax, Git diff check, GitHub authentication).
+Just completed: dedicated worktree creation, clean baseline validation (254
+tests, Python compile, JavaScript syntax, Git diff check, GitHub authentication),
+and draft PR #20 at setup head `afe0a1f708a21e3f51ecc11f264f80b65fcb0cc1`.
 
 Single next action: in a fresh user-authorized launch turn, reread this guide,
 verify the tripwire and PR state, set `stop_allowed` false, and execute Batch 1
