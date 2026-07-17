@@ -37,19 +37,19 @@ rules or import native evaluator leaf values.
 
 Status: launched and in progress
 
-Active batch: Batch 4 — minimal tactical proposal/rollout ablation
+Active batch: Batch 5 — blocked deep-tier calibration decision
 
-Just completed: Batch 3 preserved a clean failed admission (`52.0833%`) while
-retaining margin because it resolved 45/80 high-budget diagnostic ties with no
-diagnostic hit-rate regression. Paired matches remain blocked. Local HEAD, the
-remote branch, and PR #20 all equal
-`cb70a4f2df78e5a2d2ae0b50319a0be837a074aa`; the frozen plan hash still
-matches.
+Just completed: Batch 4 preserved two clean negative tactical-guidance runs.
+Tactical-only scored `54.1667%`, combined `41.6667%`, and both missed every
+admission prerequisite; guided uniform rollouts also reached 3,111 actions.
+Paired and deep jobs remain blocked. Local HEAD, the remote branch, and PR #20
+all equal `3206476f9031b4d0a05e378f3e88c4bc330f7506`; the frozen plan hash
+still matches.
 
-Single next action: tag the Batch 4 rollback point, establish the tactical
-guidance contract, and implement the smallest rules-transition-only proposal
-or rollout bias covering the six proof categories before freezing isolated and
-combined ablations.
+Single next action: tag the Batch 5 rollback point, calculate the explicit
+2,048/4,096 feasibility decision from the audited prerequisites and cost tails,
+and preserve a hash-pinned `neither` result without launching forbidden deep
+searches.
 
 ## Active compute
 
@@ -58,9 +58,9 @@ No Varde research or test process is active. Two pre-existing system
 
 ## Stop gate
 
-- Planned implementation/evidence batches remaining: 3
+- Planned implementation/evidence batches remaining: 2
 - Stop allowed right now: no
-- Next required action: execute Batch 4 tactical-guidance admission ablation
+- Next required action: execute Batch 5 blocked calibration record
 - Continue automatically through valid batches; do not merge.
 
 ## Validation gates
