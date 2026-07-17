@@ -12,24 +12,24 @@
   "learnings": "docs/elves/mcts-search-v3-learnings.md",
   "execution_log": "docs/elves/mcts-search-v3-execution-log.md",
   "merge_policy": "user-merges",
-  "status": "in_progress",
+  "status": "complete",
   "batch": {
     "current": 6,
     "total": 6,
-    "status": "in_progress"
+    "status": "complete"
   },
   "continuation_guard": {
-    "remaining_batches": 1,
-    "stop_allowed": false,
+    "remaining_batches": 0,
+    "stop_allowed": true,
     "checkpoint_is_stop": false,
     "reason": "Fresh launch command received; continue through every valid evidence-gated batch.",
-    "next_required_action": "Execute Batch 6 gated pair skip, final audit, and handoff."
+    "next_required_action": "Generate the temporary Elves report, remove operational session files, and complete post-cleanup exact-head handoff."
   },
   "test_baseline": {
     "passed": 254,
     "total": 254,
     "skipped": 0,
-    "status": "Batch 5 close: 268 passed in 32.006s"
+    "status": "Batch 6 final readiness: 268 passed in 32.002s"
   },
   "batches": [
     {"id": 1, "name": "Measurement substrate and admission corpus V2", "status": "complete", "commit": "965168f5a16f0c1cae059394fc880d5afe4130f5", "rollback_tag": "elves/mcts-search-v3-pre-batch-1", "started_at": "2026-07-16T23:40:50-05:00", "completed_at": "2026-07-17T00:14:46-05:00"},
@@ -37,7 +37,7 @@
     {"id": 3, "name": "Terminal-margin secondary backup", "status": "complete", "commit": "cb70a4f2df78e5a2d2ae0b50319a0be837a074aa", "rollback_tag": "elves/mcts-search-v3-pre-batch-3", "started_at": "2026-07-17T00:24:21-05:00", "completed_at": "2026-07-17T00:33:09-05:00"},
     {"id": 4, "name": "Minimal tactical proposal and rollout ablation", "status": "complete", "commit": "3206476f9031b4d0a05e378f3e88c4bc330f7506", "rollback_tag": "elves/mcts-search-v3-pre-batch-4", "started_at": "2026-07-17T00:33:09-05:00", "completed_at": "2026-07-17T01:07:39-05:00"},
     {"id": 5, "name": "Calibrate the 2048 or 4096 deep tier", "status": "complete", "commit": "38dfda584267757bea4fc046e44ef1bce1c8d1c2", "rollback_tag": "elves/mcts-search-v3-pre-batch-5", "started_at": "2026-07-17T01:07:39-05:00", "completed_at": "2026-07-17T01:12:12-05:00"},
-    {"id": 6, "name": "Conditional paired diagnostic and final handoff", "status": "in_progress", "commit": null, "rollback_tag": "elves/mcts-search-v3-pre-batch-6", "started_at": "2026-07-17T01:12:12-05:00", "completed_at": null}
+    {"id": 6, "name": "Conditional paired diagnostic and final handoff", "status": "complete", "commit": "a03a723f65c68acbfaa036f5db600df343c64fe2", "rollback_tag": "elves/mcts-search-v3-pre-batch-6", "started_at": "2026-07-17T01:12:12-05:00", "completed_at": "2026-07-17T01:21:05-05:00"}
   ],
   "review_comments": [],
   "active_compute": [],
@@ -56,6 +56,6 @@
     "setup_head": "afe0a1f708a21e3f51ecc11f264f80b65fcb0cc1",
     "setup_checks": "two test jobs in progress"
   },
-  "last_completed_action": "Closed Batch 5 with a hash-pinned selection of neither 2048 nor 4096; no deep job ran and paired play remains blocked.",
-  "updated_at": "2026-07-17T01:12:12-05:00"
+  "last_completed_action": "Completed Batch 6 direct final-readiness review: 268 tests and both CI jobs pass, no review findings, neither deep budget selected, and no paired job ran.",
+  "updated_at": "2026-07-17T01:21:05-05:00"
 }

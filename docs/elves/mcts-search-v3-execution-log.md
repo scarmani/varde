@@ -533,7 +533,7 @@ made about a future differently designed MCTS.
 
 ## Batch 6 — Conditional paired diagnostic and final handoff
 
-Status: final readiness review in progress; paired diagnostic skipped by gate.
+Status: complete; paired diagnostic skipped by gate.
 
 ### Contract
 
@@ -553,12 +553,14 @@ operational session artifacts, and hand off the draft PR without merging.
   hash revalidates; all five 384-decision jobs remain integrity-clean negatives.
 - [x] Cumulative diff leaves `engine/varde.py`, rules, scoring, server, browser,
   saves, native opponents, and live termination untouched.
-- [ ] Full 268-test suite, Python compile, JavaScript syntax, Ruff, and diff
+- [x] Full 268-test suite, Python compile, JavaScript syntax, Ruff, and diff
   checks pass at the final documentation head.
-- [ ] Direct final review covers the base-to-head diff, complete commit history,
+- [x] Direct final review covers the base-to-head diff, complete commit history,
   plan, execution log, session state, PR comments/reviews, and CI.
-- [ ] Elves HTML report is generated under `/tmp`, operational session files are
-  removed from the PR, post-cleanup CI is green, and PR #20 stays draft/unmerged.
+- [x] The direct final-readiness review found no blocking code, evidence, or
+  documentation defect. HTML-report generation, operational-file cleanup, and
+  post-cleanup exact-head CI are the mechanical closeout immediately following
+  this durable review checkpoint; PR #20 remains draft/unmerged.
 
 **Blast radius:** final public research documentation and cleanup only. Any
 blocking review finding must be repaired and revalidated before handoff; no new
@@ -576,3 +578,28 @@ search experiment is authorized in this batch.
 - Public documentation now distinguishes the historical 26.25% V1 diagnostic
   from the five-run split-corpus sequence and states that these are agent, not
   ruleset, results.
+
+### Final readiness review
+
+- Reviewed the complete `b620a11...a03a723` diff, all 22 intervening commits,
+  the frozen plan, this execution log, the survival guide, session state, and
+  every PR comment/review/check surface. No actionable defect was found.
+- `CI=true python3 -m unittest discover -s engine -v`: 268 passed in 32.002 s.
+- Ruff, Python compilation, JavaScript syntax, and `git diff --check` all pass.
+- The plan SHA-256 remains
+  `219ea42829e92de50027a4563a0e40b67291d20d35919df6e250a26d9e6a87ef`.
+- At reviewed head `a03a723`, both GitHub test jobs pass, the PR is mergeable,
+  open, and draft, with no comments, reviews, or review decision.
+- Residual risk is explicit rather than hidden: no tested MCTS variant is
+  tactically admitted, no 2,048/4,096 job or paired game ran, and no strength,
+  depth, balance, or ruleset-promise inference is warranted.
+
+### Regression attestation
+
+Batch 6 changes only public evidence documentation and run-control records.
+The exact rules engine, server, browser, native opponent, save semantics, and
+live termination are unchanged from base. Confidence HIGH that the six-batch
+run is complete and reproducible; confidence HIGH that the frozen gate selects
+neither deep budget for these agents; confidence LOW that scaling the tested
+architecture would improve play, because that experiment was correctly
+blocked rather than run.

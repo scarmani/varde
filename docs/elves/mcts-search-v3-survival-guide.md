@@ -35,19 +35,19 @@ rules or import native evaluator leaf values.
 
 ## Current phase
 
-Status: launched and in progress
+Status: all six batches complete; mechanical report/cleanup closeout remains
 
-Active batch: Batch 6 — conditional paired diagnostic and final handoff
+Active batch: none
 
-Just completed: Batch 5 selected neither 2,048 nor 4,096 from the failed
-admission and measured cost evidence. No deep process ran and no tier was
-named. Paired games remain blocked. Local HEAD, the remote branch, and PR #20
-all equal `38dfda584267757bea4fc046e44ef1bce1c8d1c2`; the frozen plan hash still
-matches.
+Just completed: Batch 6 reconciled all five negative 384-decision runs, skipped
+the gated paired diagnostic, passed the full 268-test suite and static checks,
+and completed direct review with no blocking finding. At reviewed head
+`a03a723f65c68acbfaa036f5db600df343c64fe2`, both GitHub checks pass and PR #20
+is open, mergeable, draft, and unreviewed. Neither 2,048 nor 4,096 was selected.
 
-Single next action: tag the Batch 6 rollback point, explicitly skip paired play,
-update public research status from generated evidence, then run cumulative
-auditors, direct diff review, exact-head CI reconciliation, and final handoff.
+Single next action: generate the temporary Elves HTML report, remove this guide,
+the execution log, and `.elves-session.json` from the PR while retaining their
+Git history, then poll post-cleanup exact-head CI and hand off without merging.
 
 ## Active compute
 
@@ -56,9 +56,10 @@ No Varde research or test process is active. Two pre-existing system
 
 ## Stop gate
 
-- Planned implementation/evidence batches remaining: 1
-- Stop allowed right now: no
-- Next required action: execute Batch 6 final audit and handoff
+- Planned implementation/evidence batches remaining: 0
+- Stop allowed right now: yes, after mechanical report/cleanup closeout
+- Next required action: generate report, remove operational files, verify final
+  exact head, and hand off
 - Continue automatically through valid batches; do not merge.
 
 ## Validation gates
