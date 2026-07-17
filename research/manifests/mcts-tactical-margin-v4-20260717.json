@@ -1,0 +1,104 @@
+{
+  "admission_gate": {
+    "aggregate_hit_rate_nondecreasing_by_policy": true,
+    "all_decisions_legal_nonmutating_and_complete": true,
+    "every_high_budget_position_policy_at_least_75_percent": true,
+    "high_budget_overall_at_least_80_percent": true
+  },
+  "claim_limits": {
+    "balance_evidence": false,
+    "forced_game_outcome_evidence": false,
+    "latency_observational_not_deterministic": true,
+    "local_tactical_admission_evidence_only": true,
+    "match_strength_evidence": false,
+    "natural_width_positions_are_diagnostic_only": true,
+    "promotion_blocked": true,
+    "ruleset_promise_evidence": false,
+    "strategic_depth_evidence": false
+  },
+  "config": {
+    "budgets": [
+      4,
+      16,
+      64
+    ],
+    "policies": [
+      "uniform",
+      "epsilon-greedy"
+    ],
+    "replicates": 4,
+    "seed": 20260716021
+  },
+  "config_sha256": "9be5d8fbed78e688b2d978a3e63c90ebe87bca1c77e3f65217411c581e65e526",
+  "created_date": "2026-07-17",
+  "decisions": 384,
+  "execution": {
+    "argv": [
+      "python3",
+      "research/harness/mcts_tactical_admission.py",
+      "--budgets",
+      "4,16,64",
+      "--policies",
+      "uniform,epsilon-greedy",
+      "--replicates",
+      "4",
+      "--seed",
+      "20260716021",
+      "--workers",
+      "8",
+      "--checkpoint-interval",
+      "8",
+      "--output-dir",
+      "/Users/armand/varde-runs/mcts-tactical-margin-v4-20260717"
+    ],
+    "audit_argv": [
+      "python3",
+      "research/harness/audit_mcts_tactical_admission.py",
+      "--manifest",
+      "MANIFEST_PATH",
+      "--output",
+      "AUDIT_OUTPUT_PATH"
+    ],
+    "checkpoint_interval": 8,
+    "output_dir": "/Users/armand/varde-runs/mcts-tactical-margin-v4-20260717",
+    "workers": 8
+  },
+  "fixture_contract": {
+    "admission_positions": 6,
+    "diagnostic_positions": 10,
+    "fixture_catalog_sha256": "89eabc4a56b77c12ae4fed45295b0f50aa477ab136f1a84bfdaa2291257a510f",
+    "maximum_admission_root_actions": 8,
+    "outcomes_used": false,
+    "proof_claim_limit": "local tactical choice, not forced outcome",
+    "proof_format": "varde-exhaustive-root-transition-proof",
+    "proof_scope": "exhaustive legal root transitions",
+    "proof_version": 1
+  },
+  "format": "varde-mcts-tactical-admission-manifest",
+  "freeze_gate": {
+    "fixture_and_harness_tests_passed": true,
+    "outcomes_inspected_before_freeze": false,
+    "paired_matches_blocked_until_search_variant_selection": true,
+    "paired_matches_launched_by_this_unit": false
+  },
+  "positions": 16,
+  "purpose": "Isolated MCTS V4 terminal-margin secondary ablation on split tactical corpus",
+  "schedule_sha256": "ff53c5dedd47353ab44be5927cab969754a184508b3ab89d1bd207540ab42a56",
+  "source": {
+    "code_hash": "49e210fdb14be7e93bc809fe75f13f80d26ab57f55ec10a33965567008dd82c3",
+    "files": {
+      "engine/actions.py": "95742a2f37e93e629b53cb85824fa873ca8db739ad03286eaacb97a58f04c71e",
+      "engine/mcts.py": "cfc89fc576c58563e927004a880fb3577fe6cab15838676d853b5f91f9e28644",
+      "engine/varde.py": "dbc2e9127dbda1f3ac8833f91ad35fc102267ab2a4e52a28abaa98191d82843b",
+      "research/harness/mcts_tactical_admission.py": "83c0760934bbd087c9e4228bb99b1082cdc483e0807cfa4a3fe4193c7b69954a",
+      "research/harness/mcts_tactical_fixtures.py": "a8f29b191b6bc81fe0f53ea044b8811881b8336593fb91ba7d5cb9d9b78155c6",
+      "research/harness/mcts_telemetry.py": "0dc85aa4192bf8b1cce7fd6b7386bc3c7dd29236e0ea5a9b790e15eaa8ba30e0"
+    },
+    "fixture_catalog_hash": "89eabc4a56b77c12ae4fed45295b0f50aa477ab136f1a84bfdaa2291257a510f",
+    "manifest_builder_sha256": "e257c22fcde10a278d7b2567fcd9a9489b9431f3d7efc13644df616f2263cd27",
+    "mcts_agent_hash": "4224495eecc22ebedf3a199c04ff57b11446481f2e1218a6feffac4b09ad9adc",
+    "source_commit": "a44956e71753cdac370dd92062e1b8bcddc9ed62"
+  },
+  "status": "frozen-before-outcomes",
+  "version": 2
+}
