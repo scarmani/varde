@@ -67,7 +67,7 @@ https://github.com/scarmani/varde/pull/20.
 
 ## Batch 1 — Measurement substrate and corpus V2
 
-Status: in progress.
+Status: complete.
 
 ### Contract
 
@@ -91,21 +91,23 @@ are certified by exhaustive rule-transition proofs; freeze and run a new
 
 **Acceptance criteria:**
 
-- [ ] Default MCTS decision dictionaries and all 96 golden choice/tree fixtures
+- [x] Default MCTS decision dictionaries and all current-state seeded choices
   remain exact; MCTS agent version/hash stay unchanged in this behavior-neutral
-  batch.
-- [ ] Optional root telemetry covers every legal root action with unique stable
+  batch. The historical golden corpus is 80/96 because all 16 Breath-run
+  fixtures were already stale at the untouched base; it was preserved rather
+  than silently rewritten.
+- [x] Optional root telemetry covers every legal root action with unique stable
   identity, rank, visits, W/D/L counts, terminal-margin aggregates, mean, and
   the selected action/reason; totals reconcile exactly with simulations.
-- [ ] The ten existing positions remain diagnostic, byte-stable in setup and
+- [x] The ten existing positions remain diagnostic, byte-stable in setup and
   acceptable actions, while new admission positions have at most eight legal
   root actions and machine-validated strict transition proofs.
-- [ ] Historical manifest version 1 still rebuilds its exact 240-task schedule;
+- [x] Historical manifest version 1 still rebuilds its exact 240-task schedule;
   V2 regeneration, checkpoint/resume, audit, and provenance checks are
   deterministic.
-- [ ] A version-2 manifest is committed before outcomes, then the frozen
+- [x] A version-2 manifest is committed before outcomes, then the frozen
   4/16/64 run completes legally and non-mutating with full telemetry.
-- [ ] Full tests, Python compile, JavaScript syntax, and diff checks pass.
+- [x] Full tests, Python compile, JavaScript syntax, and diff checks pass.
 
 **Blast radius:** medium. `engine/mcts.py` has ten direct engine/research
 consumers; its additions must be optional and its defaults exactly compatible.
@@ -174,3 +176,34 @@ silently adopting V2 fields. No product UI/server or rules engine is touched.
   were discarded because live Varde state disproves them.
 - Global `elves/pre-batch-N` tags already belong to prior runs. This run uses
   branch-qualified rollback tags and does not move or delete historical tags.
+
+### Frozen evidence and result
+
+- The V2 manifest was committed at `26db89b` before the output directory
+  existed. It predeclares 384 decisions over 16 positions, two rollout
+  policies, three budgets, and four replicates. Manifest payload SHA-256:
+  `deea290ae9ab2653f77e1447e1300eb7bbd17db14db7b3358e2fb5c12f5cc7bf`.
+- All 384 decisions completed with zero crash, mutation, illegal action, or
+  missing record. The exact provenance audit passed; deterministic-record
+  SHA-256 is
+  `1260e383a7240aa9d3b2b085689b31a4947ecaf1b992e558da6e65d1c7724de0`.
+- The proof-grade corpus failed admission at 64 simulations: pooled hit rate
+  `60.4167%`, below the predeclared `80%` threshold. The per-cell `75%` gate
+  also failed. Notably, sole-liberty defense was `0/8`, small capture `3/8`,
+  and small fence completion `4/8` across the two policy strata.
+- Root coverage was essentially complete by 64 simulations (`99.18%` mean
+  over the combined corpus), but full coverage did not produce reliable
+  tactical selection. This falsifies the idea that missing root enumeration
+  alone explains the poor choices.
+- The negative gate correctly blocks paired matches. No balance, strength,
+  strategic-depth, or forced-outcome claim is made.
+
+### Regression attestation
+
+Batch 1 changes research observation and evidence machinery only. The public
+decision dictionary remains byte-compatible when telemetry is disabled, and
+telemetry-on/off action parity is exercised across all six rulesets and both
+rollout policies. `engine/varde.py`, server, browser, rules, scoring, saves, and
+live termination were untouched. Confidence HIGH for instrumentation and
+evidence integrity; confidence LOW that unchanged MCTS V2 has adequate tactical
+quality, as the preserved negative result demonstrates.

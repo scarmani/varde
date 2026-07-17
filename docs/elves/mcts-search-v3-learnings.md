@@ -41,6 +41,26 @@ in Varde.
   before deeper-tree effects; 4,096 roughly doubles that opportunity. Actual
   visit distributions and latency, not this arithmetic, decide the named tier.
 
+## Batch 1 evidence
+
+- Behavior-neutral root telemetry can be collected on the existing backup walk
+  without another rollout or RNG call. Telemetry-on/off seeded action parity
+  holds across every candidate ruleset and both rollout policies.
+- The historical 96-fixture golden corpus is stale specifically for all 16
+  Breath-run cases. The same failures reproduce at the untouched base commit,
+  after automatic extension finishing changed that rules surface. Preserve the
+  corpus as historical evidence; use current-state parity for this batch.
+- The frozen split V2 run completed 384/384 decisions with a clean provenance
+  audit but failed proof-grade admission at `60.4167%` on the 64-simulation
+  rung. The high-budget per-position/policy floor also failed.
+- Mean root coverage reached `99.18%` at 64, yet sole-liberty defense scored
+  `0/8`; complete enumeration is not sufficient when most children have only
+  shallow or tied terminal samples.
+- The unmodified agent's 64-simulation p95 decision latency was about 7.0 s for
+  uniform and 7.2 s for epsilon-greedy on this mixed corpus. A deep research
+  tier must therefore be calibrated from measured single-process feasibility,
+  not presented as an interactive opponent by default.
+
 ## Update rule
 
 Append only evidence-backed findings after each batch. Record failed hypotheses

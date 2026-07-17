@@ -1,0 +1,2043 @@
+{
+  "accounting": {
+    "attempted": 384,
+    "complete": 384,
+    "crash": 0,
+    "pending": 0,
+    "scheduled": 384
+  },
+  "admission_gate": {
+    "aggregate_hit_rate_nondecreasing_by_policy": true,
+    "all_decisions_legal_nonmutating_and_complete": true,
+    "every_high_budget_position_policy_at_least_75_percent": false,
+    "high_budget_overall_at_least_80_percent": false
+  },
+  "admitted": false,
+  "claim_limits": {
+    "balance_evidence": false,
+    "forced_game_outcome_evidence": false,
+    "latency_observational_not_deterministic": true,
+    "local_tactical_admission_evidence_only": true,
+    "match_strength_evidence": false,
+    "natural_width_positions_are_diagnostic_only": true,
+    "promotion_blocked": true,
+    "ruleset_promise_evidence": false,
+    "strategic_depth_evidence": false
+  },
+  "claim_status": "outcome-blind tactical admission evidence",
+  "config": {
+    "budgets": [
+      4,
+      16,
+      64
+    ],
+    "policies": [
+      "uniform",
+      "epsilon-greedy"
+    ],
+    "replicates": 4,
+    "seed": 20260716021
+  },
+  "correctness_and_provenance_audit_clean": true,
+  "failure_task_ids": [],
+  "fixture_catalog": {
+    "format": "varde-mcts-tactical-fixtures",
+    "positions": [
+      {
+        "acceptable_actions": [
+          "play:-1,1"
+        ],
+        "actor_color": "B",
+        "board_size": 3,
+        "category": "capture",
+        "description": "Capture the isolated enemy surface stone immediately.",
+        "evidence_class": "diagnostic",
+        "fixture_id": "classic-immediate-capture",
+        "id": "classic-immediate-capture",
+        "legal_actions": 52,
+        "proof": null,
+        "rules": "classic",
+        "state_key_sha256": "4bfb69b690f24eb82b9b812bb99dfbe448dba8694273458a2539a4c9d4f1a62b",
+        "synthetic_history": false
+      },
+      {
+        "acceptable_actions": [
+          "play:-1,1"
+        ],
+        "actor_color": "B",
+        "board_size": 3,
+        "category": "capture",
+        "description": "Fill the last ordinary liberty and capture the isolated enemy stone.",
+        "evidence_class": "diagnostic",
+        "fixture_id": "breath-immediate-capture",
+        "id": "breath-immediate-capture",
+        "legal_actions": 52,
+        "proof": null,
+        "rules": "breath",
+        "state_key_sha256": "468c97f26d84168fd8d8928b04a85b2cd823f44148ff015eeb1771de71f48586",
+        "synthetic_history": false
+      },
+      {
+        "acceptable_actions": [
+          "play:-1,1"
+        ],
+        "actor_color": "B",
+        "board_size": 3,
+        "category": "defense",
+        "description": "Defend the isolated friendly stone by filling its sole liberty.",
+        "evidence_class": "diagnostic",
+        "fixture_id": "breath-sole-liberty-defense",
+        "id": "breath-sole-liberty-defense",
+        "legal_actions": 52,
+        "proof": null,
+        "rules": "breath",
+        "state_key_sha256": "83c65d9496188e33373ac60bcf82884d782bad3fcce9b74910e8a6ac63fd6076",
+        "synthetic_history": false
+      },
+      {
+        "acceptable_actions": [
+          "swap"
+        ],
+        "actor_color": "W",
+        "board_size": 3,
+        "category": "takeover",
+        "description": "Take over the overwhelmingly winning Black seat rather than pass.",
+        "evidence_class": "diagnostic",
+        "fixture_id": "pie-takeover-seat-perspective",
+        "id": "pie-takeover-seat-perspective",
+        "legal_actions": 2,
+        "proof": null,
+        "rules": "breath",
+        "state_key_sha256": "780af150e323f80ebec3c2a1533b71a4da2bc94d4350f3e8dff18122964ced90",
+        "synthetic_history": true
+      },
+      {
+        "acceptable_actions": [
+          "play:2,0",
+          "play:1,1",
+          "play:-1,1",
+          "play:-2,0",
+          "play:-1,-1",
+          "play:1,-1"
+        ],
+        "actor_color": "B",
+        "board_size": 3,
+        "category": "capture",
+        "description": "Cap any column of the sealed lone ring to unzip five stones.",
+        "evidence_class": "diagnostic",
+        "fixture_id": "rosette-entombment-cap",
+        "id": "rosette-entombment-cap",
+        "legal_actions": 49,
+        "proof": null,
+        "rules": "rosette",
+        "state_key_sha256": "e8a5d2bdcdf279f86476a957d1ad027b432e15fc0b57824b58d834a8ac025e70",
+        "synthetic_history": false
+      },
+      {
+        "acceptable_actions": [
+          "extend:7,1"
+        ],
+        "actor_color": "B",
+        "board_size": 3,
+        "category": "rescue-chain",
+        "description": "Choose the free rescue of a one-liberty group over a normal move.",
+        "evidence_class": "diagnostic",
+        "fixture_id": "breath-run-rescue-chain",
+        "id": "breath-run-rescue-chain:entry",
+        "legal_actions": 52,
+        "proof": null,
+        "rules": "breath-run",
+        "state_key_sha256": "5d23f501fe111a3d47af207db4059967b64c29a753c637060ec7cce753025f96",
+        "synthetic_history": false
+      },
+      {
+        "acceptable_actions": [
+          "extend:8,2"
+        ],
+        "actor_color": "B",
+        "board_size": 3,
+        "category": "rescue-chain",
+        "description": "Continue the rescue chain instead of ending it immediately.",
+        "evidence_class": "diagnostic",
+        "fixture_id": "breath-run-rescue-chain",
+        "id": "breath-run-rescue-chain:continue",
+        "legal_actions": 2,
+        "proof": null,
+        "rules": "breath-run",
+        "state_key_sha256": "7979ea0d613811ea93421de3ac1fdb7d260ef7479d9863f72212d04ef49b2c63",
+        "synthetic_history": false
+      },
+      {
+        "acceptable_actions": [
+          "play:3,1"
+        ],
+        "actor_color": "B",
+        "board_size": 3,
+        "category": "fence-completion",
+        "description": "Claim the sixth boundary line to complete a one-cell fence.",
+        "evidence_class": "diagnostic",
+        "fixture_id": "gjerde-fence-completion",
+        "id": "gjerde-fence-completion",
+        "legal_actions": 68,
+        "proof": null,
+        "rules": "gjerde",
+        "state_key_sha256": "08188d6bc602d21f1d6c5f14a19da2ef638d18c5beac547a0e2a032f7ce19182",
+        "synthetic_history": false
+      },
+      {
+        "acceptable_actions": [
+          "play:3,-1"
+        ],
+        "actor_color": "B",
+        "board_size": 3,
+        "category": "capture",
+        "description": "Fill the fourth liberty and capture the isolated enemy line.",
+        "evidence_class": "diagnostic",
+        "fixture_id": "gjerde-go-immediate-capture",
+        "id": "gjerde-go-immediate-capture",
+        "legal_actions": 69,
+        "proof": null,
+        "rules": "gjerde-go",
+        "state_key_sha256": "586104cb4a5fa2e86b4f82e09b71e71c4d7364f54c490c2b51c23f51164c9b0a",
+        "synthetic_history": false
+      },
+      {
+        "acceptable_actions": [
+          "accept"
+        ],
+        "actor_color": "B",
+        "board_size": 3,
+        "category": "acceptance",
+        "description": "Accept the sparse 1-0 fenced score rather than reopen play.",
+        "evidence_class": "diagnostic",
+        "fixture_id": "gjerde-go-ahead-acceptance",
+        "id": "gjerde-go-ahead-acceptance",
+        "legal_actions": 2,
+        "proof": null,
+        "rules": "gjerde-go",
+        "state_key_sha256": "9f5820ea9219464daf31b71bdfdb391ee7499f19d5c8a5280fea99f4ca9edbe8",
+        "synthetic_history": false
+      },
+      {
+        "acceptable_actions": [
+          "play:2,-2"
+        ],
+        "actor_color": "B",
+        "board_size": 3,
+        "category": "capture",
+        "description": "Choose the unique immediate capture from an eight-action Breath root.",
+        "evidence_class": "admission",
+        "fixture_id": "admission-breath-small-capture",
+        "id": "admission-breath-small-capture",
+        "legal_actions": 8,
+        "proof": {
+          "action_values": {
+            "pass": 0,
+            "play:-1,3": 0,
+            "play:-4,4": 0,
+            "play:-5,-3": 0,
+            "play:-7,3": 0,
+            "play:-8,2": 0,
+            "play:2,-2": 1,
+            "play:4,-4": 0
+          },
+          "best_value": 1,
+          "claim_limit": "local tactical transition only; not a forced game outcome",
+          "format": "varde-exhaustive-root-transition-proof",
+          "metric": "immediate-capture-count",
+          "root_actions": 8,
+          "scope": "exhaustive-legal-root-transitions",
+          "strict_over_rejected": true,
+          "version": 1
+        },
+        "rules": "breath",
+        "state_key_sha256": "6c070115df3dfcb91def7e6aee11274da520d2f3f204feac22e4b849ac9e573a",
+        "synthetic_history": true
+      },
+      {
+        "acceptable_actions": [
+          "play:-8,-2"
+        ],
+        "actor_color": "W",
+        "board_size": 3,
+        "category": "defense",
+        "description": "Fill the unique sole-liberty defense from a four-action Breath root.",
+        "evidence_class": "admission",
+        "fixture_id": "admission-breath-small-defense",
+        "id": "admission-breath-small-defense",
+        "legal_actions": 4,
+        "proof": {
+          "action_values": {
+            "pass": 0,
+            "play:-2,4": 0,
+            "play:-7,3": 0,
+            "play:-8,-2": 1
+          },
+          "best_value": 1,
+          "claim_limit": "local tactical transition only; not a forced game outcome",
+          "format": "varde-exhaustive-root-transition-proof",
+          "metric": "sole-liberty-defense",
+          "root_actions": 4,
+          "scope": "exhaustive-legal-root-transitions",
+          "strict_over_rejected": true,
+          "version": 1
+        },
+        "rules": "breath",
+        "state_key_sha256": "8afe55b269f7dc25f0894bd6eb2067291f1f1ff8f2ac82744b7fb7a6cfdedae5",
+        "synthetic_history": true
+      },
+      {
+        "acceptable_actions": [
+          "swap"
+        ],
+        "actor_color": "W",
+        "board_size": 3,
+        "category": "takeover",
+        "description": "Take the high-scoring Black seat in the isolated two-action pie state.",
+        "evidence_class": "admission",
+        "fixture_id": "admission-pie-small-takeover",
+        "id": "admission-pie-small-takeover",
+        "legal_actions": 2,
+        "proof": {
+          "action_values": {
+            "pass": 0,
+            "swap": 54
+          },
+          "best_value": 54,
+          "claim_limit": "local tactical transition only; not a forced game outcome",
+          "format": "varde-exhaustive-root-transition-proof",
+          "metric": "seat-score-after-action",
+          "root_actions": 2,
+          "scope": "exhaustive-legal-root-transitions",
+          "strict_over_rejected": true,
+          "version": 1
+        },
+        "rules": "breath",
+        "state_key_sha256": "780af150e323f80ebec3c2a1533b71a4da2bc94d4350f3e8dff18122964ced90",
+        "synthetic_history": true
+      },
+      {
+        "acceptable_actions": [
+          "extend:-7,-3"
+        ],
+        "actor_color": "W",
+        "board_size": 3,
+        "category": "rescue-chain",
+        "description": "Continue the only legal rescue instead of ending the extension turn.",
+        "evidence_class": "admission",
+        "fixture_id": "admission-breath-run-small-continuation",
+        "id": "admission-breath-run-small-continuation",
+        "legal_actions": 2,
+        "proof": {
+          "action_values": {
+            "extend:-7,-3": 1,
+            "finish-extension": 0
+          },
+          "best_value": 1,
+          "claim_limit": "local tactical transition only; not a forced game outcome",
+          "format": "varde-exhaustive-root-transition-proof",
+          "metric": "rescue-continuation",
+          "root_actions": 2,
+          "scope": "exhaustive-legal-root-transitions",
+          "strict_over_rejected": true,
+          "version": 1
+        },
+        "rules": "breath-run",
+        "state_key_sha256": "1182920df4e8a055d7ccbf7ab505188f0c412ace50c0cbf84ccd435f1ff03f9b",
+        "synthetic_history": true
+      },
+      {
+        "acceptable_actions": [
+          "play:-15,-3",
+          "play:-3,-1"
+        ],
+        "actor_color": "B",
+        "board_size": 3,
+        "category": "fence-completion",
+        "description": "Choose either exact fence completion from a seven-action Gjerde-Go root.",
+        "evidence_class": "admission",
+        "fixture_id": "admission-gjerde-go-small-fence",
+        "id": "admission-gjerde-go-small-fence",
+        "legal_actions": 7,
+        "proof": {
+          "action_values": {
+            "pass": 0,
+            "play:-15,-3": 1,
+            "play:-3,-1": 1,
+            "play:-6,8": 0,
+            "play:0,10": 0,
+            "play:0,6": 0,
+            "play:3,7": 0
+          },
+          "best_value": 1,
+          "claim_limit": "local tactical transition only; not a forced game outcome",
+          "format": "varde-exhaustive-root-transition-proof",
+          "metric": "fence-completion",
+          "root_actions": 7,
+          "scope": "exhaustive-legal-root-transitions",
+          "strict_over_rejected": true,
+          "version": 1
+        },
+        "rules": "gjerde-go",
+        "state_key_sha256": "f851dbc31b1f265bfb8e44e3b20a61c788c0c82d34d8cd04115f26c593c49531",
+        "synthetic_history": true
+      },
+      {
+        "acceptable_actions": [
+          "accept"
+        ],
+        "actor_color": "B",
+        "board_size": 3,
+        "category": "acceptance",
+        "description": "Accept the terminal score after the one resumption has been consumed.",
+        "evidence_class": "admission",
+        "fixture_id": "admission-gjerde-go-forced-acceptance",
+        "id": "admission-gjerde-go-forced-acceptance",
+        "legal_actions": 1,
+        "proof": {
+          "action_values": {
+            "accept": 1
+          },
+          "best_value": 1,
+          "claim_limit": "local tactical transition only; not a forced game outcome",
+          "format": "varde-exhaustive-root-transition-proof",
+          "metric": "forced-score-acceptance",
+          "root_actions": 1,
+          "scope": "exhaustive-legal-root-transitions",
+          "strict_over_rejected": true,
+          "version": 1
+        },
+        "rules": "gjerde-go",
+        "state_key_sha256": "98dc63ad54d854ac211553136f6796ff5e216f162acacddae991277a74e56b79",
+        "synthetic_history": true
+      }
+    ],
+    "version": 2
+  },
+  "format": "varde-mcts-tactical-admission-audit",
+  "high_budget_overall_hit_rate": 0.6041666666666666,
+  "ladder": {
+    "epsilon-greedy@16": {
+      "average_rollout_actions_mean": 40.694,
+      "decisions": 64,
+      "hit_rate": 0.40625,
+      "latency_ms_median": 647.106,
+      "latency_ms_p95": 1870.883,
+      "max_rollout_actions": 108,
+      "nodes_mean": 15.656,
+      "nodes_p95": 17,
+      "root_coverage_fraction_mean": 0.68903,
+      "selected_terminal_margin_mean": 14.201847,
+      "selection_reasons": {
+        "legacy-action-order": 38,
+        "mean-value": 6,
+        "most-visits": 20
+      }
+    },
+    "epsilon-greedy@4": {
+      "average_rollout_actions_mean": 41.23,
+      "decisions": 64,
+      "hit_rate": 0.34375,
+      "latency_ms_median": 144.307,
+      "latency_ms_p95": 468.656,
+      "max_rollout_actions": 97,
+      "nodes_mean": 4.812,
+      "nodes_p95": 5,
+      "root_coverage_fraction_mean": 0.536097,
+      "selected_terminal_margin_mean": 14.054688,
+      "selection_reasons": {
+        "legacy-action-order": 34,
+        "mean-value": 10,
+        "most-visits": 20
+      }
+    },
+    "epsilon-greedy@64": {
+      "average_rollout_actions_mean": 40.198,
+      "decisions": 64,
+      "hit_rate": 0.421875,
+      "latency_ms_median": 2324.572,
+      "latency_ms_p95": 7182.329,
+      "max_rollout_actions": 110,
+      "nodes_mean": 54.422,
+      "nodes_p95": 65,
+      "root_coverage_fraction_mean": 0.991795,
+      "selected_terminal_margin_mean": 13.368052,
+      "selection_reasons": {
+        "legacy-action-order": 35,
+        "mean-value": 2,
+        "most-visits": 27
+      }
+    },
+    "uniform@16": {
+      "average_rollout_actions_mean": 63.034,
+      "decisions": 64,
+      "hit_rate": 0.328125,
+      "latency_ms_median": 680.03,
+      "latency_ms_p95": 1724.787,
+      "max_rollout_actions": 455,
+      "nodes_mean": 15.656,
+      "nodes_p95": 17,
+      "root_coverage_fraction_mean": 0.68903,
+      "selected_terminal_margin_mean": 14.752821,
+      "selection_reasons": {
+        "legacy-action-order": 37,
+        "mean-value": 5,
+        "most-visits": 22
+      }
+    },
+    "uniform@4": {
+      "average_rollout_actions_mean": 65.082,
+      "decisions": 64,
+      "hit_rate": 0.328125,
+      "latency_ms_median": 169.391,
+      "latency_ms_p95": 481.568,
+      "max_rollout_actions": 460,
+      "nodes_mean": 4.812,
+      "nodes_p95": 5,
+      "root_coverage_fraction_mean": 0.536097,
+      "selected_terminal_margin_mean": 13.981771,
+      "selection_reasons": {
+        "legacy-action-order": 26,
+        "mean-value": 18,
+        "most-visits": 20
+      }
+    },
+    "uniform@64": {
+      "average_rollout_actions_mean": 64.728,
+      "decisions": 64,
+      "hit_rate": 0.359375,
+      "latency_ms_median": 2744.196,
+      "latency_ms_p95": 6996.87,
+      "max_rollout_actions": 612,
+      "nodes_mean": 54.469,
+      "nodes_p95": 65,
+      "root_coverage_fraction_mean": 0.991795,
+      "selected_terminal_margin_mean": 13.801503,
+      "selection_reasons": {
+        "legacy-action-order": 34,
+        "mean-value": 1,
+        "most-visits": 29
+      }
+    }
+  },
+  "manifest_payload_hash": "deea290ae9ab2653f77e1447e1300eb7bbd17db14db7b3358e2fb5c12f5cc7bf",
+  "next_stage_gate": {
+    "paired_light_rollout_may_be_frozen": false,
+    "paired_match_stage_launched_by_this_unit": false,
+    "paired_mcts24_may_be_frozen": false,
+    "required_action_if_not_admitted": "diagnose failed fixture-policy-budget cells"
+  },
+  "payload_hash": "5eb8fcba29ea1ea52091cd6969dd90165250638466026559c2fa5453171ddcd6",
+  "position_ladder": {
+    "admission-breath-run-small-continuation|epsilon-greedy@16": {
+      "average_rollout_actions_mean": 53.297,
+      "decisions": 4,
+      "hit_rate": 1.0,
+      "latency_ms_median": 536.064,
+      "latency_ms_p95": 555.426,
+      "max_rollout_actions": 71,
+      "nodes_mean": 17.0,
+      "nodes_p95": 17,
+      "root_coverage_fraction_mean": 1.0,
+      "selected_terminal_margin_mean": -4.046528,
+      "selection_reasons": {
+        "mean-value": 1,
+        "most-visits": 3
+      }
+    },
+    "admission-breath-run-small-continuation|epsilon-greedy@4": {
+      "average_rollout_actions_mean": 53.188,
+      "decisions": 4,
+      "hit_rate": 0.25,
+      "latency_ms_median": 117.297,
+      "latency_ms_p95": 122.121,
+      "max_rollout_actions": 67,
+      "nodes_mean": 5.0,
+      "nodes_p95": 5,
+      "root_coverage_fraction_mean": 1.0,
+      "selected_terminal_margin_mean": -0.5,
+      "selection_reasons": {
+        "mean-value": 1,
+        "most-visits": 3
+      }
+    },
+    "admission-breath-run-small-continuation|epsilon-greedy@64": {
+      "average_rollout_actions_mean": 53.597,
+      "decisions": 4,
+      "hit_rate": 1.0,
+      "latency_ms_median": 1896.456,
+      "latency_ms_p95": 1909.133,
+      "max_rollout_actions": 75,
+      "nodes_mean": 65.0,
+      "nodes_p95": 65,
+      "root_coverage_fraction_mean": 1.0,
+      "selected_terminal_margin_mean": -0.439752,
+      "selection_reasons": {
+        "most-visits": 4
+      }
+    },
+    "admission-breath-run-small-continuation|uniform@16": {
+      "average_rollout_actions_mean": 55.562,
+      "decisions": 4,
+      "hit_rate": 0.75,
+      "latency_ms_median": 526.188,
+      "latency_ms_p95": 545.159,
+      "max_rollout_actions": 99,
+      "nodes_mean": 17.0,
+      "nodes_p95": 17,
+      "root_coverage_fraction_mean": 1.0,
+      "selected_terminal_margin_mean": 8.025,
+      "selection_reasons": {
+        "legacy-action-order": 2,
+        "mean-value": 1,
+        "most-visits": 1
+      }
+    },
+    "admission-breath-run-small-continuation|uniform@4": {
+      "average_rollout_actions_mean": 58.312,
+      "decisions": 4,
+      "hit_rate": 0.25,
+      "latency_ms_median": 132.394,
+      "latency_ms_p95": 153.806,
+      "max_rollout_actions": 91,
+      "nodes_mean": 5.0,
+      "nodes_p95": 5,
+      "root_coverage_fraction_mean": 1.0,
+      "selected_terminal_margin_mean": 13.0,
+      "selection_reasons": {
+        "mean-value": 1,
+        "most-visits": 3
+      }
+    },
+    "admission-breath-run-small-continuation|uniform@64": {
+      "average_rollout_actions_mean": 59.309,
+      "decisions": 4,
+      "hit_rate": 0.5,
+      "latency_ms_median": 2261.559,
+      "latency_ms_p95": 2292.705,
+      "max_rollout_actions": 109,
+      "nodes_mean": 65.0,
+      "nodes_p95": 65,
+      "root_coverage_fraction_mean": 1.0,
+      "selected_terminal_margin_mean": 5.627957,
+      "selection_reasons": {
+        "most-visits": 4
+      }
+    },
+    "admission-breath-small-capture|epsilon-greedy@16": {
+      "average_rollout_actions_mean": 10.515,
+      "decisions": 4,
+      "hit_rate": 0.25,
+      "latency_ms_median": 38.766,
+      "latency_ms_p95": 44.388,
+      "max_rollout_actions": 21,
+      "nodes_mean": 17.0,
+      "nodes_p95": 17,
+      "root_coverage_fraction_mean": 1.0,
+      "selected_terminal_margin_mean": -3.75,
+      "selection_reasons": {
+        "legacy-action-order": 3,
+        "mean-value": 1
+      }
+    },
+    "admission-breath-small-capture|epsilon-greedy@4": {
+      "average_rollout_actions_mean": 11.062,
+      "decisions": 4,
+      "hit_rate": 0.5,
+      "latency_ms_median": 11.47,
+      "latency_ms_p95": 12.681,
+      "max_rollout_actions": 18,
+      "nodes_mean": 5.0,
+      "nodes_p95": 5,
+      "root_coverage_fraction_mean": 0.5,
+      "selected_terminal_margin_mean": -4.75,
+      "selection_reasons": {
+        "legacy-action-order": 4
+      }
+    },
+    "admission-breath-small-capture|epsilon-greedy@64": {
+      "average_rollout_actions_mean": 10.227,
+      "decisions": 4,
+      "hit_rate": 0.25,
+      "latency_ms_median": 138.709,
+      "latency_ms_p95": 145.694,
+      "max_rollout_actions": 18,
+      "nodes_mean": 65.0,
+      "nodes_p95": 65,
+      "root_coverage_fraction_mean": 1.0,
+      "selected_terminal_margin_mean": -4.334722,
+      "selection_reasons": {
+        "legacy-action-order": 2,
+        "mean-value": 1,
+        "most-visits": 1
+      }
+    },
+    "admission-breath-small-capture|uniform@16": {
+      "average_rollout_actions_mean": 13.328,
+      "decisions": 4,
+      "hit_rate": 0.25,
+      "latency_ms_median": 36.573,
+      "latency_ms_p95": 39.689,
+      "max_rollout_actions": 19,
+      "nodes_mean": 17.0,
+      "nodes_p95": 17,
+      "root_coverage_fraction_mean": 1.0,
+      "selected_terminal_margin_mean": -4.875,
+      "selection_reasons": {
+        "legacy-action-order": 3,
+        "mean-value": 1
+      }
+    },
+    "admission-breath-small-capture|uniform@4": {
+      "average_rollout_actions_mean": 14.188,
+      "decisions": 4,
+      "hit_rate": 0.25,
+      "latency_ms_median": 10.661,
+      "latency_ms_p95": 10.984,
+      "max_rollout_actions": 23,
+      "nodes_mean": 5.0,
+      "nodes_p95": 5,
+      "root_coverage_fraction_mean": 0.5,
+      "selected_terminal_margin_mean": -3.0,
+      "selection_reasons": {
+        "legacy-action-order": 3,
+        "mean-value": 1
+      }
+    },
+    "admission-breath-small-capture|uniform@64": {
+      "average_rollout_actions_mean": 13.812,
+      "decisions": 4,
+      "hit_rate": 0.5,
+      "latency_ms_median": 146.186,
+      "latency_ms_p95": 155.666,
+      "max_rollout_actions": 66,
+      "nodes_mean": 65.0,
+      "nodes_p95": 65,
+      "root_coverage_fraction_mean": 1.0,
+      "selected_terminal_margin_mean": -3.736111,
+      "selection_reasons": {
+        "legacy-action-order": 2,
+        "most-visits": 2
+      }
+    },
+    "admission-breath-small-defense|epsilon-greedy@16": {
+      "average_rollout_actions_mean": 4.969,
+      "decisions": 4,
+      "hit_rate": 0.0,
+      "latency_ms_median": 6.986,
+      "latency_ms_p95": 7.82,
+      "max_rollout_actions": 8,
+      "nodes_mean": 17.0,
+      "nodes_p95": 17,
+      "root_coverage_fraction_mean": 1.0,
+      "selected_terminal_margin_mean": 8.0,
+      "selection_reasons": {
+        "legacy-action-order": 4
+      }
+    },
+    "admission-breath-small-defense|epsilon-greedy@4": {
+      "average_rollout_actions_mean": 6.5,
+      "decisions": 4,
+      "hit_rate": 0.0,
+      "latency_ms_median": 2.563,
+      "latency_ms_p95": 2.808,
+      "max_rollout_actions": 8,
+      "nodes_mean": 5.0,
+      "nodes_p95": 5,
+      "root_coverage_fraction_mean": 1.0,
+      "selected_terminal_margin_mean": 8.0,
+      "selection_reasons": {
+        "legacy-action-order": 4
+      }
+    },
+    "admission-breath-small-defense|epsilon-greedy@64": {
+      "average_rollout_actions_mean": 3.543,
+      "decisions": 4,
+      "hit_rate": 0.0,
+      "latency_ms_median": 16.541,
+      "latency_ms_p95": 16.878,
+      "max_rollout_actions": 9,
+      "nodes_mean": 63.0,
+      "nodes_p95": 63,
+      "root_coverage_fraction_mean": 1.0,
+      "selected_terminal_margin_mean": 8.0,
+      "selection_reasons": {
+        "legacy-action-order": 4
+      }
+    },
+    "admission-breath-small-defense|uniform@16": {
+      "average_rollout_actions_mean": 5.703,
+      "decisions": 4,
+      "hit_rate": 0.0,
+      "latency_ms_median": 6.531,
+      "latency_ms_p95": 6.89,
+      "max_rollout_actions": 9,
+      "nodes_mean": 17.0,
+      "nodes_p95": 17,
+      "root_coverage_fraction_mean": 1.0,
+      "selected_terminal_margin_mean": 8.0,
+      "selection_reasons": {
+        "legacy-action-order": 4
+      }
+    },
+    "admission-breath-small-defense|uniform@4": {
+      "average_rollout_actions_mean": 7.625,
+      "decisions": 4,
+      "hit_rate": 0.0,
+      "latency_ms_median": 2.386,
+      "latency_ms_p95": 2.743,
+      "max_rollout_actions": 9,
+      "nodes_mean": 5.0,
+      "nodes_p95": 5,
+      "root_coverage_fraction_mean": 1.0,
+      "selected_terminal_margin_mean": 8.0,
+      "selection_reasons": {
+        "legacy-action-order": 4
+      }
+    },
+    "admission-breath-small-defense|uniform@64": {
+      "average_rollout_actions_mean": 3.996,
+      "decisions": 4,
+      "hit_rate": 0.0,
+      "latency_ms_median": 18.407,
+      "latency_ms_p95": 20.985,
+      "max_rollout_actions": 9,
+      "nodes_mean": 63.0,
+      "nodes_p95": 63,
+      "root_coverage_fraction_mean": 1.0,
+      "selected_terminal_margin_mean": 8.0,
+      "selection_reasons": {
+        "legacy-action-order": 4
+      }
+    },
+    "admission-gjerde-go-forced-acceptance|epsilon-greedy@16": {
+      "average_rollout_actions_mean": 0.0,
+      "decisions": 4,
+      "hit_rate": 1.0,
+      "latency_ms_median": 0.484,
+      "latency_ms_p95": 0.489,
+      "max_rollout_actions": 0,
+      "nodes_mean": 2.0,
+      "nodes_p95": 2,
+      "root_coverage_fraction_mean": 1.0,
+      "selected_terminal_margin_mean": 1.0,
+      "selection_reasons": {
+        "most-visits": 4
+      }
+    },
+    "admission-gjerde-go-forced-acceptance|epsilon-greedy@4": {
+      "average_rollout_actions_mean": 0.0,
+      "decisions": 4,
+      "hit_rate": 1.0,
+      "latency_ms_median": 0.188,
+      "latency_ms_p95": 0.192,
+      "max_rollout_actions": 0,
+      "nodes_mean": 2.0,
+      "nodes_p95": 2,
+      "root_coverage_fraction_mean": 1.0,
+      "selected_terminal_margin_mean": 1.0,
+      "selection_reasons": {
+        "most-visits": 4
+      }
+    },
+    "admission-gjerde-go-forced-acceptance|epsilon-greedy@64": {
+      "average_rollout_actions_mean": 0.0,
+      "decisions": 4,
+      "hit_rate": 1.0,
+      "latency_ms_median": 1.62,
+      "latency_ms_p95": 1.692,
+      "max_rollout_actions": 0,
+      "nodes_mean": 2.0,
+      "nodes_p95": 2,
+      "root_coverage_fraction_mean": 1.0,
+      "selected_terminal_margin_mean": 1.0,
+      "selection_reasons": {
+        "most-visits": 4
+      }
+    },
+    "admission-gjerde-go-forced-acceptance|uniform@16": {
+      "average_rollout_actions_mean": 0.0,
+      "decisions": 4,
+      "hit_rate": 1.0,
+      "latency_ms_median": 0.485,
+      "latency_ms_p95": 0.49,
+      "max_rollout_actions": 0,
+      "nodes_mean": 2.0,
+      "nodes_p95": 2,
+      "root_coverage_fraction_mean": 1.0,
+      "selected_terminal_margin_mean": 1.0,
+      "selection_reasons": {
+        "most-visits": 4
+      }
+    },
+    "admission-gjerde-go-forced-acceptance|uniform@4": {
+      "average_rollout_actions_mean": 0.0,
+      "decisions": 4,
+      "hit_rate": 1.0,
+      "latency_ms_median": 0.212,
+      "latency_ms_p95": 0.221,
+      "max_rollout_actions": 0,
+      "nodes_mean": 2.0,
+      "nodes_p95": 2,
+      "root_coverage_fraction_mean": 1.0,
+      "selected_terminal_margin_mean": 1.0,
+      "selection_reasons": {
+        "most-visits": 4
+      }
+    },
+    "admission-gjerde-go-forced-acceptance|uniform@64": {
+      "average_rollout_actions_mean": 0.0,
+      "decisions": 4,
+      "hit_rate": 1.0,
+      "latency_ms_median": 1.602,
+      "latency_ms_p95": 1.764,
+      "max_rollout_actions": 0,
+      "nodes_mean": 2.0,
+      "nodes_p95": 2,
+      "root_coverage_fraction_mean": 1.0,
+      "selected_terminal_margin_mean": 1.0,
+      "selection_reasons": {
+        "most-visits": 4
+      }
+    },
+    "admission-gjerde-go-small-fence|epsilon-greedy@16": {
+      "average_rollout_actions_mean": 10.25,
+      "decisions": 4,
+      "hit_rate": 0.5,
+      "latency_ms_median": 78.985,
+      "latency_ms_p95": 117.376,
+      "max_rollout_actions": 26,
+      "nodes_mean": 17.0,
+      "nodes_p95": 17,
+      "root_coverage_fraction_mean": 1.0,
+      "selected_terminal_margin_mean": -0.166667,
+      "selection_reasons": {
+        "legacy-action-order": 1,
+        "mean-value": 3
+      }
+    },
+    "admission-gjerde-go-small-fence|epsilon-greedy@4": {
+      "average_rollout_actions_mean": 9.438,
+      "decisions": 4,
+      "hit_rate": 0.0,
+      "latency_ms_median": 28.017,
+      "latency_ms_p95": 54.289,
+      "max_rollout_actions": 26,
+      "nodes_mean": 5.0,
+      "nodes_p95": 5,
+      "root_coverage_fraction_mean": 0.571429,
+      "selected_terminal_margin_mean": 0.25,
+      "selection_reasons": {
+        "legacy-action-order": 3,
+        "mean-value": 1
+      }
+    },
+    "admission-gjerde-go-small-fence|epsilon-greedy@64": {
+      "average_rollout_actions_mean": 10.039,
+      "decisions": 4,
+      "hit_rate": 0.5,
+      "latency_ms_median": 310.904,
+      "latency_ms_p95": 335.235,
+      "max_rollout_actions": 33,
+      "nodes_mean": 65.0,
+      "nodes_p95": 65,
+      "root_coverage_fraction_mean": 1.0,
+      "selected_terminal_margin_mean": -0.770455,
+      "selection_reasons": {
+        "legacy-action-order": 2,
+        "mean-value": 1,
+        "most-visits": 1
+      }
+    },
+    "admission-gjerde-go-small-fence|uniform@16": {
+      "average_rollout_actions_mean": 61.078,
+      "decisions": 4,
+      "hit_rate": 0.25,
+      "latency_ms_median": 468.435,
+      "latency_ms_p95": 575.638,
+      "max_rollout_actions": 200,
+      "nodes_mean": 17.0,
+      "nodes_p95": 17,
+      "root_coverage_fraction_mean": 1.0,
+      "selected_terminal_margin_mean": -2.041667,
+      "selection_reasons": {
+        "mean-value": 2,
+        "most-visits": 2
+      }
+    },
+    "admission-gjerde-go-small-fence|uniform@4": {
+      "average_rollout_actions_mean": 75.5,
+      "decisions": 4,
+      "hit_rate": 0.25,
+      "latency_ms_median": 168.592,
+      "latency_ms_p95": 312.13,
+      "max_rollout_actions": 211,
+      "nodes_mean": 5.0,
+      "nodes_p95": 5,
+      "root_coverage_fraction_mean": 0.571429,
+      "selected_terminal_margin_mean": 5.0,
+      "selection_reasons": {
+        "mean-value": 4
+      }
+    },
+    "admission-gjerde-go-small-fence|uniform@64": {
+      "average_rollout_actions_mean": 65.812,
+      "decisions": 4,
+      "hit_rate": 0.5,
+      "latency_ms_median": 2254.787,
+      "latency_ms_p95": 2392.937,
+      "max_rollout_actions": 326,
+      "nodes_mean": 65.0,
+      "nodes_p95": 65,
+      "root_coverage_fraction_mean": 1.0,
+      "selected_terminal_margin_mean": -3.803322,
+      "selection_reasons": {
+        "legacy-action-order": 1,
+        "most-visits": 3
+      }
+    },
+    "admission-pie-small-takeover|epsilon-greedy@16": {
+      "average_rollout_actions_mean": 2.312,
+      "decisions": 4,
+      "hit_rate": 1.0,
+      "latency_ms_median": 1.388,
+      "latency_ms_p95": 1.488,
+      "max_rollout_actions": 6,
+      "nodes_mean": 15.0,
+      "nodes_p95": 15,
+      "root_coverage_fraction_mean": 1.0,
+      "selected_terminal_margin_mean": 54.0,
+      "selection_reasons": {
+        "most-visits": 4
+      }
+    },
+    "admission-pie-small-takeover|epsilon-greedy@4": {
+      "average_rollout_actions_mean": 4.875,
+      "decisions": 4,
+      "hit_rate": 1.0,
+      "latency_ms_median": 0.72,
+      "latency_ms_p95": 0.735,
+      "max_rollout_actions": 6,
+      "nodes_mean": 5.0,
+      "nodes_p95": 5,
+      "root_coverage_fraction_mean": 1.0,
+      "selected_terminal_margin_mean": 54.0,
+      "selection_reasons": {
+        "most-visits": 4
+      }
+    },
+    "admission-pie-small-takeover|epsilon-greedy@64": {
+      "average_rollout_actions_mean": 0.668,
+      "decisions": 4,
+      "hit_rate": 1.0,
+      "latency_ms_median": 2.133,
+      "latency_ms_p95": 2.179,
+      "max_rollout_actions": 6,
+      "nodes_mean": 19.0,
+      "nodes_p95": 19,
+      "root_coverage_fraction_mean": 1.0,
+      "selected_terminal_margin_mean": 54.0,
+      "selection_reasons": {
+        "most-visits": 4
+      }
+    },
+    "admission-pie-small-takeover|uniform@16": {
+      "average_rollout_actions_mean": 2.453,
+      "decisions": 4,
+      "hit_rate": 1.0,
+      "latency_ms_median": 0.949,
+      "latency_ms_p95": 1.035,
+      "max_rollout_actions": 7,
+      "nodes_mean": 15.0,
+      "nodes_p95": 15,
+      "root_coverage_fraction_mean": 1.0,
+      "selected_terminal_margin_mean": 54.0,
+      "selection_reasons": {
+        "most-visits": 4
+      }
+    },
+    "admission-pie-small-takeover|uniform@4": {
+      "average_rollout_actions_mean": 5.062,
+      "decisions": 4,
+      "hit_rate": 1.0,
+      "latency_ms_median": 0.56,
+      "latency_ms_p95": 0.653,
+      "max_rollout_actions": 6,
+      "nodes_mean": 5.0,
+      "nodes_p95": 5,
+      "root_coverage_fraction_mean": 1.0,
+      "selected_terminal_margin_mean": 54.0,
+      "selection_reasons": {
+        "most-visits": 4
+      }
+    },
+    "admission-pie-small-takeover|uniform@64": {
+      "average_rollout_actions_mean": 0.723,
+      "decisions": 4,
+      "hit_rate": 1.0,
+      "latency_ms_median": 1.758,
+      "latency_ms_p95": 1.779,
+      "max_rollout_actions": 7,
+      "nodes_mean": 19.0,
+      "nodes_p95": 19,
+      "root_coverage_fraction_mean": 1.0,
+      "selected_terminal_margin_mean": 54.0,
+      "selection_reasons": {
+        "most-visits": 4
+      }
+    },
+    "breath-immediate-capture|epsilon-greedy@16": {
+      "average_rollout_actions_mean": 55.812,
+      "decisions": 4,
+      "hit_rate": 0.0,
+      "latency_ms_median": 766.823,
+      "latency_ms_p95": 768.104,
+      "max_rollout_actions": 72,
+      "nodes_mean": 17.0,
+      "nodes_p95": 17,
+      "root_coverage_fraction_mean": 0.307692,
+      "selected_terminal_margin_mean": 21.5,
+      "selection_reasons": {
+        "legacy-action-order": 4
+      }
+    },
+    "breath-immediate-capture|epsilon-greedy@4": {
+      "average_rollout_actions_mean": 55.25,
+      "decisions": 4,
+      "hit_rate": 0.0,
+      "latency_ms_median": 175.094,
+      "latency_ms_p95": 175.268,
+      "max_rollout_actions": 64,
+      "nodes_mean": 5.0,
+      "nodes_p95": 5,
+      "root_coverage_fraction_mean": 0.076923,
+      "selected_terminal_margin_mean": 27.75,
+      "selection_reasons": {
+        "legacy-action-order": 4
+      }
+    },
+    "breath-immediate-capture|epsilon-greedy@64": {
+      "average_rollout_actions_mean": 56.055,
+      "decisions": 4,
+      "hit_rate": 0.0,
+      "latency_ms_median": 2852.588,
+      "latency_ms_p95": 2859.365,
+      "max_rollout_actions": 72,
+      "nodes_mean": 65.0,
+      "nodes_p95": 65,
+      "root_coverage_fraction_mean": 1.0,
+      "selected_terminal_margin_mean": 13.25,
+      "selection_reasons": {
+        "legacy-action-order": 4
+      }
+    },
+    "breath-immediate-capture|uniform@16": {
+      "average_rollout_actions_mean": 69.64,
+      "decisions": 4,
+      "hit_rate": 0.0,
+      "latency_ms_median": 672.313,
+      "latency_ms_p95": 724.206,
+      "max_rollout_actions": 110,
+      "nodes_mean": 17.0,
+      "nodes_p95": 17,
+      "root_coverage_fraction_mean": 0.307692,
+      "selected_terminal_margin_mean": 13.0,
+      "selection_reasons": {
+        "legacy-action-order": 4
+      }
+    },
+    "breath-immediate-capture|uniform@4": {
+      "average_rollout_actions_mean": 70.25,
+      "decisions": 4,
+      "hit_rate": 0.0,
+      "latency_ms_median": 160.657,
+      "latency_ms_p95": 212.254,
+      "max_rollout_actions": 155,
+      "nodes_mean": 5.0,
+      "nodes_p95": 5,
+      "root_coverage_fraction_mean": 0.076923,
+      "selected_terminal_margin_mean": 5.25,
+      "selection_reasons": {
+        "legacy-action-order": 3,
+        "mean-value": 1
+      }
+    },
+    "breath-immediate-capture|uniform@64": {
+      "average_rollout_actions_mean": 68.922,
+      "decisions": 4,
+      "hit_rate": 0.0,
+      "latency_ms_median": 2756.997,
+      "latency_ms_p95": 2798.825,
+      "max_rollout_actions": 118,
+      "nodes_mean": 65.0,
+      "nodes_p95": 65,
+      "root_coverage_fraction_mean": 1.0,
+      "selected_terminal_margin_mean": 15.875,
+      "selection_reasons": {
+        "legacy-action-order": 4
+      }
+    },
+    "breath-run-rescue-chain:continue|epsilon-greedy@16": {
+      "average_rollout_actions_mean": 72.688,
+      "decisions": 4,
+      "hit_rate": 1.0,
+      "latency_ms_median": 675.161,
+      "latency_ms_p95": 748.205,
+      "max_rollout_actions": 101,
+      "nodes_mean": 17.0,
+      "nodes_p95": 17,
+      "root_coverage_fraction_mean": 1.0,
+      "selected_terminal_margin_mean": 12.342045,
+      "selection_reasons": {
+        "legacy-action-order": 1,
+        "most-visits": 3
+      }
+    },
+    "breath-run-rescue-chain:continue|epsilon-greedy@4": {
+      "average_rollout_actions_mean": 71.188,
+      "decisions": 4,
+      "hit_rate": 1.0,
+      "latency_ms_median": 137.375,
+      "latency_ms_p95": 141.479,
+      "max_rollout_actions": 90,
+      "nodes_mean": 5.0,
+      "nodes_p95": 5,
+      "root_coverage_fraction_mean": 1.0,
+      "selected_terminal_margin_mean": 12.208333,
+      "selection_reasons": {
+        "legacy-action-order": 1,
+        "most-visits": 3
+      }
+    },
+    "breath-run-rescue-chain:continue|epsilon-greedy@64": {
+      "average_rollout_actions_mean": 72.672,
+      "decisions": 4,
+      "hit_rate": 0.75,
+      "latency_ms_median": 2337.006,
+      "latency_ms_p95": 2346.464,
+      "max_rollout_actions": 106,
+      "nodes_mean": 65.0,
+      "nodes_p95": 65,
+      "root_coverage_fraction_mean": 1.0,
+      "selected_terminal_margin_mean": 4.352601,
+      "selection_reasons": {
+        "most-visits": 4
+      }
+    },
+    "breath-run-rescue-chain:continue|uniform@16": {
+      "average_rollout_actions_mean": 72.5,
+      "decisions": 4,
+      "hit_rate": 0.5,
+      "latency_ms_median": 733.533,
+      "latency_ms_p95": 750.151,
+      "max_rollout_actions": 120,
+      "nodes_mean": 17.0,
+      "nodes_p95": 17,
+      "root_coverage_fraction_mean": 1.0,
+      "selected_terminal_margin_mean": 1.478472,
+      "selection_reasons": {
+        "mean-value": 1,
+        "most-visits": 3
+      }
+    },
+    "breath-run-rescue-chain:continue|uniform@4": {
+      "average_rollout_actions_mean": 71.875,
+      "decisions": 4,
+      "hit_rate": 0.5,
+      "latency_ms_median": 201.273,
+      "latency_ms_p95": 212.571,
+      "max_rollout_actions": 112,
+      "nodes_mean": 5.0,
+      "nodes_p95": 5,
+      "root_coverage_fraction_mean": 1.0,
+      "selected_terminal_margin_mean": -3.0,
+      "selection_reasons": {
+        "legacy-action-order": 1,
+        "most-visits": 3
+      }
+    },
+    "breath-run-rescue-chain:continue|uniform@64": {
+      "average_rollout_actions_mean": 71.864,
+      "decisions": 4,
+      "hit_rate": 0.5,
+      "latency_ms_median": 2881.035,
+      "latency_ms_p95": 2944.433,
+      "max_rollout_actions": 123,
+      "nodes_mean": 65.0,
+      "nodes_p95": 65,
+      "root_coverage_fraction_mean": 1.0,
+      "selected_terminal_margin_mean": -1.189725,
+      "selection_reasons": {
+        "most-visits": 4
+      }
+    },
+    "breath-run-rescue-chain:entry|epsilon-greedy@16": {
+      "average_rollout_actions_mean": 75.531,
+      "decisions": 4,
+      "hit_rate": 0.0,
+      "latency_ms_median": 619.891,
+      "latency_ms_p95": 635.044,
+      "max_rollout_actions": 108,
+      "nodes_mean": 17.0,
+      "nodes_p95": 17,
+      "root_coverage_fraction_mean": 0.307692,
+      "selected_terminal_margin_mean": 25.25,
+      "selection_reasons": {
+        "legacy-action-order": 4
+      }
+    },
+    "breath-run-rescue-chain:entry|epsilon-greedy@4": {
+      "average_rollout_actions_mean": 77.062,
+      "decisions": 4,
+      "hit_rate": 0.0,
+      "latency_ms_median": 167.013,
+      "latency_ms_p95": 179.713,
+      "max_rollout_actions": 97,
+      "nodes_mean": 5.0,
+      "nodes_p95": 5,
+      "root_coverage_fraction_mean": 0.076923,
+      "selected_terminal_margin_mean": 23.5,
+      "selection_reasons": {
+        "legacy-action-order": 2,
+        "mean-value": 2
+      }
+    },
+    "breath-run-rescue-chain:entry|epsilon-greedy@64": {
+      "average_rollout_actions_mean": 72.781,
+      "decisions": 4,
+      "hit_rate": 0.0,
+      "latency_ms_median": 2296.059,
+      "latency_ms_p95": 2332.731,
+      "max_rollout_actions": 110,
+      "nodes_mean": 65.0,
+      "nodes_p95": 65,
+      "root_coverage_fraction_mean": 1.0,
+      "selected_terminal_margin_mean": 25.625,
+      "selection_reasons": {
+        "legacy-action-order": 4
+      }
+    },
+    "breath-run-rescue-chain:entry|uniform@16": {
+      "average_rollout_actions_mean": 71.015,
+      "decisions": 4,
+      "hit_rate": 0.0,
+      "latency_ms_median": 843.336,
+      "latency_ms_p95": 863.413,
+      "max_rollout_actions": 117,
+      "nodes_mean": 17.0,
+      "nodes_p95": 17,
+      "root_coverage_fraction_mean": 0.307692,
+      "selected_terminal_margin_mean": 18.25,
+      "selection_reasons": {
+        "legacy-action-order": 4
+      }
+    },
+    "breath-run-rescue-chain:entry|uniform@4": {
+      "average_rollout_actions_mean": 70.0,
+      "decisions": 4,
+      "hit_rate": 0.0,
+      "latency_ms_median": 252.47,
+      "latency_ms_p95": 301.574,
+      "max_rollout_actions": 111,
+      "nodes_mean": 5.0,
+      "nodes_p95": 5,
+      "root_coverage_fraction_mean": 0.076923,
+      "selected_terminal_margin_mean": 11.0,
+      "selection_reasons": {
+        "legacy-action-order": 2,
+        "mean-value": 2
+      }
+    },
+    "breath-run-rescue-chain:entry|uniform@64": {
+      "average_rollout_actions_mean": 73.281,
+      "decisions": 4,
+      "hit_rate": 0.0,
+      "latency_ms_median": 3011.256,
+      "latency_ms_p95": 3089.565,
+      "max_rollout_actions": 125,
+      "nodes_mean": 65.0,
+      "nodes_p95": 65,
+      "root_coverage_fraction_mean": 1.0,
+      "selected_terminal_margin_mean": 12.25,
+      "selection_reasons": {
+        "legacy-action-order": 4
+      }
+    },
+    "breath-sole-liberty-defense|epsilon-greedy@16": {
+      "average_rollout_actions_mean": 55.953,
+      "decisions": 4,
+      "hit_rate": 0.25,
+      "latency_ms_median": 807.642,
+      "latency_ms_p95": 831.215,
+      "max_rollout_actions": 66,
+      "nodes_mean": 17.0,
+      "nodes_p95": 17,
+      "root_coverage_fraction_mean": 0.307692,
+      "selected_terminal_margin_mean": 14.5,
+      "selection_reasons": {
+        "legacy-action-order": 3,
+        "mean-value": 1
+      }
+    },
+    "breath-sole-liberty-defense|epsilon-greedy@4": {
+      "average_rollout_actions_mean": 57.0,
+      "decisions": 4,
+      "hit_rate": 0.0,
+      "latency_ms_median": 198.096,
+      "latency_ms_p95": 200.161,
+      "max_rollout_actions": 67,
+      "nodes_mean": 5.0,
+      "nodes_p95": 5,
+      "root_coverage_fraction_mean": 0.076923,
+      "selected_terminal_margin_mean": 5.25,
+      "selection_reasons": {
+        "legacy-action-order": 1,
+        "mean-value": 3
+      }
+    },
+    "breath-sole-liberty-defense|epsilon-greedy@64": {
+      "average_rollout_actions_mean": 55.965,
+      "decisions": 4,
+      "hit_rate": 0.0,
+      "latency_ms_median": 3063.102,
+      "latency_ms_p95": 3086.508,
+      "max_rollout_actions": 70,
+      "nodes_mean": 65.0,
+      "nodes_p95": 65,
+      "root_coverage_fraction_mean": 1.0,
+      "selected_terminal_margin_mean": 11.25,
+      "selection_reasons": {
+        "legacy-action-order": 3,
+        "most-visits": 1
+      }
+    },
+    "breath-sole-liberty-defense|uniform@16": {
+      "average_rollout_actions_mean": 69.781,
+      "decisions": 4,
+      "hit_rate": 0.0,
+      "latency_ms_median": 688.073,
+      "latency_ms_p95": 710.529,
+      "max_rollout_actions": 117,
+      "nodes_mean": 17.0,
+      "nodes_p95": 17,
+      "root_coverage_fraction_mean": 0.307692,
+      "selected_terminal_margin_mean": 19.25,
+      "selection_reasons": {
+        "legacy-action-order": 4
+      }
+    },
+    "breath-sole-liberty-defense|uniform@4": {
+      "average_rollout_actions_mean": 67.688,
+      "decisions": 4,
+      "hit_rate": 0.0,
+      "latency_ms_median": 169.191,
+      "latency_ms_p95": 175.442,
+      "max_rollout_actions": 102,
+      "nodes_mean": 5.0,
+      "nodes_p95": 5,
+      "root_coverage_fraction_mean": 0.076923,
+      "selected_terminal_margin_mean": 12.75,
+      "selection_reasons": {
+        "legacy-action-order": 1,
+        "mean-value": 3
+      }
+    },
+    "breath-sole-liberty-defense|uniform@64": {
+      "average_rollout_actions_mean": 70.429,
+      "decisions": 4,
+      "hit_rate": 0.0,
+      "latency_ms_median": 2746.907,
+      "latency_ms_p95": 2814.856,
+      "max_rollout_actions": 109,
+      "nodes_mean": 65.0,
+      "nodes_p95": 65,
+      "root_coverage_fraction_mean": 1.0,
+      "selected_terminal_margin_mean": 6.625,
+      "selection_reasons": {
+        "legacy-action-order": 3,
+        "mean-value": 1
+      }
+    },
+    "classic-immediate-capture|epsilon-greedy@16": {
+      "average_rollout_actions_mean": 57.234,
+      "decisions": 4,
+      "hit_rate": 0.0,
+      "latency_ms_median": 692.509,
+      "latency_ms_p95": 714.69,
+      "max_rollout_actions": 72,
+      "nodes_mean": 17.0,
+      "nodes_p95": 17,
+      "root_coverage_fraction_mean": 0.307692,
+      "selected_terminal_margin_mean": 14.5,
+      "selection_reasons": {
+        "legacy-action-order": 4
+      }
+    },
+    "classic-immediate-capture|epsilon-greedy@4": {
+      "average_rollout_actions_mean": 56.312,
+      "decisions": 4,
+      "hit_rate": 0.0,
+      "latency_ms_median": 171.596,
+      "latency_ms_p95": 185.444,
+      "max_rollout_actions": 66,
+      "nodes_mean": 5.0,
+      "nodes_p95": 5,
+      "root_coverage_fraction_mean": 0.076923,
+      "selected_terminal_margin_mean": 12.75,
+      "selection_reasons": {
+        "legacy-action-order": 4
+      }
+    },
+    "classic-immediate-capture|epsilon-greedy@64": {
+      "average_rollout_actions_mean": 56.66,
+      "decisions": 4,
+      "hit_rate": 0.0,
+      "latency_ms_median": 2645.043,
+      "latency_ms_p95": 2673.334,
+      "max_rollout_actions": 80,
+      "nodes_mean": 65.0,
+      "nodes_p95": 65,
+      "root_coverage_fraction_mean": 1.0,
+      "selected_terminal_margin_mean": 13.375,
+      "selection_reasons": {
+        "legacy-action-order": 4
+      }
+    },
+    "classic-immediate-capture|uniform@16": {
+      "average_rollout_actions_mean": 184.797,
+      "decisions": 4,
+      "hit_rate": 0.0,
+      "latency_ms_median": 1433.661,
+      "latency_ms_p95": 1564.27,
+      "max_rollout_actions": 455,
+      "nodes_mean": 17.0,
+      "nodes_p95": 17,
+      "root_coverage_fraction_mean": 0.307692,
+      "selected_terminal_margin_mean": 26.25,
+      "selection_reasons": {
+        "legacy-action-order": 4
+      }
+    },
+    "classic-immediate-capture|uniform@4": {
+      "average_rollout_actions_mean": 218.25,
+      "decisions": 4,
+      "hit_rate": 0.0,
+      "latency_ms_median": 411.613,
+      "latency_ms_p95": 487.196,
+      "max_rollout_actions": 460,
+      "nodes_mean": 5.0,
+      "nodes_p95": 5,
+      "root_coverage_fraction_mean": 0.076923,
+      "selected_terminal_margin_mean": 12.25,
+      "selection_reasons": {
+        "legacy-action-order": 2,
+        "mean-value": 2
+      }
+    },
+    "classic-immediate-capture|uniform@64": {
+      "average_rollout_actions_mean": 196.621,
+      "decisions": 4,
+      "hit_rate": 0.0,
+      "latency_ms_median": 6163.859,
+      "latency_ms_p95": 6221.537,
+      "max_rollout_actions": 612,
+      "nodes_mean": 65.0,
+      "nodes_p95": 65,
+      "root_coverage_fraction_mean": 1.0,
+      "selected_terminal_margin_mean": 12.375,
+      "selection_reasons": {
+        "legacy-action-order": 4
+      }
+    },
+    "gjerde-fence-completion|epsilon-greedy@16": {
+      "average_rollout_actions_mean": 71.625,
+      "decisions": 4,
+      "hit_rate": 0.0,
+      "latency_ms_median": 1901.76,
+      "latency_ms_p95": 1970.442,
+      "max_rollout_actions": 86,
+      "nodes_mean": 17.0,
+      "nodes_p95": 17,
+      "root_coverage_fraction_mean": 0.235294,
+      "selected_terminal_margin_mean": 1.0,
+      "selection_reasons": {
+        "legacy-action-order": 4
+      }
+    },
+    "gjerde-fence-completion|epsilon-greedy@4": {
+      "average_rollout_actions_mean": 72.25,
+      "decisions": 4,
+      "hit_rate": 0.0,
+      "latency_ms_median": 484.096,
+      "latency_ms_p95": 497.123,
+      "max_rollout_actions": 92,
+      "nodes_mean": 5.0,
+      "nodes_p95": 5,
+      "root_coverage_fraction_mean": 0.058824,
+      "selected_terminal_margin_mean": 1.5,
+      "selection_reasons": {
+        "legacy-action-order": 2,
+        "mean-value": 2
+      }
+    },
+    "gjerde-fence-completion|epsilon-greedy@64": {
+      "average_rollout_actions_mean": 71.574,
+      "decisions": 4,
+      "hit_rate": 0.0,
+      "latency_ms_median": 7234.334,
+      "latency_ms_p95": 7257.579,
+      "max_rollout_actions": 87,
+      "nodes_mean": 65.0,
+      "nodes_p95": 65,
+      "root_coverage_fraction_mean": 0.941176,
+      "selected_terminal_margin_mean": 1.0,
+      "selection_reasons": {
+        "legacy-action-order": 4
+      }
+    },
+    "gjerde-fence-completion|uniform@16": {
+      "average_rollout_actions_mean": 90.688,
+      "decisions": 4,
+      "hit_rate": 0.0,
+      "latency_ms_median": 1675.03,
+      "latency_ms_p95": 1715.418,
+      "max_rollout_actions": 144,
+      "nodes_mean": 17.0,
+      "nodes_p95": 17,
+      "root_coverage_fraction_mean": 0.235294,
+      "selected_terminal_margin_mean": 3.75,
+      "selection_reasons": {
+        "legacy-action-order": 4
+      }
+    },
+    "gjerde-fence-completion|uniform@4": {
+      "average_rollout_actions_mean": 98.75,
+      "decisions": 4,
+      "hit_rate": 0.0,
+      "latency_ms_median": 464.672,
+      "latency_ms_p95": 485.12,
+      "max_rollout_actions": 135,
+      "nodes_mean": 5.0,
+      "nodes_p95": 5,
+      "root_coverage_fraction_mean": 0.058824,
+      "selected_terminal_margin_mean": 9.25,
+      "selection_reasons": {
+        "legacy-action-order": 3,
+        "mean-value": 1
+      }
+    },
+    "gjerde-fence-completion|uniform@64": {
+      "average_rollout_actions_mean": 93.176,
+      "decisions": 4,
+      "hit_rate": 0.0,
+      "latency_ms_median": 6728.395,
+      "latency_ms_p95": 6870.436,
+      "max_rollout_actions": 161,
+      "nodes_mean": 65.0,
+      "nodes_p95": 65,
+      "root_coverage_fraction_mean": 0.941176,
+      "selected_terminal_margin_mean": 4.5,
+      "selection_reasons": {
+        "legacy-action-order": 4
+      }
+    },
+    "gjerde-go-ahead-acceptance|epsilon-greedy@16": {
+      "average_rollout_actions_mean": 52.562,
+      "decisions": 4,
+      "hit_rate": 0.5,
+      "latency_ms_median": 1103.914,
+      "latency_ms_p95": 1208.933,
+      "max_rollout_actions": 81,
+      "nodes_mean": 14.5,
+      "nodes_p95": 15,
+      "root_coverage_fraction_mean": 1.0,
+      "selected_terminal_margin_mean": 0.850694,
+      "selection_reasons": {
+        "legacy-action-order": 2,
+        "most-visits": 2
+      }
+    },
+    "gjerde-go-ahead-acceptance|epsilon-greedy@4": {
+      "average_rollout_actions_mean": 52.562,
+      "decisions": 4,
+      "hit_rate": 0.75,
+      "latency_ms_median": 313.252,
+      "latency_ms_p95": 409.236,
+      "max_rollout_actions": 78,
+      "nodes_mean": 5.0,
+      "nodes_p95": 5,
+      "root_coverage_fraction_mean": 1.0,
+      "selected_terminal_margin_mean": 0.916667,
+      "selection_reasons": {
+        "legacy-action-order": 1,
+        "mean-value": 1,
+        "most-visits": 2
+      }
+    },
+    "gjerde-go-ahead-acceptance|epsilon-greedy@64": {
+      "average_rollout_actions_mean": 53.117,
+      "decisions": 4,
+      "hit_rate": 1.0,
+      "latency_ms_median": 4419.314,
+      "latency_ms_p95": 4506.662,
+      "max_rollout_actions": 87,
+      "nodes_mean": 52.75,
+      "nodes_p95": 54,
+      "root_coverage_fraction_mean": 1.0,
+      "selected_terminal_margin_mean": 0.831154,
+      "selection_reasons": {
+        "most-visits": 4
+      }
+    },
+    "gjerde-go-ahead-acceptance|uniform@16": {
+      "average_rollout_actions_mean": 83.031,
+      "decisions": 4,
+      "hit_rate": 0.5,
+      "latency_ms_median": 1133.687,
+      "latency_ms_p95": 1438.065,
+      "max_rollout_actions": 244,
+      "nodes_mean": 14.5,
+      "nodes_p95": 16,
+      "root_coverage_fraction_mean": 1.0,
+      "selected_terminal_margin_mean": 3.958333,
+      "selection_reasons": {
+        "most-visits": 4
+      }
+    },
+    "gjerde-go-ahead-acceptance|uniform@4": {
+      "average_rollout_actions_mean": 72.562,
+      "decisions": 4,
+      "hit_rate": 0.75,
+      "latency_ms_median": 289.437,
+      "latency_ms_p95": 407.387,
+      "max_rollout_actions": 149,
+      "nodes_mean": 5.0,
+      "nodes_p95": 5,
+      "root_coverage_fraction_mean": 1.0,
+      "selected_terminal_margin_mean": 2.958333,
+      "selection_reasons": {
+        "legacy-action-order": 1,
+        "mean-value": 1,
+        "most-visits": 2
+      }
+    },
+    "gjerde-go-ahead-acceptance|uniform@64": {
+      "average_rollout_actions_mean": 83.961,
+      "decisions": 4,
+      "hit_rate": 0.75,
+      "latency_ms_median": 4561.453,
+      "latency_ms_p95": 4885.264,
+      "max_rollout_actions": 267,
+      "nodes_mean": 53.5,
+      "nodes_p95": 58,
+      "root_coverage_fraction_mean": 1.0,
+      "selected_terminal_margin_mean": 3.050254,
+      "selection_reasons": {
+        "most-visits": 4
+      }
+    },
+    "gjerde-go-immediate-capture|epsilon-greedy@16": {
+      "average_rollout_actions_mean": 70.828,
+      "decisions": 4,
+      "hit_rate": 0.0,
+      "latency_ms_median": 1685.207,
+      "latency_ms_p95": 1727.567,
+      "max_rollout_actions": 87,
+      "nodes_mean": 17.0,
+      "nodes_p95": 17,
+      "root_coverage_fraction_mean": 0.231884,
+      "selected_terminal_margin_mean": 0.0,
+      "selection_reasons": {
+        "legacy-action-order": 4
+      }
+    },
+    "gjerde-go-immediate-capture|epsilon-greedy@4": {
+      "average_rollout_actions_mean": 72.812,
+      "decisions": 4,
+      "hit_rate": 0.0,
+      "latency_ms_median": 376.977,
+      "latency_ms_p95": 417.298,
+      "max_rollout_actions": 90,
+      "nodes_mean": 5.0,
+      "nodes_p95": 5,
+      "root_coverage_fraction_mean": 0.057971,
+      "selected_terminal_margin_mean": 0.0,
+      "selection_reasons": {
+        "legacy-action-order": 4
+      }
+    },
+    "gjerde-go-immediate-capture|epsilon-greedy@64": {
+      "average_rollout_actions_mean": 71.019,
+      "decisions": 4,
+      "hit_rate": 0.25,
+      "latency_ms_median": 6306.282,
+      "latency_ms_p95": 6341.393,
+      "max_rollout_actions": 95,
+      "nodes_mean": 65.0,
+      "nodes_p95": 65,
+      "root_coverage_fraction_mean": 0.927536,
+      "selected_terminal_margin_mean": 1.25,
+      "selection_reasons": {
+        "legacy-action-order": 4
+      }
+    },
+    "gjerde-go-immediate-capture|uniform@16": {
+      "average_rollout_actions_mean": 138.297,
+      "decisions": 4,
+      "hit_rate": 0.0,
+      "latency_ms_median": 1779.373,
+      "latency_ms_p95": 1944.955,
+      "max_rollout_actions": 311,
+      "nodes_mean": 17.0,
+      "nodes_p95": 17,
+      "root_coverage_fraction_mean": 0.231884,
+      "selected_terminal_margin_mean": 6.75,
+      "selection_reasons": {
+        "legacy-action-order": 4
+      }
+    },
+    "gjerde-go-immediate-capture|uniform@4": {
+      "average_rollout_actions_mean": 117.0,
+      "decisions": 4,
+      "hit_rate": 0.25,
+      "latency_ms_median": 448.535,
+      "latency_ms_p95": 523.061,
+      "max_rollout_actions": 184,
+      "nodes_mean": 5.0,
+      "nodes_p95": 5,
+      "root_coverage_fraction_mean": 0.057971,
+      "selected_terminal_margin_mean": 5.25,
+      "selection_reasons": {
+        "legacy-action-order": 3,
+        "mean-value": 1
+      }
+    },
+    "gjerde-go-immediate-capture|uniform@64": {
+      "average_rollout_actions_mean": 144.172,
+      "decisions": 4,
+      "hit_rate": 0.0,
+      "latency_ms_median": 7254.253,
+      "latency_ms_p95": 8021.142,
+      "max_rollout_actions": 432,
+      "nodes_mean": 65.0,
+      "nodes_p95": 65,
+      "root_coverage_fraction_mean": 0.927536,
+      "selected_terminal_margin_mean": 10.25,
+      "selection_reasons": {
+        "legacy-action-order": 4
+      }
+    },
+    "pie-takeover-seat-perspective|epsilon-greedy@16": {
+      "average_rollout_actions_mean": 2.376,
+      "decisions": 4,
+      "hit_rate": 1.0,
+      "latency_ms_median": 1.391,
+      "latency_ms_p95": 1.428,
+      "max_rollout_actions": 6,
+      "nodes_mean": 15.0,
+      "nodes_p95": 15,
+      "root_coverage_fraction_mean": 1.0,
+      "selected_terminal_margin_mean": 54.0,
+      "selection_reasons": {
+        "most-visits": 4
+      }
+    },
+    "pie-takeover-seat-perspective|epsilon-greedy@4": {
+      "average_rollout_actions_mean": 4.812,
+      "decisions": 4,
+      "hit_rate": 1.0,
+      "latency_ms_median": 0.638,
+      "latency_ms_p95": 0.706,
+      "max_rollout_actions": 6,
+      "nodes_mean": 5.0,
+      "nodes_p95": 5,
+      "root_coverage_fraction_mean": 1.0,
+      "selected_terminal_margin_mean": 54.0,
+      "selection_reasons": {
+        "most-visits": 4
+      }
+    },
+    "pie-takeover-seat-perspective|epsilon-greedy@64": {
+      "average_rollout_actions_mean": 0.664,
+      "decisions": 4,
+      "hit_rate": 1.0,
+      "latency_ms_median": 2.046,
+      "latency_ms_p95": 2.091,
+      "max_rollout_actions": 6,
+      "nodes_mean": 19.0,
+      "nodes_p95": 19,
+      "root_coverage_fraction_mean": 1.0,
+      "selected_terminal_margin_mean": 54.0,
+      "selection_reasons": {
+        "most-visits": 4
+      }
+    },
+    "pie-takeover-seat-perspective|uniform@16": {
+      "average_rollout_actions_mean": 2.453,
+      "decisions": 4,
+      "hit_rate": 1.0,
+      "latency_ms_median": 0.927,
+      "latency_ms_p95": 1.025,
+      "max_rollout_actions": 7,
+      "nodes_mean": 15.0,
+      "nodes_p95": 15,
+      "root_coverage_fraction_mean": 1.0,
+      "selected_terminal_margin_mean": 54.0,
+      "selection_reasons": {
+        "most-visits": 4
+      }
+    },
+    "pie-takeover-seat-perspective|uniform@4": {
+      "average_rollout_actions_mean": 4.562,
+      "decisions": 4,
+      "hit_rate": 1.0,
+      "latency_ms_median": 0.475,
+      "latency_ms_p95": 0.496,
+      "max_rollout_actions": 6,
+      "nodes_mean": 5.0,
+      "nodes_p95": 5,
+      "root_coverage_fraction_mean": 1.0,
+      "selected_terminal_margin_mean": 54.0,
+      "selection_reasons": {
+        "most-visits": 4
+      }
+    },
+    "pie-takeover-seat-perspective|uniform@64": {
+      "average_rollout_actions_mean": 0.699,
+      "decisions": 4,
+      "hit_rate": 1.0,
+      "latency_ms_median": 1.707,
+      "latency_ms_p95": 1.755,
+      "max_rollout_actions": 7,
+      "nodes_mean": 19.0,
+      "nodes_p95": 19,
+      "root_coverage_fraction_mean": 1.0,
+      "selected_terminal_margin_mean": 54.0,
+      "selection_reasons": {
+        "most-visits": 4
+      }
+    },
+    "rosette-entombment-cap|epsilon-greedy@16": {
+      "average_rollout_actions_mean": 55.156,
+      "decisions": 4,
+      "hit_rate": 0.0,
+      "latency_ms_median": 680.719,
+      "latency_ms_p95": 682.732,
+      "max_rollout_actions": 70,
+      "nodes_mean": 17.0,
+      "nodes_p95": 17,
+      "root_coverage_fraction_mean": 0.326531,
+      "selected_terminal_margin_mean": 28.25,
+      "selection_reasons": {
+        "legacy-action-order": 4
+      }
+    },
+    "rosette-entombment-cap|epsilon-greedy@4": {
+      "average_rollout_actions_mean": 55.375,
+      "decisions": 4,
+      "hit_rate": 0.0,
+      "latency_ms_median": 153.672,
+      "latency_ms_p95": 157.744,
+      "max_rollout_actions": 67,
+      "nodes_mean": 5.0,
+      "nodes_p95": 5,
+      "root_coverage_fraction_mean": 0.081633,
+      "selected_terminal_margin_mean": 29.0,
+      "selection_reasons": {
+        "legacy-action-order": 4
+      }
+    },
+    "rosette-entombment-cap|epsilon-greedy@64": {
+      "average_rollout_actions_mean": 54.586,
+      "decisions": 4,
+      "hit_rate": 0.0,
+      "latency_ms_median": 2532.654,
+      "latency_ms_p95": 2621.764,
+      "max_rollout_actions": 72,
+      "nodes_mean": 65.0,
+      "nodes_p95": 65,
+      "root_coverage_fraction_mean": 1.0,
+      "selected_terminal_margin_mean": 31.5,
+      "selection_reasons": {
+        "legacy-action-order": 4
+      }
+    },
+    "rosette-entombment-cap|uniform@16": {
+      "average_rollout_actions_mean": 88.219,
+      "decisions": 4,
+      "hit_rate": 0.0,
+      "latency_ms_median": 723.178,
+      "latency_ms_p95": 737.998,
+      "max_rollout_actions": 141,
+      "nodes_mean": 17.0,
+      "nodes_p95": 17,
+      "root_coverage_fraction_mean": 0.326531,
+      "selected_terminal_margin_mean": 25.25,
+      "selection_reasons": {
+        "legacy-action-order": 4
+      }
+    },
+    "rosette-entombment-cap|uniform@4": {
+      "average_rollout_actions_mean": 89.688,
+      "decisions": 4,
+      "hit_rate": 0.0,
+      "latency_ms_median": 196.976,
+      "latency_ms_p95": 220.445,
+      "max_rollout_actions": 126,
+      "nodes_mean": 5.0,
+      "nodes_p95": 5,
+      "root_coverage_fraction_mean": 0.081633,
+      "selected_terminal_margin_mean": 36.0,
+      "selection_reasons": {
+        "legacy-action-order": 3,
+        "mean-value": 1
+      }
+    },
+    "rosette-entombment-cap|uniform@64": {
+      "average_rollout_actions_mean": 88.867,
+      "decisions": 4,
+      "hit_rate": 0.0,
+      "latency_ms_median": 2775.752,
+      "latency_ms_p95": 2806.108,
+      "max_rollout_actions": 158,
+      "nodes_mean": 65.0,
+      "nodes_p95": 65,
+      "root_coverage_fraction_mean": 1.0,
+      "selected_terminal_margin_mean": 42.0,
+      "selection_reasons": {
+        "legacy-action-order": 4
+      }
+    }
+  },
+  "promotion_blocked": true,
+  "reproducibility": {
+    "config_sha256": "9be5d8fbed78e688b2d978a3e63c90ebe87bca1c77e3f65217411c581e65e526",
+    "deterministic_records_sha256": "1260e383a7240aa9d3b2b085689b31a4947ecaf1b992e558da6e65d1c7724de0",
+    "latency_is_observational_and_excluded_from_decision_hash": true,
+    "raw_artifact_sha256": {
+      "decisions.jsonl": "b777cd529a9ca767a1307aaf3ac6284b89b36dc5908196b16443e6d3f59cbfc3",
+      "state.json": "b75d1f417150c184abdca4ff9279f79c676735bee60e404f10eb9f2a2e74fd66",
+      "summary.json": "2510885c3d5e08beac48f94c40759beecf66fdfafdb8cafc93477c606bc8a2b9"
+    },
+    "schedule_sha256": "ff53c5dedd47353ab44be5927cab969754a184508b3ab89d1bd207540ab42a56"
+  },
+  "run_source_commit": "26db89b1f8d2a90cb7c94fbff3c17c6a760f7d8a",
+  "runtime_source_commit_at_audit": "26db89b1f8d2a90cb7c94fbff3c17c6a760f7d8a",
+  "source": {
+    "code_hash": "bd63af8e11b44c7dee2af6089f05c7fefada9703d64994b3c68e778f1c1e9394",
+    "files": {
+      "engine/actions.py": "95742a2f37e93e629b53cb85824fa873ca8db739ad03286eaacb97a58f04c71e",
+      "engine/mcts.py": "43e60fe46485aa274e7ec75b1cea6d90b687ae0c5a9a22d0ea8adae14d907f07",
+      "engine/varde.py": "dbc2e9127dbda1f3ac8833f91ad35fc102267ab2a4e52a28abaa98191d82843b",
+      "research/harness/mcts_tactical_admission.py": "3eda87a637a77118434d68b15f5093a160be915c73081faa6ca8bdff1269e893",
+      "research/harness/mcts_tactical_fixtures.py": "a8f29b191b6bc81fe0f53ea044b8811881b8336593fb91ba7d5cb9d9b78155c6",
+      "research/harness/mcts_telemetry.py": "0dc85aa4192bf8b1cce7fd6b7386bc3c7dd29236e0ea5a9b790e15eaa8ba30e0"
+    },
+    "fixture_catalog_hash": "89eabc4a56b77c12ae4fed45295b0f50aa477ab136f1a84bfdaa2291257a510f",
+    "manifest_builder_sha256": "635e47ad35201cf89242d7f5ecefdda9905f13a7cca167455a7d0de2c40cd57b",
+    "mcts_agent_hash": "63cdec59394646f4bddd8afe33245331b1f55f922d79523030722bbb8d496e97",
+    "source_commit": "4ccc84e301f76227d35d8d24a4bff360f92a6741"
+  },
+  "status": "complete",
+  "version": 2
+}
