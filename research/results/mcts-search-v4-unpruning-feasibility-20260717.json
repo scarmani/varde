@@ -1,0 +1,81 @@
+{
+  "admission_pending": true,
+  "claim_limits": {
+    "candidate_admission_evidence": false,
+    "strategic_depth_evidence": false,
+    "strength_evidence": false,
+    "structural_feasibility_only": true
+  },
+  "created_date": "2026-07-17",
+  "deterministic_sha256": "74af9f1736ae800e6fe9e52f1304e42dd148ecc18513bb13d8c1eb0998170d20",
+  "feasibility_gate": {
+    "action_legal": true,
+    "directional_winners_across_128_seeds": 50,
+    "eventual_full_expansion": true,
+    "exact_schedule": true,
+    "forced_administrative_action_visible": true,
+    "hidden_actions_unvisited": true,
+    "high_rung_admission_delta_at_least_10_points": null,
+    "median_visits_at_least_3": true,
+    "median_visits_per_exposed_child": 4.0,
+    "natural_root_exposes_16_at_64": true,
+    "no_fixed_directional_preference": true,
+    "state_unchanged": true
+  },
+  "format": "varde-mcts-search-v4-unpruning-feasibility",
+  "natural_root": {
+    "board_size": 3,
+    "elapsed_ms": 3224.298,
+    "exposed_actions": 16,
+    "exposed_visits": [
+      8,
+      6,
+      5,
+      5,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      3,
+      3,
+      2,
+      2,
+      2
+    ],
+    "hidden_actions": 38,
+    "legal_actions": 54,
+    "rules": "breath",
+    "visits": 64
+  },
+  "payload_sha256": "60f315db1a1d5995fc5ef105761dfa8d0238fe5c3d27645a31f2bac6e1dd8e62",
+  "qualified_for_common_development_screen": true,
+  "recipe_ids": {
+    "ordered_control": "mcts-search-v4-ordered-control-v1",
+    "progressive_unpruning": "mcts-search-v4-unpruning-v1"
+  },
+  "schedule": {
+    "1024": 64,
+    "16": 8,
+    "256": 32,
+    "4": 4,
+    "64": 16
+  },
+  "source": {
+    "code_hash": "6ad13c911875d81497acb68b7dae126c991b3f05d2c966328de529327af8bbf9",
+    "files": {
+      "engine/actions.py": "779afcd01fc172e9f9c759c9b2fe47bc46ac8e12dd0f4d799f36f0df5bb48643",
+      "engine/mcts.py": "72f40ff4d4f620628c313248bf9b9b9f87dde3d84f70eeccb6f9e5635f155425",
+      "engine/mcts_unpruning.py": "23ab31879a6a9ee170efb8e476059d2ba99577199756a6e69e066126fe884687",
+      "engine/varde.py": "dbc2e9127dbda1f3ac8833f91ad35fc102267ab2a4e52a28abaa98191d82843b",
+      "research/harness/evaluate_mcts_v4_unpruning.py": "2c516893263065115be548edde6eb13024d15b8383f83f293f4720e756ee5a5a"
+    },
+    "ordered_control_agent_hash": "88e63b026ec92a3507b408d6a79761ca9c134a8ffc580d0b6912664ceff2f1c1",
+    "source_commit": "d26669d28c6eed0328f71eb616bedbd8bff84753",
+    "unpruning_agent_hash": "f67d34d5c1689f1c9d261cf413e158f8a8de650c933af52ba7ee8e08c292c090"
+  },
+  "structural_feasibility_passed": true,
+  "version": 1
+}
