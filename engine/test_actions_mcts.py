@@ -4,6 +4,7 @@ from actions import RulesAction, RulesState, apply_action, legal_actions
 from mcts import (
     MCTS_AGENT_HASH,
     MCTS_VERSION,
+    _seeded_tie_value,
     choose_mcts_action,
     choose_mcts_state_action,
 )
@@ -179,13 +180,60 @@ class TestRulesActions(unittest.TestCase):
 
 class TestTerminalMCTS(unittest.TestCase):
     def test_agent_hash_and_request_validation(self):
-        self.assertEqual(MCTS_VERSION, 2)
+        self.assertEqual(MCTS_VERSION, 3)
         self.assertEqual(len(MCTS_AGENT_HASH), 64)
         int(MCTS_AGENT_HASH, 16)
         with self.assertRaises(ValueError):
             choose_mcts_action(Game(3), BLACK, simulations=0)
         with self.assertRaises(ValueError):
             choose_mcts_action(Game(3), BLACK, rollout_policy="native")
+
+    def test_seeded_ties_are_deterministic_semantic_and_direction_neutral(self):
+        actions = [
+            RulesAction("swap"),
+            RulesAction("extend", (-2, 0)),
+            RulesAction("play", (2, 0)),
+            RulesAction("pass"),
+            RulesAction("finish-extension"),
+            RulesAction("resume"),
+            RulesAction("accept"),
+        ]
+        first = [
+            _seeded_tie_value(17, "root", "node", action)
+            for action in actions
+        ]
+        self.assertEqual(
+            first,
+            [
+                _seeded_tie_value(17, "root", "node", action)
+                for action in actions
+            ],
+        )
+        self.assertEqual(len(first), len(set(first)))
+        self.assertNotEqual(
+            first,
+            [_seeded_tie_value(18, "root", "node", action) for action in actions],
+        )
+        self.assertNotEqual(
+            first,
+            [_seeded_tie_value(17, "other", "node", action) for action in actions],
+        )
+
+        # No board direction is an increasing/decreasing fallback. Across fixed
+        # seeds every member of a six-way rotational orbit wins at least once.
+        orbit = [
+            RulesAction("play", point)
+            for point in ((2, 0), (1, 1), (-1, 1), (-2, 0), (-1, -1), (1, -1))
+        ]
+        winners = set()
+        for seed in range(128):
+            winners.add(max(
+                orbit,
+                key=lambda action: _seeded_tie_value(
+                    seed, "symmetric-root", "symmetric-node", action
+                ),
+            ))
+        self.assertEqual(winners, set(orbit))
 
     def test_mcts_is_legal_deterministic_nonmutating_and_save_compatible(self):
         for rules in CANDIDATES:

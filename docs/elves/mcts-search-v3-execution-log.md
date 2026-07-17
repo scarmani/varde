@@ -207,3 +207,54 @@ rollout policies. `engine/varde.py`, server, browser, rules, scoring, saves, and
 live termination were untouched. Confidence HIGH for instrumentation and
 evidence integrity; confidence LOW that unchanged MCTS V2 has adequate tactical
 quality, as the preserved negative result demonstrates.
+
+## Batch 2 — Geometry-neutral deterministic ties
+
+Status: in progress.
+
+### Contract
+
+**Behaviors:** replace both coordinate/action-order fallbacks—UCT child
+selection and final root choice—with a SHA-256 value derived from the stored
+search seed, analyzed root position, current node position, and semantic action
+identity. Change no expansion RNG, exploration arithmetic, terminal value,
+rollout policy, margin use, or tactical proposal behavior.
+
+**Build on:** Batch 1's exact root telemetry and frozen split corpus. Bump the
+MCTS agent version/hash because seeded choices may change. Preserve the Batch 1
+manifest, raw artifacts, and compact result byte-for-byte.
+
+**Acceptance criteria:**
+
+- [ ] No coordinate or canonical action-order fallback remains in traversal,
+  final selection, telemetry ranking, or selection-reason reporting.
+- [ ] Fixed seed/position/action ties are deterministic; changing seed or
+  analyzed position reshuffles them; all play, pass, swap, extension, finish,
+  resume, and acceptance actions have semantic identities.
+- [ ] Directional-orbit tests demonstrate that no fixed board direction wins
+  all seeded ties.
+- [ ] Legality, non-mutation, superko, save compatibility, administrative
+  actions, all rulesets, and both rollout policies remain covered.
+- [ ] A separate tie-only manifest is committed before outcomes and the
+  4/16/64 result is audited without pooling with MCTS V2.
+- [ ] Full tests, Python compile, JavaScript syntax, and diff checks pass.
+
+**Blast radius:** `engine/mcts.py` selection semantics and all consumers that
+verify its version/hash. The browser opponent remains unrelated native search;
+rules, scoring, server, saves, and live termination stay untouched. Historical
+evidence tests must validate their recorded agent hashes rather than falsely
+equating them to the new runtime agent.
+
+### Pre-implementation survey
+
+- `_select_child()` used action-kind order followed by raw point coordinates
+  after equal UCT scores. `_final_selection_key()` repeated the same two
+  fallbacks after visits and mean value.
+- Root telemetry used the final selection key and labeled unresolved ties
+  `legacy-action-order`, so it must share the new tie key to keep selected rank
+  one and explain the decision honestly.
+- The seeded hash adds no RNG calls. Existing expansion and rollout streams
+  therefore change only after a formerly ordered tie selects a different node.
+- The old performance artifact is immutable MCTS V2 evidence. Its regression
+  test must pin internal historical consistency and assert that its hash differs
+  from MCTS V3, rather than requiring current-agent equality.

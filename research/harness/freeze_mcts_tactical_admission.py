@@ -36,6 +36,7 @@ from mcts_tactical_fixtures import (  # noqa: E402
     fixture_catalog,
     tactical_positions,
 )
+from mcts import MCTS_VERSION  # noqa: E402
 
 
 FORMAT = "varde-mcts-tactical-admission-manifest"
@@ -60,6 +61,7 @@ def build_manifest(
     workers,
     checkpoint_interval,
     created_date=None,
+    purpose=None,
 ):
     positions = tactical_positions()
     admissions = admission_positions()
@@ -75,9 +77,9 @@ def build_manifest(
         "version": VERSION,
         "status": "frozen-before-outcomes",
         "created_date": created_date,
-        "purpose": (
-            "Behavior-neutral MCTS V2 root telemetry and split proof-grade "
-            "admission versus natural-width diagnostic baseline"
+        "purpose": purpose or (
+            f"MCTS V{MCTS_VERSION} split proof-grade admission versus "
+            "natural-width diagnostic baseline"
         ),
         "source": run_provenance,
         "config": config,
@@ -158,6 +160,7 @@ def main():
     parser.add_argument("--workers", type=int, default=1)
     parser.add_argument("--checkpoint-interval", type=int, default=8)
     parser.add_argument("--created-date")
+    parser.add_argument("--purpose")
     parser.add_argument("--check", action="store_true")
     args = parser.parse_args()
     config = {
@@ -174,6 +177,7 @@ def main():
         workers=args.workers,
         checkpoint_interval=args.checkpoint_interval,
         created_date=args.created_date,
+        purpose=args.purpose,
     )
     rendered = json.dumps(payload, indent=2, sort_keys=True, allow_nan=False) + "\n"
     if args.check:

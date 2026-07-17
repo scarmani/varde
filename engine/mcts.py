@@ -11,7 +11,7 @@ from varde import BLACK, WHITE, control
 
 
 MCTS_FORMAT = "varde-terminal-mcts"
-MCTS_VERSION = 2
+MCTS_VERSION = 3
 ROLLOUT_POLICIES = frozenset(("uniform", "epsilon-greedy"))
 EXPLORATION = math.sqrt(2.0)
 ROLLOUT_EPSILON = 0.15
@@ -25,6 +25,7 @@ MCTS_AGENT_HASH = hashlib.sha256(
             "epsilon": ROLLOUT_EPSILON,
             "late_pass_rate": LIGHT_LATE_PASS_RATE,
             "terminal": "game-score-win-draw-loss",
+            "ties": "sha256(seed,root-position,node-position,action)",
         },
         sort_keys=True,
         separators=(",", ":"),
@@ -223,7 +224,18 @@ def _rollout(state, root_seat, policy, rng):
     return _terminal_sample(rollout, root_seat), actions_played
 
 
-def _select_child(node, root_seat):
+def _seeded_tie_value(seed, root_key, node_key, action):
+    """Return a reproducible, direction-neutral tie value.
+
+    The digest uses semantic action identity rather than the canonical action
+    ordering. Coordinates contribute entropy but never an increasing/decreasing
+    preference; changing the analyzed position or seed reshuffles every tie.
+    """
+    payload = repr((seed, root_key, node_key, _action_identity(action))).encode()
+    return int.from_bytes(hashlib.sha256(payload).digest(), "big")
+
+
+def _select_child(node, root_seat, seed, root_key):
     maximizing = node.state.actor_seat == root_seat
     log_parent = math.log(max(1, node.visits))
 
@@ -232,19 +244,17 @@ def _select_child(node, root_seat):
         exploration = EXPLORATION * math.sqrt(log_parent / child.visits)
         return (
             exploitation + exploration,
-            -child.action.sort_key()[0],
-            child.action.point or (),
+            _seeded_tie_value(seed, root_key, node.state.key(), child.action),
         )
 
     return max(node.children, key=score)
 
 
-def _final_selection_key(child):
+def _final_selection_key(child, seed, root_key):
     return (
         child.visits,
         child.mean,
-        -child.action.sort_key()[0],
-        child.action.point or (),
+        _seeded_tie_value(seed, root_key, root_key, child.action),
     )
 
 
@@ -269,18 +279,22 @@ def _selection_reason(root, selected):
         return "mean-value"
     if selected not in mean_leaders:
         raise AssertionError("selected root action is outside the final tie")
-    return "legacy-action-order"
+    return "seeded-hash"
 
 
-def _root_action_telemetry(root, selected):
+def _root_action_telemetry(root, selected, seed, root_key):
     children = {child.action: child for child in root.children}
     actions = [*children, *root.untried]
 
     def rank_key(action):
         child = children.get(action)
         if child is None:
-            return (0, 0.5, -action.sort_key()[0], action.point or ())
-        return _final_selection_key(child)
+            return (
+                0,
+                0.5,
+                _seeded_tie_value(seed, root_key, root_key, action),
+            )
+        return _final_selection_key(child, seed, root_key)
 
     ranked = sorted(actions, key=rank_key, reverse=True)
     records = []
@@ -339,6 +353,7 @@ def choose_mcts_state_action(
         raise ValueError("it is not the computer's action")
     before = rules_state.key()
     root_seat = root_state.actor_seat
+    root_key = root_state.key()
     rng = random.Random(_seed_for_position(seed, root_state))
     root = _Node(root_state)
     total_rollout_actions = 0
@@ -347,7 +362,7 @@ def choose_mcts_state_action(
     for _simulation in range(simulations):
         node = root
         while not node.state.terminal and not node.untried and node.children:
-            node = _select_child(node, root_seat)
+            node = _select_child(node, root_seat, seed, root_key)
         if not node.state.terminal and node.untried:
             index = rng.randrange(len(node.untried))
             action = node.untried.pop(index)
@@ -368,12 +383,16 @@ def choose_mcts_state_action(
         raise AssertionError("MCTS mutated the analyzed rules state")
     if not root.children:
         raise ValueError("no legal MCTS action")
-    selected = max(root.children, key=_final_selection_key)
+    selected = max(
+        root.children,
+        key=lambda child: _final_selection_key(child, seed, root_key),
+    )
     selection_reason = (
         _selection_reason(root, selected) if include_root_telemetry else None
     )
     root_actions = (
-        _root_action_telemetry(root, selected) if include_root_telemetry else ()
+        _root_action_telemetry(root, selected, seed, root_key)
+        if include_root_telemetry else ()
     )
     return MCTSDecision(
         action=selected.action,
