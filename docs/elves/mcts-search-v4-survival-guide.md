@@ -27,15 +27,15 @@ negative evidence and never merge.
 
 ## Current Phase
 
-Batch 4 — implement Candidate C as a true-terminal settling playout policy. The
-holdout remains sealed for outcome testing until Batch 5.
+Batch 5 — freeze and execute the common development screen, select components
+by the predeclared rules, and consult the sealed holdout only for that recipe.
 
 ## Stop Gate
 
-- Planned batches remaining: 3.
+- Planned batches remaining: 2.
 - Stop allowed right now: no.
-- Next exact action: add P/2P settling phases, one legal losing-seat
-  resumption, terminal-only backup telemetry, and isolated efficiency tests.
+- Next exact action: commit the telemetry-complete common harness, freeze all
+  five recipe manifests before outcomes, then run/audit them in fixed order.
 
 ## Validation
 

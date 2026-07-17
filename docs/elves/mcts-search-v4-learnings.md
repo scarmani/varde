@@ -34,3 +34,6 @@ agent results, performance observations, and any later match diagnostics.
   one visit per sampled action to a median of four visits across 16 exposed
   actions. Whether that improves tactical admission by the required ten points
   is an outcome question reserved for the common screen.
+- True-terminal settling cleanly enforces phase and resumption semantics, but
+  small spot checks were not faster than V4 control. The predeclared common
+  workload, not those probes, will decide the efficiency gate.

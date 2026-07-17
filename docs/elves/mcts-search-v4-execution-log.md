@@ -98,11 +98,27 @@ Status: complete at `2561071`; high-rung delta remains pending Batch 5.
 
 ## Batch 4 — True-terminal settling
 
-Status: in progress.
+Status: complete at `4722d21`; efficiency gates remain pending Batch 5.
+
+### Evidence
+
+- Added a separately hashed `v4-settling` recipe. Before P it retains the
+  selected fallback; P–2P uses one transition set to detect immediate progress;
+  at 2P it finishes extensions and passes; ending logic uses the losing seat's
+  one legal resumption and at most one immediate-progress action.
+- Every backed value is a real accepted terminal score. Telemetry records phase
+  counts, terminal reason, resumption use, rollout length, and terminal-backup
+  confirmation.
+- All 12 structural rollouts reached accepted terminals, remained within 4P,
+  exercised resumption, and left analyzed states unchanged.
+- Structural feasibility passes. The 50% mean-length reduction, 40% p95
+  latency reduction, and no-worse-than-five-point admission gates are reserved
+  for the identical common workload.
+- Full gate: 294 tests pass in 65.825 s; changed-file Ruff and compilation pass.
 
 ## Batch 5 — Admission, composition, and holdout
 
-Status: pending.
+Status: in progress.
 
 ## Batch 6 — Conditional deep tier and handoff
 

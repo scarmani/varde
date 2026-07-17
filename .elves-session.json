@@ -16,10 +16,10 @@
   "merge_policy": "user-merges",
   "pr_number": 21,
   "continuation_guard": {
-    "remaining_batches": 3,
+    "remaining_batches": 2,
     "stop_allowed": false,
     "checkpoint_is_stop": false,
-    "next_required_action": "Implement Candidate C true-terminal settling rollouts, instrument terminal reasons and resumption use, and run its isolated efficiency feasibility gate."
+    "next_required_action": "Freeze and execute the five-recipe 384-decision common screen, apply tactical and efficiency gates, then test only the deterministically selected standalone or composition on sealed holdout."
   },
   "test_baseline": {
     "passed": 268,
@@ -27,18 +27,18 @@
     "skipped": 0,
     "status": "passed in 47.362s"
   },
-  "current_batch": {"id": 4, "name": "True-terminal settling", "status": "in_progress"},
+  "current_batch": {"id": 5, "name": "Admission, composition, and holdout", "status": "in_progress"},
   "batches": [
     {"id": 0, "name": "Staged run", "status": "complete", "commit": "dddbaf4c5cbef15962ac069571d95074b0afbbe1", "rollback_tag": "elves/mcts-search-v4-pre-batch-0"},
     {"id": 1, "name": "Independent holdout", "status": "complete", "commit": "9dcd4e1a50f5b3288b0d3d98cc1f49eb7bba2a76", "rollback_tag": "elves/mcts-search-v4-pre-batch-1"},
     {"id": 2, "name": "Certified tactical subsearch", "status": "complete", "commit": "48ee0b66ed198030eeb7b77a72551578425cbca7", "rollback_tag": "elves/mcts-search-v4-pre-batch-2"},
     {"id": 3, "name": "Progressive unpruning", "status": "complete", "commit": "2561071723687d4c89ff47d6392b47af54fe9ecf", "rollback_tag": "elves/mcts-search-v4-pre-batch-3"},
-    {"id": 4, "name": "True-terminal settling", "status": "in_progress", "commit": null, "rollback_tag": "elves/mcts-search-v4-pre-batch-4"},
-    {"id": 5, "name": "Admission, composition, and holdout", "status": "pending", "commit": null, "rollback_tag": null},
+    {"id": 4, "name": "True-terminal settling", "status": "complete", "commit": "4722d21b4b8eb80a96a70b128e8fe3b309ac20e0", "rollback_tag": "elves/mcts-search-v4-pre-batch-4"},
+    {"id": 5, "name": "Admission, composition, and holdout", "status": "in_progress", "commit": null, "rollback_tag": "elves/mcts-search-v4-pre-batch-5"},
     {"id": 6, "name": "Conditional deep tier and handoff", "status": "pending", "commit": null, "rollback_tag": null}
   ],
   "review_comments": [],
   "active_compute": [],
-  "last_completed_action": "Candidate B passed structural widening feasibility at 2561071; its required high-rung admission delta remains pending the common screen.",
-  "updated_at": "2026-07-17T11:48:00-05:00"
+  "last_completed_action": "Candidate C passed terminal-integrity feasibility at 4722d21; its three efficiency/admission gates remain pending the common screen.",
+  "updated_at": "2026-07-17T12:10:00-05:00"
 }
