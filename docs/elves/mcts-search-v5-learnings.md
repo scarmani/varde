@@ -55,3 +55,13 @@ not invitations to tune a frozen gate.
 - Equal-tier first exposure covered more than 40 distinct points across 128
   seeds, while all four V5 factor recipes and the historical V4-unpruning hash
   remained distinct and deterministic.
+
+## Batch 4
+
+- Event facts can be computed from one generated transition batch without full
+  score/control comparisons. Ordinary placements on an empty Breath board are
+  correctly event-free.
+- The rollout reaches only accepted engine terminals, gives a losing seat one
+  resumption plus at most one event, and treats the 4P boundary as an exception.
+- All eight factor recipes now have distinct hashes while the historical V4
+  settling hash remains unchanged.

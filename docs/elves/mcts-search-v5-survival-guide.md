@@ -63,22 +63,22 @@ development factorial, and continue only through predeclared gates.
 ## Current Phase
 
 - **Status:** in progress.
-- **Active batch:** Batch 4 of 6.
-- **What was just finished:** Batch 3 committed at `f1b4fe8`; schedule,
-  mandatory-overflow, neutrality, median-visit, deterministic, V4-parity, and
-  330-product-test checks passed.
-- **Single next action:** implement Settling V2 with half-P eligibility, the
-  four exact event classes, legal resumption, and hard 4P integrity failure.
+- **Active batch:** Batch 5 of 6.
+- **What was just finished:** Batch 4 committed at `427081f`; event, eligibility,
+  pass, extension, resumption, 4P integrity, terminal-backup, V4-parity, and
+  338-product-test checks passed.
+- **Single next action:** freeze the exact eight-arm development manifest and
+  ordered-control wide-root instrument before launching any outcome tasks.
 
 ## Stop Gate
 
-- **Planned batches remaining:** 3.
+- **Planned batches remaining:** 2.
 - **Stop allowed right now:** no.
 - **Why:** the user authorized the full finite V5 run and no mandatory gate or
   other actual stop condition has fired.
-- **Next required action:** execute Batch 4's Settling V2 contract and prove
-  event classification, pass/extension/resumption semantics, true-terminal
-  backups, action ceiling accounting, and V1/V4 preservation.
+- **Next required action:** execute Batch 5's frozen 4/16/64 factorial and
+  ordered-control instrument, audit every component/interaction gate, and stop
+  before holdout unless exactly one deterministically ranked recipe qualifies.
 
 ## Effort Standard
 
@@ -117,16 +117,16 @@ development factorial, and continue only through predeclared gates.
 
 ## Next Exact Batch
 
-- **Batch:** Batch 4 — true-terminal Settling V2.
-- **Scope:** begin eligibility at `ceil(0.5P)`, recognize only capture,
-  extension/closure, controlled sole-liberty defense, and immediate fence
-  completion, settle after pass/no-event, force finish/pass at P, preserve one
-  legal losing-seat resumption plus at most one event, and fail beyond 4P.
-- **Acceptance criteria:** transition/event generation once per state; exact
-  phase and event tests; every accepted backup terminal; no illegal action or
-  mutation; deterministic recipes; V4 Settling V1 behavior/hash unchanged.
-- **Risk:** counting generic score/control change would recreate the V4 failure;
-  the 4P bound is integrity accounting, never a backed-up heuristic cutoff.
+- **Batch:** Batch 5 — frozen eight-arm development factorial.
+- **Scope:** precommit all eight factor combinations at 4/16/64, two policies,
+  four replicates, plus a high-rung ordered-control wide-root instrument. Run
+  atomically and resumably outside the repository with deterministic task IDs.
+- **Acceptance criteria:** complete integrity; oracle/solver, one-scan,
+  mandatory-visit, unpruning-delta, settling-efficiency, admission/cell,
+  monotonicity, attribution, and deterministic-ranking gates audited exactly.
+- **Risk:** runtime may consume the remaining envelope; project each rung from
+  completed lower-rung timing and do not launch a stage that crosses the hard
+  checkpoint. Never relax a threshold after outcomes.
 
 ## Post-Checkpoint Control Loop
 

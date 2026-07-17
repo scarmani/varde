@@ -203,7 +203,7 @@ Status: completed at `f1b4fe8`.
 
 ## Batch 4 — True-terminal Settling V2
 
-Status: in progress.
+Status: completed at `427081f`.
 
 ### Contract
 
@@ -222,3 +222,41 @@ Status: in progress.
 **Blast radius**
 
 - New V5 settling module plus research-only MCTS recipe combinations/tests.
+
+### Outcome
+
+- Added Settling V2 alongside unchanged V1. It uses exactly capture,
+  extension/closure, surviving sole-liberty defense, and immediate fence
+  completion events from one transition batch.
+- Half-P no-event and opponent-pass states settle immediately; P forces finish
+  or pass. A losing seat resumes once and receives at most one event action.
+- Every test rollout terminates through accepted rules state. A deliberately
+  reduced action ceiling raises `SettlingIntegrityError`, never a value.
+- All eight factorial hashes are unique; V4 settling remains
+  `d37e2c5fdeb1d95a245bcdb441192c02e77983a6931f9b1b88ef5be108f7a014`.
+- Eight focused settling tests and all 338 product tests passed in 113.604
+  seconds; changed-file Ruff, compilation, forbidden-file, diff, and CI checks
+  passed.
+
+## Batch 5 — Eight-arm development factorial
+
+Status: in progress.
+
+### Contract
+
+**Behavior**
+
+- Freeze and run all eight combinations over 24 development positions,
+  4/16/64 simulations, both rollout policies, and four deterministic replicates.
+- Add only the registered high-rung ordered-control wide-root instrument needed
+  to isolate unpruning's ten-point delta.
+
+**Acceptance criteria**
+
+- Atomic resume/worker invariance, complete integrity, exact component gates,
+  deterministic selection, and no holdout access before qualification.
+
+**Blast radius**
+
+- New V5 research harness/manifests and repository-external raw evidence;
+  compact generated audit only after the frozen run.

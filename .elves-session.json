@@ -18,10 +18,10 @@
   "merge_policy": "user-merges",
   "pr_number": 22,
   "continuation_guard": {
-    "remaining_batches": 3,
+    "remaining_batches": 2,
     "stop_allowed": false,
     "checkpoint_is_stop": false,
-    "next_required_action": "Implement true-terminal Settling V2 with the frozen event predicate, half-P eligibility, one-event post-resumption allowance, and 4P integrity accounting in Batch 4."
+    "next_required_action": "Freeze and execute the eight-arm 4/16/64 development factorial plus ordered-control instrument, audit every mandatory gate, and stop before holdout unless one deterministic recipe qualifies."
   },
   "test_baseline": {
     "passed": 299,
@@ -30,8 +30,8 @@
     "status": "passed in 108.988s"
   },
   "current_batch": {
-    "id": 4,
-    "name": "Add settling V2",
+    "id": 5,
+    "name": "Run eight-arm development factorial",
     "status": "in_progress"
   },
   "batches": [
@@ -39,12 +39,12 @@
     {"id": 1, "name": "Freeze corpora and oracle", "status": "completed", "commit": "e828a1dbe7671fec4a1b2ee988ccc606087cd144", "rollback_tag": "elves/mcts-search-v5-pre-batch-1"},
     {"id": 2, "name": "Correct root proof guidance", "status": "completed", "commit": "f572f407ae4b647ff50d75003eee5c45c12a50b4", "rollback_tag": "elves/mcts-search-v5-pre-batch-2"},
     {"id": 3, "name": "Add reserved unpruning", "status": "completed", "commit": "f1b4fe8ba10293617ab89e43853baeabb4b5dd9c", "rollback_tag": "elves/mcts-search-v5-pre-batch-3"},
-    {"id": 4, "name": "Add settling V2", "status": "in_progress", "commit": null, "rollback_tag": "elves/mcts-search-v5-pre-batch-4"},
-    {"id": 5, "name": "Run eight-arm development factorial", "status": "pending", "commit": null, "rollback_tag": "elves/mcts-search-v5-pre-batch-5"},
+    {"id": 4, "name": "Add settling V2", "status": "completed", "commit": "427081fdad60d8a8bf42d9c49b1d89e9eb00459d", "rollback_tag": "elves/mcts-search-v5-pre-batch-4"},
+    {"id": 5, "name": "Run eight-arm development factorial", "status": "in_progress", "commit": null, "rollback_tag": "elves/mcts-search-v5-pre-batch-5"},
     {"id": 6, "name": "Conditional holdout and handoff", "status": "pending", "commit": null, "rollback_tag": "elves/mcts-search-v5-pre-batch-6"}
   ],
   "review_comments": [],
   "active_compute": [],
-  "last_completed_action": "Batch 3 passed schedule, overflow, mandatory exposure, semantic neutrality, median-visit, determinism, V4 hash, and 330-product-test gates at f1b4fe8.",
-  "updated_at": "2026-07-17T14:23:10-05:00"
+  "last_completed_action": "Batch 4 passed exact event, eligibility, pass, extension, resumption, 4P failure, terminal-backup, determinism, V4 hash, and 338-product-test gates at 427081f.",
+  "updated_at": "2026-07-17T14:31:23-05:00"
 }
