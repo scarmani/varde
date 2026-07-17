@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "session_id": "elves-2026-07-17-varde-mcts-search-v5",
+  "mission": "Implement and evaluate corrected root proof guidance, obligation-reserved unpruning, and true-terminal settling V2 in a frozen eight-arm factorial.",
+  "mode": "finite",
+  "status": "in_progress",
+  "started_at": "2026-07-17T13:06:56-05:00",
+  "deadline_hours": 12,
+  "branch": "codex/mcts-search-v5",
+  "worktree": "/private/tmp/varde-mcts-search-v5",
+  "base_commit": "808c31720730fcf23bbc02c4549bd7151bdab3ec",
+  "collision_tripwire": "808c31720730fcf23bbc02c4549bd7151bdab3ec",
+  "plan_path": "docs/plans/mcts-search-v5.md",
+  "plan_sha256": "b476f08b3799babd96ee1f4187da4578b0fba161d11007bb539e16336d9767e0",
+  "survival_guide_path": "docs/elves/mcts-search-v5-survival-guide.md",
+  "learnings_path": "docs/elves/mcts-search-v5-learnings.md",
+  "execution_log_path": "docs/elves/mcts-search-v5-execution-log.md",
+  "merge_policy": "user-merges",
+  "pr_number": null,
+  "continuation_guard": {
+    "remaining_batches": 7,
+    "stop_allowed": false,
+    "checkpoint_is_stop": false,
+    "next_required_action": "Finish Batch 0 preflight, push the plan/session-only commit, open the draft PR, then begin Batch 1."
+  },
+  "test_baseline": {
+    "passed": 299,
+    "total": 299,
+    "skipped": 0,
+    "status": "passed in 108.988s"
+  },
+  "current_batch": {
+    "id": 0,
+    "name": "Stage the stacked run",
+    "status": "in_progress"
+  },
+  "batches": [
+    {"id": 0, "name": "Stage the stacked run", "status": "in_progress", "commit": null, "rollback_tag": "elves/mcts-search-v5-pre-batch-0"},
+    {"id": 1, "name": "Freeze corpora and oracle", "status": "pending", "commit": null, "rollback_tag": "elves/mcts-search-v5-pre-batch-1"},
+    {"id": 2, "name": "Correct root proof guidance", "status": "pending", "commit": null, "rollback_tag": "elves/mcts-search-v5-pre-batch-2"},
+    {"id": 3, "name": "Add reserved unpruning", "status": "pending", "commit": null, "rollback_tag": "elves/mcts-search-v5-pre-batch-3"},
+    {"id": 4, "name": "Add settling V2", "status": "pending", "commit": null, "rollback_tag": "elves/mcts-search-v5-pre-batch-4"},
+    {"id": 5, "name": "Run eight-arm development factorial", "status": "pending", "commit": null, "rollback_tag": "elves/mcts-search-v5-pre-batch-5"},
+    {"id": 6, "name": "Conditional holdout and handoff", "status": "pending", "commit": null, "rollback_tag": "elves/mcts-search-v5-pre-batch-6"}
+  ],
+  "review_comments": [],
+  "active_compute": [],
+  "last_completed_action": "Exact-base Batch 0 preflight passed: 299 tests, compilation, JavaScript syntax, JSON, diff, and survival-guide validation are clean; ten repository-wide Ruff findings are pre-existing.",
+  "updated_at": "2026-07-17T13:12:00-05:00"
+}
