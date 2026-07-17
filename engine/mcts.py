@@ -195,6 +195,7 @@ class MCTSDecision:
     solver_status: str | None = None
     solver_nodes: int = 0
     solver_cache_hits: int = 0
+    solver_elapsed_ms: float = 0.0
     solver_invocations: int = 0
     solver_overrides: int = 0
     exposed_actions: int | None = None
@@ -231,6 +232,7 @@ class MCTSDecision:
                 "status": self.solver_status,
                 "nodes": self.solver_nodes,
                 "cache_hits": self.solver_cache_hits,
+                "elapsed_ms": round(self.solver_elapsed_ms, 3),
                 "invocations": self.solver_invocations,
                 "overrides": self.solver_overrides,
                 "claim_limit": (
@@ -1148,6 +1150,10 @@ def choose_mcts_state_action(
             root.root_proof_scan.cache_hits
             if root_guidance_enabled
             else sum(scan.cache_hits for scan in solver_scans)
+        ),
+        solver_elapsed_ms=(
+            root.root_proof_scan.elapsed_ms
+            if root_guidance_enabled else 0.0
         ),
         solver_invocations=(
             root.root_proof_scan.root_scans

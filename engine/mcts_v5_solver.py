@@ -10,6 +10,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 import json
+import time
 
 from actions import RulesAction, legal_actions, legal_transitions
 from varde import GJERDE_RULESETS, control, groups_of, other
@@ -90,6 +91,7 @@ class RootProofScan:
     disproven_actions: tuple[RulesAction, ...]
     nodes: int
     cache_hits: int
+    elapsed_ms: float
     root_scans: int = 1
 
     @property
@@ -503,6 +505,7 @@ def scan_root_guidance(
     node_limit=DEFAULT_NODE_LIMIT,
 ):
     """Perform exactly one bounded root scan and aggregate all obligations."""
+    started = time.perf_counter()
     before = state.key()
     transitions = (
         tuple(legal_transitions(state))
@@ -549,4 +552,5 @@ def scan_root_guidance(
         tuple(action for action, status in statuses if status == "disproven"),
         sum(result.nodes for result in results),
         sum(result.cache_hits for result in results),
+        (time.perf_counter() - started) * 1000,
     )
